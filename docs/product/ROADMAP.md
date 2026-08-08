@@ -344,7 +344,7 @@ ToDoLab 적용 방향:
 - [ ] 기존 계정 로그인은 유효한 게스트 token을 함께 받아 Task, 일정, 완료 기록, 반복 occurrence, D-Day 관계를 하나의 트랜잭션으로 병합하도록 요청한다.
 - [ ] 게스트 상태의 신규 회원가입은 가능하면 같은 user id를 정식 계정으로 승격하고, 기존 이메일 계정과의 충돌 및 실패 rollback 정책을 확정한다.
 - [ ] 병합 API 재시도 시 중복 이전이 발생하지 않도록 멱등성과 동시 요청 잠금 정책을 백엔드와 검증한다.
-- [ ] 모바일 인증 bootstrap을 `저장 token 복원 → /auth/me 확인` 또는 `token 없음 → 게스트 생성` 흐름으로 변경하고, bootstrap 완료 전 사용자 데이터 query를 막는다.
+- [x] 모바일 인증 bootstrap을 `저장 token 복원 → /auth/me 확인` 또는 `token 없음 → 게스트 생성` 흐름으로 변경하고, bootstrap 완료 전 사용자 데이터 query를 막는다. 백엔드 `POST /api/v1/auth/guest` 계약과 mock API를 함께 반영했다.
 - [ ] 모바일 인증 상태를 `bootstrapping | guest | registered | error`로 구분하고 `/auth/me`와 token 응답에 `accountType`을 반영한다.
 - [ ] 로그인·회원가입 성공 후 정식 token으로 교체하기 전에 서버 병합 성공을 확인하고, 성공 시 사용자 범위 Query cache를 초기화해 다시 조회한다.
 - [ ] 게스트 생성 또는 병합 실패 시 기존 게스트 token과 데이터를 유지하고 사용자가 재시도할 수 있는 오류 UI를 제공한다.

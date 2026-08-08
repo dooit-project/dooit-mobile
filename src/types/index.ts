@@ -1,4 +1,5 @@
 export type {
+  AccountType,
   AuthenticatedUserResponse,
   LoginRequest,
   PasswordResetConfirmRequest,

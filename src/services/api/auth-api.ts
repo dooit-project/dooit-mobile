@@ -17,6 +17,14 @@ import { clearAccessToken, setAccessToken } from './auth-token-store';
 const AUTH_PATH = '/api/v1/auth';
 
 export const authApi = {
+  async guest(signal?: AbortSignal) {
+    const response = await apiClient.post<TokenResponse>(`${AUTH_PATH}/guest`, undefined, {
+      signal,
+    });
+    await setAccessToken(response.accessToken);
+    return response;
+  },
+
   register(request: RegisterRequest, signal?: AbortSignal) {
     return apiClient.post<UserResponse>(`${AUTH_PATH}/register`, request, { signal });
   },

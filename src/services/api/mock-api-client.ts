@@ -48,9 +48,11 @@ let currentUser: UserResponse | null = null;
 const users: UserResponse[] = [
   {
     id: 1,
+    accountType: 'REGISTERED',
     email: 'demo@todolab.app',
     displayName: 'Demo User',
     role: 'USER',
+    timeZone: 'Asia/Seoul',
     createdAt: now,
     updatedAt: null,
   },
@@ -244,15 +246,35 @@ function getGoal(goalId: number) {
 }
 
 function getUser(email: string) {
-  return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) ?? null;
+  return users.find((user) => user.email?.toLowerCase() === email.toLowerCase()) ?? null;
 }
 
 function createUser(request: RegisterRequest) {
   const user: UserResponse = {
     id: nextUserId,
+    accountType: 'REGISTERED',
     email: request.email,
     displayName: request.displayName,
     role: 'USER',
+    timeZone: 'Asia/Seoul',
+    createdAt: now,
+    updatedAt: null,
+  };
+
+  nextUserId += 1;
+  users.push(user);
+
+  return user;
+}
+
+function createGuestUser() {
+  const user: UserResponse = {
+    id: nextUserId,
+    accountType: 'GUEST',
+    email: null,
+    displayName: null,
+    role: 'USER',
+    timeZone: 'Asia/Seoul',
     createdAt: now,
     updatedAt: null,
   };
@@ -573,7 +595,9 @@ export const mockApiClient = {
       const user = currentUser ?? users[0];
       const response: AuthenticatedUserResponse = {
         id: user.id,
+        accountType: user.accountType,
         email: user.email,
+        displayName: user.displayName,
         role: user.role,
       };
 
@@ -666,6 +690,10 @@ export const mockApiClient = {
 
   async post<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (path === `${AUTH_PATH}/guest`) {
+      return createTokenResponse(createGuestUser()) as T;
+    }
 
     if (path === `${AUTH_PATH}/register`) {
       const request = body as RegisterRequest;

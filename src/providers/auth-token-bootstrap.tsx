@@ -14,6 +14,8 @@ export function AuthTokenBootstrap({ children }: PropsWithChildren) {
     initializeAccessToken()
       .then(async (token) => {
         if (!token) {
+          const guestSession = await authApi.guest();
+          queryClient.setQueryData(['auth', 'me'], guestSession.user);
           return;
         }
 

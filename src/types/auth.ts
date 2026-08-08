@@ -1,12 +1,15 @@
 import type { LocalDateTimeString } from './date-time';
 
 export type UserRole = 'USER' | 'ADMIN';
+export type AccountType = 'GUEST' | 'REGISTERED';
 
 export type UserResponse = {
   id: number;
-  email: string;
-  displayName: string;
+  accountType: AccountType;
+  email: string | null;
+  displayName: string | null;
   role: UserRole;
+  timeZone: string;
   createdAt: LocalDateTimeString;
   updatedAt: LocalDateTimeString | null;
 };
@@ -53,6 +56,8 @@ export type TokenResponse = {
 
 export type AuthenticatedUserResponse = {
   id: number;
-  email: string;
+  accountType: AccountType;
+  email: string | null;
+  displayName: string | null;
   role: UserRole;
 };

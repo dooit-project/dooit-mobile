@@ -39,6 +39,32 @@ describe('Auth API', () => {
     localStorage.clear();
   });
 
+  it('게스트 계정을 생성하고 access token을 저장한다', async () => {
+    postMock.mockResolvedValue({
+      tokenType: 'Bearer',
+      accessToken: 'guest-access-token',
+      expiresAt: '2026-08-09T10:00:00',
+      user: {
+        id: 10,
+        accountType: 'GUEST',
+        email: null,
+        displayName: null,
+        role: 'USER',
+        timeZone: 'Asia/Seoul',
+        createdAt: '2026-07-09T10:00:00',
+        updatedAt: null,
+      },
+    });
+
+    const response = await authApi.guest();
+
+    expect(postMock).toHaveBeenCalledWith('/api/v1/auth/guest', undefined, {
+      signal: undefined,
+    });
+    expect(response.user.accountType).toBe('GUEST');
+    expect(getAccessToken()).toBe('guest-access-token');
+  });
+
   it('회원가입 API를 호출한다', async () => {
     postMock.mockResolvedValue({ id: 1 });
     const request = {
@@ -61,9 +87,11 @@ describe('Auth API', () => {
       expiresAt: '2026-07-14T10:00:00',
       user: {
         id: 1,
+        accountType: 'REGISTERED',
         email: 'user@example.com',
         displayName: 'User',
         role: 'USER',
+        timeZone: 'Asia/Seoul',
         createdAt: '2026-07-14T09:00:00',
         updatedAt: null,
       },
