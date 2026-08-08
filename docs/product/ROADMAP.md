@@ -340,12 +340,12 @@ ToDoLab 적용 방향:
 백엔드와 확정한 게스트 인증·병합 계약을 기준으로 연동한다. IP 주소나 OS 단말 식별자를 사용자 ID로 사용하지 않고, 서버가 생성한 게스트 사용자와 서명된 access token을 인증 주체로 사용한다.
 
 - [ ] 게스트 계정의 보존 기간, 기능 제한, 앱 삭제 시 복구 불가 안내, 기존 계정 로그인 시 데이터 병합 정책을 확정한다.
-- [ ] 백엔드에 게스트 사용자 생성 API와 `GUEST | REGISTERED` 계정 유형을 요청하고 원본 API 계약 문서에 반영한다.
+- [x] 백엔드에 게스트 사용자 생성 API와 `GUEST | REGISTERED` 계정 유형을 요청하고 원본 API 계약 문서에 반영한다. 백엔드 `AUTH_CONTRACT.md`와 `API_V1_FRONTEND.md`의 `POST /api/v1/auth/guest`, `accountType`, 게스트 token TTL 계약을 확인했다.
 - [ ] 기존 계정 로그인은 유효한 게스트 token을 함께 받아 Task, 일정, 완료 기록, 반복 occurrence, D-Day 관계를 하나의 트랜잭션으로 병합하도록 요청한다.
 - [ ] 게스트 상태의 신규 회원가입은 가능하면 같은 user id를 정식 계정으로 승격하고, 기존 이메일 계정과의 충돌 및 실패 rollback 정책을 확정한다.
 - [ ] 병합 API 재시도 시 중복 이전이 발생하지 않도록 멱등성과 동시 요청 잠금 정책을 백엔드와 검증한다.
 - [x] 모바일 인증 bootstrap을 `저장 token 복원 → /auth/me 확인` 또는 `token 없음 → 게스트 생성` 흐름으로 변경하고, bootstrap 완료 전 사용자 데이터 query를 막는다. 백엔드 `POST /api/v1/auth/guest` 계약과 mock API를 함께 반영했다.
-- [ ] 모바일 인증 상태를 `bootstrapping | guest | registered | error`로 구분하고 `/auth/me`와 token 응답에 `accountType`을 반영한다.
+- [x] 모바일 인증 상태를 `bootstrapping | guest | registered | error`로 구분하고 `/auth/me`와 token 응답에 `accountType`을 반영한다. 프로필은 게스트 token을 정식 로그인으로 오인하지 않고 별도 상태와 복구 제한을 표시한다.
 - [ ] 로그인·회원가입 성공 후 정식 token으로 교체하기 전에 서버 병합 성공을 확인하고, 성공 시 사용자 범위 Query cache를 초기화해 다시 조회한다.
 - [ ] 게스트 생성 또는 병합 실패 시 기존 게스트 token과 데이터를 유지하고 사용자가 재시도할 수 있는 오류 UI를 제공한다.
 - [ ] 프로필에 `게스트로 사용 중`, 로그인 유도, 앱 삭제 시 복구 제한을 안내하고 로그인 완료 시 데이터 연결 결과를 보여준다.

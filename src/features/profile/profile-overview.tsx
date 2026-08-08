@@ -1,14 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import type { SymbolViewProps } from 'expo-symbols';
 import { SymbolView } from 'expo-symbols';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { ColorValue } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
-import { authApi, getAccessToken, subscribeAccessToken } from '@/services/api';
+import { useAuthState } from '@/features/auth';
+import { authApi } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 
 type ProfileItem = {
@@ -60,24 +61,24 @@ export function ProfileOverview() {
   const queryClient = useQueryClient();
   const theme = useAppTheme();
   const [focusedItem, setFocusedItem] = useState<ProfileItem['href'] | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getAccessToken()));
   const [logoutWarning, setLogoutWarning] = useState(false);
-
-  useEffect(() => subscribeAccessToken((token) => setIsLoggedIn(Boolean(token))), []);
-
-  const me = useQuery({
-    queryKey: ['auth', 'me'],
-    queryFn: ({ signal }) => authApi.me(signal),
-    enabled: isLoggedIn,
-    retry: false,
-  });
-  const userEmail = me.data?.email;
-  const identityTitle = userEmail ?? (isLoggedIn ? '나의 플래너' : '로그인이 필요해요');
-  const identityDescription = isLoggedIn
-    ? me.isPending
-      ? '계정 정보를 확인하고 있어요.'
-      : '목표와 기록, 개인 설정을 관리하세요.'
-    : '로그인하면 서버와 동기화돼요.';
+  const authState = useAuthState();
+  const isRegistered = authState.status === 'registered';
+  const isGuest = authState.status === 'guest';
+  const identityTitle = isRegistered
+    ? (authState.user.email ?? authState.user.displayName ?? '나의 플래너')
+    : isGuest
+      ? '게스트로 사용 중'
+      : authState.status === 'bootstrapping'
+        ? '계정 정보를 확인하고 있어요'
+        : '계정 정보를 확인하지 못했어요';
+  const identityDescription = isRegistered
+    ? '목표와 기록, 개인 설정을 관리하세요.'
+    : isGuest
+      ? '로그인하면 지금까지 작성한 내용을 계정에 연결할 수 있어요.'
+      : authState.status === 'bootstrapping'
+        ? '잠시만 기다려 주세요.'
+        : authState.error.message;
 
   const logout = useMutation({
     mutationFn: () => authApi.logout(),
@@ -89,7 +90,6 @@ export function ProfileOverview() {
     },
     onSettled: () => {
       queryClient.clear();
-      setIsLoggedIn(false);
     },
   });
 
@@ -121,13 +121,21 @@ export function ProfileOverview() {
         </View>
         <Button
           loading={logout.isPending}
-          onPress={isLoggedIn ? () => logout.mutate() : () => router.push('/login' as Href)}
+          onPress={isRegistered ? () => logout.mutate() : () => router.push('/login' as Href)}
           size="compact"
-          variant={isLoggedIn ? 'ghost' : 'secondary'}
+          variant={isRegistered ? 'ghost' : 'secondary'}
         >
-          {isLoggedIn ? '로그아웃' : '로그인'}
+          {isRegistered ? '로그아웃' : '로그인'}
         </Button>
       </View>
+
+      {isGuest ? (
+        <InlineNotice
+          tone="warning"
+          title="임시 계정으로 사용하고 있어요"
+          message="로그인하기 전에 앱을 삭제하거나 앱 데이터를 지우면 현재 내용을 복구할 수 없어요."
+        />
+      ) : null}
 
       {logoutWarning ? (
         <InlineNotice
