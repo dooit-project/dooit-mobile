@@ -7,6 +7,7 @@ import {
   markFeatureTipCompleted,
   resetAppGuidance,
   resetAppPreferencesStoreForTesting,
+  resetFeatureTips,
 } from '../app-preferences-store';
 
 const mockSecureStore = new Map<string, string>();
@@ -73,6 +74,16 @@ describe('app preferences store', () => {
 
     await expect(resetAppGuidance()).resolves.toEqual({
       onboardingVersion: 0,
+      completedFeatureTips: [],
+    });
+  });
+
+  it('화면 가이드만 다시 볼 때 필수 온보딩 완료 버전은 유지한다', async () => {
+    await completeOnboarding();
+    await markFeatureTipCompleted('calendar.overview');
+
+    await expect(resetFeatureTips()).resolves.toEqual({
+      onboardingVersion: CURRENT_ONBOARDING_VERSION,
       completedFeatureTips: [],
     });
   });

@@ -159,6 +159,13 @@ export async function resetAppGuidance() {
   return updateAppPreferences(() => DEFAULT_APP_PREFERENCES);
 }
 
+export async function resetFeatureTips() {
+  return updateAppPreferences((current) => ({
+    ...current,
+    completedFeatureTips: [],
+  }));
+}
+
 export function resetAppPreferencesStoreForTesting() {
   memoryPreferences = null;
   initializePromise = null;

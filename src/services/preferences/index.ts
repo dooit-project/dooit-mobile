@@ -5,5 +5,6 @@ export {
   initializeAppPreferences,
   markFeatureTipCompleted,
   resetAppGuidance,
+  resetFeatureTips,
 } from './app-preferences-store';
 export type { AppPreferences, FeatureTipId } from './app-preferences-store';

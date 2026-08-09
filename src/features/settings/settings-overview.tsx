@@ -3,9 +3,18 @@ import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, Card, IconButton, PageHeader, Screen } from '@/components/ui';
+import {
+  AppText,
+  Button,
+  Card,
+  IconButton,
+  InlineNotice,
+  PageHeader,
+  Screen,
+} from '@/components/ui';
 import { env } from '@/config';
 import { getAccessToken, subscribeAccessToken } from '@/services/api';
+import { resetFeatureTips } from '@/services/preferences';
 import { radii, spacing, useAppTheme } from '@/theme';
 
 type SettingsRowProps = {
@@ -18,6 +27,9 @@ export function SettingsOverview() {
   const router = useRouter();
   const theme = useAppTheme();
   const [accessToken, setAccessToken] = useState(() => getAccessToken());
+  const [guideResetStatus, setGuideResetStatus] = useState<
+    'idle' | 'pending' | 'success' | 'error'
+  >('idle');
   const apiModeLabel = env.apiMode === 'real' ? 'real' : 'mock';
   const apiModeTone = env.apiMode === 'real' ? 'success' : 'warning';
   const connectionDescription =
@@ -71,6 +83,54 @@ export function SettingsOverview() {
           />
           <SettingsRow label="Access Token" value={hasAccessToken ? '저장됨' : '없음'} />
         </View>
+      </Card>
+
+      <Card variant="outlined" style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View style={[styles.icon, { backgroundColor: theme.colors.primarySoft }]}>
+            <SymbolView
+              name={{ ios: 'lightbulb.fill', android: 'lightbulb', web: 'lightbulb' }}
+              size={18}
+              tintColor={theme.colors.primary}
+            />
+          </View>
+          <View style={styles.sectionCopy}>
+            <AppText variant="bodyLarge" weight="bold">
+              앱 사용 가이드
+            </AppText>
+            <AppText tone="secondary" variant="caption">
+              Today, Calendar, D-Day 화면의 짧은 안내를 다시 표시합니다.
+            </AppText>
+          </View>
+        </View>
+
+        {guideResetStatus === 'success' ? (
+          <InlineNotice
+            message="각 화면을 다시 열면 사용 가이드가 표시됩니다."
+            title="가이드를 다시 볼 수 있어요"
+            tone="success"
+          />
+        ) : null}
+        {guideResetStatus === 'error' ? (
+          <InlineNotice
+            message="가이드 상태를 초기화하지 못했어요. 다시 시도해 주세요."
+            tone="danger"
+          />
+        ) : null}
+
+        <Button
+          fullWidth
+          loading={guideResetStatus === 'pending'}
+          onPress={() => {
+            setGuideResetStatus('pending');
+            void resetFeatureTips()
+              .then(() => setGuideResetStatus('success'))
+              .catch(() => setGuideResetStatus('error'));
+          }}
+          variant="secondary"
+        >
+          앱 사용 가이드 다시 보기
+        </Button>
       </Card>
     </Screen>
   );
