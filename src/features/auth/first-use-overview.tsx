@@ -1,5 +1,6 @@
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
@@ -18,6 +19,7 @@ export function FirstUseOverview({
 }: FirstUseOverviewProps) {
   const router = useRouter();
   const theme = useAppTheme();
+  const [showFeatureTour, setShowFeatureTour] = useState(false);
 
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
@@ -83,7 +85,54 @@ export function FirstUseOverview({
           로그인 또는 계정 만들기
         </Button>
       </View>
+
+      <View style={styles.featureTour}>
+        <Button
+          accessibilityState={{ expanded: showFeatureTour }}
+          disabled={isStartingGuest}
+          onPress={() => setShowFeatureTour((current) => !current)}
+          variant="ghost"
+        >
+          {showFeatureTour ? '기능 둘러보기 닫기' : '기능 둘러보기'}
+        </Button>
+        {showFeatureTour ? (
+          <View accessibilityLabel="ToDoLab 주요 기능" style={styles.featureList}>
+            <FeatureSummary
+              description="오늘 일정과 할 일을 한곳에서 확인하고 빠르게 기록해요."
+              title="Today"
+            />
+            <FeatureSummary
+              description="날짜별 일정과 반복되는 계획을 달력 흐름으로 살펴봐요."
+              title="Calendar"
+            />
+            <FeatureSummary
+              description="중요한 날짜를 세고, 그 목표에 필요한 Task를 연결해요."
+              title="D-Day"
+            />
+          </View>
+        ) : null}
+      </View>
     </Screen>
+  );
+}
+
+function FeatureSummary({ title, description }: { title: string; description: string }) {
+  const theme = useAppTheme();
+
+  return (
+    <View
+      style={[
+        styles.featureSummary,
+        { backgroundColor: theme.colors.surfaceMuted, borderColor: theme.colors.border },
+      ]}
+    >
+      <AppText variant="label" weight="bold">
+        {title}
+      </AppText>
+      <AppText tone="secondary" variant="body">
+        {description}
+      </AppText>
+    </View>
   );
 }
 
@@ -117,5 +166,19 @@ const styles = StyleSheet.create({
   accountAction: {
     alignItems: 'center',
     gap: spacing[3],
+  },
+  featureTour: {
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  featureList: {
+    gap: spacing[2],
+    width: '100%',
+  },
+  featureSummary: {
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    gap: spacing[1],
+    padding: spacing[3],
   },
 });

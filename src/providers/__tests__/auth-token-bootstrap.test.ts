@@ -1,4 +1,8 @@
-import { bootstrapAuthSession, createGuestSession } from '../auth-token-bootstrap';
+import {
+  bootstrapAuthSession,
+  createGuestSession,
+  shouldRenderAppRoutes,
+} from '../auth-token-bootstrap';
 
 const guestUser = {
   id: 10,
@@ -108,5 +112,25 @@ describe('createGuestSession', () => {
     ).rejects.toBe(error);
     expect(cacheUser).not.toHaveBeenCalled();
     expect(completeFirstUse).not.toHaveBeenCalled();
+  });
+});
+
+describe('shouldRenderAppRoutes', () => {
+  it.each(['first-use', 'starting-guest', 'session-error'] as const)(
+    '%s 상태에서는 Today route를 렌더링하지 않는다',
+    (status) => {
+      expect(shouldRenderAppRoutes(status, '/')).toBe(false);
+    },
+  );
+
+  it.each(['/login', '/register', '/password-reset'])(
+    '게스트 시작 실패 중에도 %s 인증 route는 렌더링한다',
+    (pathname) => {
+      expect(shouldRenderAppRoutes('first-use', pathname)).toBe(true);
+    },
+  );
+
+  it('세션 준비가 끝나면 Today route를 렌더링한다', () => {
+    expect(shouldRenderAppRoutes('ready', '/')).toBe(true);
   });
 });

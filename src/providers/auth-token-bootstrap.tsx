@@ -18,6 +18,23 @@ type BootstrapDependencies = {
   cacheUser: (user: AuthenticatedUserResponse) => void;
 };
 
+export type AuthBootstrapStatus =
+  | 'loading'
+  | 'first-use'
+  | 'starting-guest'
+  | 'ready'
+  | 'session-error';
+
+const PUBLIC_AUTH_PATHS = ['/login', '/register', '/password-reset'];
+
+export function shouldRenderAppRoutes(status: AuthBootstrapStatus, pathname: string) {
+  if (status === 'ready') {
+    return true;
+  }
+
+  return status !== 'loading' && PUBLIC_AUTH_PATHS.includes(pathname);
+}
+
 const defaultDependencies: BootstrapDependencies = {
   initializeToken: initializeAccessToken,
   getCurrentUser: () => authApi.me(),
@@ -51,9 +68,7 @@ export async function createGuestSession(
 
 export function AuthTokenBootstrap({ children }: PropsWithChildren) {
   const pathname = usePathname();
-  const [status, setStatus] = useState<
-    'loading' | 'first-use' | 'starting-guest' | 'ready' | 'session-error'
-  >('loading');
+  const [status, setStatus] = useState<AuthBootstrapStatus>('loading');
   const [guestErrorMessage, setGuestErrorMessage] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
@@ -95,9 +110,7 @@ export function AuthTokenBootstrap({ children }: PropsWithChildren) {
     [],
   );
 
-  const isPublicAuthRoute = ['/login', '/register', '/password-reset'].includes(pathname);
-
-  if (isPublicAuthRoute && status !== 'loading' && status !== 'ready') {
+  if (shouldRenderAppRoutes(status, pathname)) {
     return children;
   }
 
@@ -150,7 +163,7 @@ export function AuthTokenBootstrap({ children }: PropsWithChildren) {
     );
   }
 
-  return children;
+  return null;
 }
 
 const styles = StyleSheet.create({
