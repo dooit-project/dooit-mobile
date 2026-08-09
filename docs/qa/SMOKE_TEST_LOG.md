@@ -2,6 +2,37 @@
 
 이 문서는 모바일 앱이 실제 사용 가능한 상태인지 확인한 최신 smoke test 기준선만 남긴다. 오래된 조사 과정과 해결된 원인 분석은 git history와 각 커밋에 맡기고, 재실행에 필요한 사실과 남은 확인 항목만 관리한다.
 
+## 2026-08-10 local backend guest deployment preflight
+
+환경:
+
+- 모바일 `main`: 온보딩·게스트 시작 흐름이 반영된 최신 commit
+- 백엔드 `main`: 게스트 발급, 회원가입 승격, 로그인 병합, 멱등 재시도 구현 commit 확인
+- Docker production API: `http://127.0.0.1:8080`
+- 별도 local Java API: `http://localhost:8080`
+
+확인 결과:
+
+- 모바일의 온보딩 관련 미푸시 commit을 `origin/main`에 반영했다.
+- 백엔드 게스트 관련 선별 테스트는 통과했다. 전체 390개 테스트 중 게스트와 무관한 `DocumentationSecurityIntegrationTest` 1개는 실패했다.
+- Docker API의 `POST /api/v1/auth/guest`는 401 `인증이 필요합니다.`를 반환해 아직 구버전 app이 실행 중인 것으로 확인했다.
+- local Java API의 같은 endpoint는 500 `서버 오류가 발생했습니다.`를 반환했다.
+- 두 API의 readiness는 DB와 schema를 포함해 `UP`이지만, Docker MySQL의 `APP_USER`를 읽기 전용으로 확인한 결과 `ACCOUNT_TYPE`, `MERGED_INTO_USER_ID`, `GUEST_EXPIRES_AT` 등 게스트 column이 없었다.
+- 기존 DB의 `EMAIL`, `PASSWORD_HASH`, `DISPLAY_NAME`도 여전히 `NOT NULL`이어서 게스트 생성에 필요한 `20260809_add_guest_account_columns.sql`이 적용되지 않은 상태다.
+
+다음 순서:
+
+1. production DB backup을 생성하고 복구 가능 여부를 확인한다.
+2. app container를 중지한 뒤 `docs/db/migrations/20260809_add_guest_account_columns.sql`을 production DB에 적용한다.
+3. 최신 backend `main` image로 app container를 재배포한다.
+4. readiness 확인 후 `EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:guest:real`을 재실행한다.
+5. 게스트 발급과 `/auth/me`가 통과하면 승격·병합·멱등 재시도 smoke를 모바일 script에 확장한다.
+
+주의:
+
+- migration과 production container 재배포는 실제 DB를 변경하므로 별도 사용자 승인 후 진행한다.
+- 게스트 token 갱신 API와 병합 결과 count 응답은 백엔드에 아직 없다.
+
 ## 2026-08-09 mock Web guest session smoke
 
 환경:
