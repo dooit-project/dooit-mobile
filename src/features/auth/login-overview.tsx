@@ -27,8 +27,9 @@ export function LoginOverview() {
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const login = useMutation({
     mutationFn: () => authApi.login({ email: email.trim(), password }),
-    onSuccess: async () => {
+    onSuccess: async (response) => {
       setValidationMessage(null);
+      queryClient.setQueryData(['auth', 'me'], response.user);
       await queryClient.invalidateQueries();
       router.replace('/' as Href);
     },

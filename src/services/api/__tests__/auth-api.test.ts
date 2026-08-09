@@ -1,4 +1,4 @@
-import { authApi, getAccessToken } from '@/services/api';
+import { authApi, getAccessToken, setAccessToken } from '@/services/api';
 import { apiClient } from '@/services/api/api-client';
 
 jest.mock('@/services/api/api-client', () => ({
@@ -104,6 +104,17 @@ describe('Auth API', () => {
       signal: undefined,
     });
     expect(getAccessToken()).toBe('access-token');
+  });
+
+  it('로그인 실패 시 기존 게스트 access token을 유지한다', async () => {
+    await setAccessToken('guest-access-token');
+    postMock.mockRejectedValue(new Error('login failed'));
+
+    await expect(
+      authApi.login({ email: 'user@example.com', password: 'wrong-password' }),
+    ).rejects.toThrow('login failed');
+
+    expect(getAccessToken()).toBe('guest-access-token');
   });
 
   it('내 정보 API를 호출한다', async () => {
