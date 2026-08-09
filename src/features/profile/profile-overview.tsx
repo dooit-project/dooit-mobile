@@ -12,6 +12,8 @@ import { useAuthState } from '@/features/auth';
 import { authApi } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 
+import { getProfileAuthPresentation } from './profile-auth-presentation';
+
 type ProfileItem = {
   accent: 'amber' | 'sage' | 'blue';
   title: string;
@@ -64,21 +66,7 @@ export function ProfileOverview() {
   const [logoutWarning, setLogoutWarning] = useState(false);
   const authState = useAuthState();
   const isRegistered = authState.status === 'registered';
-  const isGuest = authState.status === 'guest';
-  const identityTitle = isRegistered
-    ? (authState.user.email ?? authState.user.displayName ?? '나의 플래너')
-    : isGuest
-      ? '게스트로 사용 중'
-      : authState.status === 'bootstrapping'
-        ? '계정 정보를 확인하고 있어요'
-        : '계정 정보를 확인하지 못했어요';
-  const identityDescription = isRegistered
-    ? '목표와 기록, 개인 설정을 관리하세요.'
-    : isGuest
-      ? '로그인하면 지금까지 작성한 내용을 계정에 연결할 수 있어요.'
-      : authState.status === 'bootstrapping'
-        ? '잠시만 기다려 주세요.'
-        : authState.error.message;
+  const authPresentation = getProfileAuthPresentation(authState);
 
   const logout = useMutation({
     mutationFn: () => authApi.logoutToGuest(),
@@ -114,10 +102,10 @@ export function ProfileOverview() {
               나의 플래너 공간
             </AppText>
             <AppText numberOfLines={1} variant="bodyLarge" weight="bold">
-              {identityTitle}
+              {authPresentation.title}
             </AppText>
             <AppText numberOfLines={2} tone="secondary" variant="caption">
-              {identityDescription}
+              {authPresentation.description}
             </AppText>
           </View>
         </View>
@@ -127,11 +115,11 @@ export function ProfileOverview() {
           size="compact"
           variant={isRegistered ? 'ghost' : 'secondary'}
         >
-          {isRegistered ? '로그아웃' : '로그인'}
+          {authPresentation.actionLabel}
         </Button>
       </View>
 
-      {isGuest ? (
+      {authPresentation.showGuestRecoveryWarning ? (
         <InlineNotice
           tone="warning"
           title="임시 계정으로 사용하고 있어요"
