@@ -80,6 +80,21 @@ describe('Auth API', () => {
     });
   });
 
+  it('회원가입 실패 시 기존 게스트 access token을 유지한다', async () => {
+    await setAccessToken('guest-access-token');
+    postMock.mockRejectedValue(new Error('register failed'));
+
+    await expect(
+      authApi.register({
+        email: 'user@example.com',
+        password: 'password123',
+        displayName: 'User',
+      }),
+    ).rejects.toThrow('register failed');
+
+    expect(getAccessToken()).toBe('guest-access-token');
+  });
+
   it('로그인 성공 시 access token을 저장한다', async () => {
     postMock.mockResolvedValue({
       tokenType: 'Bearer',
@@ -142,6 +157,15 @@ describe('Auth API', () => {
     });
     expect(response.user.accountType).toBe('GUEST');
     expect(getAccessToken()).toBe('new-guest-access-token');
+  });
+
+  it('로그아웃 후 게스트 발급 실패 시 정식 access token을 남기지 않는다', async () => {
+    await setAccessToken('registered-access-token');
+    postMock.mockRejectedValue(new Error('guest creation failed'));
+
+    await expect(authApi.logoutToGuest()).rejects.toThrow('guest creation failed');
+
+    expect(getAccessToken()).toBeNull();
   });
 
   it('내 정보 API를 호출한다', async () => {
