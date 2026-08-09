@@ -380,7 +380,7 @@ ToDoLab 적용 방향:
 - [x] 현재 최초 실행, 게스트 Profile, 로그인 연결, 게스트 생성 실패 상태를 390×844 Web에서 캡쳐하고 UX 위험을 정리한다.
 - [x] 현재 구조가 순수 로컬 모드가 아니라 서버 게스트 방식임을 명시하고, 첫 화면에서는 `로컬로 사용` 대신 `로그인 없이 시작`을 사용하기로 정한다.
 - [x] Apple HIG와 Todoist, Things, TickTick의 공식 가이드에서 짧고 선택 가능한 시작 안내, 첫 행동 중심 학습, 맥락형 도움말 원칙을 확인한다.
-- [ ] `onboardingVersion`과 기능별 tip 완료 상태를 Android, iOS, Web에서 공통으로 저장하는 preference 계층을 만든다.
+- [x] `onboardingVersion`과 기능별 tip 완료 상태를 Android, iOS, Web에서 공통으로 저장하는 preference 계층을 만든다. Native는 SecureStore, Web은 localStorage에 하나의 정규화된 JSON으로 보존하며 손상값·중복 tip·버전 후퇴를 방어한다.
 - [ ] 인증 bootstrap을 `저장 세션 복원`과 `최초 사용자의 시작 방식 선택`으로 분리하고, token이 없을 때 게스트 API를 자동 호출하지 않는다.
 - [ ] 최초 시작 화면에 `로그인 없이 시작`, `로그인 또는 계정 만들기`, 선택형 `기능 둘러보기`를 제공한다.
 - [ ] 게스트 생성 실패 시 시작 화면에 머물면서 재시도와 로그인 우회를 모두 제공하고, Today query가 실행되지 않는지 테스트한다.
