@@ -124,7 +124,8 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}) 
     const envelope = isApiEnvelope(responseBody) ? responseBody : null;
 
     if (!response.ok) {
-      if (response.status === 401 && accessToken) {
+      const isCredentialFailure = response.status === 401 && envelope?.error?.code === 11001;
+      if (response.status === 401 && accessToken && !isCredentialFailure) {
         void clearAccessToken();
         notifySessionExpired();
       }

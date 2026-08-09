@@ -89,6 +89,59 @@ describe('api client authorization', () => {
     unsubscribe();
   });
 
+  it('로그인 자격 증명 실패 11001은 기존 게스트 token을 유지한다', async () => {
+    globalThis.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      text: async () =>
+        JSON.stringify({
+          status: 'fail',
+          data: null,
+          error: { code: 11001, message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
+          timestamp: '2026-08-10T10:00:00',
+        }),
+    });
+
+    const listener = jest.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+    await setAccessToken('guest-access-token');
+
+    await expect(
+      request('/api/v1/auth/login', {
+        method: 'POST',
+        body: { email: 'user@example.com', password: 'wrong-password' },
+      }),
+    ).rejects.toThrow('이메일 또는 비밀번호가 올바르지 않습니다.');
+
+    expect(getAccessToken()).toBe('guest-access-token');
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe();
+  });
+
+  it('token 오류 11002는 기존 token을 삭제하고 세션 만료를 알린다', async () => {
+    globalThis.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      text: async () =>
+        JSON.stringify({
+          status: 'fail',
+          data: null,
+          error: { code: 11002, message: '인증이 필요합니다.' },
+          timestamp: '2026-08-10T10:00:00',
+        }),
+    });
+
+    const listener = jest.fn();
+    const unsubscribe = subscribeSessionExpired(listener);
+    await setAccessToken('expired-token');
+
+    await expect(request('/api/v1/auth/me')).rejects.toThrow('인증이 필요합니다.');
+
+    expect(getAccessToken()).toBeNull();
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
   it('403 응답은 access token을 유지하고 세션 만료로 처리하지 않는다', async () => {
     globalThis.fetch = jest.fn().mockResolvedValue({
       ok: false,
