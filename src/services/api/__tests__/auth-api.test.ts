@@ -1,4 +1,4 @@
-import { authApi, getAccessToken, setAccessToken } from '@/services/api';
+import { authApi, getAccessToken, isTokenResponse, setAccessToken } from '@/services/api';
 import { apiClient } from '@/services/api/api-client';
 
 jest.mock('@/services/api/api-client', () => ({
@@ -93,6 +93,34 @@ describe('Auth API', () => {
     ).rejects.toThrow('register failed');
 
     expect(getAccessToken()).toBe('guest-access-token');
+  });
+
+  it('게스트 회원가입 승격 응답이면 정식 access token을 저장한다', async () => {
+    await setAccessToken('guest-access-token');
+    postMock.mockResolvedValue({
+      tokenType: 'Bearer',
+      accessToken: 'registered-access-token',
+      expiresAt: '2026-09-09T10:00:00',
+      user: {
+        id: 10,
+        accountType: 'REGISTERED',
+        email: 'user@example.com',
+        displayName: 'User',
+        role: 'USER',
+        timeZone: 'Asia/Seoul',
+        createdAt: '2026-08-09T10:00:00',
+        updatedAt: '2026-08-09T10:00:00',
+      },
+    });
+
+    const response = await authApi.register({
+      email: 'user@example.com',
+      password: 'password123',
+      displayName: 'User',
+    });
+
+    expect(isTokenResponse(response)).toBe(true);
+    expect(getAccessToken()).toBe('registered-access-token');
   });
 
   it('로그인 성공 시 access token을 저장한다', async () => {

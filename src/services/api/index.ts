@@ -1,4 +1,4 @@
-export { authApi } from './auth-api';
+export { authApi, isTokenResponse } from './auth-api';
 export { subscribeSessionExpired } from './auth-session';
 export {
   clearAccessToken,

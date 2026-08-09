@@ -1,17 +1,27 @@
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { KeyboardAvoidingView, Platform, RefreshControl, StyleSheet, View } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Screen } from '@/components/ui';
+import { InlineNotice, Screen } from '@/components/ui';
 import { QuickCapture, TodayOverview, TodayWeekStrip, useTodayOverview } from '@/features/today';
 import { spacing, useAppTheme } from '@/theme';
 import { toApiLocalDate } from '@/utils';
 
 export default function TodayScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ linked?: string }>();
   const theme = useAppTheme();
   const now = new Date();
   const today = toApiLocalDate(now);
   const overview = useTodayOverview(today);
   const [isQuickCaptureExpanded, setIsQuickCaptureExpanded] = useState(false);
+  const [showLinkedNotice] = useState(() => params.linked === '1');
+
+  useEffect(() => {
+    if (params.linked === '1') {
+      router.setParams({ linked: '' });
+    }
+  }, [params.linked, router]);
 
   return (
     <View style={styles.container}>
@@ -31,6 +41,13 @@ export default function TodayScreen() {
           ),
         }}
       >
+        {showLinkedNotice ? (
+          <InlineNotice
+            tone="success"
+            title="계정 연결 완료"
+            message="게스트로 작성한 내용을 계정에 안전하게 연결했어요."
+          />
+        ) : null}
         <TodayWeekStrip today={today} />
         <TodayOverview
           date={today}

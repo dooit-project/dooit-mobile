@@ -744,9 +744,10 @@ export const mockApiClient = {
 
     if (path === `${AUTH_PATH}/register`) {
       const request = body as RegisterRequest;
+      const isGuestPromotion = currentUser?.accountType === 'GUEST';
       const user = registerUser(request);
 
-      return { ...user } as T;
+      return (isGuestPromotion ? createTokenResponse(user) : { ...user }) as T;
     }
 
     if (path === `${AUTH_PATH}/login`) {

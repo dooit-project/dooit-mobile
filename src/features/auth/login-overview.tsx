@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { useAuthState } from '@/features/auth/use-auth-state';
 import { authApi, getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
 
@@ -19,6 +20,7 @@ export function LoginOverview() {
   const router = useRouter();
   const params = useLocalSearchParams<{ email?: string; expired?: string; registered?: string }>();
   const queryClient = useQueryClient();
+  const authState = useAuthState();
   const theme = useAppTheme();
   const passwordInputRef = useRef<TextInput>(null);
   const [email, setEmail] = useState(() => params.email ?? '');
@@ -31,7 +33,11 @@ export function LoginOverview() {
       setValidationMessage(null);
       queryClient.setQueryData(['auth', 'me'], response.user);
       await queryClient.invalidateQueries();
-      router.replace('/' as Href);
+      router.replace(
+        authState.status === 'guest'
+          ? ({ pathname: '/', params: { linked: '1' } } as Href)
+          : ('/' as Href),
+      );
     },
   });
   const errorMessage =

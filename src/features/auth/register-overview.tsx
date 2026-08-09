@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -12,11 +12,12 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
-import { authApi, getUserFacingApiErrorMessage } from '@/services/api';
+import { authApi, getUserFacingApiErrorMessage, isTokenResponse } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
 
 export function RegisterOverview() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const theme = useAppTheme();
   const displayNameInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
@@ -32,8 +33,16 @@ export function RegisterOverview() {
         displayName: displayName.trim(),
         password,
       }),
-    onSuccess: () => {
+    onSuccess: async (response) => {
       setValidationMessage(null);
+
+      if (isTokenResponse(response)) {
+        queryClient.setQueryData(['auth', 'me'], response.user);
+        await queryClient.invalidateQueries();
+        router.replace({ pathname: '/', params: { linked: '1' } } as Href);
+        return;
+      }
+
       router.replace({
         pathname: '/login',
         params: { email: email.trim(), registered: '1' },

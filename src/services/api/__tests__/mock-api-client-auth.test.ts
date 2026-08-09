@@ -44,15 +44,16 @@ describe('Mock auth API', () => {
 
   it('게스트 회원가입은 같은 사용자 id를 정식 계정으로 승격한다', async () => {
     const guest = await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
-    const registered = await mockApiClient.post<UserResponse>('/api/v1/auth/register', {
+    const promoted = await mockApiClient.post<TokenResponse>('/api/v1/auth/register', {
       email: 'promoted-guest@example.com',
       password: 'password123',
       displayName: 'Promoted Guest',
     });
     const me = await mockApiClient.get<AuthenticatedUserResponse>('/api/v1/auth/me');
 
-    expect(registered.id).toBe(guest.user.id);
-    expect(registered.accountType).toBe('REGISTERED');
+    expect(promoted.user.id).toBe(guest.user.id);
+    expect(promoted.user.accountType).toBe('REGISTERED');
+    expect(promoted.accessToken).toContain('mock-access-token-registered');
     expect(me.accountType).toBe('REGISTERED');
     expect(me.email).toBe('promoted-guest@example.com');
   });
