@@ -117,6 +117,33 @@ describe('Auth API', () => {
     expect(getAccessToken()).toBe('guest-access-token');
   });
 
+  it('로그아웃 후 새 게스트 계정으로 전환한다', async () => {
+    await setAccessToken('registered-access-token');
+    postMock.mockResolvedValue({
+      tokenType: 'Bearer',
+      accessToken: 'new-guest-access-token',
+      expiresAt: '2026-09-09T10:00:00',
+      user: {
+        id: 20,
+        accountType: 'GUEST',
+        email: null,
+        displayName: null,
+        role: 'USER',
+        timeZone: 'Asia/Seoul',
+        createdAt: '2026-08-09T10:00:00',
+        updatedAt: null,
+      },
+    });
+
+    const response = await authApi.logoutToGuest();
+
+    expect(postMock).toHaveBeenCalledWith('/api/v1/auth/guest', undefined, {
+      signal: undefined,
+    });
+    expect(response.user.accountType).toBe('GUEST');
+    expect(getAccessToken()).toBe('new-guest-access-token');
+  });
+
   it('내 정보 API를 호출한다', async () => {
     getMock.mockResolvedValue({ id: 1, email: 'user@example.com', role: 'USER' });
 

@@ -66,4 +66,9 @@ export const authApi = {
   logout() {
     return clearAccessToken();
   },
+
+  async logoutToGuest(signal?: AbortSignal) {
+    await clearAccessToken();
+    return this.guest(signal);
+  },
 };

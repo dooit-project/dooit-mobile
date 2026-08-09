@@ -81,15 +81,17 @@ export function ProfileOverview() {
         : authState.error.message;
 
   const logout = useMutation({
-    mutationFn: () => authApi.logout(),
+    mutationFn: () => authApi.logoutToGuest(),
     onMutate: () => {
       setLogoutWarning(false);
     },
     onError: () => {
+      queryClient.clear();
       setLogoutWarning(true);
     },
-    onSettled: () => {
+    onSuccess: (session) => {
       queryClient.clear();
+      queryClient.setQueryData(['auth', 'me'], session.user);
     },
   });
 
@@ -140,7 +142,7 @@ export function ProfileOverview() {
       {logoutWarning ? (
         <InlineNotice
           tone="warning"
-          message="로그아웃은 처리했지만 기기 저장소 정리가 완전히 끝났는지 확인이 필요해요. 앱을 다시 열어 로그인 상태를 확인해 주세요."
+          message="로그아웃은 완료했지만 새 게스트 계정을 시작하지 못했어요. 네트워크를 확인한 뒤 로그인하거나 앱을 다시 열어 주세요."
         />
       ) : null}
 
