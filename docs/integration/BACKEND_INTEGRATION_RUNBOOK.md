@@ -72,11 +72,12 @@ type ApiEnvelope<T> = {
 - token은 로그, 오류 메시지, smoke test 출력에 남기지 않는다.
 - refresh token은 현재 도입하지 않으며, access token 만료 시 다시 로그인한다.
 
-| Method | Path                    | 용도               |
-| ------ | ----------------------- | ------------------ |
-| `POST` | `/api/v1/auth/register` | 회원가입           |
-| `POST` | `/api/v1/auth/login`    | 로그인, token 저장 |
-| `GET`  | `/api/v1/auth/me`       | 현재 사용자 확인   |
+| Method | Path                    | 용도                         |
+| ------ | ----------------------- | ---------------------------- |
+| `POST` | `/api/v1/auth/guest`    | 게스트 계정과 token 발급     |
+| `POST` | `/api/v1/auth/register` | 회원가입                     |
+| `POST` | `/api/v1/auth/login`    | 로그인, token 저장           |
+| `GET`  | `/api/v1/auth/me`       | 현재 사용자와 계정 유형 확인 |
 
 `POST /api/v1/auth/login` 응답은 다음 필드를 포함해야 한다.
 
@@ -84,6 +85,12 @@ type ApiEnvelope<T> = {
 - `accessToken`
 - `expiresAt`
 - `user`
+
+게스트 발급과 `/auth/me` 기본 계약은 다음 명령으로 확인한다. token은 출력하지 않지만 실행할 때마다 만료 정리 대상 게스트 계정 하나가 생성된다.
+
+```bash
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
+```
 
 401 응답을 받으면 모바일은 access token을 삭제하고 캐시를 비운 뒤 로그인 화면으로 이동해 "세션이 만료됐어요. 다시 로그인해 주세요." 안내를 표시한다. 403 응답은 재로그인 반복 대신 권한 오류로 보여준다.
 

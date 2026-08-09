@@ -353,7 +353,7 @@ ToDoLab 적용 방향:
 - [x] 정식 회원 로그아웃 후에는 새 게스트 계정을 생성하고 이전 게스트 계정으로 돌아가지 않는 정책을 적용한다. 로그아웃 성공 직후 새 게스트 token과 인증 cache로 교체하며, 발급 실패 시 정식 사용자 cache를 제거하고 재로그인 안내를 표시한다.
 - [x] mock API에 게스트 발급, 게스트 `/auth/me`, 같은 user id를 유지하는 회원가입 승격, 기존 계정 로그인 후 mock 데이터 유지 동작을 추가한다.
 - [ ] 최초 실행, 앱 재실행, token 만료, 신규 회원가입 승격, 기존 계정 병합, 병합 재시도, 앱 삭제 후 재설치 시나리오를 Android, iOS, Web에서 검증한다.
-- [ ] 게스트 생성·병합 real API smoke test를 추가하고 데이터 소유권, 관계 무결성, 중복 미발생 결과를 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.
+- [ ] 게스트 생성·병합 real API smoke test를 추가하고 데이터 소유권, 관계 무결성, 중복 미발생 결과를 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다. 게스트 발급과 동일 user id의 `/auth/me` 계약을 token 출력 없이 확인하는 `npm run smoke:guest:real`을 추가했으며, 실제 병합 검증은 백엔드 구현 이후 확장한다.
 
 완료 기준:
 
