@@ -267,6 +267,23 @@ function createUser(request: RegisterRequest) {
   return user;
 }
 
+function registerUser(request: RegisterRequest) {
+  const existingUser = getUser(request.email);
+  if (existingUser) {
+    return existingUser;
+  }
+
+  if (currentUser?.accountType === 'GUEST') {
+    currentUser.accountType = 'REGISTERED';
+    currentUser.email = request.email;
+    currentUser.displayName = request.displayName;
+    currentUser.updatedAt = now;
+    return currentUser;
+  }
+
+  return createUser(request);
+}
+
 function createGuestUser() {
   const user: UserResponse = {
     id: nextUserId,
@@ -697,8 +714,7 @@ export const mockApiClient = {
 
     if (path === `${AUTH_PATH}/register`) {
       const request = body as RegisterRequest;
-      const existingUser = getUser(request.email);
-      const user = existingUser ?? createUser(request);
+      const user = registerUser(request);
 
       return { ...user } as T;
     }

@@ -1,4 +1,4 @@
-import type { AuthenticatedUserResponse, TokenResponse, UserResponse } from '@/types';
+import type { AuthenticatedUserResponse, TaskResponse, TokenResponse, UserResponse } from '@/types';
 
 import { mockApiClient } from '../mock-api-client';
 
@@ -14,6 +14,10 @@ describe('Mock auth API', () => {
   });
 
   it('회원가입 응답을 반환한다', async () => {
+    await mockApiClient.post<TokenResponse>('/api/v1/auth/login', {
+      email: 'demo@todolab.app',
+      password: 'password123',
+    });
     const response = await mockApiClient.post<UserResponse>('/api/v1/auth/register', {
       email: 'mock-register@example.com',
       password: 'password123',
@@ -25,6 +29,39 @@ describe('Mock auth API', () => {
     expect(response.displayName).toBe('Mock Register');
     expect(response.role).toBe('USER');
     expect(response.updatedAt).toBeNull();
+  });
+
+  it('게스트 회원가입은 같은 사용자 id를 정식 계정으로 승격한다', async () => {
+    const guest = await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
+    const registered = await mockApiClient.post<UserResponse>('/api/v1/auth/register', {
+      email: 'promoted-guest@example.com',
+      password: 'password123',
+      displayName: 'Promoted Guest',
+    });
+    const me = await mockApiClient.get<AuthenticatedUserResponse>('/api/v1/auth/me');
+
+    expect(registered.id).toBe(guest.user.id);
+    expect(registered.accountType).toBe('REGISTERED');
+    expect(me.accountType).toBe('REGISTERED');
+    expect(me.email).toBe('promoted-guest@example.com');
+  });
+
+  it('게스트가 기존 계정에 로그인해도 기존 mock 데이터를 유지한다', async () => {
+    await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
+    const beforeLogin = await mockApiClient.get<TaskResponse[]>('/api/v1/tasks/today', {
+      query: { date: '2026-08-09' },
+    });
+    const login = await mockApiClient.post<TokenResponse>('/api/v1/auth/login', {
+      email: 'demo@todolab.app',
+      password: 'password123',
+    });
+    const afterLogin = await mockApiClient.get<TaskResponse[]>('/api/v1/tasks/today', {
+      query: { date: '2026-08-09' },
+    });
+
+    expect(login.user.accountType).toBe('REGISTERED');
+    expect(login.user.email).toBe('demo@todolab.app');
+    expect(afterLogin.map((task) => task.id)).toEqual(beforeLogin.map((task) => task.id));
   });
 
   it('로그인 후 내 정보 응답을 반환한다', async () => {
