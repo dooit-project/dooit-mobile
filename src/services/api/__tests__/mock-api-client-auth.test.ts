@@ -1,8 +1,19 @@
 import type { AuthenticatedUserResponse, TaskResponse, TokenResponse, UserResponse } from '@/types';
 
-import { mockApiClient } from '../mock-api-client';
+import { mockApiClient, restoreGuestUserFromAccessToken } from '../mock-api-client';
 
 describe('Mock auth API', () => {
+  it('저장된 mock 게스트 token에서 같은 게스트 사용자를 복원한다', () => {
+    const restored = restoreGuestUserFromAccessToken('mock-access-token-guest-42');
+
+    expect(restored).toMatchObject({
+      id: 42,
+      accountType: 'GUEST',
+      email: null,
+      displayName: null,
+    });
+  });
+
   it('게스트 계정과 token을 발급한다', async () => {
     const response = await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
     const me = await mockApiClient.get<AuthenticatedUserResponse>('/api/v1/auth/me');

@@ -1,4 +1,5 @@
 import { ApiClientError } from './api-error';
+import { getAccessToken } from './auth-token-store';
 
 import type {
   AuthenticatedUserResponse,
@@ -307,10 +308,38 @@ function createTokenResponse(user: UserResponse): TokenResponse {
 
   return {
     tokenType: 'Bearer',
-    accessToken: `mock-access-token-${user.id}`,
+    accessToken: `mock-access-token-${user.accountType.toLowerCase()}-${user.id}`,
     expiresAt: `${today}T23:59:59`,
     user,
   };
+}
+
+export function restoreGuestUserFromAccessToken(token: string | null) {
+  const match = token?.match(/^mock-access-token-guest-(\d+)$/);
+  if (!match) {
+    return null;
+  }
+
+  const id = Number(match[1]);
+  const existingUser = users.find((user) => user.id === id);
+  if (existingUser?.accountType === 'GUEST') {
+    return existingUser;
+  }
+
+  const user: UserResponse = {
+    id,
+    accountType: 'GUEST',
+    email: null,
+    displayName: null,
+    role: 'USER',
+    timeZone: 'Asia/Seoul',
+    createdAt: now,
+    updatedAt: null,
+  };
+  users.push(user);
+  nextUserId = Math.max(nextUserId, id + 1);
+
+  return user;
 }
 
 function getTaskId(path: string) {
@@ -609,7 +638,8 @@ export const mockApiClient = {
     requireNotAborted(options.signal);
 
     if (path === `${AUTH_PATH}/me`) {
-      const user = currentUser ?? users[0];
+      const user = currentUser ?? restoreGuestUserFromAccessToken(getAccessToken()) ?? users[0];
+      currentUser = user;
       const response: AuthenticatedUserResponse = {
         id: user.id,
         accountType: user.accountType,

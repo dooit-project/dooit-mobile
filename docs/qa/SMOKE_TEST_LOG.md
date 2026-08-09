@@ -2,6 +2,27 @@
 
 이 문서는 모바일 앱이 실제 사용 가능한 상태인지 확인한 최신 smoke test 기준선만 남긴다. 오래된 조사 과정과 해결된 원인 분석은 git history와 각 커밋에 맡기고, 재실행에 필요한 사실과 남은 확인 항목만 관리한다.
 
+## 2026-08-09 mock Web guest session smoke
+
+환경:
+
+- API 모드: `mock`
+- URL: `http://localhost:8092/profile`
+- 실행 명령: `npm run web:mock -- --localhost --port 8092 --clear`
+- 검증 화면: Profile
+
+발견 및 조치:
+
+- 첫 게스트 발급 직후에는 `게스트로 사용 중`이 표시됐지만 Web 새로고침 후 mock 메모리가 초기화되면서 저장 token을 demo 회원으로 잘못 복원했다.
+- mock access token에 `accountType`과 user id를 구분해 기록하고, `/auth/me`가 저장된 guest token에서 같은 게스트 사용자를 복원하도록 수정했다.
+
+통과:
+
+- 첫 게스트 세션에서 Profile의 `게스트로 사용 중`, 로그인 버튼, 앱 데이터 삭제 시 복구 불가 안내가 표시된다.
+- 새로고침 후에도 같은 게스트 상태 표현과 로그인 동선이 유지된다.
+- 새로고침 후 `demo@todolab.app` 정식 회원으로 바뀌지 않는다.
+- 단위 테스트에서 저장 guest token의 account type과 user id 복원을 확인한다.
+
 ## 2026-08-09 local real API guest auth smoke
 
 환경:
