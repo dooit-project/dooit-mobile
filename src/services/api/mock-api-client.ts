@@ -45,6 +45,8 @@ let nextUserId = 2;
 let nextTaskId = 100;
 let nextGoalId = 10;
 let currentUser: UserResponse | null = null;
+const taskIdsByUser = new Map<number, Set<number>>();
+const goalIdsByUser = new Map<number, Set<number>>();
 
 const users: UserResponse[] = [
   {
@@ -216,6 +218,54 @@ function cloneGoal(goal: DdayGoalResponse): DdayGoalResponse {
   return { ...goal, daysLeft: getDaysLeft(goal.targetDate) };
 }
 
+function getOwnedIds(store: Map<number, Set<number>>) {
+  if (!currentUser || currentUser.id === 1) {
+    return null;
+  }
+
+  let ownedIds = store.get(currentUser.id);
+  if (!ownedIds) {
+    ownedIds = new Set();
+    store.set(currentUser.id, ownedIds);
+  }
+
+  return ownedIds;
+}
+
+function getVisibleTasks() {
+  const ownedIds = getOwnedIds(taskIdsByUser);
+  return ownedIds ? tasks.filter((task) => ownedIds.has(task.id)) : tasks;
+}
+
+function getVisibleGoals() {
+  const ownedIds = getOwnedIds(goalIdsByUser);
+  return ownedIds ? ddayGoals.filter((goal) => ownedIds.has(goal.id)) : ddayGoals;
+}
+
+function rememberTask(taskId: number) {
+  getOwnedIds(taskIdsByUser)?.add(taskId);
+}
+
+function rememberGoal(goalId: number) {
+  getOwnedIds(goalIdsByUser)?.add(goalId);
+}
+
+function transferOwnership(sourceUserId: number, targetUserId: number) {
+  const transferIds = (store: Map<number, Set<number>>) => {
+    const sourceIds = store.get(sourceUserId);
+    if (!sourceIds || sourceIds.size === 0) {
+      return;
+    }
+
+    const targetIds = store.get(targetUserId) ?? new Set<number>();
+    sourceIds.forEach((id) => targetIds.add(id));
+    store.set(targetUserId, targetIds);
+  };
+
+  transferIds(taskIdsByUser);
+  transferIds(goalIdsByUser);
+}
+
 function requireNotAborted(signal?: AbortSignal) {
   if (signal?.aborted) {
     throw new ApiClientError('요청이 취소되었습니다.', { kind: 'cancelled' });
@@ -227,7 +277,7 @@ function getDate(query?: MockQueryParams) {
 }
 
 function getTask(taskId: number) {
-  const task = tasks.find((item) => item.id === taskId);
+  const task = getVisibleTasks().find((item) => item.id === taskId);
 
   if (!task) {
     throw new ApiClientError('Mock Task를 찾을 수 없습니다.', { kind: 'http', status: 404 });
@@ -237,7 +287,7 @@ function getTask(taskId: number) {
 }
 
 function getGoal(goalId: number) {
-  const goal = ddayGoals.find((item) => item.id === goalId);
+  const goal = getVisibleGoals().find((item) => item.id === goalId);
 
   if (!goal) {
     throw new ApiClientError('Mock D-Day 목표를 찾을 수 없습니다.', { kind: 'http', status: 404 });
@@ -264,6 +314,8 @@ function createUser(request: RegisterRequest) {
 
   nextUserId += 1;
   users.push(user);
+  taskIdsByUser.set(user.id, new Set());
+  goalIdsByUser.set(user.id, new Set());
 
   return user;
 }
@@ -299,6 +351,8 @@ function createGuestUser() {
 
   nextUserId += 1;
   users.push(user);
+  taskIdsByUser.set(user.id, new Set());
+  goalIdsByUser.set(user.id, new Set());
 
   return user;
 }
@@ -337,6 +391,8 @@ export function restoreGuestUserFromAccessToken(token: string | null) {
     updatedAt: null,
   };
   users.push(user);
+  taskIdsByUser.set(user.id, new Set());
+  goalIdsByUser.set(user.id, new Set());
   nextUserId = Math.max(nextUserId, id + 1);
 
   return user;
@@ -386,7 +442,7 @@ function setTaskStatus(task: TaskResponse, status: TaskStatus, date?: LocalDateS
 }
 
 function getNextTodayOrder(date: LocalDateString) {
-  const orders = tasks
+  const orders = getVisibleTasks()
     .filter((task) => task.status === 'TODAY' && task.plannedDate === date)
     .map((task) => task.todayOrder ?? 0);
 
@@ -523,7 +579,7 @@ function searchTasks(query?: MockQueryParams): TaskSearchPage {
   const hasDday = parseBooleanQuery(query?.hasDday);
   const allDay = parseBooleanQuery(query?.allDay);
 
-  const items: TaskSearchItem[] = tasks
+  const items: TaskSearchItem[] = getVisibleTasks()
     .filter((task) => {
       const text = `${task.title} ${task.description ?? ''}`.toLocaleLowerCase();
 
@@ -587,7 +643,7 @@ function sortTodayTasks(left: TaskResponse, right: TaskResponse) {
 }
 
 function reorderToday(taskId: number, date: LocalDateString, direction: TodayOrderDirection) {
-  const todayTasks = tasks
+  const todayTasks = getVisibleTasks()
     .filter(
       (task) => task.status === 'TODAY' && task.plannedDate === date && task.type !== 'SCHEDULE',
     )
@@ -656,7 +712,7 @@ export const mockApiClient = {
       const type = String(options.query?.type ?? 'DAY') as TaskQueryType;
       const range = getTaskRange(type, date);
 
-      return tasks
+      return getVisibleTasks()
         .filter(
           (task) =>
             task.type === 'SCHEDULE' &&
@@ -672,7 +728,7 @@ export const mockApiClient = {
     if (path === `${TASKS_PATH}/today`) {
       const date = getDate(options.query);
 
-      return tasks
+      return getVisibleTasks()
         .filter(
           (task) =>
             task.status === 'TODAY' &&
@@ -683,7 +739,7 @@ export const mockApiClient = {
     }
 
     if (path === `${TASKS_PATH}/today/recommendations`) {
-      const recommendations: TaskRecommendationResponse[] = tasks
+      const recommendations: TaskRecommendationResponse[] = getVisibleTasks()
         .filter((task) => task.status === 'INBOX' && !task.staleCarryOver)
         .slice(0, 3)
         .map((task) => ({
@@ -697,23 +753,25 @@ export const mockApiClient = {
     if (path === `${TASKS_PATH}/done`) {
       const date = getDate(options.query);
 
-      return tasks
+      return getVisibleTasks()
         .filter((task) => task.status === 'DONE' && task.plannedDate === date)
         .map(cloneTask) as T;
     }
 
     if (path === `${TASKS_PATH}/stale`) {
-      return tasks.filter((task) => task.staleCarryOver).map(cloneTask) as T;
+      return getVisibleTasks()
+        .filter((task) => task.staleCarryOver)
+        .map(cloneTask) as T;
     }
 
     if (path === `${TASKS_PATH}/inbox`) {
-      return tasks
+      return getVisibleTasks()
         .filter((task) => task.status === 'INBOX' && !task.staleCarryOver)
         .map(cloneTask) as T;
     }
 
     if (path === DDAYS_PATH) {
-      return ddayGoals.map(cloneGoal) as T;
+      return getVisibleGoals().map(cloneGoal) as T;
     }
 
     const taskId = getTaskId(path);
@@ -727,7 +785,9 @@ export const mockApiClient = {
     }
 
     if (goalId && path === `${DDAYS_PATH}/${goalId}/tasks`) {
-      return tasks.filter((task) => task.ddayGoalId === goalId).map(cloneTask) as T;
+      return getVisibleTasks()
+        .filter((task) => task.ddayGoalId === goalId)
+        .map(cloneTask) as T;
     }
 
     throw new ApiClientError(`Mock API가 지원하지 않는 GET 요청입니다. (${path})`, {
@@ -752,6 +812,7 @@ export const mockApiClient = {
 
     if (path === `${AUTH_PATH}/login`) {
       const request = body as LoginRequest;
+      const guestUserId = currentUser?.accountType === 'GUEST' ? currentUser.id : null;
       const user =
         getUser(request.email) ??
         createUser({
@@ -759,6 +820,10 @@ export const mockApiClient = {
           displayName: request.email.split('@')[0] || 'Mock User',
           password: request.password,
         });
+
+      if (guestUserId && guestUserId !== user.id) {
+        transferOwnership(guestUserId, user.id);
+      }
 
       return createTokenResponse(user) as T;
     }
@@ -791,6 +856,7 @@ export const mockApiClient = {
 
       nextTaskId += 1;
       tasks.unshift(task);
+      rememberTask(task.id);
 
       return cloneTask(task) as T;
     }
@@ -807,6 +873,7 @@ export const mockApiClient = {
 
       nextGoalId += 1;
       ddayGoals.unshift(goal);
+      rememberGoal(goal.id);
 
       return cloneGoal(goal) as T;
     }
@@ -834,6 +901,7 @@ export const mockApiClient = {
 
       nextTaskId += 1;
       tasks.unshift(task);
+      rememberTask(task.id);
 
       return cloneTask(task) as T;
     }
@@ -916,6 +984,7 @@ export const mockApiClient = {
 
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
+      getTask(taskId);
       const index = tasks.findIndex((task) => task.id === taskId);
 
       if (index >= 0) {
@@ -941,6 +1010,7 @@ export const mockApiClient = {
 
     const goalId = getGoalId(path);
     if (goalId && path === `${DDAYS_PATH}/${goalId}`) {
+      getGoal(goalId);
       const index = ddayGoals.findIndex((goal) => goal.id === goalId);
 
       if (index >= 0) {

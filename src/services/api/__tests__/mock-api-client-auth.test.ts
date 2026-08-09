@@ -58,22 +58,26 @@ describe('Mock auth API', () => {
     expect(me.email).toBe('promoted-guest@example.com');
   });
 
-  it('게스트가 기존 계정에 로그인해도 기존 mock 데이터를 유지한다', async () => {
+  it('신규 게스트는 샘플 데이터 없이 시작하고 작성한 데이터는 로그인 후에도 유지한다', async () => {
     await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
     const beforeLogin = await mockApiClient.get<TaskResponse[]>('/api/v1/tasks/today', {
       query: { date: '2026-08-09' },
+    });
+    const created = await mockApiClient.post<TaskResponse>('/api/v1/tasks', {
+      title: '게스트가 처음 만든 할 일',
+      type: 'TODO',
+      allDay: false,
     });
     const login = await mockApiClient.post<TokenResponse>('/api/v1/auth/login', {
       email: 'demo@todolab.app',
       password: 'password123',
     });
-    const afterLogin = await mockApiClient.get<TaskResponse[]>('/api/v1/tasks/today', {
-      query: { date: '2026-08-09' },
-    });
+    const afterLogin = await mockApiClient.get<TaskResponse[]>('/api/v1/tasks/inbox');
 
     expect(login.user.accountType).toBe('REGISTERED');
     expect(login.user.email).toBe('demo@todolab.app');
-    expect(afterLogin.map((task) => task.id)).toEqual(beforeLogin.map((task) => task.id));
+    expect(beforeLogin).toEqual([]);
+    expect(afterLogin.map((task) => task.id)).toContain(created.id);
   });
 
   it('로그인 후 내 정보 응답을 반환한다', async () => {

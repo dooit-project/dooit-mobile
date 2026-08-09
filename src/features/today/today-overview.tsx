@@ -140,17 +140,17 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
 
         {executionTasks.length === 0 ? (
           <EmptyState
-            title="오늘 할 일이 없어요"
-            description="생각난 일을 바로 적어두면 기록함에 저장돼요. 오늘 할 일로 옮길지는 나중에 정리하면 됩니다."
+            title="오늘 할 일을 하나 적어볼까요?"
+            description="처음에는 하나면 충분해요. 빠르게 기록한 뒤 오늘 계획으로 옮길 수 있어요."
             action={
               onOpenQuickCapture ? (
                 <Button
-                  accessibilityLabel="오늘 할 일 빠르게 기록하기"
+                  accessibilityLabel="첫 할 일 빠르게 기록하기"
                   size="compact"
                   variant="secondary"
                   onPress={onOpenQuickCapture}
                 >
-                  바로 기록하기
+                  첫 할 일 기록하기
                 </Button>
               ) : null
             }
