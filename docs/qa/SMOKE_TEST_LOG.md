@@ -2,6 +2,28 @@
 
 이 문서는 모바일 앱이 실제 사용 가능한 상태인지 확인한 최신 smoke test 기준선만 남긴다. 오래된 조사 과정과 해결된 원인 분석은 git history와 각 커밋에 맡기고, 재실행에 필요한 사실과 남은 확인 항목만 관리한다.
 
+## 2026-08-09 local real API guest auth smoke
+
+환경:
+
+- API URL: `http://127.0.0.1:8080`
+- 백엔드: Docker port `127.0.0.1:8080` listen 확인
+- 실행 명령: `EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:guest:real`
+- 보안: access token은 출력하지 않음
+
+결과:
+
+- 샌드박스 기본 권한의 로컬 포트 연결 실패 후 승인된 네트워크 권한으로 재실행했다.
+- `POST /api/v1/auth/guest`가 HTTP 401과 `인증이 필요합니다.`를 반환해 실패했다.
+- 게스트 token이 발급되지 않았으므로 `/api/v1/auth/me` 동일 user id 검증은 실행되지 않았다.
+- 실패 응답 기준으로 smoke 실행에서 생성된 게스트 계정은 없다.
+
+다음 확인:
+
+- 현재 실행 중인 백엔드를 게스트 endpoint와 security permit 설정이 포함된 최신 backend commit/image로 재배포한다.
+- 재배포 후 같은 명령을 실행해 `GUEST` token 응답과 `/auth/me`의 동일 user id를 확인한다.
+- 실제 승격·병합 API가 준비되면 게스트 데이터 소유권 이전과 중복 미발생 검증을 이 smoke에 추가한다.
+
 ## 2026-08-03 EAS Android preview APK build 요청
 
 환경:
