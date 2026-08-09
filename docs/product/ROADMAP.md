@@ -341,6 +341,7 @@ ToDoLab 적용 방향:
 
 - [ ] 게스트 계정의 보존 기간, 기능 제한, 앱 삭제 시 복구 불가 안내, 기존 계정 로그인 시 데이터 병합 정책을 확정한다.
 - [x] 백엔드에 게스트 사용자 생성 API와 `GUEST | REGISTERED` 계정 유형을 요청하고 원본 API 계약 문서에 반영한다. 백엔드 `AUTH_CONTRACT.md`와 `API_V1_FRONTEND.md`의 `POST /api/v1/auth/guest`, `accountType`, 게스트 token TTL 계약을 확인했다.
+- [ ] 게스트 access token 만료 전에 같은 guest user id를 유지해 token을 갱신하거나 재발급하는 백엔드 계약을 확정한다. 만료 시 `POST /auth/guest`로 새 사용자를 만드는 방식은 기존 게스트 데이터에 접근할 수 없게 되므로 복구 방식으로 사용하지 않는다.
 - [ ] 기존 계정 로그인은 유효한 게스트 token을 함께 받아 Task, 일정, 완료 기록, 반복 occurrence, D-Day 관계를 하나의 트랜잭션으로 병합하도록 요청한다.
 - [ ] 게스트 상태의 신규 회원가입은 가능하면 같은 user id를 정식 계정으로 승격하고, 기존 이메일 계정과의 충돌 및 실패 rollback 정책을 확정한다.
 - [ ] 병합 API 재시도 시 중복 이전이 발생하지 않도록 멱등성과 동시 요청 잠금 정책을 백엔드와 검증한다.
