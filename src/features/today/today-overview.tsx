@@ -12,6 +12,7 @@ import {
   SectionHeader,
 } from '@/components/ui';
 import { ScheduleCard, TaskCard, useCompleteTask, useReopenTask } from '@/features/tasks';
+import { ContextualFeatureTip } from '@/features/onboarding';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { motion, radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
@@ -81,6 +82,11 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
 
   return (
     <View style={styles.container}>
+      <ContextualFeatureTip
+        message="하단 + 버튼으로 생각난 일을 기록하고, 오늘 할 일의 체크박스를 눌러 완료해 보세요."
+        tipIds={['today.quickCapture', 'today.completeTask']}
+        title="Today를 시작하는 방법"
+      />
       {sortedScheduleTasks.length > 0 ? (
         <View style={styles.scheduleSection}>
           <SectionHeader

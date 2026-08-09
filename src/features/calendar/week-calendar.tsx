@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { AppText, Screen } from '@/components/ui';
+import { ContextualFeatureTip } from '@/features/onboarding';
 import { radii, spacing, useAppTheme, useMobileLayout } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 import { formatDateLabel, isLocalDateString, shiftLocalDate, toApiLocalDate } from '@/utils';
@@ -62,6 +63,11 @@ export function WeekCalendar() {
 
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
+      <ContextualFeatureTip
+        message="날짜를 누르면 그날의 Task와 일정을 볼 수 있어요. 여러 날 일정은 달력 위의 이어진 막대로 표시됩니다."
+        tipIds={['calendar.overview']}
+        title="Calendar 보는 방법"
+      />
       <View style={styles.calendarSurface}>
         <View style={styles.calendarHeading}>
           <Pressable

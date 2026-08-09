@@ -14,6 +14,7 @@ import {
   Screen,
   SectionHeader,
 } from '@/components/ui';
+import { ContextualFeatureTip } from '@/features/onboarding';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type { DdayGoalResponse } from '@/types';
 import { formatDateLabel } from '@/utils';
@@ -67,6 +68,12 @@ export function DdayOverview() {
             </Button>
           )
         }
+      />
+
+      <ContextualFeatureTip
+        message="중요한 날짜를 목표로 만들고, 목표 메뉴에서 오늘 실행할 Task를 연결할 수 있어요."
+        tipIds={['dday.linkedTasks']}
+        title="D-Day로 목표 이어가기"
       />
 
       {isCreating ? (
