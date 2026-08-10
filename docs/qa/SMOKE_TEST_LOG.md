@@ -17,6 +17,8 @@
 - 게스트가 만든 일반 Task 1건, D-Day 연결 Task 1건, 반복 일정 1건, D-Day 목표 1건을 기존 정식 계정 로그인으로 병합한다.
 - 병합 응답이 `tasks=2`, `schedules=1`, `ddayGoals=1`, `recurrenceSeries=1`을 반환한다.
 - 병합된 Task와 일정의 원본 ID, 반복 series ID, D-Day 목표와 연결 Task 관계가 유지된다.
+- 잘못된 비밀번호 로그인은 HTTP 401을 반환하고 기존 guest user id, token과 Task 접근을 유지한다.
+- 병합에 사용한 동일 guest token으로 로그인을 재시도하면 모든 병합 건수가 0이며 데이터가 중복되지 않는다.
 - 같은 정식 계정으로 다시 로그인해도 병합된 Task가 중복되지 않고 `mergeResult`가 `null`이다.
 - 검증에 사용한 Task, 반복 일정, D-Day 연결 Task와 목표는 정식 계정 token으로 삭제했다.
 - 게스트 회원가입에서 기존 이메일을 사용하면 HTTP 409가 반환되고 기존 guest user id, account type, token과 Task 접근이 유지된다.

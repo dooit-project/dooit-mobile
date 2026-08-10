@@ -344,7 +344,7 @@ ToDoLab 적용 방향:
 - [x] 게스트 access token 만료 전에 같은 guest user id를 유지하는 `POST /api/v1/auth/guest/refresh` 계약과 모바일 API를 반영한다. 앱 시작 시 `/auth/me`로 유효성이 확인된 게스트 token을 자동 갱신하며, 실패 시 기존 token을 유지하고 새 게스트를 자동 생성해 데이터 연결을 끊지 않는다.
 - [x] 기존 계정 로그인은 유효한 게스트 token을 함께 받아 Task, 일정, 완료 기록, 반복 occurrence, D-Day 관계를 하나의 트랜잭션으로 병합한다. 모바일은 로그인 응답의 `mergeResult`를 받아 Today에서 유형별 연결 건수를 안내한다.
 - [x] 게스트 상태의 신규 회원가입은 같은 user id를 정식 계정으로 승격한다. 실제 API smoke에서 기존 이메일 충돌 시 HTTP 409와 게스트 token·데이터 유지, 새 이메일 가입 시 같은 user id의 `REGISTERED` 전환과 기존 데이터 접근을 확인했다.
-- [ ] 병합 API 재시도 시 중복 이전이 발생하지 않도록 멱등성과 동시 요청 잠금 정책을 백엔드와 검증한다.
+- [x] 같은 guest token으로 같은 계정 로그인을 재시도하면 빈 병합 결과를 반환하고 데이터가 중복되지 않는 것을 real API smoke로 확인한다. 백엔드는 guest와 target user를 pessimistic write lock으로 조회해 동시 병합 요청을 직렬화한다.
 - [x] 모바일 인증 bootstrap을 `저장 token 복원 → /auth/me 확인` 또는 `token 없음 → 게스트 생성` 흐름으로 변경하고, bootstrap 완료 전 사용자 데이터 query를 막는다. 백엔드 `POST /api/v1/auth/guest` 계약과 mock API를 함께 반영했다.
 - [x] 모바일 인증 상태를 `bootstrapping | guest | registered | error`로 구분하고 `/auth/me`와 token 응답에 `accountType`을 반영한다. 프로필은 게스트 token을 정식 로그인으로 오인하지 않고 별도 상태와 복구 제한을 표시한다.
 - [x] 로그인·회원가입 성공 응답으로 서버 병합 또는 승격 성공을 확인한 뒤 정식 token과 인증 사용자를 교체한다. 진행 중인 query를 취소하고 인증 cache를 제외한 사용자 범위 Query cache를 제거해 새 계정 데이터만 다시 조회하며, 실패 시 기존 guest token과 cache를 유지한다.

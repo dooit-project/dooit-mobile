@@ -144,6 +144,25 @@ async function main() {
   assert(guestDdayTask?.ddayGoalId === guestDday.id, 'guest D-Day task relation mismatch');
   console.log('✓ guest D-Day goal and linked task created');
 
+  let invalidLoginError;
+  try {
+    await request('/api/v1/auth/login', {
+      method: 'POST',
+      headers: guestHeaders,
+      body: JSON.stringify({ email, password: `${password}-wrong` }),
+    });
+  } catch (error) {
+    invalidLoginError = error;
+  }
+  assert(invalidLoginError?.status === 401, 'invalid login must fail with HTTP 401');
+  const guestAfterInvalidLogin = await request('/api/v1/auth/me', { headers: guestHeaders });
+  const taskAfterInvalidLogin = await request(`/api/v1/tasks/${guestTask.id}`, {
+    headers: guestHeaders,
+  });
+  assert(guestAfterInvalidLogin.id === session.user.id, 'invalid login changed guest user');
+  assert(taskAfterInvalidLogin.id === guestTask.id, 'invalid login lost guest data');
+  console.log('✓ invalid login preserved guest session and data');
+
   const mergedSession = await request('/api/v1/auth/login', {
     method: 'POST',
     headers: guestHeaders,
@@ -183,6 +202,21 @@ async function main() {
     'merged D-Day task relation mismatch',
   );
   console.log('✓ merged Task, recurrence, and D-Day relations verified');
+
+  const retriedMergeSession = await request('/api/v1/auth/login', {
+    method: 'POST',
+    headers: guestHeaders,
+    body: JSON.stringify({ email, password }),
+  });
+  assert(retriedMergeSession.user.id === registeredUser.id, 'merge retry target mismatch');
+  assert(retriedMergeSession.mergeResult?.tasks === 0, 'merge retry moved tasks again');
+  assert(retriedMergeSession.mergeResult.schedules === 0, 'merge retry moved schedules again');
+  assert(retriedMergeSession.mergeResult.ddayGoals === 0, 'merge retry moved D-Days again');
+  assert(
+    retriedMergeSession.mergeResult.recurrenceSeries === 0,
+    'merge retry moved recurrence again',
+  );
+  console.log('✓ same guest token merge retry was idempotent');
 
   const secondLogin = await request('/api/v1/auth/login', {
     method: 'POST',
