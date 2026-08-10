@@ -12,9 +12,10 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
 import { useAuthState } from '@/features/auth/use-auth-state';
-import { authApi, getUserFacingApiErrorMessage } from '@/services/api';
+import { authApi } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
 
 export function LoginOverview() {
@@ -42,7 +43,8 @@ export function LoginOverview() {
     },
   });
   const errorMessage =
-    validationMessage ?? (login.error ? getUserFacingApiErrorMessage(login.error) : null);
+    validationMessage ??
+    (login.error ? getAuthSubmissionErrorMessage(login.error, authState.status === 'guest') : null);
 
   const submit = () => {
     const normalizedEmail = email.trim();

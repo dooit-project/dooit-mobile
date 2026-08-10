@@ -1,5 +1,6 @@
 export { LoginOverview } from './login-overview';
 export { FirstUseOverview } from './first-use-overview';
+export { getAuthSubmissionErrorMessage } from './auth-submission-error';
 export { createGuestMergeRouteParams, getGuestMergeNoticeMessage } from './guest-merge-result';
 export { PasswordResetOverview } from './password-reset-overview';
 export { RegisterOverview } from './register-overview';

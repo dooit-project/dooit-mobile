@@ -12,13 +12,16 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
-import { authApi, getUserFacingApiErrorMessage, isTokenResponse } from '@/services/api';
+import { useAuthState } from '@/features/auth/use-auth-state';
+import { authApi, isTokenResponse } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
 
 export function RegisterOverview() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const authState = useAuthState();
   const theme = useAppTheme();
   const displayNameInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
@@ -54,7 +57,10 @@ export function RegisterOverview() {
     },
   });
   const errorMessage =
-    validationMessage ?? (register.error ? getUserFacingApiErrorMessage(register.error) : null);
+    validationMessage ??
+    (register.error
+      ? getAuthSubmissionErrorMessage(register.error, authState.status === 'guest')
+      : null);
 
   const submit = () => {
     const normalizedEmail = email.trim();
