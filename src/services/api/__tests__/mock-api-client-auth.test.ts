@@ -24,6 +24,14 @@ describe('Mock auth API', () => {
     expect(me.accountType).toBe('GUEST');
   });
 
+  it('게스트 token 갱신 시 같은 사용자 id를 유지한다', async () => {
+    const guest = await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
+    const refreshed = await mockApiClient.post<TokenResponse>('/api/v1/auth/guest/refresh');
+
+    expect(refreshed.user.id).toBe(guest.user.id);
+    expect(refreshed.user.accountType).toBe('GUEST');
+  });
+
   it('회원가입 응답을 반환한다', async () => {
     await mockApiClient.post<TokenResponse>('/api/v1/auth/login', {
       email: 'demo@todolab.app',

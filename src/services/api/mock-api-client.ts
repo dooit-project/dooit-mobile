@@ -803,6 +803,17 @@ export const mockApiClient = {
       return createTokenResponse(createGuestUser()) as T;
     }
 
+    if (path === `${AUTH_PATH}/guest/refresh`) {
+      if (currentUser?.accountType !== 'GUEST') {
+        throw new ApiClientError('게스트 계정만 token을 갱신할 수 있습니다.', {
+          kind: 'http',
+          status: 403,
+        });
+      }
+
+      return createTokenResponse(currentUser) as T;
+    }
+
     if (path === `${AUTH_PATH}/register`) {
       const request = body as RegisterRequest;
       const isGuestPromotion = currentUser?.accountType === 'GUEST';

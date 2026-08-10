@@ -65,6 +65,57 @@ describe('bootstrapAuthSession', () => {
     expect(cacheUser).toHaveBeenCalledWith(guestUser);
   });
 
+  it('저장된 게스트 세션이 유효하면 앱 시작 시 token을 갱신한다', async () => {
+    const cacheUser = jest.fn();
+    const refreshedUser = { ...guestUser, updatedAt: '2026-08-11T09:00:00' as const };
+    const refreshGuest = jest.fn().mockResolvedValue({ user: refreshedUser });
+
+    await expect(
+      bootstrapAuthSession({
+        initializeToken: jest.fn().mockResolvedValue('stored-guest-token'),
+        getCurrentUser: jest.fn().mockResolvedValue(guestUser),
+        refreshGuest,
+        cacheUser,
+      }),
+    ).resolves.toBe('ready');
+
+    expect(refreshGuest).toHaveBeenCalledTimes(1);
+    expect(cacheUser).toHaveBeenCalledWith(refreshedUser);
+  });
+
+  it('게스트 token 갱신 실패 시 확인된 기존 세션으로 앱을 연다', async () => {
+    const cacheUser = jest.fn();
+
+    await expect(
+      bootstrapAuthSession({
+        initializeToken: jest.fn().mockResolvedValue('stored-guest-token'),
+        getCurrentUser: jest.fn().mockResolvedValue(guestUser),
+        refreshGuest: jest.fn().mockRejectedValue(new Error('refresh failed')),
+        cacheUser,
+      }),
+    ).resolves.toBe('ready');
+
+    expect(cacheUser).toHaveBeenCalledWith(guestUser);
+  });
+
+  it('정식 회원 세션은 게스트 token 갱신을 호출하지 않는다', async () => {
+    const refreshGuest = jest.fn();
+    const registeredUser = {
+      ...guestUser,
+      accountType: 'REGISTERED' as const,
+      email: 'user@example.com',
+    };
+
+    await bootstrapAuthSession({
+      initializeToken: jest.fn().mockResolvedValue('registered-token'),
+      getCurrentUser: jest.fn().mockResolvedValue(registeredUser),
+      refreshGuest,
+      cacheUser: jest.fn(),
+    });
+
+    expect(refreshGuest).not.toHaveBeenCalled();
+  });
+
   it('저장 token 확인 실패 시 새 게스트를 만들지 않고 오류를 전달한다', async () => {
     const error = new Error('stored session check failed');
     const cacheUser = jest.fn();

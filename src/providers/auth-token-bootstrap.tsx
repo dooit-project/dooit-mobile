@@ -15,6 +15,7 @@ import { queryClient } from './query-provider';
 type BootstrapDependencies = {
   initializeToken: () => Promise<string | null>;
   getCurrentUser: () => ReturnType<typeof authApi.me>;
+  refreshGuest?: () => ReturnType<typeof authApi.refreshGuest>;
   cacheUser: (user: AuthenticatedUserResponse) => void;
 };
 
@@ -38,6 +39,7 @@ export function shouldRenderAppRoutes(status: AuthBootstrapStatus, pathname: str
 const defaultDependencies: BootstrapDependencies = {
   initializeToken: initializeAccessToken,
   getCurrentUser: () => authApi.me(),
+  refreshGuest: () => authApi.refreshGuest(),
   cacheUser: (user) => queryClient.setQueryData(['auth', 'me'], user),
 };
 
@@ -48,6 +50,16 @@ export async function bootstrapAuthSession(dependencies = defaultDependencies) {
   }
 
   const user = await dependencies.getCurrentUser();
+
+  if (user.accountType === 'GUEST' && dependencies.refreshGuest) {
+    try {
+      const refreshedSession = await dependencies.refreshGuest();
+      dependencies.cacheUser(refreshedSession.user);
+      return 'ready' as const;
+    } catch {
+      // /auth/me로 확인한 기존 게스트 세션을 유지하고 다음 앱 시작 때 다시 시도한다.
+    }
+  }
 
   dependencies.cacheUser(user);
   return 'ready' as const;
