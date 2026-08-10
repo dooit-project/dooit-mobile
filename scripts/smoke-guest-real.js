@@ -6,6 +6,9 @@ const email = `mobile-guest-smoke-${runId}@example.com`;
 const password = `M-guest-${runId}`;
 const displayName = `게스트 병합 스모크 ${runId.slice(-6)}`;
 const taskTitle = `GM-${runId.slice(-12)}`;
+const scheduleTitle = `GS-${runId.slice(-12)}`;
+const ddayTitle = `GD-${runId.slice(-12)}`;
+const ddayTaskTitle = `GDT-${runId.slice(-11)}`;
 
 async function readJsonBody(response) {
   const text = await response.text();
@@ -101,6 +104,40 @@ async function main() {
   assert(guestTask?.title === taskTitle, 'guest task creation mismatch');
   console.log('✓ guest task created');
 
+  const guestSchedule = await request('/api/v1/tasks', {
+    method: 'POST',
+    headers: guestHeaders,
+    body: JSON.stringify({
+      title: scheduleTitle,
+      description: '게스트 반복 일정 병합 smoke',
+      type: 'SCHEDULE',
+      startAt: '2026-08-18T09:00:00',
+      endAt: '2026-08-18T10:00:00',
+      category: 'Smoke',
+      allDay: false,
+      recurrence: {
+        frequency: 'DAILY',
+        interval: 1,
+        recurrenceCount: 2,
+      },
+    }),
+  });
+  assert(guestSchedule?.recurrenceSeriesId, 'guest recurrence series missing');
+  console.log('✓ guest recurring schedule created');
+
+  const guestDday = await request('/api/v1/dday-goals', {
+    method: 'POST',
+    headers: guestHeaders,
+    body: JSON.stringify({ title: ddayTitle, targetDate: '2026-12-31' }),
+  });
+  const guestDdayTask = await request(`/api/v1/dday-goals/${guestDday.id}/tasks`, {
+    method: 'POST',
+    headers: guestHeaders,
+    body: JSON.stringify({ title: ddayTaskTitle, date: '2026-08-20' }),
+  });
+  assert(guestDdayTask?.ddayGoalId === guestDday.id, 'guest D-Day task relation mismatch');
+  console.log('✓ guest D-Day goal and linked task created');
+
   const mergedSession = await request('/api/v1/auth/login', {
     method: 'POST',
     headers: guestHeaders,
@@ -108,7 +145,10 @@ async function main() {
   });
   assert(mergedSession.user?.id === registeredUser.id, 'login did not select target account');
   assert(mergedSession.user.accountType === 'REGISTERED', 'merged account type mismatch');
-  assert(mergedSession.mergeResult?.tasks === 1, 'merged task count mismatch');
+  assert(mergedSession.mergeResult?.tasks === 2, 'merged task count mismatch');
+  assert(mergedSession.mergeResult.schedules === 1, 'merged schedule count mismatch');
+  assert(mergedSession.mergeResult.ddayGoals === 1, 'merged D-Day count mismatch');
+  assert(mergedSession.mergeResult.recurrenceSeries === 1, 'merged recurrence count mismatch');
   console.log('✓ guest data merged into registered account');
 
   const registeredHeaders = { Authorization: `Bearer ${mergedSession.accessToken}` };
@@ -116,7 +156,27 @@ async function main() {
     headers: registeredHeaders,
   });
   assert(mergedTask?.title === taskTitle, 'merged task is not readable by target account');
-  console.log('✓ merged task ownership verified');
+  const mergedSchedule = await request(`/api/v1/tasks/${guestSchedule.id}`, {
+    headers: registeredHeaders,
+  });
+  assert(
+    mergedSchedule?.recurrenceSeriesId === guestSchedule.recurrenceSeriesId,
+    'merged recurrence series relation mismatch',
+  );
+  const mergedDday = await request(`/api/v1/dday-goals/${guestDday.id}`, {
+    headers: registeredHeaders,
+  });
+  assert(mergedDday?.title === ddayTitle, 'merged D-Day goal is not readable');
+  const mergedDdayTasks = await request(`/api/v1/dday-goals/${guestDday.id}/tasks`, {
+    headers: registeredHeaders,
+  });
+  assert(
+    mergedDdayTasks.some(
+      (task) => task.id === guestDdayTask.id && task.ddayGoalId === guestDday.id,
+    ),
+    'merged D-Day task relation mismatch',
+  );
+  console.log('✓ merged Task, recurrence, and D-Day relations verified');
 
   const secondLogin = await request('/api/v1/auth/login', {
     method: 'POST',
@@ -138,7 +198,19 @@ async function main() {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
   });
-  console.log('✓ merged smoke task cleaned up');
+  await request(`/api/v1/tasks/${guestSchedule.id}?recurrenceScope=ALL`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
+  });
+  await request(`/api/v1/tasks/${guestDdayTask.id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
+  });
+  await request(`/api/v1/dday-goals/${guestDday.id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
+  });
+  console.log('✓ merged smoke data cleaned up');
 
   console.log('Guest auth and merge smoke passed. Access tokens and password were not printed.');
   console.log(

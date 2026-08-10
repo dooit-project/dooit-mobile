@@ -14,16 +14,17 @@
 
 - 게스트 계정과 token 발급 후 `/auth/me`가 같은 user id를 반환한다.
 - `POST /api/v1/auth/guest/refresh`가 같은 guest user id의 새 token을 반환한다.
-- 게스트가 만든 Task를 기존 정식 계정 로그인으로 병합하고 `mergeResult.tasks`가 `1`을 반환한다.
-- 병합된 Task를 정식 계정 token으로 조회할 수 있다.
+- 게스트가 만든 일반 Task 1건, D-Day 연결 Task 1건, 반복 일정 1건, D-Day 목표 1건을 기존 정식 계정 로그인으로 병합한다.
+- 병합 응답이 `tasks=2`, `schedules=1`, `ddayGoals=1`, `recurrenceSeries=1`을 반환한다.
+- 병합된 Task와 일정의 원본 ID, 반복 series ID, D-Day 목표와 연결 Task 관계가 유지된다.
 - 같은 정식 계정으로 다시 로그인해도 병합된 Task가 중복되지 않고 `mergeResult`가 `null`이다.
-- 검증에 사용한 Task는 정식 계정 token으로 삭제했다.
+- 검증에 사용한 Task, 반복 일정, D-Day 연결 Task와 목표는 정식 계정 token으로 삭제했다.
 
 메모:
 
 - 환경 변수 없이 기본값 `http://localhost:8080`으로 실행하면 회원가입 후 게스트 생성이 HTTP 500으로 실패했다. 최신 Docker API 검증에는 `127.0.0.1`을 명시한다.
 - smoke 실행 과정에서 테스트용 정식 계정과 게스트 계정이 생성된다. 병합된 게스트와 테스트 정식 계정의 정리는 백엔드 보존 정책을 따른다.
-- 일정, 반복 occurrence, D-Day 관계 무결성과 동시 병합 요청은 후속 smoke에서 확인한다.
+- 동시 병합 요청 잠금은 백엔드 통합 테스트에서 별도로 확인한다.
 
 ## 2026-08-10 local backend guest deployment preflight
 
