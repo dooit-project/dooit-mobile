@@ -13,6 +13,7 @@ import {
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
+import { shouldShowFirstUseReturn } from '@/features/auth/auth-return-navigation';
 import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
 import { useAuthState } from '@/features/auth/use-auth-state';
@@ -234,6 +235,11 @@ export function LoginOverview() {
             게스트로 계속 사용
           </Button>
         </View>
+      ) : null}
+      {shouldShowFirstUseReturn(authState.status, params) ? (
+        <Button onPress={() => router.navigate('/start' as Href)} variant="ghost">
+          시작 화면으로 돌아가기
+        </Button>
       ) : null}
     </Screen>
   );

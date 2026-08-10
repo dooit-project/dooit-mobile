@@ -32,7 +32,7 @@ export type AuthBootstrapStatus =
   | 'ready'
   | 'session-error';
 
-const PUBLIC_AUTH_PATHS = ['/login', '/register', '/password-reset'];
+const PUBLIC_AUTH_PATHS = ['/start', '/login', '/register', '/password-reset'];
 const GUEST_FOREGROUND_REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1_000;
 
 export function shouldRefreshGuestOnAppActive(

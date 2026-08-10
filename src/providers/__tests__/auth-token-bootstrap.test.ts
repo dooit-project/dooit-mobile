@@ -183,6 +183,10 @@ describe('shouldRenderAppRoutes', () => {
     },
   );
 
+  it('최초 사용자는 공개 start route에서 시작 안내를 다시 열 수 있다', () => {
+    expect(shouldRenderAppRoutes('first-use', '/start')).toBe(true);
+  });
+
   it('세션 준비가 끝나면 Today route를 렌더링한다', () => {
     expect(shouldRenderAppRoutes('ready', '/')).toBe(true);
   });
