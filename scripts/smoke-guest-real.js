@@ -9,6 +9,9 @@ const taskTitle = `GM-${runId.slice(-12)}`;
 const scheduleTitle = `GS-${runId.slice(-12)}`;
 const ddayTitle = `GD-${runId.slice(-12)}`;
 const ddayTaskTitle = `GDT-${runId.slice(-11)}`;
+const promotionEmail = `mobile-guest-promote-${runId}@example.com`;
+const promotionPassword = `M-promote-${runId}`;
+const promotionTaskTitle = `GP-${runId.slice(-12)}`;
 
 async function readJsonBody(response) {
   const text = await response.text();
@@ -41,7 +44,10 @@ async function request(path, options = {}) {
 
   if (!response.ok || body?.status === 'fail') {
     const message = body?.error?.message ?? `HTTP ${response.status}`;
-    throw new Error(`${path} failed: ${message}`);
+    const error = new Error(`${path} failed: ${message}`);
+    error.status = response.status;
+    error.code = body?.error?.code;
+    throw error;
   }
 
   return body?.data ?? null;
@@ -212,9 +218,71 @@ async function main() {
   });
   console.log('✓ merged smoke data cleaned up');
 
+  const promotionGuest = await request('/api/v1/auth/guest', { method: 'POST' });
+  const promotionGuestHeaders = {
+    Authorization: `Bearer ${promotionGuest.accessToken}`,
+  };
+  const promotionTask = await request('/api/v1/tasks', {
+    method: 'POST',
+    headers: promotionGuestHeaders,
+    body: JSON.stringify({
+      title: promotionTaskTitle,
+      description: '게스트 회원가입 승격 smoke',
+      type: 'TODO',
+      category: 'Smoke',
+      allDay: false,
+    }),
+  });
+
+  let conflictError;
+  try {
+    await request('/api/v1/auth/register', {
+      method: 'POST',
+      headers: promotionGuestHeaders,
+      body: JSON.stringify({ email, password: promotionPassword, displayName }),
+    });
+  } catch (error) {
+    conflictError = error;
+  }
+  assert(conflictError?.status === 409, 'existing email promotion must fail with HTTP 409');
+
+  const guestAfterConflict = await request('/api/v1/auth/me', {
+    headers: promotionGuestHeaders,
+  });
+  const taskAfterConflict = await request(`/api/v1/tasks/${promotionTask.id}`, {
+    headers: promotionGuestHeaders,
+  });
+  assert(guestAfterConflict.id === promotionGuest.user.id, 'promotion conflict changed guest id');
+  assert(guestAfterConflict.accountType === 'GUEST', 'promotion conflict changed account type');
+  assert(taskAfterConflict.id === promotionTask.id, 'promotion conflict lost guest data');
+  console.log('✓ registration conflict preserved guest session and data');
+
+  const promotedSession = await request('/api/v1/auth/register', {
+    method: 'POST',
+    headers: promotionGuestHeaders,
+    body: JSON.stringify({
+      email: promotionEmail,
+      password: promotionPassword,
+      displayName: `게스트 승격 ${runId.slice(-6)}`,
+    }),
+  });
+  assert(promotedSession.tokenType === 'Bearer', 'promoted token contract mismatch');
+  assert(promotedSession.user.id === promotionGuest.user.id, 'promotion changed user id');
+  assert(promotedSession.user.accountType === 'REGISTERED', 'promotion account type mismatch');
+
+  const promotedTask = await request(`/api/v1/tasks/${promotionTask.id}`, {
+    headers: { Authorization: `Bearer ${promotedSession.accessToken}` },
+  });
+  assert(promotedTask.id === promotionTask.id, 'promoted account cannot read guest task');
+  await request(`/api/v1/tasks/${promotionTask.id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${promotedSession.accessToken}` },
+  });
+  console.log('✓ guest registration promoted same user and preserved data');
+
   console.log('Guest auth and merge smoke passed. Access tokens and password were not printed.');
   console.log(
-    'Note: this smoke creates one registered and one merged guest account; backend cleanup owns removal.',
+    'Note: this smoke creates merge and promotion test accounts; backend cleanup owns account removal.',
   );
 }
 

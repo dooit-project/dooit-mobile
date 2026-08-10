@@ -19,6 +19,8 @@
 - 병합된 Task와 일정의 원본 ID, 반복 series ID, D-Day 목표와 연결 Task 관계가 유지된다.
 - 같은 정식 계정으로 다시 로그인해도 병합된 Task가 중복되지 않고 `mergeResult`가 `null`이다.
 - 검증에 사용한 Task, 반복 일정, D-Day 연결 Task와 목표는 정식 계정 token으로 삭제했다.
+- 게스트 회원가입에서 기존 이메일을 사용하면 HTTP 409가 반환되고 기존 guest user id, account type, token과 Task 접근이 유지된다.
+- 새 이메일로 다시 회원가입하면 추가 로그인 없이 같은 user id가 `REGISTERED`로 승격되고 기존 Task를 계속 조회할 수 있다.
 
 메모:
 
