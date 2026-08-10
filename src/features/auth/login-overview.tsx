@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
 import { useAuthState } from '@/features/auth/use-auth-state';
 import { authApi, getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
@@ -35,7 +36,7 @@ export function LoginOverview() {
       await queryClient.invalidateQueries();
       router.replace(
         authState.status === 'guest'
-          ? ({ pathname: '/', params: { linked: '1' } } as Href)
+          ? ({ pathname: '/', params: createGuestMergeRouteParams(response.mergeResult) } as Href)
           : ('/' as Href),
       );
     },

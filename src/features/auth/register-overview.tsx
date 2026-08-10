@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
 import { authApi, getUserFacingApiErrorMessage, isTokenResponse } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
 
@@ -39,7 +40,10 @@ export function RegisterOverview() {
       if (isTokenResponse(response)) {
         queryClient.setQueryData(['auth', 'me'], response.user);
         await queryClient.invalidateQueries();
-        router.replace({ pathname: '/', params: { linked: '1' } } as Href);
+        router.replace({
+          pathname: '/',
+          params: createGuestMergeRouteParams(response.mergeResult),
+        } as Href);
         return;
       }
 
