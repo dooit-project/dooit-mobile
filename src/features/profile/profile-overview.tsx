@@ -9,6 +9,7 @@ import type { ColorValue } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { useAuthState } from '@/features/auth';
+import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
 import { authApi } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 
@@ -77,9 +78,8 @@ export function ProfileOverview() {
       queryClient.clear();
       setLogoutWarning(true);
     },
-    onSuccess: (session) => {
-      queryClient.clear();
-      queryClient.setQueryData(['auth', 'me'], session.user);
+    onSuccess: async (session) => {
+      await replaceUserQueryCache(queryClient, session.user);
     },
   });
 

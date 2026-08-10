@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
 import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
 import { useAuthState } from '@/features/auth/use-auth-state';
@@ -33,8 +34,7 @@ export function LoginOverview() {
     mutationFn: () => authApi.login({ email: email.trim(), password }),
     onSuccess: async (response) => {
       setValidationMessage(null);
-      queryClient.setQueryData(['auth', 'me'], response.user);
-      await queryClient.invalidateQueries();
+      await replaceUserQueryCache(queryClient, response.user);
       router.replace(
         authState.status === 'guest'
           ? ({ pathname: '/', params: createGuestMergeRouteParams(response.mergeResult) } as Href)

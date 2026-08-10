@@ -1,6 +1,7 @@
 export { LoginOverview } from './login-overview';
 export { FirstUseOverview } from './first-use-overview';
 export { getAuthSubmissionErrorMessage } from './auth-submission-error';
+export { replaceUserQueryCache } from './auth-query-cache';
 export { createGuestMergeRouteParams, getGuestMergeNoticeMessage } from './guest-merge-result';
 export { PasswordResetOverview } from './password-reset-overview';
 export { RegisterOverview } from './register-overview';
