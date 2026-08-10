@@ -7,6 +7,7 @@ describe('contextual feature tip', () => {
         {
           onboardingVersion: 1,
           completedFeatureTips: ['today.quickCapture'],
+          notificationPermissionPrompted: false,
         },
         ['today.quickCapture', 'today.completeTask', 'calendar.overview'],
       ),
@@ -19,6 +20,7 @@ describe('contextual feature tip', () => {
         {
           onboardingVersion: 1,
           completedFeatureTips: ['dday.linkedTasks'],
+          notificationPermissionPrompted: false,
         },
         ['dday.linkedTasks'],
       ),

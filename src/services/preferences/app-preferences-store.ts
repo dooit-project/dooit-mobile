@@ -22,11 +22,13 @@ export type FeatureTipId = (typeof FEATURE_TIP_IDS)[number];
 export type AppPreferences = {
   onboardingVersion: number;
   completedFeatureTips: FeatureTipId[];
+  notificationPermissionPrompted: boolean;
 };
 
 const DEFAULT_APP_PREFERENCES: AppPreferences = {
   onboardingVersion: 0,
   completedFeatureTips: [],
+  notificationPermissionPrompted: false,
 };
 
 const featureTipIds = new Set<string>(FEATURE_TIP_IDS);
@@ -38,6 +40,7 @@ function clonePreferences(preferences: AppPreferences): AppPreferences {
   return {
     onboardingVersion: preferences.onboardingVersion,
     completedFeatureTips: [...preferences.completedFeatureTips],
+    notificationPermissionPrompted: preferences.notificationPermissionPrompted,
   };
 }
 
@@ -58,8 +61,9 @@ function normalizePreferences(value: unknown): AppPreferences {
         (tipId): tipId is FeatureTipId => typeof tipId === 'string' && featureTipIds.has(tipId),
       )
     : [];
+  const notificationPermissionPrompted = candidate.notificationPermissionPrompted === true;
 
-  return { onboardingVersion, completedFeatureTips };
+  return { onboardingVersion, completedFeatureTips, notificationPermissionPrompted };
 }
 
 function getWebStorage() {
@@ -155,8 +159,18 @@ export async function markFeatureTipCompleted(tipId: FeatureTipId) {
   }));
 }
 
+export async function markNotificationPermissionPrompted() {
+  return updateAppPreferences((current) => ({
+    ...current,
+    notificationPermissionPrompted: true,
+  }));
+}
+
 export async function resetAppGuidance() {
-  return updateAppPreferences(() => DEFAULT_APP_PREFERENCES);
+  return updateAppPreferences((current) => ({
+    ...DEFAULT_APP_PREFERENCES,
+    notificationPermissionPrompted: current.notificationPermissionPrompted,
+  }));
 }
 
 export async function resetFeatureTips() {

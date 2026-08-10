@@ -4,6 +4,7 @@ export {
   completeOnboarding,
   initializeAppPreferences,
   markFeatureTipCompleted,
+  markNotificationPermissionPrompted,
   resetAppGuidance,
   resetFeatureTips,
 } from './app-preferences-store';

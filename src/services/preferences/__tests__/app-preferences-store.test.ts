@@ -5,6 +5,7 @@ import {
   completeOnboarding,
   initializeAppPreferences,
   markFeatureTipCompleted,
+  markNotificationPermissionPrompted,
   resetAppGuidance,
   resetAppPreferencesStoreForTesting,
   resetFeatureTips,
@@ -29,6 +30,7 @@ describe('app preferences store', () => {
     await expect(initializeAppPreferences()).resolves.toEqual({
       onboardingVersion: 0,
       completedFeatureTips: [],
+      notificationPermissionPrompted: false,
     });
   });
 
@@ -41,6 +43,7 @@ describe('app preferences store', () => {
     await expect(initializeAppPreferences()).resolves.toEqual({
       onboardingVersion: CURRENT_ONBOARDING_VERSION,
       completedFeatureTips: ['today.quickCapture'],
+      notificationPermissionPrompted: false,
     });
   });
 
@@ -65,6 +68,7 @@ describe('app preferences store', () => {
     await expect(initializeAppPreferences()).resolves.toEqual({
       onboardingVersion: 0,
       completedFeatureTips: ['calendar.overview'],
+      notificationPermissionPrompted: false,
     });
   });
 
@@ -75,6 +79,7 @@ describe('app preferences store', () => {
     await expect(resetAppGuidance()).resolves.toEqual({
       onboardingVersion: 0,
       completedFeatureTips: [],
+      notificationPermissionPrompted: false,
     });
   });
 
@@ -85,6 +90,19 @@ describe('app preferences store', () => {
     await expect(resetFeatureTips()).resolves.toEqual({
       onboardingVersion: CURRENT_ONBOARDING_VERSION,
       completedFeatureTips: [],
+      notificationPermissionPrompted: false,
+    });
+  });
+
+  it('알림 권한 안내 여부는 온보딩과 화면 가이드 초기화와 별도로 유지한다', async () => {
+    await markNotificationPermissionPrompted();
+    await completeOnboarding();
+
+    await expect(resetFeatureTips()).resolves.toMatchObject({
+      notificationPermissionPrompted: true,
+    });
+    await expect(resetAppGuidance()).resolves.toMatchObject({
+      notificationPermissionPrompted: true,
     });
   });
 
@@ -112,6 +130,7 @@ describe('app preferences store', () => {
       await expect(initializeAppPreferences()).resolves.toEqual({
         onboardingVersion: CURRENT_ONBOARDING_VERSION,
         completedFeatureTips: ['search.history'],
+        notificationPermissionPrompted: false,
       });
     } finally {
       Object.defineProperty(Platform, 'OS', { configurable: true, value: originalPlatform });
