@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
 const apiUrl = (process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080').replace(/\/$/, '');
+const runId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+const email = `mobile-guest-smoke-${runId}@example.com`;
+const password = `M-guest-${runId}`;
+const displayName = `게스트 병합 스모크 ${runId.slice(-6)}`;
+const taskTitle = `GM-${runId.slice(-12)}`;
 
 async function readJsonBody(response) {
   const text = await response.text();
@@ -25,6 +30,7 @@ async function request(path, options = {}) {
     signal: controller.signal,
     headers: {
       Accept: 'application/json',
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
       ...options.headers,
     },
   }).finally(() => clearTimeout(timeoutId));
@@ -47,6 +53,13 @@ function assert(condition, message) {
 async function main() {
   console.log(`Guest auth smoke target: ${apiUrl}`);
 
+  const registeredUser = await request('/api/v1/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ email, password, displayName }),
+  });
+  assert(registeredUser?.email === email, 'merge target registration mismatch');
+  console.log('✓ merge target registered');
+
   const session = await request('/api/v1/auth/guest', { method: 'POST' });
   assert(session?.tokenType === 'Bearer', 'guest tokenType must be Bearer');
   assert(typeof session.accessToken === 'string' && session.accessToken, 'guest token missing');
@@ -65,9 +78,71 @@ async function main() {
   assert(me.displayName === null, 'guest /me displayName must be null');
   console.log('✓ guest /me');
 
-  console.log('Guest auth smoke passed. Access token was not printed.');
+  const refreshedSession = await request('/api/v1/auth/guest/refresh', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${session.accessToken}` },
+  });
+  assert(refreshedSession.user?.id === session.user.id, 'guest refresh changed user id');
+  assert(refreshedSession.accessToken, 'refreshed guest token missing');
+  console.log('✓ guest token refreshed with same user id');
+
+  const guestHeaders = { Authorization: `Bearer ${refreshedSession.accessToken}` };
+  const guestTask = await request('/api/v1/tasks', {
+    method: 'POST',
+    headers: guestHeaders,
+    body: JSON.stringify({
+      title: taskTitle,
+      description: '게스트 병합 smoke',
+      type: 'TODO',
+      category: 'Smoke',
+      allDay: false,
+    }),
+  });
+  assert(guestTask?.title === taskTitle, 'guest task creation mismatch');
+  console.log('✓ guest task created');
+
+  const mergedSession = await request('/api/v1/auth/login', {
+    method: 'POST',
+    headers: guestHeaders,
+    body: JSON.stringify({ email, password }),
+  });
+  assert(mergedSession.user?.id === registeredUser.id, 'login did not select target account');
+  assert(mergedSession.user.accountType === 'REGISTERED', 'merged account type mismatch');
+  assert(mergedSession.mergeResult?.tasks === 1, 'merged task count mismatch');
+  console.log('✓ guest data merged into registered account');
+
+  const registeredHeaders = { Authorization: `Bearer ${mergedSession.accessToken}` };
+  const mergedTask = await request(`/api/v1/tasks/${guestTask.id}`, {
+    headers: registeredHeaders,
+  });
+  assert(mergedTask?.title === taskTitle, 'merged task is not readable by target account');
+  console.log('✓ merged task ownership verified');
+
+  const secondLogin = await request('/api/v1/auth/login', {
+    method: 'POST',
+    headers: registeredHeaders,
+    body: JSON.stringify({ email, password }),
+  });
+  assert(secondLogin.mergeResult === null, 'normal login must not report another guest merge');
+
+  const inbox = await request('/api/v1/tasks/inbox', {
+    headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
+  });
+  assert(
+    inbox.filter((task) => task.id === guestTask.id).length === 1,
+    'subsequent login duplicated the merged task',
+  );
+  console.log('✓ subsequent login did not duplicate merged data');
+
+  await request(`/api/v1/tasks/${guestTask.id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
+  });
+  console.log('✓ merged smoke task cleaned up');
+
+  console.log('Guest auth and merge smoke passed. Access tokens and password were not printed.');
   console.log(
-    'Note: this smoke creates one guest account; backend expiration cleanup owns removal.',
+    'Note: this smoke creates one registered and one merged guest account; backend cleanup owns removal.',
   );
 }
 

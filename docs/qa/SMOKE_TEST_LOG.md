@@ -2,6 +2,29 @@
 
 이 문서는 모바일 앱이 실제 사용 가능한 상태인지 확인한 최신 smoke test 기준선만 남긴다. 오래된 조사 과정과 해결된 원인 분석은 git history와 각 커밋에 맡기고, 재실행에 필요한 사실과 남은 확인 항목만 관리한다.
 
+## 2026-08-11 local real API guest refresh and merge smoke
+
+환경:
+
+- API URL: `http://127.0.0.1:8080`
+- 실행 명령: `EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:guest:real`
+- 보안: access token과 비밀번호는 출력하지 않음
+
+통과:
+
+- 게스트 계정과 token 발급 후 `/auth/me`가 같은 user id를 반환한다.
+- `POST /api/v1/auth/guest/refresh`가 같은 guest user id의 새 token을 반환한다.
+- 게스트가 만든 Task를 기존 정식 계정 로그인으로 병합하고 `mergeResult.tasks`가 `1`을 반환한다.
+- 병합된 Task를 정식 계정 token으로 조회할 수 있다.
+- 같은 정식 계정으로 다시 로그인해도 병합된 Task가 중복되지 않고 `mergeResult`가 `null`이다.
+- 검증에 사용한 Task는 정식 계정 token으로 삭제했다.
+
+메모:
+
+- 환경 변수 없이 기본값 `http://localhost:8080`으로 실행하면 회원가입 후 게스트 생성이 HTTP 500으로 실패했다. 최신 Docker API 검증에는 `127.0.0.1`을 명시한다.
+- smoke 실행 과정에서 테스트용 정식 계정과 게스트 계정이 생성된다. 병합된 게스트와 테스트 정식 계정의 정리는 백엔드 보존 정책을 따른다.
+- 일정, 반복 occurrence, D-Day 관계 무결성과 동시 병합 요청은 후속 smoke에서 확인한다.
+
 ## 2026-08-10 local backend guest deployment preflight
 
 환경:
