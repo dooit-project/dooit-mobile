@@ -29,6 +29,14 @@ export const authApi = {
     return response;
   },
 
+  async refreshGuest(signal?: AbortSignal) {
+    const response = await apiClient.post<TokenResponse>(`${AUTH_PATH}/guest/refresh`, undefined, {
+      signal,
+    });
+    await setAccessToken(response.accessToken);
+    return response;
+  },
+
   async register(request: RegisterRequest, signal?: AbortSignal) {
     const response = await apiClient.post<UserResponse | TokenResponse>(
       `${AUTH_PATH}/register`,

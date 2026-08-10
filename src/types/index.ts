@@ -1,6 +1,7 @@
 export type {
   AccountType,
   AuthenticatedUserResponse,
+  GuestMergeResultResponse,
   LoginRequest,
   PasswordResetConfirmRequest,
   PasswordResetRequest,

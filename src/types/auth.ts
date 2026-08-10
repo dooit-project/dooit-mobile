@@ -47,11 +47,19 @@ export type PasswordResetConfirmRequest = {
   newPassword: string;
 };
 
+export type GuestMergeResultResponse = {
+  tasks: number;
+  schedules: number;
+  ddayGoals: number;
+  recurrenceSeries: number;
+};
+
 export type TokenResponse = {
   tokenType: 'Bearer';
   accessToken: string;
   expiresAt: LocalDateTimeString;
   user: UserResponse;
+  mergeResult: GuestMergeResultResponse | null;
 };
 
 export type AuthenticatedUserResponse = {

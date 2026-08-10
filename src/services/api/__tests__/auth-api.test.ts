@@ -54,6 +54,7 @@ describe('Auth API', () => {
         createdAt: '2026-07-09T10:00:00',
         updatedAt: null,
       },
+      mergeResult: null,
     });
 
     const response = await authApi.guest();
@@ -63,6 +64,43 @@ describe('Auth API', () => {
     });
     expect(response.user.accountType).toBe('GUEST');
     expect(getAccessToken()).toBe('guest-access-token');
+  });
+
+  it('같은 게스트 계정의 access token을 갱신해 저장한다', async () => {
+    await setAccessToken('old-guest-access-token');
+    postMock.mockResolvedValue({
+      tokenType: 'Bearer',
+      accessToken: 'refreshed-guest-access-token',
+      expiresAt: '2026-09-09T10:00:00',
+      user: {
+        id: 10,
+        accountType: 'GUEST',
+        email: null,
+        displayName: null,
+        role: 'USER',
+        timeZone: 'Asia/Seoul',
+        createdAt: '2026-07-09T10:00:00',
+        updatedAt: null,
+      },
+      mergeResult: null,
+    });
+
+    const response = await authApi.refreshGuest();
+
+    expect(postMock).toHaveBeenCalledWith('/api/v1/auth/guest/refresh', undefined, {
+      signal: undefined,
+    });
+    expect(response.user.id).toBe(10);
+    expect(getAccessToken()).toBe('refreshed-guest-access-token');
+  });
+
+  it('게스트 token 갱신 실패 시 기존 token을 유지한다', async () => {
+    await setAccessToken('old-guest-access-token');
+    postMock.mockRejectedValue(new Error('refresh failed'));
+
+    await expect(authApi.refreshGuest()).rejects.toThrow('refresh failed');
+
+    expect(getAccessToken()).toBe('old-guest-access-token');
   });
 
   it('회원가입 API를 호출한다', async () => {
@@ -111,6 +149,7 @@ describe('Auth API', () => {
         createdAt: '2026-08-09T10:00:00',
         updatedAt: '2026-08-09T10:00:00',
       },
+      mergeResult: null,
     });
 
     const response = await authApi.register({
@@ -138,6 +177,7 @@ describe('Auth API', () => {
         createdAt: '2026-07-14T09:00:00',
         updatedAt: null,
       },
+      mergeResult: null,
     });
     const request = { email: 'user@example.com', password: 'password123' };
 
@@ -176,6 +216,7 @@ describe('Auth API', () => {
         createdAt: '2026-08-09T10:00:00',
         updatedAt: null,
       },
+      mergeResult: null,
     });
 
     const response = await authApi.logoutToGuest();

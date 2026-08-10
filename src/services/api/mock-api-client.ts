@@ -365,6 +365,7 @@ function createTokenResponse(user: UserResponse): TokenResponse {
     accessToken: `mock-access-token-${user.accountType.toLowerCase()}-${user.id}`,
     expiresAt: `${today}T23:59:59`,
     user,
+    mergeResult: null,
   };
 }
 
