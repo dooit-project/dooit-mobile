@@ -1,6 +1,8 @@
 import {
   bootstrapAuthSession,
   createGuestSession,
+  refreshActiveGuestSession,
+  shouldRefreshGuestOnAppActive,
   shouldRenderAppRoutes,
 } from '../auth-token-bootstrap';
 
@@ -183,5 +185,54 @@ describe('shouldRenderAppRoutes', () => {
 
   it('세션 준비가 끝나면 Today route를 렌더링한다', () => {
     expect(shouldRenderAppRoutes('ready', '/')).toBe(true);
+  });
+});
+
+describe('foreground guest refresh', () => {
+  it('마지막 시도 후 24시간이 지난 게스트만 갱신 대상으로 판단한다', () => {
+    const lastAttemptAt = Date.UTC(2026, 7, 10, 0, 0, 0);
+
+    expect(
+      shouldRefreshGuestOnAppActive(guestUser, lastAttemptAt, lastAttemptAt + 24 * 60 * 60 * 1_000),
+    ).toBe(true);
+    expect(
+      shouldRefreshGuestOnAppActive(guestUser, lastAttemptAt, lastAttemptAt + 60 * 60 * 1_000),
+    ).toBe(false);
+    expect(
+      shouldRefreshGuestOnAppActive(
+        { ...guestUser, accountType: 'REGISTERED' },
+        lastAttemptAt,
+        lastAttemptAt + 48 * 60 * 60 * 1_000,
+      ),
+    ).toBe(false);
+  });
+
+  it('활성화된 게스트 token을 갱신하고 사용자 cache를 교체한다', async () => {
+    const cacheUser = jest.fn();
+    const refreshedUser = { ...guestUser, updatedAt: '2026-08-11T10:00:00' as const };
+
+    await expect(
+      refreshActiveGuestSession({
+        getCachedUser: () => guestUser,
+        refreshGuest: jest.fn().mockResolvedValue({ user: refreshedUser }),
+        cacheUser,
+      }),
+    ).resolves.toBe(true);
+
+    expect(cacheUser).toHaveBeenCalledWith(refreshedUser);
+  });
+
+  it('활성화 갱신 실패 시 기존 사용자 cache를 유지한다', async () => {
+    const cacheUser = jest.fn();
+
+    await expect(
+      refreshActiveGuestSession({
+        getCachedUser: () => guestUser,
+        refreshGuest: jest.fn().mockRejectedValue(new Error('refresh failed')),
+        cacheUser,
+      }),
+    ).resolves.toBe(false);
+
+    expect(cacheUser).not.toHaveBeenCalled();
   });
 });

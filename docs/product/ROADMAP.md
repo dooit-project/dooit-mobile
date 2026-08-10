@@ -341,7 +341,7 @@ ToDoLab 적용 방향:
 
 - [x] 게스트 계정의 보존 기간, 기능 제한, 앱 삭제 시 복구 불가 안내, 기존 계정 로그인 시 데이터 병합 정책을 확정한다. 아래 제품 정책을 모바일과 백엔드의 공통 기준으로 사용한다.
 - [x] 백엔드에 게스트 사용자 생성 API와 `GUEST | REGISTERED` 계정 유형을 요청하고 원본 API 계약 문서에 반영한다. 백엔드 `AUTH_CONTRACT.md`와 `API_V1_FRONTEND.md`의 `POST /api/v1/auth/guest`, `accountType`, 게스트 token TTL 계약을 확인했다.
-- [x] 게스트 access token 만료 전에 같은 guest user id를 유지하는 `POST /api/v1/auth/guest/refresh` 계약과 모바일 API를 반영한다. 앱 시작 시 `/auth/me`로 유효성이 확인된 게스트 token을 자동 갱신하며, 실패 시 기존 token을 유지하고 새 게스트를 자동 생성해 데이터 연결을 끊지 않는다.
+- [x] 게스트 access token 만료 전에 같은 guest user id를 유지하는 `POST /api/v1/auth/guest/refresh` 계약과 모바일 API를 반영한다. 앱 시작 시 갱신하고, 실행 중에는 마지막 시도 후 24시간 이상 지난 앱 활성화 시 다시 갱신한다. 실패하면 기존 token을 유지하고 새 게스트를 자동 생성해 데이터 연결을 끊지 않는다.
 - [x] 기존 계정 로그인은 유효한 게스트 token을 함께 받아 Task, 일정, 완료 기록, 반복 occurrence, D-Day 관계를 하나의 트랜잭션으로 병합한다. 모바일은 로그인 응답의 `mergeResult`를 받아 Today에서 유형별 연결 건수를 안내한다.
 - [x] 게스트 상태의 신규 회원가입은 같은 user id를 정식 계정으로 승격한다. 실제 API smoke에서 기존 이메일 충돌 시 HTTP 409와 게스트 token·데이터 유지, 새 이메일 가입 시 같은 user id의 `REGISTERED` 전환과 기존 데이터 접근을 확인했다.
 - [x] 같은 guest token으로 같은 계정 로그인을 재시도하면 빈 병합 결과를 반환하고 데이터가 중복되지 않는 것을 real API smoke로 확인한다. 백엔드는 guest와 target user를 pessimistic write lock으로 조회해 동시 병합 요청을 직렬화한다.

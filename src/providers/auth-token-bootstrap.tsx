@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
-import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AppState, StyleSheet } from 'react-native';
 import { usePathname } from 'expo-router';
 
 import { Button, InlineNotice, Screen } from '@/components/ui';
@@ -27,6 +27,38 @@ export type AuthBootstrapStatus =
   | 'session-error';
 
 const PUBLIC_AUTH_PATHS = ['/login', '/register', '/password-reset'];
+const GUEST_FOREGROUND_REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1_000;
+
+export function shouldRefreshGuestOnAppActive(
+  user: AuthenticatedUserResponse | undefined,
+  lastAttemptAt: number,
+  now: number,
+) {
+  return (
+    user?.accountType === 'GUEST' && now - lastAttemptAt >= GUEST_FOREGROUND_REFRESH_INTERVAL_MS
+  );
+}
+
+export async function refreshActiveGuestSession(
+  dependencies = {
+    getCachedUser: () => queryClient.getQueryData<AuthenticatedUserResponse>(['auth', 'me']),
+    refreshGuest: () => authApi.refreshGuest(),
+    cacheUser: defaultDependencies.cacheUser,
+  },
+) {
+  const user = dependencies.getCachedUser();
+  if (user?.accountType !== 'GUEST') {
+    return false;
+  }
+
+  try {
+    const refreshedSession = await dependencies.refreshGuest();
+    dependencies.cacheUser(refreshedSession.user);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export function shouldRenderAppRoutes(status: AuthBootstrapStatus, pathname: string) {
   if (status === 'ready') {
@@ -83,6 +115,7 @@ export function AuthTokenBootstrap({ children }: PropsWithChildren) {
   const [status, setStatus] = useState<AuthBootstrapStatus>('loading');
   const [guestErrorMessage, setGuestErrorMessage] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
+  const lastGuestRefreshAttemptAt = useRef(0);
 
   useEffect(() => {
     let mounted = true;
@@ -121,6 +154,26 @@ export function AuthTokenBootstrap({ children }: PropsWithChildren) {
       }),
     [],
   );
+
+  useEffect(() => {
+    lastGuestRefreshAttemptAt.current = Date.now();
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState !== 'active') {
+        return;
+      }
+
+      const now = Date.now();
+      const user = queryClient.getQueryData<AuthenticatedUserResponse>(['auth', 'me']);
+      if (!shouldRefreshGuestOnAppActive(user, lastGuestRefreshAttemptAt.current, now)) {
+        return;
+      }
+
+      lastGuestRefreshAttemptAt.current = now;
+      void refreshActiveGuestSession();
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   if (shouldRenderAppRoutes(status, pathname)) {
     return children;
