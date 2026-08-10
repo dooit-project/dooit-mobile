@@ -5,7 +5,12 @@ import { usePathname } from 'expo-router';
 
 import { Button, InlineNotice, Screen } from '@/components/ui';
 import { FirstUseOverview } from '@/features/auth';
-import { authApi, initializeAccessToken, subscribeAccessToken } from '@/services/api';
+import {
+  authApi,
+  initializeAccessToken,
+  initializeAuthAccountType,
+  subscribeAccessToken,
+} from '@/services/api';
 import { completeOnboarding } from '@/services/preferences';
 import { spacing } from '@/theme';
 import type { AuthenticatedUserResponse } from '@/types';
@@ -14,6 +19,7 @@ import { queryClient } from './query-provider';
 
 type BootstrapDependencies = {
   initializeToken: () => Promise<string | null>;
+  initializeAccountType?: () => Promise<unknown>;
   getCurrentUser: () => ReturnType<typeof authApi.me>;
   refreshGuest?: () => ReturnType<typeof authApi.refreshGuest>;
   cacheUser: (user: AuthenticatedUserResponse) => void;
@@ -70,6 +76,7 @@ export function shouldRenderAppRoutes(status: AuthBootstrapStatus, pathname: str
 
 const defaultDependencies: BootstrapDependencies = {
   initializeToken: initializeAccessToken,
+  initializeAccountType: initializeAuthAccountType,
   getCurrentUser: () => authApi.me(),
   refreshGuest: () => authApi.refreshGuest(),
   cacheUser: (user) => queryClient.setQueryData(['auth', 'me'], user),
@@ -80,6 +87,8 @@ export async function bootstrapAuthSession(dependencies = defaultDependencies) {
   if (!token) {
     return 'first-use' as const;
   }
+
+  await dependencies.initializeAccountType?.();
 
   const user = await dependencies.getCurrentUser();
 

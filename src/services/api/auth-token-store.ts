@@ -1,7 +1,10 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
+import type { AccountType } from '@/types';
+
 const ACCESS_TOKEN_STORAGE_KEY = 'todolab.accessToken';
+const ACCOUNT_TYPE_STORAGE_KEY = 'todolab.authAccountType';
 const SECURE_STORE_OPTIONS = {
   keychainService: 'todolab.accessToken',
 } satisfies SecureStore.SecureStoreOptions;
@@ -9,12 +12,18 @@ const SECURE_STORE_OPTIONS = {
 type AccessTokenListener = (token: string | null) => void;
 
 let memoryAccessToken: string | null = null;
+let memoryAccountType: AccountType | null = null;
 let initialized = false;
+let accountTypeInitialized = false;
 const accessTokenListeners = new Set<AccessTokenListener>();
 
 function normalizeToken(token: string | null | undefined) {
   const normalized = token?.trim();
   return normalized ? normalized : null;
+}
+
+function normalizeAccountType(value: string | null | undefined): AccountType | null {
+  return value === 'GUEST' || value === 'REGISTERED' ? value : null;
 }
 
 function getWebStorage() {
@@ -94,6 +103,43 @@ export async function initializeAccessToken() {
   return memoryAccessToken;
 }
 
+export function getAuthAccountType() {
+  if (memoryAccountType) {
+    return memoryAccountType;
+  }
+
+  if (Platform.OS === 'web') {
+    memoryAccountType = normalizeAccountType(getWebStorage()?.getItem(ACCOUNT_TYPE_STORAGE_KEY));
+  }
+
+  return memoryAccountType;
+}
+
+export async function initializeAuthAccountType() {
+  if (accountTypeInitialized) {
+    return memoryAccountType;
+  }
+
+  const persistedValue =
+    Platform.OS === 'web'
+      ? getWebStorage()?.getItem(ACCOUNT_TYPE_STORAGE_KEY)
+      : await SecureStore.getItemAsync(ACCOUNT_TYPE_STORAGE_KEY);
+  memoryAccountType = normalizeAccountType(persistedValue);
+  accountTypeInitialized = true;
+  return memoryAccountType;
+}
+
+export async function setAuthAccountType(accountType: AccountType) {
+  memoryAccountType = accountType;
+  accountTypeInitialized = true;
+
+  if (Platform.OS === 'web') {
+    getWebStorage()?.setItem(ACCOUNT_TYPE_STORAGE_KEY, accountType);
+  } else {
+    await SecureStore.setItemAsync(ACCOUNT_TYPE_STORAGE_KEY, accountType);
+  }
+}
+
 export async function setAccessToken(token: string | null | undefined) {
   const previousToken = memoryAccessToken;
   memoryAccessToken = normalizeToken(token);
@@ -125,6 +171,8 @@ export function subscribeAccessToken(listener: AccessTokenListener) {
 
 export function resetAuthTokenStoreForTesting() {
   memoryAccessToken = null;
+  memoryAccountType = null;
   initialized = false;
+  accountTypeInitialized = false;
   accessTokenListeners.clear();
 }

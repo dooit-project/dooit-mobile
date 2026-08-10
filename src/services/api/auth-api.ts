@@ -12,9 +12,14 @@ import type {
 } from '@/types';
 
 import { apiClient } from './api-client';
-import { clearAccessToken, setAccessToken } from './auth-token-store';
+import { clearAccessToken, setAccessToken, setAuthAccountType } from './auth-token-store';
 
 const AUTH_PATH = '/api/v1/auth';
+
+async function persistTokenResponse(response: TokenResponse) {
+  await setAccessToken(response.accessToken);
+  await setAuthAccountType(response.user.accountType);
+}
 
 export function isTokenResponse(response: UserResponse | TokenResponse): response is TokenResponse {
   return 'accessToken' in response;
@@ -25,7 +30,7 @@ export const authApi = {
     const response = await apiClient.post<TokenResponse>(`${AUTH_PATH}/guest`, undefined, {
       signal,
     });
-    await setAccessToken(response.accessToken);
+    await persistTokenResponse(response);
     return response;
   },
 
@@ -33,7 +38,7 @@ export const authApi = {
     const response = await apiClient.post<TokenResponse>(`${AUTH_PATH}/guest/refresh`, undefined, {
       signal,
     });
-    await setAccessToken(response.accessToken);
+    await persistTokenResponse(response);
     return response;
   },
 
@@ -44,14 +49,14 @@ export const authApi = {
       { signal },
     );
     if (isTokenResponse(response)) {
-      await setAccessToken(response.accessToken);
+      await persistTokenResponse(response);
     }
     return response;
   },
 
   async login(request: LoginRequest, signal?: AbortSignal) {
     const response = await apiClient.post<TokenResponse>(`${AUTH_PATH}/login`, request, { signal });
-    await setAccessToken(response.accessToken);
+    await persistTokenResponse(response);
     return response;
   },
 

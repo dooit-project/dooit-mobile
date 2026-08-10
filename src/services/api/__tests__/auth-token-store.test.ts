@@ -1,9 +1,12 @@
 import {
   clearAccessToken,
+  getAuthAccountType,
   getAccessToken,
   initializeAccessToken,
+  initializeAuthAccountType,
   resetAuthTokenStoreForTesting,
   setAccessToken,
+  setAuthAccountType,
   subscribeAccessToken,
 } from '../auth-token-store';
 
@@ -61,5 +64,27 @@ describe('auth token store', () => {
     expect(listener).toHaveBeenNthCalledWith(1, 'token-value');
     expect(listener).toHaveBeenNthCalledWith(2, null);
     expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  it('계정 유형을 SecureStore에 저장하고 cold start 메모리로 복원한다', async () => {
+    await setAuthAccountType('GUEST');
+
+    expect(getAuthAccountType()).toBe('GUEST');
+    expect(mockSecureStore.get('todolab.authAccountType')).toBe('GUEST');
+
+    resetAuthTokenStoreForTesting();
+    await initializeAuthAccountType();
+
+    expect(getAuthAccountType()).toBe('GUEST');
+  });
+
+  it('token을 삭제해도 만료 복구용 계정 유형은 유지한다', async () => {
+    await setAccessToken('expired-token');
+    await setAuthAccountType('GUEST');
+
+    await clearAccessToken();
+
+    expect(getAccessToken()).toBeNull();
+    expect(getAuthAccountType()).toBe('GUEST');
   });
 });

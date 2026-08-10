@@ -21,4 +21,8 @@ describe('getSessionExpiryParams', () => {
   it('사용자 유형을 알 수 없으면 일반 만료 안내를 사용한다', () => {
     expect(getSessionExpiryParams(undefined)).toEqual({ expired: '1' });
   });
+
+  it('cold start cache가 비어 있어도 저장된 게스트 유형으로 구분한다', () => {
+    expect(getSessionExpiryParams(undefined, 'GUEST')).toEqual({ guestExpired: '1' });
+  });
 });
