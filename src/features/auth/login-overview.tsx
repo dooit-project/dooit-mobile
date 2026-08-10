@@ -21,7 +21,12 @@ import { radii, spacing, typography, useAppTheme } from '@/theme';
 
 export function LoginOverview() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ email?: string; expired?: string; registered?: string }>();
+  const params = useLocalSearchParams<{
+    email?: string;
+    expired?: string;
+    guestExpired?: string;
+    registered?: string;
+  }>();
   const queryClient = useQueryClient();
   const authState = useAuthState();
   const theme = useAppTheme();
@@ -188,6 +193,13 @@ export function LoginOverview() {
             tone="warning"
             title="다시 로그인해 주세요"
             message="보안을 위해 이전 로그인 세션이 종료됐어요."
+          />
+        ) : null}
+        {params.guestExpired === '1' ? (
+          <InlineNotice
+            tone="warning"
+            title="게스트 사용 기간이 만료됐어요"
+            message="기존 데이터를 보호하기 위해 새 게스트 계정을 자동으로 만들지 않았어요. 기존 계정이 있다면 로그인해 주세요."
           />
         ) : null}
         {errorMessage ? <InlineNotice tone="danger" message={errorMessage} /> : null}
