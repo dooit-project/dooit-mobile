@@ -221,6 +221,20 @@ export function LoginOverview() {
           계정 만들기
         </Button>
       </View>
+      {authState.status === 'guest' ? (
+        <View style={styles.secondaryAction}>
+          <AppText tone="secondary" variant="label">
+            지금 연결하지 않아도 작성한 내용은 유지돼요.
+          </AppText>
+          <Button
+            disabled={login.isPending}
+            onPress={() => router.replace('/' as Href)}
+            variant="ghost"
+          >
+            게스트로 계속 사용
+          </Button>
+        </View>
+      ) : null}
     </Screen>
   );
 }

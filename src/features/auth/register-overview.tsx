@@ -241,6 +241,20 @@ export function RegisterOverview() {
           로그인하기
         </Button>
       </View>
+      {authState.status === 'guest' ? (
+        <View style={styles.secondaryAction}>
+          <AppText tone="secondary" variant="label">
+            계정 만들기는 나중에 해도 괜찮아요.
+          </AppText>
+          <Button
+            disabled={register.isPending}
+            onPress={() => router.replace('/' as Href)}
+            variant="ghost"
+          >
+            게스트로 계속 사용
+          </Button>
+        </View>
+      ) : null}
     </Screen>
   );
 }
