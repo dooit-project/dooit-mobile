@@ -14,6 +14,7 @@ export { requestLocalNotificationPermission } from './request-notification-permi
 export { shouldPromptForNotificationPermission } from './notification-permission-policy';
 export {
   cancelManagedTaskNotifications,
+  getTaskNotificationFingerprint,
   reconcileTaskNotifications,
   syncUpcomingTaskNotifications,
 } from './sync-task-notifications';

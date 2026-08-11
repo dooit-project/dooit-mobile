@@ -12,6 +12,7 @@ const NOTIFICATION_WINDOW_DAYS = 30;
 type ScheduledTaskNotification = {
   identifier: string;
   source?: unknown;
+  fingerprint?: unknown;
 };
 
 type NotificationReconcileDependencies = {
@@ -47,37 +48,67 @@ export async function reconcileTaskNotifications(
   dependencies: NotificationReconcileDependencies,
   now = new Date(),
 ) {
-  const desired = candidates.filter((candidate) => {
+  const desired = new Map<
+    string,
+    { candidate: TaskNotificationCandidateResponse; fingerprint: string }
+  >();
+  candidates.forEach((candidate) => {
     const delivery = getTaskNotificationDelivery(candidate);
-    return (
+    if (
       !candidate.suppressLocalNotification &&
-      Boolean(delivery && delivery.date.getTime() > now.getTime())
-    );
+      delivery &&
+      delivery.date.getTime() > now.getTime()
+    ) {
+      desired.set(candidate.notificationKey, {
+        candidate,
+        fingerprint: getTaskNotificationFingerprint(candidate),
+      });
+    }
   });
   const scheduled = await dependencies.getScheduled();
   const managed = scheduled.filter((notification) => notification.source === NOTIFICATION_SOURCE);
+  const pending = new Map(desired);
+  const stale = managed.filter((notification) => {
+    const expected = desired.get(notification.identifier);
+    if (expected && notification.fingerprint === expected.fingerprint) {
+      pending.delete(notification.identifier);
+      return false;
+    }
+    return true;
+  });
 
-  await Promise.all(managed.map((notification) => dependencies.cancel(notification.identifier)));
-  await Promise.all(desired.map((candidate) => dependencies.schedule(candidate)));
+  await Promise.all(stale.map((notification) => dependencies.cancel(notification.identifier)));
+  await Promise.all([...pending.values()].map(({ candidate }) => dependencies.schedule(candidate)));
 
-  return { cancelled: managed.length, scheduled: desired.length };
+  return {
+    cancelled: stale.length,
+    scheduled: pending.size,
+    kept: managed.length - stale.length,
+  };
+}
+
+export function getTaskNotificationFingerprint(candidate: TaskNotificationCandidateResponse) {
+  const delivery = getTaskNotificationDelivery(candidate);
+  return delivery
+    ? JSON.stringify([delivery.date.getTime(), delivery.title, delivery.body, candidate.taskId])
+    : '';
 }
 
 export async function syncUpcomingTaskNotifications(now = new Date()) {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
-    return { cancelled: 0, scheduled: 0 };
+    return { cancelled: 0, scheduled: 0, kept: 0 };
   }
 
   const from = toApiLocalDate(now);
   const to = shiftLocalDate(from, NOTIFICATION_WINDOW_DAYS);
   if (!to) {
-    return { cancelled: 0, scheduled: 0 };
+    return { cancelled: 0, scheduled: 0, kept: 0 };
   }
 
   const Notifications = await import('expo-notifications');
   const permissions = await Notifications.getPermissionsAsync();
   if (!permissions.granted) {
-    return { cancelled: 0, scheduled: 0 };
+    return { cancelled: 0, scheduled: 0, kept: 0 };
   }
 
   const candidates = await taskApi.getNotificationCandidates(from, to);
@@ -89,6 +120,7 @@ export async function syncUpcomingTaskNotifications(now = new Date()) {
         return scheduled.map((notification) => ({
           identifier: notification.identifier,
           source: notification.content.data?.source,
+          fingerprint: notification.content.data?.fingerprint,
         }));
       },
       cancel: (identifier) => Notifications.cancelScheduledNotificationAsync(identifier),
@@ -106,6 +138,7 @@ export async function syncUpcomingTaskNotifications(now = new Date()) {
             data: {
               source: NOTIFICATION_SOURCE,
               taskId: candidate.taskId,
+              fingerprint: getTaskNotificationFingerprint(candidate),
             },
           },
           trigger: {
@@ -129,6 +162,7 @@ async function createNativeNotificationCancelDependencies(): Promise<Notificatio
       return scheduled.map((notification) => ({
         identifier: notification.identifier,
         source: notification.content.data?.source,
+        fingerprint: notification.content.data?.fingerprint,
       }));
     },
     cancel: (identifier) => Notifications.cancelScheduledNotificationAsync(identifier),

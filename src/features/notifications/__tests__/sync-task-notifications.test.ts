@@ -2,6 +2,7 @@ import type { TaskNotificationCandidateResponse, TaskResponse } from '@/types';
 
 import {
   cancelManagedTaskNotifications,
+  getTaskNotificationFingerprint,
   reconcileTaskNotifications,
 } from '../sync-task-notifications';
 
@@ -65,7 +66,7 @@ describe('task notification reconciliation', () => {
         },
         new Date('2026-08-11T12:00:00'),
       ),
-    ).resolves.toEqual({ cancelled: 1, scheduled: 1 });
+    ).resolves.toEqual({ cancelled: 1, scheduled: 1, kept: 0 });
 
     expect(cancel).toHaveBeenCalledWith('task:1');
     expect(cancel).not.toHaveBeenCalledWith('other-app');
@@ -88,7 +89,7 @@ describe('task notification reconciliation', () => {
         },
         new Date('2026-08-11T12:00:00'),
       ),
-    ).resolves.toEqual({ cancelled: 0, scheduled: 0 });
+    ).resolves.toEqual({ cancelled: 0, scheduled: 0, kept: 0 });
 
     expect(schedule).not.toHaveBeenCalled();
   });
@@ -114,9 +115,36 @@ describe('task notification reconciliation', () => {
         },
         new Date('2026-08-11T08:00:00'),
       ),
-    ).resolves.toEqual({ cancelled: 0, scheduled: 1 });
+    ).resolves.toEqual({ cancelled: 0, scheduled: 1, kept: 0 });
 
     expect(schedule).toHaveBeenCalledWith(allDayCandidate);
+  });
+
+  it('fingerprint가 같은 기존 예약은 취소하거나 다시 예약하지 않는다', async () => {
+    const currentCandidate = candidate();
+    const cancel = jest.fn().mockResolvedValue(undefined);
+    const schedule = jest.fn().mockResolvedValue(undefined);
+
+    await expect(
+      reconcileTaskNotifications(
+        [currentCandidate],
+        {
+          getScheduled: jest.fn().mockResolvedValue([
+            {
+              identifier: currentCandidate.notificationKey,
+              source: 'todolab-task',
+              fingerprint: getTaskNotificationFingerprint(currentCandidate),
+            },
+          ]),
+          cancel,
+          schedule,
+        },
+        new Date('2026-08-11T12:00:00'),
+      ),
+    ).resolves.toEqual({ cancelled: 0, scheduled: 0, kept: 1 });
+
+    expect(cancel).not.toHaveBeenCalled();
+    expect(schedule).not.toHaveBeenCalled();
   });
 
   it('후보에서 사라진 기존 ToDoLab 예약을 취소한다', async () => {
