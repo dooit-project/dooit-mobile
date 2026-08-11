@@ -6,6 +6,7 @@ import { Platform, StyleSheet } from 'react-native';
 import { IconButton, PageHeader, Screen } from '@/components/ui';
 import {
   NotificationPermissionPrompt,
+  getNotificationPermissionState,
   requestLocalNotificationPermission,
   shouldPromptForNotificationPermission,
   syncUpcomingTaskNotifications,
@@ -31,12 +32,13 @@ export default function NewTaskScreen() {
   const handleSubmit = (request: TaskUpsertRequest) => {
     createTask.mutate(request, {
       onSuccess: (task) => {
-        void initializeAppPreferences()
-          .then(async (preferences) => {
+        void Promise.all([initializeAppPreferences(), getNotificationPermissionState()])
+          .then(async ([preferences, permissionState]) => {
             if (
               shouldPromptForNotificationPermission({
                 platform: Platform.OS,
                 notificationPermissionPrompted: preferences.notificationPermissionPrompted,
+                permissionState,
                 task,
               })
             ) {

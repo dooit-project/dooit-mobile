@@ -1,8 +1,11 @@
 import type { TaskResponse } from '@/types';
 
+import type { NotificationPermissionState } from './notification-settings';
+
 type NotificationPermissionPromptInput = {
   platform: string;
   notificationPermissionPrompted: boolean;
+  permissionState?: NotificationPermissionState;
   task: TaskResponse;
   now?: Date;
 };
@@ -10,6 +13,7 @@ type NotificationPermissionPromptInput = {
 export function shouldPromptForNotificationPermission({
   platform,
   notificationPermissionPrompted,
+  permissionState = 'undetermined',
   task,
   now = new Date(),
 }: NotificationPermissionPromptInput) {
@@ -17,7 +21,12 @@ export function shouldPromptForNotificationPermission({
     return false;
   }
 
-  if (notificationPermissionPrompted || task.status !== 'TODAY' || task.completedAt) {
+  if (
+    notificationPermissionPrompted ||
+    permissionState !== 'undetermined' ||
+    task.status !== 'TODAY' ||
+    task.completedAt
+  ) {
     return false;
   }
 

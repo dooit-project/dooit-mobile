@@ -64,6 +64,21 @@ describe('notification permission policy', () => {
     ).toBe(false);
   });
 
+  it.each(['granted', 'denied', 'unsupported'] as const)(
+    'OS 권한 상태가 %s이면 저장 후 안내를 반복하지 않는다',
+    (permissionState) => {
+      expect(
+        shouldPromptForNotificationPermission({
+          platform: 'android',
+          notificationPermissionPrompted: false,
+          permissionState,
+          task: futureSchedule,
+          now,
+        }),
+      ).toBe(false);
+    },
+  );
+
   it.each([
     ['시간이 없는 Task', { startAt: null }],
     ['Inbox Task', { status: 'INBOX' as const }],
