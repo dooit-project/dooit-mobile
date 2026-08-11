@@ -1,4 +1,10 @@
-import type { AuthenticatedUserResponse, TaskResponse, TokenResponse, UserResponse } from '@/types';
+import type {
+  AuthenticatedUserResponse,
+  TaskNotificationCandidateResponse,
+  TaskResponse,
+  TokenResponse,
+  UserResponse,
+} from '@/types';
 
 import { mockApiClient, restoreGuestUserFromAccessToken } from '../mock-api-client';
 
@@ -99,5 +105,29 @@ describe('Mock auth API', () => {
     expect(login.accessToken).toContain('mock-access-token');
     expect(login.user.accountType).toBe('REGISTERED');
     expect(me.email).toBe('mock-login@example.com');
+  });
+
+  it('시간이 있는 일정을 Today 알림 후보로 제공한다', async () => {
+    await mockApiClient.post<TokenResponse>('/api/v1/auth/guest');
+    const created = await mockApiClient.post<TaskResponse>('/api/v1/tasks', {
+      title: '알림 후보 일정',
+      type: 'SCHEDULE',
+      allDay: false,
+      startAt: '2099-01-02T09:00:00',
+      endAt: null,
+    });
+    const candidates = await mockApiClient.get<TaskNotificationCandidateResponse[]>(
+      '/api/v1/tasks/notification-candidates',
+      { query: { from: '2099-01-01', to: '2099-01-31' } },
+    );
+
+    expect(created.status).toBe('TODAY');
+    expect(candidates).toContainEqual(
+      expect.objectContaining({
+        notificationKey: `task:${created.id}`,
+        scheduledAt: '2099-01-02T09:00:00',
+        suppressLocalNotification: false,
+      }),
+    );
   });
 });

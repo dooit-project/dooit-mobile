@@ -132,6 +132,7 @@ export type TaskNotificationCandidateResponse = {
   scheduledAt: LocalDateTimeString;
   recurrenceSeriesId: number | null;
   occurrenceDate: LocalDateString | null;
+  suppressLocalNotification: boolean;
   task: TaskResponse;
 };
 

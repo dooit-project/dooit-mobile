@@ -11,6 +11,7 @@ import type {
   LocalDateString,
   RegisterRequest,
   TaskRecommendationResponse,
+  TaskNotificationCandidateResponse,
   TaskQueryType,
   TaskResponse,
   TaskSearchDateField,
@@ -751,6 +752,35 @@ export const mockApiClient = {
       return recommendations as T;
     }
 
+    if (path === `${TASKS_PATH}/notification-candidates`) {
+      const from = String(options.query?.from ?? today);
+      const to = String(options.query?.to ?? today);
+      const candidates: TaskNotificationCandidateResponse[] = getVisibleTasks()
+        .filter(
+          (task) =>
+            task.status === 'TODAY' &&
+            !task.completedAt &&
+            Boolean(task.startAt) &&
+            task.recurrenceException !== 'SKIPPED' &&
+            task.startAt!.slice(0, 10) >= from &&
+            task.startAt!.slice(0, 10) <= to,
+        )
+        .map((task) => ({
+          notificationKey:
+            task.recurrenceSeriesId && task.occurrenceDate
+              ? `recurrence:${task.recurrenceSeriesId}:${task.occurrenceDate}`
+              : `task:${task.id}`,
+          taskId: task.id,
+          scheduledAt: task.startAt!,
+          recurrenceSeriesId: task.recurrenceSeriesId ?? null,
+          occurrenceDate: task.occurrenceDate ?? null,
+          suppressLocalNotification: false,
+          task: cloneTask(task),
+        }));
+
+      return candidates as T;
+    }
+
     if (path === `${TASKS_PATH}/done`) {
       const date = getDate(options.query);
 
@@ -863,7 +893,7 @@ export const mockApiClient = {
         endAt: request.endAt ?? null,
         allDay: request.allDay,
         category: request.category ?? null,
-        status: 'INBOX',
+        status: request.type === 'SCHEDULE' ? 'TODAY' : 'INBOX',
       });
 
       nextTaskId += 1;

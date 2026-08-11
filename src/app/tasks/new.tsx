@@ -8,6 +8,7 @@ import {
   NotificationPermissionPrompt,
   requestLocalNotificationPermission,
   shouldPromptForNotificationPermission,
+  syncUpcomingTaskNotifications,
 } from '@/features/notifications';
 import { TaskForm, useCreateTask } from '@/features/tasks';
 import {
@@ -85,7 +86,10 @@ export default function NewTaskScreen() {
           if (!task) return;
 
           try {
-            await requestLocalNotificationPermission();
+            const granted = await requestLocalNotificationPermission();
+            if (granted) {
+              await syncUpcomingTaskNotifications().catch(() => undefined);
+            }
           } finally {
             setNotificationPromptTask(null);
             openTask(task);
