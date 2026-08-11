@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { taskApi } from '@/features/tasks';
+import { taskApi } from '@/features/tasks/task-api';
 import type { TaskNotificationCandidateResponse } from '@/types';
 import { shiftLocalDate, toApiLocalDate } from '@/utils';
 

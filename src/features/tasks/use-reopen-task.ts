@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { requestTaskNotificationSync } from '@/features/notifications';
 import type { LocalDateString, TaskResponse } from '@/types';
 
 import { taskApi } from './task-api';
@@ -18,6 +19,7 @@ export function useReopenTask(date: LocalDateString) {
         ...tasks.filter((task) => task.id !== reopenedTask.id),
         reopenedTask,
       ]);
+      requestTaskNotificationSync();
     },
   });
 }

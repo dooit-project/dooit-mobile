@@ -2,7 +2,10 @@ import type { PropsWithChildren } from 'react';
 import { useEffect, useMemo } from 'react';
 import { AppState, Platform } from 'react-native';
 
-import { syncUpcomingTaskNotifications } from '@/features/notifications';
+import {
+  subscribeTaskNotificationSync,
+  syncUpcomingTaskNotifications,
+} from '@/features/notifications';
 
 type NotificationSync = () => Promise<unknown>;
 
@@ -34,13 +37,19 @@ export function NotificationSyncProvider({ children }: PropsWithChildren) {
     }
 
     void runSync();
+    const unsubscribeTaskChanges = subscribeTaskNotificationSync(() => {
+      void runSync();
+    });
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
         void runSync();
       }
     });
 
-    return () => subscription.remove();
+    return () => {
+      unsubscribeTaskChanges();
+      subscription.remove();
+    };
   }, [runSync]);
 
   return children;

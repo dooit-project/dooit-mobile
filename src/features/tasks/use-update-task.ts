@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { requestTaskNotificationSync } from '@/features/notifications';
 import type { RecurrenceEditScope, TaskResponse, TaskUpsertRequest } from '@/types';
 
 import { taskApi } from './task-api';
@@ -20,6 +21,7 @@ export function useUpdateTask() {
     onSuccess: (updatedTask) => {
       queryClient.setQueryData<TaskResponse>(taskQueryKeys.detail(updatedTask.id), updatedTask);
       void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
+      requestTaskNotificationSync();
     },
   });
 }

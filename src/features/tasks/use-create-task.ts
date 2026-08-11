@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { requestTaskNotificationSync } from '@/features/notifications';
 import type { TaskUpsertRequest } from '@/types';
 
 import { taskApi } from './task-api';
@@ -14,6 +15,7 @@ export function useCreateTask() {
     onSuccess: (createdTask) => {
       cacheCreatedTask(queryClient, createdTask);
       void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
+      requestTaskNotificationSync();
     },
   });
 }

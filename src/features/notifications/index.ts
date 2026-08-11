@@ -5,3 +5,7 @@ export {
   reconcileTaskNotifications,
   syncUpcomingTaskNotifications,
 } from './sync-task-notifications';
+export {
+  requestTaskNotificationSync,
+  subscribeTaskNotificationSync,
+} from './task-notification-sync-events';

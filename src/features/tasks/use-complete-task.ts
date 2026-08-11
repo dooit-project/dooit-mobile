@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { requestTaskNotificationSync } from '@/features/notifications';
 import type { LocalDateString, TaskResponse } from '@/types';
 
 import { taskApi } from './task-api';
@@ -21,6 +22,7 @@ export function useCompleteTask(date: LocalDateString) {
         completedTask,
         ...tasks.filter((task) => task.id !== completedTask.id),
       ]);
+      requestTaskNotificationSync();
     },
   });
 }

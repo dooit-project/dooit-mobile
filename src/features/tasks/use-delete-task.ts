@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { requestTaskNotificationSync } from '@/features/notifications';
 import type { RecurrenceEditScope, TaskResponse } from '@/types';
 
 import { taskApi } from './task-api';
@@ -22,6 +23,7 @@ export function useDeleteTask() {
         tasks.filter((task) => task.id !== taskId),
       );
       void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
+      requestTaskNotificationSync();
     },
   });
 }
