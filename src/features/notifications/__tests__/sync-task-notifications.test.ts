@@ -93,6 +93,32 @@ describe('task notification reconciliation', () => {
     expect(schedule).not.toHaveBeenCalled();
   });
 
+  it('오늘 종일 일정은 자정이 지났어도 오전 9시 전이면 예약한다', async () => {
+    const schedule = jest.fn().mockResolvedValue(undefined);
+    const allDayCandidate = candidate({
+      scheduledAt: '2026-08-11T00:00:00',
+      task: {
+        ...task,
+        allDay: true,
+        startAt: '2026-08-11T00:00:00',
+      },
+    });
+
+    await expect(
+      reconcileTaskNotifications(
+        [allDayCandidate],
+        {
+          getScheduled: jest.fn().mockResolvedValue([]),
+          cancel: jest.fn().mockResolvedValue(undefined),
+          schedule,
+        },
+        new Date('2026-08-11T08:00:00'),
+      ),
+    ).resolves.toEqual({ cancelled: 0, scheduled: 1 });
+
+    expect(schedule).toHaveBeenCalledWith(allDayCandidate);
+  });
+
   it('후보에서 사라진 기존 ToDoLab 예약을 취소한다', async () => {
     const cancel = jest.fn().mockResolvedValue(undefined);
 

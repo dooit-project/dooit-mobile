@@ -4,6 +4,8 @@ import { taskApi } from '@/features/tasks/task-api';
 import type { TaskNotificationCandidateResponse } from '@/types';
 import { shiftLocalDate, toApiLocalDate } from '@/utils';
 
+import { getTaskNotificationDelivery } from './task-notification-delivery';
+
 const NOTIFICATION_SOURCE = 'todolab-task';
 const NOTIFICATION_WINDOW_DAYS = 30;
 
@@ -45,11 +47,13 @@ export async function reconcileTaskNotifications(
   dependencies: NotificationReconcileDependencies,
   now = new Date(),
 ) {
-  const desired = candidates.filter(
-    (candidate) =>
+  const desired = candidates.filter((candidate) => {
+    const delivery = getTaskNotificationDelivery(candidate);
+    return (
       !candidate.suppressLocalNotification &&
-      new Date(candidate.scheduledAt).getTime() > now.getTime(),
-  );
+      Boolean(delivery && delivery.date.getTime() > now.getTime())
+    );
+  });
   const scheduled = await dependencies.getScheduled();
   const managed = scheduled.filter((notification) => notification.source === NOTIFICATION_SOURCE);
 
@@ -89,11 +93,16 @@ export async function syncUpcomingTaskNotifications(now = new Date()) {
       },
       cancel: (identifier) => Notifications.cancelScheduledNotificationAsync(identifier),
       schedule: async (candidate) => {
+        const delivery = getTaskNotificationDelivery(candidate);
+        if (!delivery) {
+          return;
+        }
+
         await Notifications.scheduleNotificationAsync({
           identifier: candidate.notificationKey,
           content: {
-            title: candidate.task.title,
-            body: '시작할 시간이에요.',
+            title: delivery.title,
+            body: delivery.body,
             data: {
               source: NOTIFICATION_SOURCE,
               taskId: candidate.taskId,
@@ -101,7 +110,7 @@ export async function syncUpcomingTaskNotifications(now = new Date()) {
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: new Date(candidate.scheduledAt),
+            date: delivery.date,
             channelId: Platform.OS === 'android' ? 'tasks' : undefined,
           },
         });

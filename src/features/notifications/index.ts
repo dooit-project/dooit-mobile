@@ -21,3 +21,5 @@ export {
   requestTaskNotificationSync,
   subscribeTaskNotificationSync,
 } from './task-notification-sync-events';
+export { getTaskNotificationDelivery } from './task-notification-delivery';
+export type { TaskNotificationDelivery } from './task-notification-delivery';
