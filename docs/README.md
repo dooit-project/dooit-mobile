@@ -13,8 +13,11 @@
 | [`qa`](./qa/RELEASE_CHECKLIST.md)                             | smoke test, release, 접근성, 성능, 플랫폼 품질     | `SMOKE_TEST_LOG.md`, `RELEASE_CHECKLIST.md`                                           |
 | [`marketing`](./marketing/APP_STORE_ASSETS.md)                | 앱 마켓, 소개 이미지, 문구 산출물                  | `APP_STORE_ASSETS.md`                                                                 |
 | [`screenshots`](./screenshots/.gitkeep)                       | 실제 앱 화면 캡쳐                                  | 화면별 PNG                                                                            |
+| [`audits`](./audits/first-use-2026-08-11/README.md)           | 최신 사용자 흐름의 화면 근거                       | 최초 사용 Web 반응형 점검                                                             |
 
 현재 `screenshots/`에는 mock Web 390×844 기준 실제 화면 PNG가 있다. 마켓용 편집 이미지는 `marketing/`에 초안으로 생성되어 있으며, 최종 제출 전에는 [`marketing/APP_STORE_ASSETS.md`](./marketing/APP_STORE_ASSETS.md)의 규격에 맞춰 다시 export한다.
+
+`audits/`에는 현재 판단에 필요한 최신 근거만 둔다. 수정 전후 과정이 다른 문서에 반영됐거나 현재 UI로 대체된 audit 묶음은 Git 이력으로만 보관한다.
 
 ## 관리 기준
 
@@ -23,3 +26,5 @@
 - 백엔드 구현이 필요한 요구사항은 모바일 저장소에서는 `api/`나 `integration/`에 계약만 기록한다.
 - 실제 검증 결과와 출시 전 체크리스트는 `qa/`에 둔다.
 - 화면 캡쳐와 마켓 이미지는 `screenshots/`, `marketing/`에 분리한다.
+- 로드맵에는 완료 작업의 세부 연혁을 누적하지 않고 현재 기준선과 미완료 항목만 둔다.
+- 오래된 실패·audit 기록은 현재 결정에 필요한 요약만 남기고 원본은 Git 이력에서 확인한다.

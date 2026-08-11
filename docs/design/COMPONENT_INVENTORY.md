@@ -95,7 +95,15 @@ Calendar 기준:
 | `SearchOverview`    | `src/features/search/search-overview.tsx`       | 통합 검색과 filter                        | real API enum 계약과 mock 결과를 함께 유지 |
 | `CompletedOverview` | `src/features/completed/completed-overview.tsx` | 완료 기록                                 | 통계보다 완료 목록을 우선                  |
 | `DdayOverview`      | `src/features/dday/dday-overview.tsx`           | D-Day 목표 관리                           | 목표와 연결 Task의 위계 분리               |
-| `SettingsOverview`  | `src/features/settings/settings-overview.tsx`   | 설정 placeholder                          | 실제 설정 기능 추가 전 과한 메뉴 금지      |
+| `SettingsOverview`  | `src/features/settings/settings-overview.tsx`   | API·가이드·알림 설정 조합                 | 상태와 action을 section별로 분리           |
+
+## 최초 사용과 알림
+
+| 컴포넌트                       | 위치                                                            | 역할                                | 주의점                                    |
+| ------------------------------ | --------------------------------------------------------------- | ----------------------------------- | ----------------------------------------- |
+| `FirstUseOverview`             | `src/features/auth/first-use-overview.tsx`                      | 게스트·계정·기능 안내 시작 선택     | 데이터 화면보다 먼저 표시, 설명 강제 금지 |
+| `NotificationPermissionPrompt` | `src/features/notifications/notification-permission-prompt.tsx` | 첫 미래 일정 저장 뒤 권한 사전 안내 | 일정 저장은 권한 선택과 무관하게 완료     |
+| `NotificationSettingsCard`     | `src/features/notifications/notification-settings-card.tsx`     | 권한 상태·기기 설정·수동 동기화     | 거부 상태에서 OS 권한 요청 반복 금지      |
 
 ## 새 화면을 만들 때 선택 순서
 

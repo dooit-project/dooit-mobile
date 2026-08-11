@@ -1,6 +1,6 @@
 # 플랫폼 품질 점검표
 
-Phase 7에서 Android, iOS, Web 출시 전 확인할 네이티브 품질 기준이다. 새 의존성이나 빌드 설정을 추가하기 전에 현재 앱 설정과 실제 화면 동작을 이 문서 기준으로 확인한다.
+Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존성이나 빌드 설정을 추가하기 전에 현재 앱 설정과 실제 화면 동작을 이 문서 기준으로 확인한다.
 
 ## 앱 아이콘과 splash
 
@@ -142,7 +142,7 @@ Phase 7에서 Android, iOS, Web 출시 전 확인할 네이티브 품질 기준�
 - 앱 표시 이름
 - scheme 유지 여부: `todolab`
 
-식별자 확정 전까지는 실제 store 제출용 build를 만들지 않는다.
+식별자는 확정됐으며 store 제출 전 versionCode·buildNumber와 배포 범위를 결정한다.
 
 현재 상태:
 
@@ -171,7 +171,7 @@ Phase 7에서 Android, iOS, Web 출시 전 확인할 네이티브 품질 기준�
 }
 ```
 
-`eas.json`을 추가한다면 최소 profile은 다음 결정을 포함해야 한다.
+현재 `eas.json` profile을 변경할 때는 다음 결정을 함께 확인한다.
 
 - development build 필요 여부
 - preview/internal distribution 사용 여부

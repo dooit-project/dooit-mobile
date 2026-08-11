@@ -19,12 +19,17 @@ ToDoLab의 일정 관리 경험을 Android, iOS, Web에서 제공하는 크로�
 
 ```text
 src/
-└── app/
-    ├── _layout.tsx  # 애플리케이션 공통 레이아웃
-    └── index.tsx    # 시작 화면
+├── app/         # Expo Router 화면과 route layout
+├── components/  # 공통 UI
+├── features/    # auth, task, calendar, notification 등 도메인 기능
+├── providers/   # query, 인증 bootstrap, 세션·알림 lifecycle
+├── services/    # API client, token, preference 저장
+├── theme/       # token, theme, responsive 기준
+├── types/       # API·도메인 타입
+└── utils/       # 날짜·일정 공통 로직
 ```
 
-기능이 확장되면 화면, 도메인, API 계층의 책임이 섞이지 않도록 `features/`, `services/`, `components/` 단위로 분리합니다.
+화면, 도메인, API 계층의 책임이 섞이지 않도록 route는 조합에 집중하고 실제 기능은 `features/`, 외부 상태는 `services/`와 `providers/`에 둡니다.
 
 ## 제품 및 디자인 문서
 

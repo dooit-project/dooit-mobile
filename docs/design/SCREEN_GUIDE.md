@@ -8,30 +8,31 @@ ToDoLab Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서�
 
 - 화면 설명과 캡쳐 기준은 최신 UI 구조 기준으로 정리되어 있다.
 - mock Web 390×844 viewport 기준 실제 PNG 캡쳐를 생성했다.
-- Product Design audit은 2026-08-02 기준 route-level 주요 화면을 한 번씩 캡쳐해 점검했다. 상태별 audit은 아직 남아 있으며, 특히 입력 form 확장, error/loading/empty, native accessibility는 별도 확인한다.
+- 최초 사용 흐름은 2026-08-11 Web 320×844·390×844·430×932에서 별도 점검했다.
+- `docs/screenshots`는 화면 구조 참고용이며 실제 release 판정은 최신 APK와 실기기 QA를 따른다.
 - 화면 구조가 바뀌면 아래 파일명을 유지한 채 다시 캡쳐한다.
 
 ## 화면 점검 범위
 
 현재 앱 route 기준으로 확인 범위를 아래처럼 관리한다. “문서화”는 화면 가이드 또는 screenshot이 있는 상태를 뜻하고, “Product Design audit”은 실제 캡쳐 기반으로 디자인 피드백을 받고 수정 후 재확인한 상태를 뜻한다.
 
-| Route             | 화면            | 문서화 | Product Design audit | 남은 확인                                     |
-| ----------------- | --------------- | ------ | -------------------- | --------------------------------------------- |
-| `/`               | Today           | 완료   | 완료                 | native font scale, safe area, screen reader   |
-| `/calendar`       | Calendar        | 완료   | 완료                 | native font scale, 일정 label overflow        |
-| `/profile`        | Profile         | 완료   | 완료                 | native bottom tab overlap, screen reader      |
-| `/today/review`   | 정리할 항목     | 완료   | 완료                 | 상태별 empty/success/error                    |
-| `/search`         | Search          | 완료   | 완료                 | 상세 필터 펼침, 빈 상태, pagination           |
-| `/completed`      | Completed       | 완료   | 완료                 | 긴 제목, 다시 열기 affordance native 확인     |
-| `/dday`           | D-Day           | 완료   | 완료                 | 목표 메뉴, 생성 form, 삭제 확인, 연결 Task    |
-| `/tasks/[taskId]` | Task 상세       | 완료   | 완료                 | 반복 occurrence, scope action, 긴 상세 내용   |
-| `/tasks/new`      | Task 작성       | 완료   | 완료                 | 반복/일정 입력 form 확장 상태                 |
-| `/login`          | 로그인          | 완료   | 완료                 | native keyboard, screen reader, brand asset   |
-| `/register`       | 계정 만들기     | 완료   | 완료                 | native keyboard, password reset 진입          |
-| `/password-reset` | 비밀번호 재설정 | 완료   | 문서 기준            | API 연결 후 form/메일 발송/토큰 검증          |
-| `/settings`       | 설정            | 완료   | 완료                 | real token 상태, 로그아웃/계정 설정 확장 상태 |
+| Route             | 화면            | 문서화 | Product Design audit | 남은 확인                                    |
+| ----------------- | --------------- | ------ | -------------------- | -------------------------------------------- |
+| `/`               | Today           | 완료   | 완료                 | native font scale, safe area, screen reader  |
+| `/calendar`       | Calendar        | 완료   | 완료                 | native font scale, 일정 label overflow       |
+| `/profile`        | Profile         | 완료   | 완료                 | native bottom tab overlap, screen reader     |
+| `/today/review`   | 정리할 항목     | 완료   | 완료                 | 상태별 empty/success/error                   |
+| `/search`         | Search          | 완료   | 완료                 | real pagination, native keyboard             |
+| `/completed`      | Completed       | 완료   | 완료                 | 긴 제목, 다시 열기 affordance native 확인    |
+| `/dday`           | D-Day           | 완료   | 완료                 | real API, 긴 목표 제목, screen reader        |
+| `/tasks/[taskId]` | Task 상세       | 완료   | 완료                 | 반복 scope action, 긴 상세 내용              |
+| `/tasks/new`      | Task 작성       | 완료   | 완료                 | native keyboard, 알림 권한 안내              |
+| `/login`          | 로그인          | 완료   | 완료                 | native keyboard, screen reader, brand asset  |
+| `/register`       | 계정 만들기     | 완료   | 완료                 | native keyboard, password reset 진입         |
+| `/password-reset` | 비밀번호 재설정 | 완료   | 문서 기준            | 백엔드 메일 발송·token API 구현 후 real 검증 |
+| `/settings`       | 설정            | 완료   | 완료                 | native 알림 권한·기기 설정 복귀              |
 
-2026-08-02 상태별 Product Design audit에서 Search 상세 필터와 빈 상태, Task 작성 일정/추가 정보 확장, D-Day 생성/menu/삭제/연결 Task 상태를 추가 확인했다. 남은 것은 pagination, auth validation, custom recurrence, native keyboard와 접근성 상태다.
+남은 공통 확인은 최신 native 화면의 keyboard, font scale, screen reader, 실제 API 오류·빈 상태와 알림 권한 상태다.
 
 ## 캡쳐 파일 위치
 

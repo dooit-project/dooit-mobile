@@ -70,14 +70,17 @@ type ApiEnvelope<T> = {
 - Web은 브라우저 제약상 `localStorage` fallback을 사용하되, 운영 Web에서는 XSS 방지와 배포 CSP를 별도 점검한다.
 - 앱 시작 시 저장된 token을 먼저 메모리로 복원한 뒤 API 요청을 보낸다.
 - token은 로그, 오류 메시지, smoke test 출력에 남기지 않는다.
-- refresh token은 현재 도입하지 않으며, access token 만료 시 다시 로그인한다.
+- 정식 계정 refresh token은 현재 도입하지 않으며 access token 만료 시 다시 로그인한다.
+- 게스트는 만료 전 `guest/refresh`로 같은 guest user id의 access token을 갱신한다.
 
-| Method | Path                    | 용도                         |
-| ------ | ----------------------- | ---------------------------- |
-| `POST` | `/api/v1/auth/guest`    | 게스트 계정과 token 발급     |
-| `POST` | `/api/v1/auth/register` | 회원가입                     |
-| `POST` | `/api/v1/auth/login`    | 로그인, token 저장           |
-| `GET`  | `/api/v1/auth/me`       | 현재 사용자와 계정 유형 확인 |
+| Method | Path                            | 용도                                  |
+| ------ | ------------------------------- | ------------------------------------- |
+| `POST` | `/api/v1/auth/guest`            | 게스트 계정과 token 발급              |
+| `POST` | `/api/v1/auth/guest/refresh`    | 같은 게스트 ID의 token 갱신           |
+| `POST` | `/api/v1/auth/register`         | 회원가입·게스트 승격                  |
+| `POST` | `/api/v1/auth/login`            | 로그인·게스트 데이터 병합, token 저장 |
+| `GET`  | `/api/v1/auth/me`               | 현재 사용자와 계정 유형 확인          |
+| `POST` | `/api/v1/auth/password-reset/*` | 비밀번호 재설정 계약, 배포 여부 확인  |
 
 `POST /api/v1/auth/login` 응답은 다음 필드를 포함해야 한다.
 
@@ -85,6 +88,7 @@ type ApiEnvelope<T> = {
 - `accessToken`
 - `expiresAt`
 - `user`
+- 게스트 데이터 병합이 있으면 `mergeResult`, 일반 로그인은 `mergeResult: null`
 
 게스트 발급과 `/auth/me` 기본 계약은 다음 명령으로 확인한다. token은 출력하지 않지만 실행할 때마다 만료 정리 대상 게스트 계정 하나가 생성된다.
 
@@ -128,7 +132,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 - `todayOrder`
 - `ddayGoalId`, `ddayGoalTitle`, `ddayGoalTargetDate`, `ddayDaysLeft`
 - 반복 일정 필드: `recurrenceSeriesId`, nested `recurrence`, `occurrenceDate`, `recurrenceException`
-- 알림 후보 필드: `notificationKey`, `scheduledAt`, `recurrenceSeriesId`, `occurrenceDate`, `task`
+- 알림 후보 응답 필드: `notificationKey`, `scheduledAt`, `recurrenceSeriesId`, `occurrenceDate`, `suppressLocalNotification`, `task`
 
 ## 5. 현재 모바일이 호출하는 D-Day API
 
@@ -172,11 +176,15 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
    - 목표 상세 조회와 목표 Task 생성에서 500이 발생하지 않는지
    - Task와 D-Day 연결/해제가 양쪽 화면에 일관되게 반영되는지
 7. 반복 일정
-   - 백엔드 `RECURRENCE_MODEL.md` 기준으로 반복 생성 계약은 추가된 것으로 보이나, 백엔드 상태 문서 정합성과 real smoke가 끝날 때까지 작성·수정 저장 기능은 제한한다.
+   - 반복 생성, Today·Calendar materialize, occurrence 완료·미룸·건너뛰기, scope 수정·삭제가 현재 계약과 일치하는지 확인한다.
 8. 알림
-   - 백엔드 `NOTIFICATION_CONTRACT.md` 기준으로 서버 push API는 아직 없고, 모바일 로컬 알림은 가까운 미래 occurrence에 대한 best-effort 예약으로만 다룬다.
+   - `notification-candidates`가 완료·삭제·건너뜀을 제외하고 `notificationKey`, `scheduledAt`, `suppressLocalNotification`을 내려주는지 확인한다.
+   - 모바일은 향후 30일 후보 중 가까운 50개를 로컬에 예약하며 실제 OS 동작은 native smoke에서 확인한다.
 9. 중복 요청 방지
    - 빠른 기록, 일정 생성, 반복 occurrence 생성처럼 사용자가 여러 번 누를 수 있는 요청에 idempotency 또는 client request id 정책이 필요한지 결정한다.
+10. 비밀번호 재설정
+
+- request, verify, confirm endpoint와 메일 deep link가 배포됐는지 확인한다. 미구현 환경에서는 UI 계약만 검증하고 실제 복구가 가능하다고 판정하지 않는다.
 
 ## 7. real 모드 smoke test 순서
 
