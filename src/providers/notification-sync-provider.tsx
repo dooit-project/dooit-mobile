@@ -1,8 +1,11 @@
 import type { PropsWithChildren } from 'react';
+import type { Href } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { AppState, Platform } from 'react-native';
 
 import {
+  initializeTaskNotificationResponses,
   subscribeTaskNotificationSync,
   syncUpcomingTaskNotifications,
 } from '@/features/notifications';
@@ -29,6 +32,7 @@ export function createNotificationSyncRunner(sync: NotificationSync) {
 }
 
 export function NotificationSyncProvider({ children }: PropsWithChildren) {
+  const router = useRouter();
   const runSync = useMemo(() => createNotificationSyncRunner(syncUpcomingTaskNotifications), []);
 
   useEffect(() => {
@@ -51,6 +55,32 @@ export function NotificationSyncProvider({ children }: PropsWithChildren) {
       subscription.remove();
     };
   }, [runSync]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    let disposed = false;
+    let cleanup: (() => void) | undefined;
+
+    void initializeTaskNotificationResponses((taskId) => {
+      router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } } as Href);
+    })
+      .then((nextCleanup) => {
+        if (disposed) {
+          nextCleanup();
+        } else {
+          cleanup = nextCleanup;
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      disposed = true;
+      cleanup?.();
+    };
+  }, [router]);
 
   return children;
 }
