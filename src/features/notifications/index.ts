@@ -15,6 +15,7 @@ export { shouldPromptForNotificationPermission } from './notification-permission
 export {
   cancelManagedTaskNotifications,
   getTaskNotificationFingerprint,
+  MAX_SCHEDULED_TASK_NOTIFICATIONS,
   reconcileTaskNotifications,
   syncUpcomingTaskNotifications,
 } from './sync-task-notifications';

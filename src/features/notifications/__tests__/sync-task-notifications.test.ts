@@ -3,6 +3,7 @@ import type { TaskNotificationCandidateResponse, TaskResponse } from '@/types';
 import {
   cancelManagedTaskNotifications,
   getTaskNotificationFingerprint,
+  MAX_SCHEDULED_TASK_NOTIFICATIONS,
   reconcileTaskNotifications,
 } from '../sync-task-notifications';
 
@@ -145,6 +146,45 @@ describe('task notification reconciliation', () => {
 
     expect(cancel).not.toHaveBeenCalled();
     expect(schedule).not.toHaveBeenCalled();
+  });
+
+  it('전달 시각이 가까운 후보부터 최대 예약 수만 유지한다', async () => {
+    const schedule = jest.fn().mockResolvedValue(undefined);
+    const candidates = Array.from({ length: MAX_SCHEDULED_TASK_NOTIFICATIONS + 2 }, (_, index) => {
+      const date = new Date('2026-08-12T09:00:00');
+      date.setMinutes(date.getMinutes() + index);
+      const scheduledAt = date
+        .toISOString()
+        .slice(0, 19) as TaskNotificationCandidateResponse['scheduledAt'];
+      return candidate({
+        notificationKey: `task:${index + 1}`,
+        taskId: index + 1,
+        scheduledAt,
+        task: { ...task, id: index + 1, startAt: scheduledAt },
+      });
+    }).reverse();
+
+    await expect(
+      reconcileTaskNotifications(
+        candidates,
+        {
+          getScheduled: jest.fn().mockResolvedValue([]),
+          cancel: jest.fn().mockResolvedValue(undefined),
+          schedule,
+        },
+        new Date('2026-08-11T12:00:00'),
+      ),
+    ).resolves.toEqual({
+      cancelled: 0,
+      scheduled: MAX_SCHEDULED_TASK_NOTIFICATIONS,
+      kept: 0,
+    });
+
+    expect(schedule).toHaveBeenCalledTimes(MAX_SCHEDULED_TASK_NOTIFICATIONS);
+    expect(schedule.mock.calls[0]?.[0].notificationKey).toBe('task:1');
+    expect(schedule).not.toHaveBeenCalledWith(
+      expect.objectContaining({ notificationKey: `task:${MAX_SCHEDULED_TASK_NOTIFICATIONS + 1}` }),
+    );
   });
 
   it('후보에서 사라진 기존 ToDoLab 예약을 취소한다', async () => {

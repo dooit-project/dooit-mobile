@@ -8,6 +8,7 @@ import { getTaskNotificationDelivery } from './task-notification-delivery';
 
 const NOTIFICATION_SOURCE = 'todolab-task';
 const NOTIFICATION_WINDOW_DAYS = 30;
+export const MAX_SCHEDULED_TASK_NOTIFICATIONS = 50;
 
 type ScheduledTaskNotification = {
   identifier: string;
@@ -52,19 +53,25 @@ export async function reconcileTaskNotifications(
     string,
     { candidate: TaskNotificationCandidateResponse; fingerprint: string }
   >();
-  candidates.forEach((candidate) => {
-    const delivery = getTaskNotificationDelivery(candidate);
-    if (
-      !candidate.suppressLocalNotification &&
-      delivery &&
-      delivery.date.getTime() > now.getTime()
-    ) {
+  candidates
+    .map((candidate) => ({ candidate, delivery: getTaskNotificationDelivery(candidate) }))
+    .filter(
+      ({ candidate, delivery }) =>
+        !candidate.suppressLocalNotification &&
+        Boolean(delivery && delivery.date.getTime() > now.getTime()),
+    )
+    .sort(
+      (left, right) =>
+        left.delivery!.date.getTime() - right.delivery!.date.getTime() ||
+        left.candidate.notificationKey.localeCompare(right.candidate.notificationKey),
+    )
+    .slice(0, MAX_SCHEDULED_TASK_NOTIFICATIONS)
+    .forEach(({ candidate }) => {
       desired.set(candidate.notificationKey, {
         candidate,
         fingerprint: getTaskNotificationFingerprint(candidate),
       });
-    }
-  });
+    });
   const scheduled = await dependencies.getScheduled();
   const managed = scheduled.filter((notification) => notification.source === NOTIFICATION_SOURCE);
   const pending = new Map(desired);
