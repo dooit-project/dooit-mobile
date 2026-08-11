@@ -1,4 +1,10 @@
 export { NotificationPermissionPrompt } from './notification-permission-prompt';
+export { NotificationSettingsCard } from './notification-settings-card';
+export {
+  getNotificationPermissionState,
+  openNotificationSettings,
+  resolveNotificationPermissionState,
+} from './notification-settings';
 export {
   configureTaskNotificationResponses,
   getTaskIdFromNotificationData,

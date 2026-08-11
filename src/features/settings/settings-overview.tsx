@@ -13,6 +13,7 @@ import {
   Screen,
 } from '@/components/ui';
 import { env } from '@/config';
+import { NotificationSettingsCard } from '@/features/notifications';
 import { getAccessToken, subscribeAccessToken } from '@/services/api';
 import { resetFeatureTips } from '@/services/preferences';
 import { radii, spacing, useAppTheme } from '@/theme';
@@ -84,6 +85,8 @@ export function SettingsOverview() {
           <SettingsRow label="Access Token" value={hasAccessToken ? '저장됨' : '없음'} />
         </View>
       </Card>
+
+      <NotificationSettingsCard />
 
       <Card variant="outlined" style={styles.section}>
         <View style={styles.sectionHeader}>
