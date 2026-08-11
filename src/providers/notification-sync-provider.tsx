@@ -5,10 +5,12 @@ import { useEffect, useMemo } from 'react';
 import { AppState, Platform } from 'react-native';
 
 import {
+  cancelManagedTaskNotifications,
   initializeTaskNotificationResponses,
   subscribeTaskNotificationSync,
   syncUpcomingTaskNotifications,
 } from '@/features/notifications';
+import { getAccessToken, subscribeAccessToken } from '@/services/api';
 
 type NotificationSync = () => Promise<unknown>;
 
@@ -54,6 +56,34 @@ export function NotificationSyncProvider({ children }: PropsWithChildren) {
       unsubscribeTaskChanges();
       subscription.remove();
     };
+  }, [runSync]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    let currentToken = getAccessToken();
+    return subscribeAccessToken((nextToken) => {
+      if (nextToken === currentToken) {
+        return;
+      }
+
+      const hadPreviousAccount = Boolean(currentToken);
+      currentToken = nextToken;
+
+      if (hadPreviousAccount) {
+        void cancelManagedTaskNotifications()
+          .catch(() => undefined)
+          .then(() => {
+            if (nextToken) {
+              return runSync();
+            }
+          });
+      } else if (nextToken) {
+        void runSync();
+      }
+    });
   }, [runSync]);
 
   useEffect(() => {

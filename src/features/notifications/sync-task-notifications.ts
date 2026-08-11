@@ -18,6 +18,28 @@ type NotificationReconcileDependencies = {
   schedule: (candidate: TaskNotificationCandidateResponse) => Promise<void>;
 };
 
+type NotificationCancelDependencies = {
+  getScheduled: () => Promise<ScheduledTaskNotification[]>;
+  cancel: (identifier: string) => Promise<void>;
+};
+
+export async function cancelManagedTaskNotifications(
+  dependencies?: NotificationCancelDependencies,
+) {
+  if (!dependencies && Platform.OS !== 'android' && Platform.OS !== 'ios') {
+    return 0;
+  }
+
+  const resolvedDependencies = dependencies ?? (await createNativeNotificationCancelDependencies());
+  const scheduled = await resolvedDependencies.getScheduled();
+  const managed = scheduled.filter((notification) => notification.source === NOTIFICATION_SOURCE);
+
+  await Promise.all(
+    managed.map((notification) => resolvedDependencies.cancel(notification.identifier)),
+  );
+  return managed.length;
+}
+
 export async function reconcileTaskNotifications(
   candidates: TaskNotificationCandidateResponse[],
   dependencies: NotificationReconcileDependencies,
@@ -87,4 +109,19 @@ export async function syncUpcomingTaskNotifications(now = new Date()) {
     },
     now,
   );
+}
+
+async function createNativeNotificationCancelDependencies(): Promise<NotificationCancelDependencies> {
+  const Notifications = await import('expo-notifications');
+
+  return {
+    getScheduled: async () => {
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      return scheduled.map((notification) => ({
+        identifier: notification.identifier,
+        source: notification.content.data?.source,
+      }));
+    },
+    cancel: (identifier) => Notifications.cancelScheduledNotificationAsync(identifier),
+  };
 }

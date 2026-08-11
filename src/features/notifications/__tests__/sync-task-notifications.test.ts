@@ -1,6 +1,9 @@
 import type { TaskNotificationCandidateResponse, TaskResponse } from '@/types';
 
-import { reconcileTaskNotifications } from '../sync-task-notifications';
+import {
+  cancelManagedTaskNotifications,
+  reconcileTaskNotifications,
+} from '../sync-task-notifications';
 
 const task: TaskResponse = {
   id: 1,
@@ -102,5 +105,22 @@ describe('task notification reconciliation', () => {
     });
 
     expect(cancel).toHaveBeenCalledWith('recurrence:3:2026-08-12');
+  });
+
+  it('로그아웃 시 다른 source 예약은 유지하고 ToDoLab 예약만 제거한다', async () => {
+    const cancel = jest.fn().mockResolvedValue(undefined);
+
+    await expect(
+      cancelManagedTaskNotifications({
+        getScheduled: jest.fn().mockResolvedValue([
+          { identifier: 'task:1', source: 'todolab-task' },
+          { identifier: 'other', source: 'other-app' },
+        ]),
+        cancel,
+      }),
+    ).resolves.toBe(1);
+
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(cancel).toHaveBeenCalledWith('task:1');
   });
 });
