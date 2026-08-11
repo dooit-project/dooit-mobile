@@ -13,7 +13,7 @@
 | [`qa`](./qa/RELEASE_CHECKLIST.md)                             | smoke test, release, 접근성, 성능, 플랫폼 품질     | `SMOKE_TEST_LOG.md`, `RELEASE_CHECKLIST.md`                                           |
 | [`marketing`](./marketing/APP_STORE_ASSETS.md)                | 앱 마켓, 소개 이미지, 문구 산출물                  | `APP_STORE_ASSETS.md`                                                                 |
 | [`screenshots`](./screenshots/.gitkeep)                       | 실제 앱 화면 캡쳐                                  | 화면별 PNG                                                                            |
-| [`audits`](./audits/first-use-2026-08-11/README.md)           | 최신 사용자 흐름의 화면 근거                       | 최초 사용 Web 반응형 점검                                                             |
+| [`audits`](./audits/product-design-2026-08-12/README.md)      | 최신 사용자 흐름의 화면 근거                       | 전체 UI/UX 감사, 최초 사용 Web 반응형 점검                                            |
 
 현재 `screenshots/`에는 mock Web 390×844 기준 실제 화면 PNG가 있다. 마켓용 편집 이미지는 `marketing/`에 초안으로 생성되어 있으며, 최종 제출 전에는 [`marketing/APP_STORE_ASSETS.md`](./marketing/APP_STORE_ASSETS.md)의 규격에 맞춰 다시 export한다.
 

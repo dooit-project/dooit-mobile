@@ -52,6 +52,12 @@ Last updated: 2026-08-12
 
 ## 앞으로 할 일
 
+### P0. 사용자 화면의 개발 정보 제거
+
+- [ ] 비밀번호 재설정 API가 준비되기 전에는 로그인 화면의 진입점을 숨기거나 실제 지원 행동만 제공하고, `백엔드 계약`과 API 목록을 사용자 화면에서 제거한다.
+- [ ] Settings의 API mode, API URL, Access Token 상태는 development build에서만 보이는 진단 영역으로 분리한다.
+- [ ] 전체 UI/UX 감사의 나머지 P1 개선 항목은 [`product-design-2026-08-12`](../audits/product-design-2026-08-12/README.md) 기준으로 순서대로 반영한다.
+
 ### P0. 최신 Android APK와 실제 사용 검증
 
 - [ ] 현재 `main`과 `expo-notifications` 네이티브 모듈이 포함된 preview APK를 새로 빌드한다.
