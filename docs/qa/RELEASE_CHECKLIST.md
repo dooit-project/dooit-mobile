@@ -94,6 +94,10 @@ API URL:
 - [ ] iOS home indicator, Android navigation bar, 하단 tab이 composer나 CTA를 가리지 않는다.
 - [ ] Android back 버튼 첫 동작이 키보드 닫기인지 확인했다.
 - [ ] Web favicon이 표시된다.
+- [ ] 최초 실행에서는 알림 권한을 요청하지 않고 미래 일정 저장 또는 설정 행동 뒤에만 요청한다.
+- [ ] Android/iOS에서 시간 일정과 종일 일정 알림을 각각 지정 시각과 오전 9시에 수신한다.
+- [ ] foreground, background, cold start에서 알림 선택 시 해당 Task 상세로 이동한다.
+- [ ] 완료·삭제·건너뜀·로그아웃 뒤 이전 로컬 알림 예약이 제거된다.
 
 ## 8. 성능과 안정성
 

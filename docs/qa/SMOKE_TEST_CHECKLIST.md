@@ -112,7 +112,7 @@
 - Calendar 범위 조회가 3주 화면에 필요한 일정과 여러 날 일정 원본 ID를 중복 없이 내려준다.
 - Search는 `/api/v1/tasks/search` real API로 검색어, 상태 filter, 상세 filter, 빈 상태, cursor pagination을 확인한다.
 - network, timeout, 5xx 오류에서 공통 오류 문구와 retry 버튼이 표시된다.
-- 반복 생성/수정과 서버 push 알림은 백엔드 문서 정합성과 real smoke가 끝날 때까지 실제 저장 기능처럼 노출하지 않는다.
+- 반복 생성·수정은 실제 저장 기능으로 제공하고 로컬 알림은 백엔드 후보 계약을 따른다. 서버 push 발송은 별도 활성화 전까지 사용자 기능으로 안내하지 않는다.
 
 ## 완료 기록 방식
 

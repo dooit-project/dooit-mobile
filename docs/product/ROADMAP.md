@@ -145,7 +145,7 @@ type ApiResponse<T> = {
 - staging, production API URL 확정
 - 네트워크 재시도와 중복 생성 방지를 위한 idempotency 또는 client request id 정책
 - 반복 Task·일정은 생성, occurrence 조회, 완료, 미룸, 건너뛰기, 알림 후보 제외까지 real smoke가 통과했다. 이후 회귀는 `npm run smoke:recurrence:real`과 `npm run smoke:recurrence-actions:real`로 확인한다.
-- 로컬 알림은 백엔드 [`NOTIFICATION_CONTRACT.md`](../../../backend/docs/api/NOTIFICATION_CONTRACT.md)에 따라 가까운 미래 occurrence만 모바일에서 best-effort로 예약
+- 로컬 알림은 백엔드 [`NOTIFICATION_CONTRACT.md`](../../../backend/docs/api/NOTIFICATION_CONTRACT.md)에 따라 향후 30일 후보 중 실제 전달 시각이 가까운 50개를 모바일에서 best-effort로 예약한다. 변경 없는 예약은 fingerprint로 유지하고 완료·삭제·건너뜀·계정 전환 시 정리한다.
 - real API 화면 smoke에서 검색 cursor 정렬, 기간 filter, timezone 경계는 계속 회귀 확인
 
 백엔드 연동을 다시 진행할 때는 [`BACKEND_INTEGRATION_RUNBOOK.md`](../integration/BACKEND_INTEGRATION_RUNBOOK.md)를 기준으로 mock 검증 → real API 검증 → smoke log 기록 순서로 진행한다. 이 저장소에는 필요한 계약과 모바일 변경만 문서화하고 백엔드 코드는 추가하지 않는다.
@@ -413,7 +413,8 @@ ToDoLab 적용 방향:
 - [x] occurrence별 완료, 미룸과 완료 기록을 연결한다. 2026-08-02 real smoke에서 materialize된 occurrence의 `/done`, `/defer-reason`, 완료 처리일 기준 done list 조회가 통과했다.
 - [x] occurrence별 건너뛰기 계약을 확정하고 모바일 smoke에 연결한다. 2026-08-02 real smoke에서 `DELETE recurrenceScope=THIS`가 해당 occurrence만 숨기고 이후 occurrence를 유지하는 것을 확인했다.
 - [x] 모바일 API client는 `GET /api/v1/tasks/notification-candidates` 응답 타입과 조회 method를 제공한다.
-- [x] 반복 일정과 로컬 알림의 예약·취소 책임을 실제 API 후보 기준으로 검증한다. 2026-08-02 real smoke에서 완료·건너뛴 occurrence가 notification candidates에서 제외되고 이후 occurrence가 유지되는 것을 확인했다. 실제 OS 알림 예약·취소는 native 실기기 QA에서 확인한다.
+- [x] 반복 일정과 로컬 알림의 예약·취소 책임을 실제 API 후보 기준으로 구현한다. 2026-08-02 real smoke에서 완료·건너뛴 occurrence가 notification candidates에서 제외되고 이후 occurrence가 유지되는 것을 확인했다. 모바일은 `expo-notifications`로 권한 안내, 30일 후보 조회, 가까운 50개 증분 예약, Task 변경·앱 활성화 갱신, 로그아웃 정리, 알림 선택 시 Task 상세 이동을 제공한다.
+- [ ] Android/iOS 실기기에서 권한 허용·거부·설정 복귀, 시간 일정·종일 일정 수신, foreground 표시, background·cold start 알림 선택, 완료·삭제·건너뜀 취소를 확인한다.
 
 완료 기준:
 
@@ -588,7 +589,7 @@ Today 작업 목록 표시
 - API URL과 mock/real 모드는 환경변수로 교체할 수 있게 유지한다.
 - 로컬 UI 개발은 `EXPO_PUBLIC_API_MODE=mock`으로 더미 데이터를 사용하고, 백엔드 연동 테스트는 `EXPO_PUBLIC_API_MODE=real`과 `EXPO_PUBLIC_API_URL`로 실제 서버를 사용한다.
 - 자연어 빠른 입력, 검색, 하위 작업, 주간 리포트는 핵심 모바일 흐름 이후에 진행한다.
-- 네이티브 알림은 MVP 데이터 흐름이 안정된 뒤 추가한다.
+- 네이티브 알림은 서버 후보 기반 로컬 알림으로 제공한다. 최초 실행에서는 권한을 요청하지 않고 첫 미래 일정 저장 또는 설정의 사용자 행동 뒤에만 요청하며, 서버 push 활성 후보는 `suppressLocalNotification`으로 중복 예약하지 않는다.
 
 ## 11. 프론트 개발 산출물
 
@@ -622,6 +623,7 @@ Today 작업 목록 표시
 4. 430dp, font scale 1.5, light/dark에서 Today와 Calendar, Android back/keyboard/navigation bar가 깨지지 않는지 실기기로 확인한다.
 5. [`BACKEND_INTEGRATION_RUNBOOK.md`](../integration/BACKEND_INTEGRATION_RUNBOOK.md)와 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에 맞춰 Android real-mode 전체 smoke를 기록한다.
 6. 최소 하루 실제 사용하면서 네트워크 전환, 앱 강제 종료, 기기 재부팅, 날짜 경계, 중복 생성과 세션 복원을 확인한다.
-7. Android 개인 APK가 안정된 뒤 알림, Play Store, iOS/Web 배포 범위를 별도로 결정한다.
+7. Android APK에서 알림 권한 허용·거부, 시간 일정·종일 일정 수신, 알림 선택 Task 이동, 완료·삭제 후 예약 취소를 확인한다.
+8. Android 개인 APK가 안정된 뒤 Play Store, iOS/Web 배포 범위를 별도로 결정한다.
 
 그전에도 사용을 막는 접근성, 키보드, 오류 상태와 명백한 정보 중복은 발견 즉시 수정한다.
