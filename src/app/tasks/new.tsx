@@ -1,21 +1,52 @@
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 
 import { IconButton, PageHeader, Screen } from '@/components/ui';
+import {
+  NotificationPermissionPrompt,
+  requestLocalNotificationPermission,
+  shouldPromptForNotificationPermission,
+} from '@/features/notifications';
 import { TaskForm, useCreateTask } from '@/features/tasks';
+import {
+  initializeAppPreferences,
+  markNotificationPermissionPrompted,
+} from '@/services/preferences';
 import { spacing, useAppTheme } from '@/theme';
-import type { TaskUpsertRequest } from '@/types';
+import type { TaskResponse, TaskUpsertRequest } from '@/types';
 
 export default function NewTaskScreen() {
   const router = useRouter();
   const theme = useAppTheme();
   const createTask = useCreateTask();
+  const [notificationPromptTask, setNotificationPromptTask] = useState<TaskResponse | null>(null);
+
+  const openTask = (task: TaskResponse) => {
+    router.replace({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } });
+  };
 
   const handleSubmit = (request: TaskUpsertRequest) => {
     createTask.mutate(request, {
       onSuccess: (task) => {
-        router.replace({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } });
+        void initializeAppPreferences()
+          .then(async (preferences) => {
+            if (
+              shouldPromptForNotificationPermission({
+                platform: Platform.OS,
+                notificationPermissionPrompted: preferences.notificationPermissionPrompted,
+                task,
+              })
+            ) {
+              await markNotificationPermissionPrompted();
+              setNotificationPromptTask(task);
+              return;
+            }
+
+            openTask(task);
+          })
+          .catch(() => openTask(task));
       },
     });
   };
@@ -45,6 +76,28 @@ export default function NewTaskScreen() {
         submitLabel="저장하기"
         onCancel={() => router.back()}
         onSubmit={handleSubmit}
+      />
+
+      <NotificationPermissionPrompt
+        visible={Boolean(notificationPromptTask)}
+        onEnable={async () => {
+          const task = notificationPromptTask;
+          if (!task) return;
+
+          try {
+            await requestLocalNotificationPermission();
+          } finally {
+            setNotificationPromptTask(null);
+            openTask(task);
+          }
+        }}
+        onLater={() => {
+          const task = notificationPromptTask;
+          if (!task) return;
+
+          setNotificationPromptTask(null);
+          openTask(task);
+        }}
       />
     </Screen>
   );
