@@ -80,6 +80,8 @@ Last updated: 2026-08-13
 - font scale 1.5에서 제목·오류·주요 버튼이 잘리거나 순서가 뒤집히지 않는가
 - 375pt iPhone과 430dp Android에서 Calendar bar와 Task form이 안정적인가
 
+공통 Screen의 SafeAreaView와 scroll keyboard inset을 기준으로 사용한다. 로그인·회원가입 form은 별도의 KeyboardAvoidingView를 중첩하지 않으며, Today의 하단 빠른 기록만 절대 배치 layer에서 키보드 높이를 별도로 반영한다. 실제 home indicator·navigation bar·키보드 조합은 실기기 smoke에서 확인한다.
+
 ### 접근성
 
 - VoiceOver·TalkBack 읽기 순서가 화면의 시각 순서와 일치하는가

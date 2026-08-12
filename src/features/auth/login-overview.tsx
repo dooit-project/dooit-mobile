@@ -2,14 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
@@ -90,8 +83,7 @@ export function LoginOverview() {
         </View>
       </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      <View
         style={[
           styles.formCard,
           { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
@@ -196,7 +188,7 @@ export function LoginOverview() {
         <Button fullWidth loading={login.isPending} onPress={submit} size="large">
           로그인하고 동기화하기
         </Button>
-      </KeyboardAvoidingView>
+      </View>
 
       <View style={styles.secondaryAction}>
         <AppText tone="secondary" variant="label">

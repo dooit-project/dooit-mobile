@@ -2,14 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
@@ -107,8 +100,7 @@ export function RegisterOverview() {
         </View>
       </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      <View
         style={[
           styles.formCard,
           { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
@@ -226,7 +218,7 @@ export function RegisterOverview() {
         <Button fullWidth loading={register.isPending} onPress={submit} size="large">
           계정 만들기
         </Button>
-      </KeyboardAvoidingView>
+      </View>
 
       <View style={styles.secondaryAction}>
         <AppText tone="secondary" variant="label">

@@ -96,7 +96,8 @@ Last updated: 2026-08-13
 - [ ] Android·iOS 320dp·390dp·430dp와 font scale 1.0·1.5에서 같은 문장·말줄임 기준을 실기기로 확인한다.
 - [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → 더보기 핵심 흐름을 점검한다.
 - [x] checkbox, 일정 bar, tab, 빠른 기록, 알림 설정의 코드상 역할·상태·읽기 순서를 확인하고 누락된 상태 label을 보완한다.
-- [ ] 375pt iPhone과 430dp Android의 safe area, home indicator, navigation bar, 키보드 겹침을 확인한다.
+- [x] 공통 Screen, 하단 tab, 빠른 기록과 인증 form의 safe area·keyboard inset 코드를 점검하고 중복 키보드 보정을 제거한다.
+- [ ] 375pt iPhone과 430dp Android에서 home indicator, navigation bar, 키보드 겹침을 실기기로 확인한다.
 - [ ] light·dark와 font scale 1.5에서 제목·주요 CTA·오류 문구가 잘리지 않는지 확인한다.
 - [ ] 실제 API 지연과 긴 Today·Completed 목록, Calendar 일정 밀집 상태의 렌더링 성능을 확인한다.
 
