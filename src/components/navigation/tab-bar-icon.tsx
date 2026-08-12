@@ -52,11 +52,12 @@ function WebTabIcon({ color, name, size }: WebTabIconProps) {
     );
   }
 
-  if (name === 'person') {
+  if (name === 'more_horiz') {
     return (
-      <View accessible={false} style={[styles.webPersonIcon, { height: size, width: size }]}>
-        <View style={[styles.webPersonHead, { borderColor: color }]} />
-        <View style={[styles.webPersonBody, { borderColor: color }]} />
+      <View accessible={false} style={[styles.webMoreIcon, { height: size, width: size }]}>
+        <View style={[styles.webMoreDot, { backgroundColor: color }]} />
+        <View style={[styles.webMoreDot, { backgroundColor: color }]} />
+        <View style={[styles.webMoreDot, { backgroundColor: color }]} />
       </View>
     );
   }
@@ -136,22 +137,15 @@ const styles = StyleSheet.create({
     top: '50%',
     width: 4,
   },
-  webPersonIcon: {
+  webMoreIcon: {
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 3,
     justifyContent: 'center',
   },
-  webPersonHead: {
+  webMoreDot: {
     borderRadius: radii.full,
-    borderWidth: 2,
-    height: 8,
-    width: 8,
-  },
-  webPersonBody: {
-    borderTopLeftRadius: radii.full,
-    borderTopRightRadius: radii.full,
-    borderWidth: 2,
-    height: 8,
-    marginTop: 2,
-    width: 16,
+    height: 4,
+    width: 4,
   },
 });

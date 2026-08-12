@@ -24,38 +24,48 @@ type ProfileItem = {
   webIcon: 'flag' | 'search' | 'task_alt' | 'settings';
 };
 
-const profileItems: ProfileItem[] = [
+const profileItemGroups: { title: string; items: ProfileItem[] }[] = [
   {
-    accent: 'amber',
-    title: '목표',
-    description: 'D-Day와 연결된 실행 항목',
-    href: '/dday',
-    icon: { ios: 'flag.fill', android: 'flag', web: 'flag' },
-    webIcon: 'flag',
+    title: '작업 도구',
+    items: [
+      {
+        accent: 'amber',
+        title: '목표',
+        description: 'D-Day와 연결된 실행 항목',
+        href: '/dday',
+        icon: { ios: 'flag.fill', android: 'flag', web: 'flag' },
+        webIcon: 'flag',
+      },
+      {
+        accent: 'blue',
+        title: '검색',
+        description: '과거 Task와 일정 찾기',
+        href: '/search',
+        icon: { ios: 'magnifyingglass', android: 'search', web: 'search' },
+        webIcon: 'search',
+      },
+      {
+        accent: 'sage',
+        title: '완료 기록',
+        description: '끝낸 일과 주간 흐름',
+        href: '/completed',
+        icon: { ios: 'checkmark.circle.fill', android: 'task_alt', web: 'task_alt' },
+        webIcon: 'task_alt',
+      },
+    ],
   },
   {
-    accent: 'blue',
-    title: '검색',
-    description: '과거 Task와 일정 찾기',
-    href: '/search',
-    icon: { ios: 'magnifyingglass', android: 'search', web: 'search' },
-    webIcon: 'search',
-  },
-  {
-    accent: 'sage',
-    title: '완료 기록',
-    description: '끝낸 일과 주간 흐름',
-    href: '/completed',
-    icon: { ios: 'checkmark.circle.fill', android: 'task_alt', web: 'task_alt' },
-    webIcon: 'task_alt',
-  },
-  {
-    accent: 'blue',
-    title: '설정',
-    description: '테마, 알림, 개인 설정',
-    href: '/settings',
-    icon: { ios: 'gearshape.fill', android: 'settings', web: 'settings' },
-    webIcon: 'settings',
+    title: '앱 설정',
+    items: [
+      {
+        accent: 'blue',
+        title: '설정',
+        description: '테마, 알림, 개인 설정',
+        href: '/settings',
+        icon: { ios: 'gearshape.fill', android: 'settings', web: 'settings' },
+        webIcon: 'settings',
+      },
+    ],
   },
 ];
 
@@ -85,38 +95,43 @@ export function ProfileOverview() {
 
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
-      <View
-        style={[
-          styles.identityCard,
-          { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-        ]}
-      >
-        <View style={styles.identity}>
-          <View style={[styles.avatar, { backgroundColor: theme.colors.highlightSage }]}>
-            <AppText variant="bodyLarge" weight="bold">
-              나
-            </AppText>
-          </View>
-          <View style={styles.identityCopy}>
-            <AppText tone="primary" variant="caption" weight="bold">
-              나의 플래너 공간
-            </AppText>
-            <AppText numberOfLines={1} variant="bodyLarge" weight="bold">
-              {authPresentation.title}
-            </AppText>
-            <AppText numberOfLines={2} tone="secondary" variant="caption">
-              {authPresentation.description}
-            </AppText>
-          </View>
-        </View>
-        <Button
-          loading={logout.isPending}
-          onPress={isRegistered ? () => logout.mutate() : () => router.push('/login' as Href)}
-          size="compact"
-          variant={isRegistered ? 'ghost' : 'secondary'}
+      <View style={styles.section}>
+        <AppText tone="secondary" variant="caption" weight="bold">
+          계정
+        </AppText>
+        <View
+          style={[
+            styles.identityCard,
+            { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+          ]}
         >
-          {authPresentation.actionLabel}
-        </Button>
+          <View style={styles.identity}>
+            <View style={[styles.avatar, { backgroundColor: theme.colors.highlightSage }]}>
+              <AppText variant="bodyLarge" weight="bold">
+                나
+              </AppText>
+            </View>
+            <View style={styles.identityCopy}>
+              <AppText tone="primary" variant="caption" weight="bold">
+                나의 플래너 공간
+              </AppText>
+              <AppText numberOfLines={1} variant="bodyLarge" weight="bold">
+                {authPresentation.title}
+              </AppText>
+              <AppText numberOfLines={2} tone="secondary" variant="caption">
+                {authPresentation.description}
+              </AppText>
+            </View>
+          </View>
+          <Button
+            loading={logout.isPending}
+            onPress={isRegistered ? () => logout.mutate() : () => router.push('/login' as Href)}
+            size="compact"
+            variant={isRegistered ? 'ghost' : 'secondary'}
+          >
+            {authPresentation.actionLabel}
+          </Button>
+        </View>
       </View>
 
       {authPresentation.showGuestRecoveryWarning ? (
@@ -134,62 +149,77 @@ export function ProfileOverview() {
         />
       ) : null}
 
-      <View accessibilityRole="list" style={styles.menu}>
-        {profileItems.map((item) => {
-          const accents = {
-            amber: {
-              backgroundColor: theme.colors.highlightAmber,
-              color: theme.colors.warning,
-            },
-            sage: {
-              backgroundColor: theme.colors.highlightSage,
-              color: theme.colors.success,
-            },
-            blue: {
-              backgroundColor: theme.colors.highlightBlue,
-              color: theme.colors.primary,
-            },
-          };
-          const accent = accents[item.accent];
-
-          return (
-            <Pressable
-              key={item.href}
-              accessibilityHint={`${item.title} 화면으로 이동합니다.`}
-              accessibilityLabel={`${item.title}, ${item.description}`}
-              accessibilityRole="button"
-              onBlur={() => setFocusedItem(null)}
-              onFocus={() => setFocusedItem(item.href)}
-              onPress={() => router.push(item.href as Href)}
-              style={({ pressed }) => [
-                styles.row,
-                {
-                  backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
-                  borderColor:
-                    focusedItem === item.href ? theme.colors.primarySoft : theme.colors.border,
+      {profileItemGroups.map((group) => (
+        <View key={group.title} style={styles.section}>
+          <AppText tone="secondary" variant="caption" weight="bold">
+            {group.title}
+          </AppText>
+          <View
+            accessibilityRole="list"
+            style={[
+              styles.menu,
+              { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+            ]}
+          >
+            {group.items.map((item, index) => {
+              const accents = {
+                amber: {
+                  backgroundColor: theme.colors.highlightAmber,
+                  color: theme.colors.warning,
                 },
-              ]}
-            >
-              <View style={[styles.icon, { backgroundColor: accent.backgroundColor }]}>
-                {Platform.OS === 'web' ? (
-                  <WebShortcutIcon color={accent.color} name={item.webIcon} />
-                ) : (
-                  <SymbolView name={item.icon} size={18} tintColor={accent.color} />
-                )}
-              </View>
-              <View style={styles.copy}>
-                <AppText weight="medium">{item.title}</AppText>
-                <AppText numberOfLines={1} tone="secondary" variant="caption">
-                  {item.description}
-                </AppText>
-              </View>
-              <AppText tone="muted" variant="bodyLarge">
-                ›
-              </AppText>
-            </Pressable>
-          );
-        })}
-      </View>
+                sage: {
+                  backgroundColor: theme.colors.highlightSage,
+                  color: theme.colors.success,
+                },
+                blue: {
+                  backgroundColor: theme.colors.highlightBlue,
+                  color: theme.colors.primary,
+                },
+              };
+              const accent = accents[item.accent];
+
+              return (
+                <Pressable
+                  key={item.href}
+                  accessibilityHint={`${item.title} 화면으로 이동합니다.`}
+                  accessibilityLabel={`${item.title}, ${item.description}`}
+                  accessibilityRole="button"
+                  onBlur={() => setFocusedItem(null)}
+                  onFocus={() => setFocusedItem(item.href)}
+                  onPress={() => router.push(item.href as Href)}
+                  style={({ pressed }) => [
+                    styles.row,
+                    index > 0 && styles.rowDivider,
+                    {
+                      backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
+                      borderColor:
+                        focusedItem === item.href ? theme.colors.primarySoft : 'transparent',
+                      borderTopColor: index > 0 ? theme.colors.border : undefined,
+                    },
+                  ]}
+                >
+                  <View style={[styles.icon, { backgroundColor: accent.backgroundColor }]}>
+                    {Platform.OS === 'web' ? (
+                      <WebShortcutIcon color={accent.color} name={item.webIcon} />
+                    ) : (
+                      <SymbolView name={item.icon} size={18} tintColor={accent.color} />
+                    )}
+                  </View>
+                  <View style={styles.copy}>
+                    <AppText weight="medium">{item.title}</AppText>
+                    <AppText numberOfLines={1} tone="secondary" variant="caption">
+                      {item.description}
+                    </AppText>
+                  </View>
+                  <AppText tone="muted" variant="bodyLarge">
+                    ›
+                  </AppText>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ))}
     </Screen>
   );
 }
@@ -267,18 +297,24 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   menu: {
-    backgroundColor: 'transparent',
-    gap: spacing[3],
+    borderRadius: radii.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+  },
+  section: {
+    gap: spacing[2],
   },
   row: {
     alignItems: 'center',
-    borderRadius: radii.lg,
     borderWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: spacing[4],
     minHeight: 68,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
+  },
+  rowDivider: {
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   icon: {
     alignItems: 'center',

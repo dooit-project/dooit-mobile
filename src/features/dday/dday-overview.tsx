@@ -45,7 +45,7 @@ export function DdayOverview() {
         title="목표"
         leading={
           <IconButton
-            accessibilityLabel="프로필 화면으로 돌아가기"
+            accessibilityLabel="더보기 화면으로 돌아가기"
             onPress={router.back}
             style={styles.headerButton}
           >

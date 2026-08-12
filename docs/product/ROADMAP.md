@@ -7,7 +7,7 @@ Last updated: 2026-08-13
 ## 현재 기준선
 
 - Expo SDK 56, React Native 0.85, React 19, TypeScript 6 기반 Android·iOS·Web 클라이언트다.
-- 하단 탭은 `오늘`, `달력`, `프로필`이며 기록함은 Today의 `정리할 항목`에서 다룬다.
+- 하단 탭은 `오늘`, `달력`, `더보기`이며 기록함은 Today의 `정리할 항목`에서 다룬다.
 - 인증이 없는 신규 사용자는 데이터 화면보다 먼저 `/start`에서 `로그인 없이 시작`, `로그인 또는 계정 만들기`, `기능 둘러보기`를 선택한다.
 - 로그인 없이 시작은 순수 로컬 모드가 아니라 서버 게스트 계정이다. 이후 로그인·회원가입 시 게스트 데이터를 계정에 연결한다.
 - mock과 real API 모드를 분리하며 실제 비밀 값과 로컬 환경 파일은 커밋하지 않는다.
@@ -90,10 +90,10 @@ Last updated: 2026-08-13
 - [x] 공통 빈 상태를 icon·title·description·primary action·secondary action 구조로 정리하고 Today·Calendar부터 적용한다.
 - [x] Calendar 빈 날짜에 해당 날짜의 일정 또는 Task를 추가하는 행동을 제공한다.
 - [x] Completed와 하루 정리 빈 상태에 Today로 돌아가는 행동을 제공하고, 검색 전 상태와 검색 결과 없음을 구분한다.
-- [ ] Profile 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 `프로필`과 `더보기` 중 역할에 맞는 탭 이름을 확정한다.
+- [x] 더보기 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 기능 허브 역할에 맞게 탭 이름을 `더보기`로 확정한다.
 - [ ] 시작·로그인·회원가입·도움말·설정의 긴 문장을 줄이고, 제목의 강제 개행과 본문의 자동 개행 기준을 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)에 맞춘다.
 - [ ] 320px·390px·430px와 font scale 1.0·1.5에서 고립된 짧은 마지막 줄, 조사·서술어 분리, 중요 문구 말줄임을 점검한다.
-- [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → Profile 핵심 흐름을 점검한다.
+- [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → 더보기 핵심 흐름을 점검한다.
 - [ ] checkbox, 일정 bar, tab, 빠른 기록, 알림 설정의 역할·상태·읽기 순서를 확인한다.
 - [ ] 375pt iPhone과 430dp Android의 safe area, home indicator, navigation bar, 키보드 겹침을 확인한다.
 - [ ] light·dark와 font scale 1.5에서 제목·주요 CTA·오류 문구가 잘리지 않는지 확인한다.

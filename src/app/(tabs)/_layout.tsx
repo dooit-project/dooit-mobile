@@ -60,14 +60,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: '프로필',
-          tabBarAccessibilityLabel: '프로필',
+          title: '더보기',
+          tabBarAccessibilityLabel: '더보기',
           tabBarIcon: ({ color, focused, size }) => (
             <TabBarIcon
               color={color}
               focused={focused}
               size={size}
-              name={{ ios: 'person.crop.circle.fill', android: 'person', web: 'person' }}
+              name={{ ios: 'ellipsis.circle', android: 'more_horiz', web: 'more_horiz' }}
             />
           ),
         }}
