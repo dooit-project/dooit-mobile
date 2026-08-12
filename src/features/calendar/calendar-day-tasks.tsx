@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { AppText, Button, EmptyState, InlineNotice, ListSkeleton } from '@/components/ui';
 import { ScheduleCard, TaskCard, useCompleteTask } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
-import { spacing, useAppTheme } from '@/theme';
+import { radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 import { formatDateLabel } from '@/utils';
 
@@ -58,7 +59,19 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
           tone="danger"
         />
       ) : !hasTasks ? (
-        <EmptyState title="예정된 항목이 없어요" description="다른 날짜를 선택해 보세요." />
+        <EmptyState
+          icon={
+            <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
+              <SymbolView
+                name={{ ios: 'calendar', android: 'calendar_month', web: 'calendar_month' }}
+                size={22}
+                tintColor={theme.colors.primary}
+              />
+            </View>
+          }
+          title="예정된 항목이 없어요"
+          description="선택한 날짜에는 아직 일정이나 할 일이 없어요."
+        />
       ) : (
         <>
           {scheduledTasks.length > 0 ? (
@@ -148,6 +161,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     minHeight: 20,
+  },
+  emptyIcon: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   section: {
     gap: spacing[3],

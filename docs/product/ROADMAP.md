@@ -87,7 +87,7 @@ Last updated: 2026-08-13
 
 ### P1. 접근성·레이아웃·성능
 
-- [ ] 공통 빈 상태를 icon·title·description·primary action·secondary action 구조로 정리하고 Today·Calendar부터 적용한다.
+- [x] 공통 빈 상태를 icon·title·description·primary action·secondary action 구조로 정리하고 Today·Calendar부터 적용한다.
 - [ ] Calendar 빈 날짜에 해당 날짜의 일정 또는 Task를 추가하는 행동을 제공한다.
 - [ ] Completed와 하루 정리 빈 상태에 Today로 돌아가는 행동을 제공하고, 검색 전 상태와 검색 결과 없음을 구분한다.
 - [ ] Profile 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 `프로필`과 `더보기` 중 역할에 맞는 탭 이름을 확정한다.

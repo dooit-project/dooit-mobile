@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -146,16 +147,20 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
 
         {executionTasks.length === 0 ? (
           <EmptyState
+            icon={
+              <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
+                <SymbolView
+                  name={{ ios: 'checkmark.circle', android: 'check_circle', web: 'check_circle' }}
+                  size={22}
+                  tintColor={theme.colors.primary}
+                />
+              </View>
+            }
             title="오늘 할 일을 하나 적어볼까요?"
-            description="처음에는 하나면 충분해요. 빠르게 기록한 뒤 오늘 계획으로 옮길 수 있어요."
-            action={
+            description="하나면 충분해요. 생각난 일을 먼저 기록해 보세요."
+            primaryAction={
               onOpenQuickCapture ? (
-                <Button
-                  accessibilityLabel="첫 할 일 빠르게 기록하기"
-                  size="compact"
-                  variant="secondary"
-                  onPress={onOpenQuickCapture}
-                >
+                <Button accessibilityLabel="첫 할 일 빠르게 기록하기" onPress={onOpenQuickCapture}>
                   첫 할 일 기록하기
                 </Button>
               ) : null
@@ -294,6 +299,13 @@ function compareScheduleTasks(left: TaskResponse, right: TaskResponse) {
 const styles = StyleSheet.create({
   container: {
     gap: spacing[4],
+  },
+  emptyIcon: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   taskSection: {
     gap: spacing[2],

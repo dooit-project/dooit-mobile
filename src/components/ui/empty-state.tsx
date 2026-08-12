@@ -9,10 +9,17 @@ type EmptyStateProps = {
   title: string;
   description?: string;
   icon?: ReactNode;
-  action?: ReactNode;
+  primaryAction?: ReactNode;
+  secondaryAction?: ReactNode;
 };
 
-export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  description,
+  icon,
+  primaryAction,
+  secondaryAction,
+}: EmptyStateProps) {
   return (
     <View style={styles.container}>
       {icon}
@@ -26,7 +33,12 @@ export function EmptyState({ title, description, icon, action }: EmptyStateProps
           </AppText>
         ) : null}
       </View>
-      {action}
+      {primaryAction || secondaryAction ? (
+        <View style={styles.actions}>
+          {primaryAction}
+          {secondaryAction}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -43,5 +55,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[2],
     maxWidth: 320,
+  },
+  actions: {
+    alignItems: 'center',
+    gap: spacing[1],
   },
 });
