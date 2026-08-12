@@ -82,12 +82,10 @@ export function LoginOverview() {
         </View>
         <View style={styles.heroCopy}>
           <AppText accessibilityRole="header" variant="display" weight="heavy">
-            오늘의 흐름을
-            {'\n'}
-            다시 이어가요
+            다시 로그인해요
           </AppText>
           <AppText tone="secondary" variant="body">
-            로그인하면 일정, 할 일, 완료 기록이 안전하게 동기화돼요.
+            로그인하면 일정과 할 일, 완료 기록이 동기화돼요.
           </AppText>
         </View>
       </View>
@@ -190,7 +188,7 @@ export function LoginOverview() {
           <InlineNotice
             tone="warning"
             title="게스트 사용 기간이 만료됐어요"
-            message="기존 데이터를 보호하기 위해 새 게스트 계정을 자동으로 만들지 않았어요. 기존 계정이 있다면 로그인해 주세요."
+            message="새 게스트 계정을 만들지 않았어요. 기존 계정으로 로그인해 주세요."
           />
         ) : null}
         {errorMessage ? <InlineNotice tone="danger" message={errorMessage} /> : null}

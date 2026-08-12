@@ -91,7 +91,7 @@ Last updated: 2026-08-13
 - [x] Calendar 빈 날짜에 해당 날짜의 일정 또는 Task를 추가하는 행동을 제공한다.
 - [x] Completed와 하루 정리 빈 상태에 Today로 돌아가는 행동을 제공하고, 검색 전 상태와 검색 결과 없음을 구분한다.
 - [x] 더보기 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 기능 허브 역할에 맞게 탭 이름을 `더보기`로 확정한다.
-- [ ] 시작·로그인·회원가입·도움말·설정의 긴 문장을 줄이고, 제목의 강제 개행과 본문의 자동 개행 기준을 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)에 맞춘다.
+- [x] 시작·로그인·회원가입·도움말·설정의 긴 문장을 줄이고, 제목의 강제 개행과 본문의 자동 개행 기준을 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)에 맞춘다.
 - [ ] 320px·390px·430px와 font scale 1.0·1.5에서 고립된 짧은 마지막 줄, 조사·서술어 분리, 중요 문구 말줄임을 점검한다.
 - [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → 더보기 핵심 흐름을 점검한다.
 - [ ] checkbox, 일정 bar, tab, 빠른 기록, 알림 설정의 역할·상태·읽기 순서를 확인한다.
@@ -115,6 +115,19 @@ Last updated: 2026-08-13
 - [ ] 서버 push가 필요해지면 push token 등록, source 중복 방지, 발송 이력 UX를 별도 설계한다.
 - [ ] 자연어 빠른 입력, 하위 작업, 주간 리포트의 필요성과 우선순위를 검증한다.
 
+### P2. Web 운영 검증
+
+모바일 로드맵의 기능·회귀·배포 검증을 마친 뒤 진행한다. Web에서는 로컬 알림을 제공하지 않는다.
+
+- [ ] 운영 Web 빌드에 `EXPO_PUBLIC_API_MODE=real`과 HTTPS API URL을 주입하고 mock 모드 혼입을 막는다.
+- [ ] 운영 Web origin의 CORS, `Authorization` header, preflight와 API의 `no-store` 정책을 확인한다.
+- [ ] 신규 게스트 → Task 작성 → 새로고침 → 게스트 복원 → 로그인·회원가입 연결을 실제 브라우저에서 확인한다.
+- [ ] 로그인 → 새로고침 → 세션 만료 → 재로그인 → 계정 전환에서 token과 React Query cache가 격리되는지 확인한다.
+- [ ] Web token 저장 방식을 HttpOnly cookie 또는 localStorage 보완 정책 중 하나로 확정하고 CSP를 적용한다.
+- [ ] `/login`, `/calendar`, `/tasks/{id}` 직접 접근과 새로고침이 정적 host의 route fallback에서 동작하는지 확인한다.
+- [ ] 브라우저·기기·도메인 변경과 storage 삭제 시 게스트 데이터 복구 한계를 사용자 안내와 일치시킨다.
+- [ ] 320px부터 desktop 폭까지 keyboard navigation, zoom 150%, 캐시 갱신과 real API 전체 흐름을 smoke log에 기록한다.
+
 ## 외부 의존성
 
 | 의존성                       | 필요한 작업                                                                 | 완료 판단                                 |
@@ -130,6 +143,7 @@ Last updated: 2026-08-13
 - 게스트 데이터는 로그인·회원가입·실패·재시도 과정에서 유실되거나 중복되지 않는다.
 - Today, Calendar, Search, D-Day, Completed의 핵심 흐름이 mock과 real API에서 일관된다.
 - 알림 권한을 강요하지 않으며 예약·취소·계정 격리가 실제 기기에서 검증된다.
+- Web은 알림 없이 real API 인증·게스트 복원·데이터 동기화·직접 경로 접근이 운영 도메인에서 검증된다.
 - Android APK가 Expo Go·Metro 없이 시작되고 최소 하루 실제 사용에서 치명적 오류가 없다.
 - `npm run validate`와 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)가 통과한다.
 

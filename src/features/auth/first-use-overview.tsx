@@ -35,10 +35,10 @@ export function FirstUseOverview({
         </View>
         <View style={styles.copy}>
           <AppText accessibilityRole="header" variant="display" weight="heavy">
-            오늘 할 일부터{`\n`}가볍게 시작해요
+            오늘 할 일부터 시작해요
           </AppText>
           <AppText tone="secondary" variant="body">
-            Task, 일정, D-Day를 한곳에서 계획하고 완료 흐름을 기록할 수 있어요.
+            할 일과 일정을 계획하고 완료 흐름을 기록해요.
           </AppText>
         </View>
       </View>
@@ -54,8 +54,7 @@ export function FirstUseOverview({
             로그인 없이 시작
           </AppText>
           <AppText tone="secondary" variant="body">
-            이 기기에서 게스트로 시작하고, 나중에 로그인하면 지금 만든 내용을 계정에 연결할 수
-            있어요.
+            게스트로 시작해도 나중에 지금 만든 내용을 계정에 연결할 수 있어요.
           </AppText>
         </View>
         <Button fullWidth loading={isStartingGuest} onPress={onStartGuest} size="large">
@@ -73,7 +72,7 @@ export function FirstUseOverview({
 
       <View style={styles.accountAction}>
         <AppText tone="secondary" variant="label">
-          이미 계정이 있거나 데이터를 안전하게 동기화하고 싶나요?
+          계정이 있거나 데이터를 동기화하고 싶나요?
         </AppText>
         <Button
           disabled={isStartingGuest}
@@ -98,17 +97,14 @@ export function FirstUseOverview({
         {showFeatureTour ? (
           <View accessibilityLabel="ToDoLab 주요 기능" style={styles.featureList}>
             <FeatureSummary
-              description="오늘 일정과 할 일을 한곳에서 확인하고 빠르게 기록해요."
+              description="오늘 일정과 할 일을 확인하고 빠르게 기록해요."
               title="Today"
             />
             <FeatureSummary
-              description="날짜별 일정과 반복되는 계획을 달력 흐름으로 살펴봐요."
+              description="날짜별 일정과 반복 계획을 달력에서 살펴봐요."
               title="Calendar"
             />
-            <FeatureSummary
-              description="중요한 날짜를 세고, 그 목표에 필요한 Task를 연결해요."
-              title="D-Day"
-            />
+            <FeatureSummary description="중요한 날짜와 필요한 할 일을 연결해요." title="D-Day" />
           </View>
         ) : null}
       </View>

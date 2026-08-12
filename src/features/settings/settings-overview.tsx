@@ -64,7 +64,7 @@ export function SettingsOverview() {
               앱 사용 가이드
             </AppText>
             <AppText tone="secondary" variant="caption">
-              Today, Calendar, D-Day 화면의 짧은 안내를 다시 표시합니다.
+              주요 화면의 사용 안내를 다시 표시합니다.
             </AppText>
           </View>
         </View>

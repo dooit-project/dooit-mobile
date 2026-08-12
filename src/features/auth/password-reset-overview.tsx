@@ -28,12 +28,10 @@ export function PasswordResetOverview() {
         </View>
         <View style={styles.heroCopy}>
           <AppText accessibilityRole="header" variant="display" weight="heavy">
-            비밀번호 재설정을
-            {'\n'}준비하고 있어요
+            비밀번호 재설정 준비 중이에요
           </AppText>
           <AppText tone="secondary" variant="body">
-            아직 앱에서 비밀번호를 재설정할 수 없어요. 기존 비밀번호를 알고 있다면 로그인으로 돌아가
-            주세요.
+            아직 앱에서 재설정할 수 없어요. 기존 비밀번호로 로그인해 주세요.
           </AppText>
         </View>
       </View>
@@ -45,7 +43,7 @@ export function PasswordResetOverview() {
         ]}
       >
         <AppText tone="secondary" variant="body">
-          계정 복구 기능이 준비되면 로그인 화면에서 바로 안내할게요.
+          계정 복구 기능이 준비되면 로그인 화면에서 안내할게요.
         </AppText>
         <Button fullWidth onPress={() => router.replace('/login' as Href)} size="large">
           로그인으로 돌아가기

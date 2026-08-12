@@ -71,7 +71,7 @@ export function DdayOverview() {
       />
 
       <ContextualFeatureTip
-        message="중요한 날짜를 목표로 만들고, 목표 메뉴에서 오늘 실행할 Task를 연결할 수 있어요."
+        message="중요한 날짜를 목표로 만들고 오늘 실행할 할 일을 연결해요."
         tipIds={['dday.linkedTasks']}
         title="D-Day로 목표 이어가기"
       />

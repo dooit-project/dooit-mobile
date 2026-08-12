@@ -84,7 +84,7 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
   return (
     <View style={styles.container}>
       <ContextualFeatureTip
-        message="하단 + 버튼으로 생각난 일을 기록하고, 오늘 할 일의 체크박스를 눌러 완료해 보세요."
+        message="+ 버튼으로 할 일을 기록해요. 체크박스를 누르면 완료됩니다."
         tipIds={['today.quickCapture', 'today.completeTask']}
         title="Today를 시작하는 방법"
       />

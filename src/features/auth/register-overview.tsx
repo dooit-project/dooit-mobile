@@ -99,12 +99,10 @@ export function RegisterOverview() {
         </View>
         <View style={styles.heroCopy}>
           <AppText accessibilityRole="header" variant="display" weight="heavy">
-            계정을 만들고
-            {'\n'}
-            오늘부터 정리해요
+            계정을 만들고 시작해요
           </AppText>
           <AppText tone="secondary" variant="body">
-            이메일과 이름만 입력하면 일정과 할 일을 안전하게 동기화할 수 있어요.
+            계정을 만들면 일정과 할 일을 여러 기기에서 이어갈 수 있어요.
           </AppText>
         </View>
       </View>
