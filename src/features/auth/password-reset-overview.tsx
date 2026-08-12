@@ -2,7 +2,7 @@ import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { AppText, Button, Screen } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 
 export function PasswordResetOverview() {
@@ -28,12 +28,12 @@ export function PasswordResetOverview() {
         </View>
         <View style={styles.heroCopy}>
           <AppText accessibilityRole="header" variant="display" weight="heavy">
-            비밀번호 재설정은
-            {'\n'}곧 연결할게요
+            비밀번호 재설정을
+            {'\n'}준비하고 있어요
           </AppText>
           <AppText tone="secondary" variant="body">
-            이메일로 재설정 링크를 보내는 흐름을 준비 중이에요. 지금은 가입한 이메일과 비밀번호로
-            다시 로그인해 주세요.
+            아직 앱에서 비밀번호를 재설정할 수 없어요. 기존 비밀번호를 알고 있다면 로그인으로 돌아가
+            주세요.
           </AppText>
         </View>
       </View>
@@ -44,25 +44,9 @@ export function PasswordResetOverview() {
           { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
         ]}
       >
-        <InlineNotice
-          tone="warning"
-          title="백엔드 계약 준비 필요"
-          message="요청 API, 토큰 검증 API, 새 비밀번호 저장 API가 준비되면 이 화면에서 바로 연결합니다."
-        />
-        <View style={styles.contractSummary}>
-          <AppText variant="label" weight="bold">
-            필요한 흐름
-          </AppText>
-          <AppText tone="secondary" variant="body">
-            1. 이메일 입력
-            {'\n'}
-            2. 재설정 메일 발송
-            {'\n'}
-            3. 링크 token 검증
-            {'\n'}
-            4. 새 비밀번호 저장 후 로그인
-          </AppText>
-        </View>
+        <AppText tone="secondary" variant="body">
+          계정 복구 기능이 준비되면 로그인 화면에서 바로 안내할게요.
+        </AppText>
         <Button fullWidth onPress={() => router.replace('/login' as Href)} size="large">
           로그인으로 돌아가기
         </Button>
@@ -102,8 +86,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: spacing[4],
     padding: spacing[4],
-  },
-  contractSummary: {
-    gap: spacing[2],
   },
 });

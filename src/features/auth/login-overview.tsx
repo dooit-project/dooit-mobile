@@ -169,16 +169,6 @@ export function LoginOverview() {
                 </AppText>
               </Pressable>
             </View>
-            <Pressable
-              accessibilityRole="link"
-              disabled={login.isPending}
-              onPress={() => router.push('/password-reset' as Href)}
-              style={styles.forgotPasswordLink}
-            >
-              <AppText tone="secondary" variant="caption" weight="bold">
-                비밀번호를 잊으셨나요?
-              </AppText>
-            </Pressable>
           </View>
         </View>
 
@@ -309,11 +299,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 44,
     paddingHorizontal: spacing[2],
-  },
-  forgotPasswordLink: {
-    alignSelf: 'flex-end',
-    minHeight: 32,
-    justifyContent: 'center',
   },
   secondaryAction: {
     alignItems: 'center',
