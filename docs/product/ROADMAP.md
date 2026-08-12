@@ -1,6 +1,6 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-12
+Last updated: 2026-08-13
 
 이 문서는 완료 이력이 아니라 현재 제품 기준과 앞으로 할 일을 관리한다. 과거 검증 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md), 실제 배포 전 확인은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 관리한다.
 
@@ -56,7 +56,7 @@ Last updated: 2026-08-12
 
 - [x] 비밀번호 재설정 API가 준비되기 전에는 로그인 화면의 진입점을 숨기거나 실제 지원 행동만 제공하고, `백엔드 계약`과 API 목록을 사용자 화면에서 제거한다.
 - [x] Settings의 API mode, API URL, Access Token 상태는 development build에서만 보이는 진단 영역으로 분리한다.
-- [ ] 전체 UI/UX 감사의 나머지 P1 개선 항목은 [`product-design-2026-08-12`](../audits/product-design-2026-08-12/README.md) 기준으로 순서대로 반영한다.
+- [ ] 전체 UI/UX 감사와 [`shadcn-ui-2026-08-13`](../audits/shadcn-ui-2026-08-13/README.md)의 P1 개선 항목을 순서대로 반영한다.
 
 ### P0. 최신 Android APK와 실제 사용 검증
 
@@ -87,6 +87,12 @@ Last updated: 2026-08-12
 
 ### P1. 접근성·레이아웃·성능
 
+- [ ] 공통 빈 상태를 icon·title·description·primary action·secondary action 구조로 정리하고 Today·Calendar부터 적용한다.
+- [ ] Calendar 빈 날짜에 해당 날짜의 일정 또는 Task를 추가하는 행동을 제공한다.
+- [ ] Completed와 하루 정리 빈 상태에 Today로 돌아가는 행동을 제공하고, 검색 전 상태와 검색 결과 없음을 구분한다.
+- [ ] Profile 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 `프로필`과 `더보기` 중 역할에 맞는 탭 이름을 확정한다.
+- [ ] 시작·로그인·회원가입·도움말·설정의 긴 문장을 줄이고, 제목의 강제 개행과 본문의 자동 개행 기준을 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)에 맞춘다.
+- [ ] 320px·390px·430px와 font scale 1.0·1.5에서 고립된 짧은 마지막 줄, 조사·서술어 분리, 중요 문구 말줄임을 점검한다.
 - [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → Profile 핵심 흐름을 점검한다.
 - [ ] checkbox, 일정 bar, tab, 빠른 기록, 알림 설정의 역할·상태·읽기 순서를 확인한다.
 - [ ] 375pt iPhone과 430dp Android의 safe area, home indicator, navigation bar, 키보드 겹침을 확인한다.
