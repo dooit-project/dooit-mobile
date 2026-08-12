@@ -115,10 +115,10 @@ export function ProfileOverview() {
               <AppText tone="primary" variant="caption" weight="bold">
                 나의 플래너 공간
               </AppText>
-              <AppText numberOfLines={1} variant="bodyLarge" weight="bold">
+              <AppText numberOfLines={2} variant="bodyLarge" weight="bold">
                 {authPresentation.title}
               </AppText>
-              <AppText numberOfLines={2} tone="secondary" variant="caption">
+              <AppText tone="secondary" variant="caption">
                 {authPresentation.description}
               </AppText>
             </View>
@@ -207,7 +207,7 @@ export function ProfileOverview() {
                   </View>
                   <View style={styles.copy}>
                     <AppText weight="medium">{item.title}</AppText>
-                    <AppText numberOfLines={1} tone="secondary" variant="caption">
+                    <AppText tone="secondary" variant="caption">
                       {item.description}
                     </AppText>
                   </View>

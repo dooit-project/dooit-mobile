@@ -92,7 +92,8 @@ Last updated: 2026-08-13
 - [x] Completed와 하루 정리 빈 상태에 Today로 돌아가는 행동을 제공하고, 검색 전 상태와 검색 결과 없음을 구분한다.
 - [x] 더보기 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 기능 허브 역할에 맞게 탭 이름을 `더보기`로 확정한다.
 - [x] 시작·로그인·회원가입·도움말·설정의 긴 문장을 줄이고, 제목의 강제 개행과 본문의 자동 개행 기준을 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)에 맞춘다.
-- [ ] 320px·390px·430px와 font scale 1.0·1.5에서 고립된 짧은 마지막 줄, 조사·서술어 분리, 중요 문구 말줄임을 점검한다.
+- [x] Web 320px·390px·430px와 browser zoom 100%·150%에서 고립된 마지막 줄, 조사·서술어 분리, 중요 문구 말줄임을 점검한다.
+- [ ] Android·iOS 320dp·390dp·430dp와 font scale 1.0·1.5에서 같은 문장·말줄임 기준을 실기기로 확인한다.
 - [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → 더보기 핵심 흐름을 점검한다.
 - [ ] checkbox, 일정 bar, tab, 빠른 기록, 알림 설정의 역할·상태·읽기 순서를 확인한다.
 - [ ] 375pt iPhone과 430dp Android의 safe area, home indicator, navigation bar, 키보드 겹침을 확인한다.

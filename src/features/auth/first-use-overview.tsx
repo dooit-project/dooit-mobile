@@ -54,7 +54,7 @@ export function FirstUseOverview({
             로그인 없이 시작
           </AppText>
           <AppText tone="secondary" variant="body">
-            게스트로 시작해도 나중에 지금 만든 내용을 계정에 연결할 수 있어요.
+            게스트로 시작하고 나중에 만든 내용을 계정에 연결할 수 있어요.
           </AppText>
         </View>
         <Button fullWidth loading={isStartingGuest} onPress={onStartGuest} size="large">
