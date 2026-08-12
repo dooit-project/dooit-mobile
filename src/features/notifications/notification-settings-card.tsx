@@ -88,7 +88,11 @@ export function NotificationSettingsCard() {
         </View>
       </View>
 
-      <View style={styles.statusRow}>
+      <View
+        accessibilityLabel={`일정 알림 권한 상태, ${permissionLabels[permission]}`}
+        accessibilityLiveRegion="polite"
+        style={styles.statusRow}
+      >
         <AppText tone="secondary" variant="caption">
           권한 상태
         </AppText>

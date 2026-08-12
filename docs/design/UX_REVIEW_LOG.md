@@ -87,6 +87,8 @@ Last updated: 2026-08-13
 - drag 또는 정렬 행동에 화면 읽기 사용자가 접근 가능한 대체 수단이 있는가
 - 성공·오류 상태가 색상 외 문구와 live region으로 전달되는가
 
+코드 기준으로 Task·일정 완료 control은 checkbox 역할과 checked·busy·disabled 상태를 제공한다. Calendar 일정 bar와 tab은 button·selected 의미를 유지하며, 빠른 기록은 expanded 상태, 알림 권한은 상태 label과 live region을 제공한다. 실제 읽기 순서와 발음은 VoiceOver·TalkBack smoke에서 별도로 확인한다.
+
 ### 인증과 데이터 신뢰
 
 - 게스트 병합 실패·offline·token 만료에서 사용자가 데이터 보존 상태를 정확히 이해하는가

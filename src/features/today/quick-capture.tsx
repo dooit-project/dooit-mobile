@@ -165,6 +165,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
           accessibilityHint="하단 입력창을 열어 기록함에 할 일을 추가합니다."
           accessibilityLabel="빠르게 기록 열기"
           accessibilityRole="button"
+          accessibilityState={{ expanded: false }}
           onPress={openComposer}
           style={({ pressed }) => [
             styles.quickBar,
