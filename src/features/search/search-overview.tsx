@@ -89,6 +89,14 @@ export function SearchOverview() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [focusedElement, setFocusedElement] = useState<string | null>(null);
   const deferredKeyword = useDeferredValue(keyword.trim());
+  const hasKeyword = keyword.trim().length > 0;
+  const hasActiveSearchConditions =
+    hasKeyword ||
+    selectedFilter !== 'ALL' ||
+    selectedDateRange !== 'ALL' ||
+    selectedDdayFilter !== 'ALL' ||
+    selectedCategory !== 'ALL' ||
+    selectedSort !== 'RELEVANT_DATE_DESC';
   const today = toApiLocalDate();
   const dateRangeQuery = useMemo(
     () => getDateRangeQuery(selectedDateRange, today),
@@ -129,16 +137,8 @@ export function SearchOverview() {
 
     return baseQuery;
   }, [categoryQuery, dateRangeQuery, ddayQuery, deferredKeyword, selectedFilter, selectedSort]);
-  const search = useTaskSearch(searchQuery);
+  const search = useTaskSearch(searchQuery, { enabled: hasActiveSearchConditions });
   const results = search.data?.pages.flatMap((page) => page.items) ?? [];
-  const hasKeyword = keyword.trim().length > 0;
-  const hasActiveSearchConditions =
-    hasKeyword ||
-    selectedFilter !== 'ALL' ||
-    selectedDateRange !== 'ALL' ||
-    selectedDdayFilter !== 'ALL' ||
-    selectedCategory !== 'ALL' ||
-    selectedSort !== 'RELEVANT_DATE_DESC';
   const selectedFilterLabel =
     searchFilters.find((filter) => filter.value === selectedFilter)?.label ?? '전체';
   const selectedDateRangeLabel =
@@ -163,11 +163,13 @@ export function SearchOverview() {
     activeExtraFilters.length > 0
       ? `${baseSummary} · ${activeExtraFilters.join(' · ')}`
       : baseSummary;
-  const resultDescription = search.isFetching
-    ? '검색 결과를 업데이트하고 있어요.'
-    : hasKeyword
-      ? `${searchSummary}에서 찾은 항목이에요.`
-      : `${searchSummary}을 최근 관련 날짜 순으로 보여줘요.`;
+  const resultDescription = !hasActiveSearchConditions
+    ? '검색어나 필터를 선택하면 결과를 보여줘요.'
+    : search.isFetching
+      ? '검색 결과를 업데이트하고 있어요.'
+      : hasKeyword
+        ? `${searchSummary}에서 찾은 항목이에요.`
+        : `${searchSummary}을 최근 관련 날짜 순으로 보여줘요.`;
   const resetSearchConditions = () => {
     setKeyword('');
     setSelectedFilter('ALL');
@@ -494,7 +496,7 @@ export function SearchOverview() {
         </View>
       </Card>
 
-      {search.error ? (
+      {hasActiveSearchConditions && search.error ? (
         <InlineNotice
           tone="danger"
           message={getUserFacingApiErrorMessage(search.error)}
@@ -521,12 +523,31 @@ export function SearchOverview() {
           </AppText>
         </View>
 
-        {search.isLoading ? (
+        {!hasActiveSearchConditions ? (
+          <EmptyState
+            icon={
+              <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
+                <SymbolView
+                  name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
+                  size={22}
+                  tintColor={theme.colors.primary}
+                />
+              </View>
+            }
+            title="무엇을 찾고 있나요?"
+            description="검색어를 입력하거나 필터로 기록을 둘러보세요."
+          />
+        ) : search.isLoading ? (
           <ListSkeleton accessibilityLabel="검색 결과를 불러오는 중" count={3} />
         ) : results.length === 0 ? (
           <EmptyState
             title="찾은 항목이 없어요"
             description="검색어를 줄이거나 전체 필터로 다시 확인해 보세요."
+            secondaryAction={
+              <Button variant="secondary" onPress={resetSearchConditions}>
+                검색 조건 초기화
+              </Button>
+            }
           />
         ) : (
           <View style={styles.resultList}>
@@ -673,6 +694,13 @@ const styles = StyleSheet.create({
   screen: {
     gap: spacing[3],
     paddingTop: spacing[3],
+  },
+  emptyIcon: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   searchCard: {
     gap: spacing[2],

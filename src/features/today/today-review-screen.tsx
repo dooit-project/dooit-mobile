@@ -79,7 +79,20 @@ export function TodayReviewScreen() {
           }
         />
       ) : reviewCount === 0 ? (
-        <EmptyState title="정리가 끝났어요" description="지금 다시 판단할 항목이 없습니다." />
+        <EmptyState
+          icon={
+            <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
+              <SymbolView
+                name={{ ios: 'checkmark.circle', android: 'task_alt', web: 'task_alt' }}
+                size={22}
+                tintColor={theme.colors.primary}
+              />
+            </View>
+          }
+          title="정리가 끝났어요"
+          description="지금 다시 판단할 항목이 없어요."
+          primaryAction={<Button onPress={() => router.replace('/')}>Today로 돌아가기</Button>}
+        />
       ) : (
         <View style={styles.sections}>
           {overview.staleTasks.length > 0 ? (
@@ -234,6 +247,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     backgroundColor: 'transparent',
+  },
+  emptyIcon: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   sections: {
     gap: spacing[3],

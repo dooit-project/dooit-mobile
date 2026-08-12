@@ -171,8 +171,18 @@ export function CompletedOverview() {
             </View>
           ) : (
             <EmptyState
+              icon={
+                <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
+                  <SymbolView
+                    name={{ ios: 'checkmark.circle', android: 'task_alt', web: 'task_alt' }}
+                    size={22}
+                    tintColor={theme.colors.primary}
+                  />
+                </View>
+              }
               title="이날 완료한 일이 없어요"
               description="다른 날짜를 선택해 완료 기록을 확인해 보세요."
+              primaryAction={<Button onPress={() => router.replace('/')}>Today로 돌아가기</Button>}
             />
           )}
 
@@ -218,6 +228,13 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     backgroundColor: 'transparent',
+  },
+  emptyIcon: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   weekCard: {
     overflow: 'hidden',
