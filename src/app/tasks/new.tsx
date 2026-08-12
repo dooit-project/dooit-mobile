@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -18,12 +18,16 @@ import {
 } from '@/services/preferences';
 import { spacing, useAppTheme } from '@/theme';
 import type { TaskResponse, TaskUpsertRequest } from '@/types';
+import { isLocalDateString } from '@/utils';
 
 export default function NewTaskScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ date?: string; type?: string }>();
   const theme = useAppTheme();
   const createTask = useCreateTask();
   const [notificationPromptTask, setNotificationPromptTask] = useState<TaskResponse | null>(null);
+  const initialDate = params.date && isLocalDateString(params.date) ? params.date : undefined;
+  const initialType = params.type === 'SCHEDULE' ? 'SCHEDULE' : undefined;
 
   const openTask = (task: TaskResponse) => {
     router.replace({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } });
@@ -57,7 +61,7 @@ export default function NewTaskScreen() {
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title="새 할 일"
+        title={initialType === 'SCHEDULE' ? '새 일정' : '새 할 일'}
         leading={
           <IconButton
             accessibilityLabel="이전 화면으로 돌아가기"
@@ -75,6 +79,8 @@ export default function NewTaskScreen() {
 
       <TaskForm
         errorMessage={createTask.error?.message}
+        initialDate={initialDate}
+        initialType={initialType}
         isSubmitting={createTask.isPending}
         submitLabel="저장하기"
         onCancel={() => router.back()}

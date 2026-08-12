@@ -71,6 +71,15 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
           }
           title="예정된 항목이 없어요"
           description="선택한 날짜에는 아직 일정이나 할 일이 없어요."
+          primaryAction={
+            <Button
+              onPress={() =>
+                router.push({ pathname: '/tasks/new', params: { date, type: 'SCHEDULE' } })
+              }
+            >
+              이 날짜에 일정 추가
+            </Button>
+          }
         />
       ) : (
         <>

@@ -3,7 +3,13 @@ import { Pressable, StyleSheet, Switch, TextInput, View } from 'react-native';
 
 import { AppText, Button, Card, InlineNotice } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
-import type { RecurrenceFrequency, TaskResponse, TaskType, TaskUpsertRequest } from '@/types';
+import type {
+  LocalDateString,
+  RecurrenceFrequency,
+  TaskResponse,
+  TaskType,
+  TaskUpsertRequest,
+} from '@/types';
 import { taskLimits } from '@/types';
 import { isLocalDateString, toApiLocalDate } from '@/utils';
 
@@ -42,6 +48,8 @@ type TaskFormField =
 
 type TaskFormProps = {
   initialTask?: TaskResponse;
+  initialDate?: LocalDateString;
+  initialType?: TaskType;
   submitLabel: string;
   isSubmitting?: boolean;
   errorMessage?: string | null;
@@ -57,6 +65,8 @@ const taskTypes: { value: TaskType; label: string }[] = [
 
 export function TaskForm({
   initialTask,
+  initialDate,
+  initialType,
   submitLabel,
   isSubmitting = false,
   errorMessage,
@@ -71,12 +81,13 @@ export function TaskForm({
       title: initialTask?.title ?? '',
       description: initialTask?.description ?? '',
       category: initialTask?.category ?? '',
-      type: initialTask?.type ?? 'TODO',
+      type: initialTask?.type ?? initialType ?? 'TODO',
       allDay: initialTask?.allDay ?? false,
       scheduleDate:
         initialTask?.startAt?.slice(0, 10) ??
         initialTask?.targetDate ??
         initialTask?.plannedDate ??
+        initialDate ??
         toApiLocalDate(),
       startTime: initialTask?.startAt?.slice(11, 16) ?? '09:00',
       endTime: initialTask?.endAt?.slice(11, 16) ?? '',
@@ -98,7 +109,7 @@ export function TaskForm({
           initialTask.type !== 'TODO' ||
           initialTask.allDay,
         )
-      : false,
+      : initialType !== undefined && initialType !== 'TODO',
   );
   const titleLength = values.title.trim().length;
   const canSubmit = titleLength > 0 && !isSubmitting;
