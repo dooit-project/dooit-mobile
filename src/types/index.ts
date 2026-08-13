@@ -56,3 +56,12 @@ export type {
   TodayOrderDirection,
 } from './task';
 export { deferReasonLabels, taskLimits } from './task';
+export type {
+  WorkspaceInviteRequest,
+  WorkspaceMemberResponse,
+  WorkspaceMemberStatus,
+  WorkspaceMemberUpdateRequest,
+  WorkspaceRequest,
+  WorkspaceResponse,
+  WorkspaceRole,
+} from './workspace';
