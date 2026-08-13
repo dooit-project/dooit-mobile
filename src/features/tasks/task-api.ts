@@ -4,6 +4,8 @@ import type {
   LocalDateString,
   RecurrenceEditScope,
   TaskNotificationCandidateResponse,
+  TaskQuickCaptureRequest,
+  TaskQuickCaptureResponse,
   TaskRecommendationResponse,
   TaskResponse,
   TaskListQuery,
@@ -46,6 +48,12 @@ export const taskApi = {
 
   create(request: TaskUpsertRequest, signal?: AbortSignal) {
     return apiClient.post<TaskResponse>(TASKS_PATH, request, { signal });
+  },
+
+  quickCapture(request: TaskQuickCaptureRequest, signal?: AbortSignal) {
+    return apiClient.post<TaskQuickCaptureResponse>(`${TASKS_PATH}/quick-capture`, request, {
+      signal,
+    });
   },
 
   update(

@@ -43,6 +43,21 @@ describe('Task API', () => {
     expect(postMock).toHaveBeenCalledWith('/api/v1/tasks', request, { signal: undefined });
   });
 
+  test('자연어 빠른 등록 요청을 전용 endpoint로 전달한다', async () => {
+    const request = {
+      text: '내일 오후 3시 출시 회의',
+      referenceDate: '2026-08-13' as const,
+      timeZone: 'Asia/Seoul',
+      defaultCategory: '업무',
+    };
+
+    await taskApi.quickCapture(request);
+
+    expect(postMock).toHaveBeenCalledWith('/api/v1/tasks/quick-capture', request, {
+      signal: undefined,
+    });
+  });
+
   test('반복 Task 생성 payload를 그대로 전달한다', async () => {
     const request = {
       title: '주간 회의',

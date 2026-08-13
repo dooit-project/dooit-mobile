@@ -62,6 +62,25 @@ export type TaskUpsertRequest = {
   recurrence?: TaskRecurrenceRequest | null;
 };
 
+export type TaskQuickCaptureRequest = {
+  text: string;
+  referenceDate?: LocalDateString | null;
+  timeZone?: string | null;
+  defaultCategory?: string | null;
+};
+
+export type TaskQuickCaptureResponse = {
+  task: TaskResponse;
+  parsed: boolean;
+  originalText: string;
+  parsedDate: LocalDateString | null;
+  parsedTime: string | null;
+  parsedType: TaskType;
+  parsedRecurrenceFrequency: RecurrenceFrequency | null;
+  parsedByDays: string[];
+  timeZone: string;
+};
+
 export type TaskRecurrenceRequest = {
   frequency: RecurrenceFrequency;
   interval?: number | null;

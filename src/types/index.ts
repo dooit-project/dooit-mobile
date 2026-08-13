@@ -35,6 +35,8 @@ export type {
   TaskListQuery,
   TaskNotificationCandidateResponse,
   TaskQueryType,
+  TaskQuickCaptureRequest,
+  TaskQuickCaptureResponse,
   TaskRecommendationResponse,
   TaskRecurrenceRequest,
   TaskRecurrenceResponse,

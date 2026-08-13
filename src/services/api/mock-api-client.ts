@@ -13,6 +13,8 @@ import type {
   TaskRecommendationResponse,
   TaskNotificationCandidateResponse,
   TaskQueryType,
+  TaskQuickCaptureRequest,
+  TaskQuickCaptureResponse,
   TaskResponse,
   TaskSearchDateField,
   TaskSearchDateSource,
@@ -901,6 +903,38 @@ export const mockApiClient = {
       rememberTask(task.id);
 
       return cloneTask(task) as T;
+    }
+
+    if (path === `${TASKS_PATH}/quick-capture`) {
+      const request = body as TaskQuickCaptureRequest;
+      const originalText = request.text.trim();
+      const task = createTask({
+        id: nextTaskId,
+        title: originalText.slice(0, 30),
+        description: originalText.length > 30 ? originalText : null,
+        type: 'TODO',
+        startAt: null,
+        endAt: null,
+        allDay: false,
+        category: request.defaultCategory ?? null,
+        status: 'INBOX',
+      });
+
+      nextTaskId += 1;
+      tasks.unshift(task);
+      rememberTask(task.id);
+
+      return {
+        task: cloneTask(task),
+        parsed: false,
+        originalText,
+        parsedDate: null,
+        parsedTime: null,
+        parsedType: 'TODO',
+        parsedRecurrenceFrequency: null,
+        parsedByDays: [],
+        timeZone: request.timeZone ?? 'Asia/Seoul',
+      } satisfies TaskQuickCaptureResponse as T;
     }
 
     if (path === DDAYS_PATH) {
