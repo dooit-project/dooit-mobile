@@ -88,6 +88,13 @@ Last updated: 2026-08-13
 - Calendar 일정 막대는 화면에 두 lane만 배치하고 나머지는 `+N` 전체 목록 행동으로 연결한다.
 - 실제 API 지연과 운영 데이터 규모의 렌더링 시간은 release 후보에서 별도로 측정한다.
 
+### 큰 글꼴과 명암
+
+- 공통 Button은 고정 높이가 아닌 최소 높이를 사용해 label이 커지면 세로로 확장한다.
+- 제목, 주요 CTA, 오류와 상태 안내에는 줄 수 제한을 두지 않는다. 공간이 제한된 일정 bar와 보조 metadata만 한 줄로 줄인다.
+- light·dark theme의 기본·보조·상태 text와 primary·secondary button surface는 자동 대비 테스트를 유지한다.
+- font scale 1.5의 실제 줄바꿈과 control 높이는 Android·iOS 실기기에서 별도로 확인한다.
+
 ### 접근성
 
 - VoiceOver·TalkBack 읽기 순서가 화면의 시각 순서와 일치하는가

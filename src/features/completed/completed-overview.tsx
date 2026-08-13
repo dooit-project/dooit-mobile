@@ -222,7 +222,7 @@ export function CompletedOverview() {
             <AppText variant="label" weight="semibold">
               이번 주 {summary.total}개 완료 · {summary.activeDays}일 기록
             </AppText>
-            <AppText numberOfLines={1} tone="secondary" variant="caption">
+            <AppText tone="secondary" variant="caption">
               {summary.message}
             </AppText>
           </View>

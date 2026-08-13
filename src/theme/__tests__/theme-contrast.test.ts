@@ -34,6 +34,16 @@ describe.each([
     );
   });
 
+  it('secondary button text가 4.5:1 이상이다', () => {
+    expect(contrastRatio(theme.colors.primary, theme.colors.primarySoft)).toBeGreaterThanOrEqual(
+      4.5,
+    );
+  });
+
+  it('기본 text가 muted surface에서 4.5:1 이상이다', () => {
+    expect(contrastRatio(theme.colors.text, theme.colors.surfaceMuted)).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('기본 ink text가 paper background에서 4.5:1 이상이다', () => {
     expect(contrastRatio(theme.colors.text, theme.colors.background)).toBeGreaterThanOrEqual(4.5);
   });

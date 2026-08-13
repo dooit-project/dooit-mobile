@@ -224,7 +224,7 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
           >
             <View style={styles.reviewCopy}>
               <AppText weight="semibold">정리할 항목</AppText>
-              <AppText numberOfLines={1} tone="secondary" variant="caption">
+              <AppText tone="secondary" variant="caption">
                 미완료 {staleTasks.length} · 추천 {recommendations.length} · 기록함{' '}
                 {inboxTasks.length}
               </AppText>

@@ -115,7 +115,7 @@ export function ProfileOverview() {
               <AppText tone="primary" variant="caption" weight="bold">
                 나의 플래너 공간
               </AppText>
-              <AppText numberOfLines={2} variant="bodyLarge" weight="bold">
+              <AppText variant="bodyLarge" weight="bold">
                 {authPresentation.title}
               </AppText>
               <AppText tone="secondary" variant="caption">
