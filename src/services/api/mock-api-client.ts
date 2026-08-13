@@ -22,6 +22,9 @@ import type {
   TaskSearchPage,
   TaskSearchSort,
   TaskStatus,
+  TaskTemplateCreateTaskRequest,
+  TaskTemplateRequest,
+  TaskTemplateResponse,
   TaskType,
   TaskUpsertRequest,
   TokenResponse,
@@ -42,14 +45,17 @@ const now = '2026-06-30T09:00:00';
 const today = toApiLocalDate();
 const AUTH_PATH = '/api/v1/auth';
 const TASKS_PATH = '/api/v1/tasks';
+const TASK_TEMPLATES_PATH = '/api/v1/task-templates';
 const DDAYS_PATH = '/api/v1/dday-goals';
 
 let nextUserId = 2;
 let nextTaskId = 100;
+let nextTemplateId = 1;
 let nextGoalId = 10;
 let currentUser: UserResponse | null = null;
 const taskIdsByUser = new Map<number, Set<number>>();
 const goalIdsByUser = new Map<number, Set<number>>();
+const taskTemplates: TaskTemplateResponse[] = [];
 
 const users: UserResponse[] = [
   {
@@ -693,6 +699,40 @@ function disconnectGoal(task: TaskResponse) {
   return cloneTask(task);
 }
 
+function getTemplateId(path: string) {
+  const match = path.match(/^\/api\/v1\/task-templates\/(\d+)(?:\/tasks)?$/);
+  return match ? Number(match[1]) : null;
+}
+
+function getTemplate(templateId: number) {
+  const template = taskTemplates.find((item) => item.id === templateId);
+  if (!template) {
+    throw new ApiClientError('Task 템플릿을 찾을 수 없습니다.', {
+      kind: 'http',
+      status: 404,
+    });
+  }
+  return template;
+}
+
+function applyTemplateRequest(
+  template: TaskTemplateResponse,
+  request: TaskTemplateRequest,
+): TaskTemplateResponse {
+  template.title = request.title;
+  template.description = request.description ?? null;
+  template.type = request.type ?? 'TODO';
+  template.category = request.category ?? null;
+  template.allDay = request.allDay;
+  template.defaultStartTime = request.defaultStartTime ?? null;
+  template.defaultDurationMinutes = request.defaultDurationMinutes ?? null;
+  template.recurrenceFrequency = request.recurrenceFrequency ?? null;
+  template.recurrenceInterval = request.recurrenceInterval ?? 1;
+  template.recurrenceByDays = [...(request.recurrenceByDays ?? [])];
+  template.updatedAt = now;
+  return { ...template, recurrenceByDays: [...template.recurrenceByDays] };
+}
+
 export const mockApiClient = {
   async get<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
@@ -803,6 +843,13 @@ export const mockApiClient = {
         .map(cloneTask) as T;
     }
 
+    if (path === TASK_TEMPLATES_PATH) {
+      return taskTemplates.map((template) => ({
+        ...template,
+        recurrenceByDays: [...template.recurrenceByDays],
+      })) as T;
+    }
+
     if (path === DDAYS_PATH) {
       return getVisibleGoals().map(cloneGoal) as T;
     }
@@ -810,6 +857,12 @@ export const mockApiClient = {
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
       return cloneTask(getTask(taskId)) as T;
+    }
+
+    const templateId = getTemplateId(path);
+    if (templateId && path === `${TASK_TEMPLATES_PATH}/${templateId}`) {
+      const template = getTemplate(templateId);
+      return { ...template, recurrenceByDays: [...template.recurrenceByDays] } as T;
     }
 
     const goalId = getGoalId(path);
@@ -937,6 +990,61 @@ export const mockApiClient = {
       } satisfies TaskQuickCaptureResponse as T;
     }
 
+    if (path === TASK_TEMPLATES_PATH) {
+      const request = body as TaskTemplateRequest;
+      const template = applyTemplateRequest(
+        {
+          id: nextTemplateId,
+          title: request.title,
+          description: null,
+          type: 'TODO',
+          category: null,
+          allDay: false,
+          defaultStartTime: null,
+          defaultDurationMinutes: null,
+          recurrenceFrequency: null,
+          recurrenceInterval: 1,
+          recurrenceByDays: [],
+          createdAt: now,
+          updatedAt: null,
+        },
+        request,
+      );
+      template.updatedAt = null;
+      nextTemplateId += 1;
+      taskTemplates.push(template);
+      return { ...template, recurrenceByDays: [...template.recurrenceByDays] } as T;
+    }
+
+    const templateId = getTemplateId(path);
+    if (templateId && path === `${TASK_TEMPLATES_PATH}/${templateId}/tasks`) {
+      const template = getTemplate(templateId);
+      const request = body as TaskTemplateCreateTaskRequest;
+      const targetDate = request.targetDate ?? null;
+      const isSchedule = template.type === 'SCHEDULE';
+      const startAt =
+        isSchedule && targetDate
+          ? `${targetDate}T${template.allDay ? '00:00:00' : (template.defaultStartTime ?? '09:00:00')}`
+          : null;
+      const task = createTask({
+        id: nextTaskId,
+        title: request.title ?? template.title,
+        description: request.description ?? template.description,
+        type: template.type,
+        category: request.category ?? template.category,
+        allDay: template.allDay,
+        startAt,
+        endAt: null,
+        status: isSchedule ? 'TODAY' : 'INBOX',
+        plannedDate: isSchedule ? targetDate : null,
+        targetDate: isSchedule ? targetDate : null,
+      });
+      nextTaskId += 1;
+      tasks.unshift(task);
+      rememberTask(task.id);
+      return cloneTask(task) as T;
+    }
+
     if (path === DDAYS_PATH) {
       const request = body as DdayGoalRequest;
       const goal: DdayGoalResponse = {
@@ -993,6 +1101,11 @@ export const mockApiClient = {
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
       return applyTaskRequest(getTask(taskId), body as TaskUpsertRequest) as T;
+    }
+
+    const templateId = getTemplateId(path);
+    if (templateId && path === `${TASK_TEMPLATES_PATH}/${templateId}`) {
+      return applyTemplateRequest(getTemplate(templateId), body as TaskTemplateRequest) as T;
     }
 
     throw new ApiClientError(`Mock API가 지원하지 않는 PUT 요청입니다. (${path})`, {
@@ -1067,6 +1180,14 @@ export const mockApiClient = {
         tasks.splice(index, 1);
       }
 
+      return null as T;
+    }
+
+    const templateId = getTemplateId(path);
+    if (templateId && path === `${TASK_TEMPLATES_PATH}/${templateId}`) {
+      getTemplate(templateId);
+      const index = taskTemplates.findIndex((template) => template.id === templateId);
+      taskTemplates.splice(index, 1);
       return null as T;
     }
 

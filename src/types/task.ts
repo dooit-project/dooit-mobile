@@ -81,6 +81,42 @@ export type TaskQuickCaptureResponse = {
   timeZone: string;
 };
 
+export type TaskTemplateRequest = {
+  title: string;
+  description?: string | null;
+  type?: TaskType | null;
+  category?: string | null;
+  allDay: boolean;
+  defaultStartTime?: string | null;
+  defaultDurationMinutes?: number | null;
+  recurrenceFrequency?: RecurrenceFrequency | null;
+  recurrenceInterval?: number | null;
+  recurrenceByDays?: string[] | null;
+};
+
+export type TaskTemplateCreateTaskRequest = {
+  targetDate?: LocalDateString | null;
+  title?: string | null;
+  description?: string | null;
+  category?: string | null;
+};
+
+export type TaskTemplateResponse = {
+  id: number;
+  title: string;
+  description: string | null;
+  type: TaskType;
+  category: string | null;
+  allDay: boolean;
+  defaultStartTime: string | null;
+  defaultDurationMinutes: number | null;
+  recurrenceFrequency: RecurrenceFrequency | null;
+  recurrenceInterval: number;
+  recurrenceByDays: string[];
+  createdAt: LocalDateTimeString;
+  updatedAt: LocalDateTimeString | null;
+};
+
 export type TaskRecurrenceRequest = {
   frequency: RecurrenceFrequency;
   interval?: number | null;

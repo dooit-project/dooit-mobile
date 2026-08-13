@@ -119,7 +119,8 @@ Last updated: 2026-08-13
 - [ ] 서버 push가 필요해지면 push token 등록, source 중복 방지, 발송 이력 UX를 별도 설계한다.
 - [x] 자연어 빠른 등록의 request·response 타입, API client, mock fallback과 endpoint 회귀 테스트를 추가한다.
 - [ ] 빠른 기록 composer를 자연어 빠른 등록 API에 연결하고 파싱 결과를 사용자가 확인·수정할 수 있게 한다.
-- [ ] 개인 Task 템플릿 API와 관리·적용 화면을 추가한다.
+- [x] 개인 Task 템플릿의 타입, CRUD·Task 적용 API client, mock과 endpoint 회귀 테스트를 추가한다.
+- [ ] 개인 Task 템플릿 관리·적용 화면을 추가한다.
 - [ ] Workspace 기본 API는 백엔드 배포 확인 후 생성·조회·멤버 관리 범위만 별도 화면으로 연결한다.
 - [ ] Workspace Task·D-Day·템플릿·알림은 백엔드 API가 제공되기 전까지 화면에 노출하지 않는다.
 - [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.
