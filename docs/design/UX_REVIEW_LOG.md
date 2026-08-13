@@ -82,6 +82,12 @@ Last updated: 2026-08-13
 
 공통 Screen의 SafeAreaView와 scroll keyboard inset을 기준으로 사용한다. 로그인·회원가입 form은 별도의 KeyboardAvoidingView를 중첩하지 않으며, Today의 하단 빠른 기록만 절대 배치 layer에서 키보드 높이를 별도로 반영한다. 실제 home indicator·navigation bar·키보드 조합은 실기기 smoke에서 확인한다.
 
+### 긴 목록과 밀집 일정
+
+- Today의 오늘 할 일과 펼친 완료 목록, Completed의 선택 날짜 목록은 처음 20개를 렌더링하고 사용자가 요청하면 20개씩 추가한다.
+- Calendar 일정 막대는 화면에 두 lane만 배치하고 나머지는 `+N` 전체 목록 행동으로 연결한다.
+- 실제 API 지연과 운영 데이터 규모의 렌더링 시간은 release 후보에서 별도로 측정한다.
+
 ### 접근성
 
 - VoiceOver·TalkBack 읽기 순서가 화면의 시각 순서와 일치하는가

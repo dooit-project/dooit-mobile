@@ -33,6 +33,8 @@ type FeedbackMessage = {
   message: string;
 };
 
+const COMPLETED_RENDER_BATCH_SIZE = 20;
+
 export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverviewProps) {
   const router = useRouter();
   const theme = useAppTheme();
@@ -51,11 +53,14 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
   const reopenTask = useReopenTask(date);
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
   const [isCompletedExpanded, setIsCompletedExpanded] = useState(false);
+  const [completedVisibleCount, setCompletedVisibleCount] = useState(COMPLETED_RENDER_BATCH_SIZE);
   const [isReviewFocused, setIsReviewFocused] = useState(false);
   const { scheduleTasks, executionTasks } = splitTodayTasks(todayTasks);
   const reviewItemCount = staleTasks.length + recommendations.length + inboxTasks.length;
   const sortedScheduleTasks = [...scheduleTasks].sort(compareScheduleTasks);
   const schedulePreview = getTodaySchedulePreview(sortedScheduleTasks);
+  const visibleDoneTasks = doneTasks.slice(0, completedVisibleCount);
+  const remainingDoneCount = Math.max(0, doneTasks.length - visibleDoneTasks.length);
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
   };
@@ -259,7 +264,7 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
 
         {isCompletedExpanded && doneTasks.length > 0 ? (
           <View style={styles.taskList}>
-            {doneTasks.map((task) => (
+            {visibleDoneTasks.map((task) => (
               <TaskCard
                 key={task.id}
                 task={task}
@@ -273,6 +278,17 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
                 }
               />
             ))}
+            {remainingDoneCount > 0 ? (
+              <Button
+                accessibilityLabel={`완료한 일 ${remainingDoneCount}개 더 보기`}
+                onPress={() =>
+                  setCompletedVisibleCount((count) => count + COMPLETED_RENDER_BATCH_SIZE)
+                }
+                variant="ghost"
+              >
+                더 보기 ({remainingDoneCount}개)
+              </Button>
+            ) : null}
           </View>
         ) : null}
       </View>

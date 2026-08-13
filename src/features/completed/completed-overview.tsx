@@ -24,19 +24,27 @@ import { formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
 import { getCompletedSummary } from './completed-summary';
 import { useCompletedWeek } from './use-completed-week';
 
+const TASK_RENDER_BATCH_SIZE = 20;
+
 export function CompletedOverview() {
   const router = useRouter();
   const theme = useAppTheme();
   const today = toApiLocalDate();
   const [selectedDate, setSelectedDate] = useState<LocalDateString>(today);
   const [focusedDate, setFocusedDate] = useState<LocalDateString | null>(null);
+  const [visibleTaskCount, setVisibleTaskCount] = useState(TASK_RENDER_BATCH_SIZE);
   const week = useCompletedWeek(selectedDate);
   const reopenTask = useReopenTask(selectedDate);
   const selectedDay = week.days.find((day) => day.date === selectedDate) ?? week.days[0];
   const summary = getCompletedSummary(week.days);
+  const visibleTasks = selectedDay?.tasks.slice(0, visibleTaskCount) ?? [];
+  const remainingTaskCount = Math.max(0, (selectedDay?.tasks.length ?? 0) - visibleTasks.length);
   const moveWeek = (days: number) => {
     const nextDate = shiftLocalDate(selectedDate, days);
-    if (nextDate) setSelectedDate(nextDate);
+    if (nextDate) {
+      setSelectedDate(nextDate);
+      setVisibleTaskCount(TASK_RENDER_BATCH_SIZE);
+    }
   };
 
   return (
@@ -91,7 +99,10 @@ export function CompletedOverview() {
                 accessibilityState={{ selected }}
                 onBlur={() => setFocusedDate(null)}
                 onFocus={() => setFocusedDate(day.date)}
-                onPress={() => setSelectedDate(day.date)}
+                onPress={() => {
+                  setSelectedDate(day.date);
+                  setVisibleTaskCount(TASK_RENDER_BATCH_SIZE);
+                }}
                 style={[
                   styles.dayButton,
                   {
@@ -151,7 +162,7 @@ export function CompletedOverview() {
                 }
               />
               <View style={styles.tasks}>
-                {selectedDay.tasks.map((task) => (
+                {visibleTasks.map((task) => (
                   <TaskCard
                     compact
                     key={task.id}
@@ -167,6 +178,15 @@ export function CompletedOverview() {
                     }
                   />
                 ))}
+                {remainingTaskCount > 0 ? (
+                  <Button
+                    accessibilityLabel={`완료 기록 ${remainingTaskCount}개 더 보기`}
+                    onPress={() => setVisibleTaskCount((count) => count + TASK_RENDER_BATCH_SIZE)}
+                    variant="ghost"
+                  >
+                    더 보기 ({remainingTaskCount}개)
+                  </Button>
+                ) : null}
               </View>
             </View>
           ) : (
