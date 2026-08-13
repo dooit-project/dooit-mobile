@@ -1,5 +1,6 @@
 export { taskApi } from './task-api';
 export { taskTemplateApi } from './task-template-api';
+export { taskTemplateQueryKeys } from './task-template-query-keys';
 export { ScheduleCard } from './schedule-card';
 export { TaskCard } from './task-card';
 export { TaskDateQuickActions } from './task-date-quick-actions';
@@ -18,4 +19,11 @@ export { useReopenTask } from './use-reopen-task';
 export { useSetDeferReason } from './use-set-defer-reason';
 export { useTaskDetail } from './use-task-detail';
 export { useTaskDdayGoal } from './use-task-dday-goal';
+export {
+  useCreateTaskFromTemplate,
+  useCreateTaskTemplate,
+  useDeleteTaskTemplate,
+  useUpdateTaskTemplate,
+} from './use-task-template-mutations';
+export { useTaskTemplates } from './use-task-templates';
 export { useUpdateTask } from './use-update-task';
