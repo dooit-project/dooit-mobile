@@ -115,7 +115,8 @@ Last updated: 2026-08-13
 
 ### P2. 후속 제품 기능
 
-- [ ] 사용자가 일정별 알림 시각 또는 미리 알림 간격을 선택할 수 있게 한다.
+- [x] 일정별 알림 설정의 저장 책임, 반복 범위와 후보 시각 요구 계약을 [`TASK_NOTIFICATION_TIMING_CONTRACT.md`](../api/TASK_NOTIFICATION_TIMING_CONTRACT.md)에 정리한다.
+- [ ] 백엔드가 일정별 알림 preference와 실제 후보 `notifyAt`을 제공하면 생성·편집 UI와 로컬 예약에 연결한다.
 - [ ] 서버 push가 필요해지면 push token 등록, source 중복 방지, 발송 이력 UX를 별도 설계한다.
 - [x] 자연어 빠른 등록의 request·response 타입, API client, mock fallback과 endpoint 회귀 테스트를 추가한다.
 - [x] 빠른 기록 composer를 자연어 빠른 등록 API에 연결하고 파싱 결과를 사용자가 확인·수정할 수 있게 한다.
