@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
-import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import {
   AppText,
   Button,
@@ -86,16 +86,33 @@ export function WorkspaceOverview() {
           <View style={styles.list}>
             <SectionHeader title="참여 중인 공간" count={query.data?.length ?? 0} />
             {query.data?.map((item) => (
-              <Card key={item.id}>
-                <AppText numberOfLines={2} weight="semibold">
-                  {item.name}
-                </AppText>
-                {item.description ? (
-                  <AppText numberOfLines={3} tone="secondary" variant="caption">
-                    {item.description}
+              <Pressable
+                key={item.id}
+                accessibilityRole="button"
+                accessibilityLabel={`${item.name} 공유 공간 열기`}
+                onPress={() =>
+                  router.push({
+                    pathname: '/workspaces/[workspaceId]',
+                    params: { workspaceId: String(item.id) },
+                  })
+                }
+              >
+                <Card style={styles.workspaceCard}>
+                  <View style={styles.workspaceCopy}>
+                    <AppText numberOfLines={2} weight="semibold">
+                      {item.name}
+                    </AppText>
+                    {item.description ? (
+                      <AppText numberOfLines={3} tone="secondary" variant="caption">
+                        {item.description}
+                      </AppText>
+                    ) : null}
+                  </View>
+                  <AppText tone="muted" variant="bodyLarge">
+                    ›
                   </AppText>
-                ) : null}
-              </Card>
+                </Card>
+              </Pressable>
             ))}
           </View>
         ) : null
@@ -190,6 +207,8 @@ const styles = StyleSheet.create({
   screen: { gap: spacing[4], paddingBottom: spacing[8], paddingTop: spacing[3] },
   state: { alignItems: 'center', flexDirection: 'row', gap: spacing[2] },
   list: { gap: spacing[3] },
+  workspaceCard: { alignItems: 'center', flexDirection: 'row', gap: spacing[3] },
+  workspaceCopy: { flex: 1, gap: spacing[1], minWidth: 0 },
   form: { gap: spacing[4] },
   field: { gap: spacing[2] },
   input: {
