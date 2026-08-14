@@ -131,7 +131,7 @@ Last updated: 2026-08-13
 - [x] Workspace D-Day 생성·조회·연결 Task·삭제 API client와 endpoint 테스트를 추가한다.
 - [ ] 초대받은 사용자가 PENDING membership의 `workspaceId`와 `memberId`를 조회하는 계약을 백엔드와 확정한다.
 - [x] 백엔드 확인·보완 요청을 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md)에 정리한다.
-- [ ] Workspace 목록·생성·멤버 목록 Query 상태 계층을 추가한다.
+- [x] Workspace 목록·생성·멤버 목록 Query 상태 계층을 추가한다.
 - [ ] 최신 실행 OpenAPI에 Workspace path가 노출되고 backend commit SHA가 확인되면 더보기에서 공유 공간 진입점을 연다.
 - [ ] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [ ] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
