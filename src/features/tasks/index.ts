@@ -1,5 +1,6 @@
 export { taskApi } from './task-api';
 export { taskTemplateApi } from './task-template-api';
+export { TaskTemplateOverview } from './task-template-overview';
 export { taskTemplateQueryKeys } from './task-template-query-keys';
 export { ScheduleCard } from './schedule-card';
 export { TaskCard } from './task-card';

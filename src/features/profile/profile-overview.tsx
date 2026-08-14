@@ -19,9 +19,9 @@ type ProfileItem = {
   accent: 'amber' | 'sage' | 'blue';
   title: string;
   description: string;
-  href: '/dday' | '/search' | '/completed' | '/settings';
+  href: '/dday' | '/search' | '/completed' | '/templates' | '/settings';
   icon: SymbolViewProps['name'];
-  webIcon: 'flag' | 'search' | 'task_alt' | 'settings';
+  webIcon: 'flag' | 'search' | 'task_alt' | 'content_copy' | 'settings';
 };
 
 const profileItemGroups: { title: string; items: ProfileItem[] }[] = [
@@ -50,6 +50,14 @@ const profileItemGroups: { title: string; items: ProfileItem[] }[] = [
         description: '끝낸 일과 주간 흐름',
         href: '/completed',
         icon: { ios: 'checkmark.circle.fill', android: 'task_alt', web: 'task_alt' },
+        webIcon: 'content_copy',
+      },
+      {
+        accent: 'amber',
+        title: 'Task 템플릿',
+        description: '자주 하는 일을 빠르게 추가',
+        href: '/templates',
+        icon: { ios: 'doc.on.doc.fill', android: 'content_copy', web: 'content_copy' },
         webIcon: 'task_alt',
       },
     ],
@@ -253,6 +261,15 @@ function WebShortcutIcon({ color, name }: { color: ColorValue; name: ProfileItem
     );
   }
 
+  if (name === 'content_copy') {
+    return (
+      <View accessible={false} style={styles.webShortcutIcon}>
+        <View style={[styles.webCopyBack, { borderColor: color }]} />
+        <View style={[styles.webCopyFront, { borderColor: color }]} />
+      </View>
+    );
+  }
+
   return (
     <View accessible={false} style={styles.webShortcutIcon}>
       <View style={[styles.webSliderLineTop, { backgroundColor: color }]} />
@@ -390,6 +407,25 @@ const styles = StyleSheet.create({
     top: 8,
     transform: [{ rotate: '-45deg' }],
     width: 8,
+  },
+  webCopyBack: {
+    borderRadius: 3,
+    borderWidth: 2,
+    height: 12,
+    left: 3,
+    position: 'absolute',
+    top: 2,
+    width: 10,
+  },
+  webCopyFront: {
+    backgroundColor: 'transparent',
+    borderRadius: 3,
+    borderWidth: 2,
+    bottom: 2,
+    height: 12,
+    position: 'absolute',
+    right: 3,
+    width: 10,
   },
   webSliderKnobBottom: {
     backgroundColor: 'transparent',
