@@ -1,6 +1,7 @@
 export { taskApi } from './task-api';
 export { taskTemplateApi } from './task-template-api';
 export { TaskTemplateOverview } from './task-template-overview';
+export { TaskTemplateSettingsFields } from './task-template-settings-fields';
 export { taskTemplateQueryKeys } from './task-template-query-keys';
 export {
   buildTaskTemplateSettingsRequest,

@@ -25,6 +25,11 @@ import {
   useUpdateTaskTemplate,
 } from './use-task-template-mutations';
 import { useTaskTemplates } from './use-task-templates';
+import { TaskTemplateSettingsFields } from './task-template-settings-fields';
+import {
+  buildTaskTemplateSettingsRequest,
+  getTaskTemplateSettingsValues,
+} from './task-template-settings';
 
 type Feedback = { message: string; tone: 'success' | 'danger' };
 
@@ -229,12 +234,20 @@ function TaskTemplateEditForm({
   const [title, setTitle] = useState(template.title);
   const [description, setDescription] = useState(template.description ?? '');
   const [category, setCategory] = useState(template.category ?? '');
+  const [settings, setSettings] = useState(() => getTaskTemplateSettingsValues(template));
   const [titleError, setTitleError] = useState<string | null>(null);
+  const [settingsError, setSettingsError] = useState<string | null>(null);
 
   const submit = () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setTitleError('템플릿 이름을 입력해 주세요.');
+      return;
+    }
+
+    const settingsResult = buildTaskTemplateSettingsRequest(settings);
+    if (!settingsResult.ok) {
+      setSettingsError(settingsResult.message);
       return;
     }
 
@@ -245,13 +258,7 @@ function TaskTemplateEditForm({
           title: trimmedTitle,
           description: description.trim() || null,
           category: category.trim() || null,
-          type: template.type,
-          allDay: template.allDay,
-          defaultStartTime: template.defaultStartTime,
-          defaultDurationMinutes: template.defaultDurationMinutes,
-          recurrenceFrequency: template.recurrenceFrequency,
-          recurrenceInterval: template.recurrenceInterval,
-          recurrenceByDays: template.recurrenceByDays,
+          ...settingsResult.request,
         },
       },
       { onSuccess: onUpdated },
@@ -370,6 +377,16 @@ function TaskTemplateEditForm({
           value={category}
         />
       </View>
+      <TaskTemplateSettingsFields
+        disabled={updateTemplate.isPending}
+        onChange={(values) => {
+          setSettings(values);
+          setSettingsError(null);
+          updateTemplate.reset();
+        }}
+        values={settings}
+      />
+      {settingsError ? <InlineNotice message={settingsError} tone="warning" /> : null}
       {updateTemplate.error ? (
         <InlineNotice message={updateTemplate.error.message} tone="danger" />
       ) : null}

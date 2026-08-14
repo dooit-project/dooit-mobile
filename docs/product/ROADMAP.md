@@ -122,7 +122,7 @@ Last updated: 2026-08-13
 - [x] 개인 Task 템플릿의 타입, CRUD·Task 적용 API client, mock과 endpoint 회귀 테스트를 추가한다.
 - [x] 개인 Task 템플릿 목록, 기본 생성·삭제와 오늘 Task 적용 화면을 추가한다.
 - [x] 기존 개인 Task 템플릿의 이름·설명·분류 편집 화면을 추가한다.
-- [ ] 개인 Task 템플릿의 일정·반복 설정 화면을 추가한다.
+- [x] 개인 Task 템플릿의 일정·반복 설정 화면을 추가한다.
 - [ ] Workspace 기본 API는 백엔드 배포 확인 후 생성·조회·멤버 관리 범위만 별도 화면으로 연결한다.
 - [x] Workspace 기본 관리와 멤버 초대·수락·제거의 타입, API client와 endpoint 회귀 테스트를 추가한다.
 - [ ] 초대받은 사용자가 PENDING membership의 `workspaceId`와 `memberId`를 조회하는 계약을 백엔드와 확정한다.
