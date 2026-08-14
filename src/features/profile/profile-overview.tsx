@@ -19,7 +19,7 @@ type ProfileItem = {
   accent: 'amber' | 'sage' | 'blue';
   title: string;
   description: string;
-  href: '/dday' | '/search' | '/completed' | '/templates' | '/settings';
+  href: '/dday' | '/search' | '/completed' | '/templates' | '/workspaces' | '/settings';
   icon: SymbolViewProps['name'];
   webIcon: 'flag' | 'search' | 'task_alt' | 'content_copy' | 'settings';
 };
@@ -59,6 +59,14 @@ const profileItemGroups: { title: string; items: ProfileItem[] }[] = [
         href: '/templates',
         icon: { ios: 'doc.on.doc.fill', android: 'content_copy', web: 'content_copy' },
         webIcon: 'task_alt',
+      },
+      {
+        accent: 'blue',
+        title: '공유 공간',
+        description: '함께 관리하는 일정과 목표',
+        href: '/workspaces',
+        icon: { ios: 'person.2.fill', android: 'group', web: 'group' },
+        webIcon: 'content_copy',
       },
     ],
   },
