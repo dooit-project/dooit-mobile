@@ -30,6 +30,11 @@ import type {
   TokenResponse,
   TodayOrderDirection,
   UserResponse,
+  WorkspaceInviteRequest,
+  WorkspaceMemberResponse,
+  WorkspaceMemberUpdateRequest,
+  WorkspaceRequest,
+  WorkspaceResponse,
 } from '@/types';
 import { deferReasonLabels } from '@/types';
 import { doesScheduleOverlapDate, shiftLocalDate, toApiLocalDate } from '@/utils';
@@ -47,15 +52,20 @@ const AUTH_PATH = '/api/v1/auth';
 const TASKS_PATH = '/api/v1/tasks';
 const TASK_TEMPLATES_PATH = '/api/v1/task-templates';
 const DDAYS_PATH = '/api/v1/dday-goals';
+const WORKSPACES_PATH = '/api/v1/workspaces';
 
-let nextUserId = 2;
+let nextUserId = 3;
 let nextTaskId = 100;
 let nextTemplateId = 1;
 let nextGoalId = 10;
+let nextWorkspaceId = 1;
+let nextWorkspaceMemberId = 1;
 let currentUser: UserResponse | null = null;
 const taskIdsByUser = new Map<number, Set<number>>();
 const goalIdsByUser = new Map<number, Set<number>>();
 const taskTemplates: TaskTemplateResponse[] = [];
+const workspaces: WorkspaceResponse[] = [];
+const workspaceMembers: WorkspaceMemberResponse[] = [];
 
 const users: UserResponse[] = [
   {
@@ -63,6 +73,16 @@ const users: UserResponse[] = [
     accountType: 'REGISTERED',
     email: 'demo@todolab.app',
     displayName: 'Demo User',
+    role: 'USER',
+    timeZone: 'Asia/Seoul',
+    createdAt: now,
+    updatedAt: null,
+  },
+  {
+    id: 2,
+    accountType: 'REGISTERED',
+    email: 'member@todolab.app',
+    displayName: 'Mock Member',
     role: 'USER',
     timeZone: 'Asia/Seoul',
     createdAt: now,
@@ -830,6 +850,29 @@ function applyTemplateRequest(
   return { ...template, recurrenceByDays: [...template.recurrenceByDays] };
 }
 
+function getWorkspacePathIds(path: string) {
+  const match = path.match(/^\/api\/v1\/workspaces\/(\d+)(?:\/members(?:\/(\d+))?)?$/);
+  return match
+    ? { workspaceId: Number(match[1]), memberId: match[2] ? Number(match[2]) : null }
+    : null;
+}
+
+function getMockActor() {
+  return currentUser ?? users[0];
+}
+
+function getWorkspace(workspaceId: number) {
+  const workspace = workspaces.find((item) => item.id === workspaceId);
+  if (!workspace) {
+    throw new ApiClientError('Workspace를 찾을 수 없습니다.', { kind: 'http', status: 404 });
+  }
+  return workspace;
+}
+
+function cloneWorkspaceMember(member: WorkspaceMemberResponse) {
+  return { ...member };
+}
+
 export const mockApiClient = {
   async get<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
@@ -951,6 +994,32 @@ export const mockApiClient = {
       return getVisibleGoals().map(cloneGoal) as T;
     }
 
+    if (path === WORKSPACES_PATH) {
+      const actorId = getMockActor().id;
+      const visibleIds = new Set(
+        workspaceMembers
+          .filter((member) => member.userId === actorId && member.status === 'ACTIVE')
+          .map((member) => member.workspaceId),
+      );
+      return workspaces
+        .filter((workspace) => visibleIds.has(workspace.id))
+        .map((item) => ({ ...item })) as T;
+    }
+
+    const workspacePath = getWorkspacePathIds(path);
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}`) {
+      return { ...getWorkspace(workspacePath.workspaceId) } as T;
+    }
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}/members`) {
+      getWorkspace(workspacePath.workspaceId);
+      return workspaceMembers
+        .filter(
+          (member) =>
+            member.workspaceId === workspacePath.workspaceId && member.status === 'ACTIVE',
+        )
+        .map(cloneWorkspaceMember) as T;
+    }
+
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
       return cloneTask(getTask(taskId)) as T;
@@ -1032,6 +1101,54 @@ export const mockApiClient = {
 
     if (path === `${AUTH_PATH}/password-reset/confirm`) {
       return null as T;
+    }
+
+    if (path === WORKSPACES_PATH) {
+      const request = body as WorkspaceRequest;
+      const actor = getMockActor();
+      const workspace: WorkspaceResponse = {
+        id: nextWorkspaceId++,
+        name: request.name,
+        description: request.description ?? null,
+        createdByUserId: actor.id,
+        createdAt: now,
+        updatedAt: null,
+      };
+      workspaces.push(workspace);
+      workspaceMembers.push({
+        id: nextWorkspaceMemberId++,
+        workspaceId: workspace.id,
+        userId: actor.id,
+        email: actor.email ?? '',
+        displayName: actor.displayName ?? '',
+        role: 'OWNER',
+        status: 'ACTIVE',
+        createdAt: now,
+        updatedAt: null,
+      });
+      return { ...workspace } as T;
+    }
+
+    const workspacePath = getWorkspacePathIds(path);
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}/members`) {
+      getWorkspace(workspacePath.workspaceId);
+      const request = body as WorkspaceInviteRequest;
+      const user = users.find((item) => item.email === request.email);
+      if (!user)
+        throw new ApiClientError('등록 사용자를 찾을 수 없습니다.', { kind: 'http', status: 404 });
+      const member: WorkspaceMemberResponse = {
+        id: nextWorkspaceMemberId++,
+        workspaceId: workspacePath.workspaceId,
+        userId: user.id,
+        email: user.email ?? '',
+        displayName: user.displayName ?? '',
+        role: request.role ?? 'VIEWER',
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: null,
+      };
+      workspaceMembers.push(member);
+      return cloneWorkspaceMember(member) as T;
     }
 
     if (path === TASKS_PATH) {
@@ -1211,6 +1328,16 @@ export const mockApiClient = {
       return applyTemplateRequest(getTemplate(templateId), body as TaskTemplateRequest) as T;
     }
 
+    const workspacePath = getWorkspacePathIds(path);
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}`) {
+      const workspace = getWorkspace(workspacePath.workspaceId);
+      const request = body as WorkspaceRequest;
+      workspace.name = request.name;
+      workspace.description = request.description ?? null;
+      workspace.updatedAt = now;
+      return { ...workspace } as T;
+    }
+
     throw new ApiClientError(`Mock API가 지원하지 않는 PUT 요청입니다. (${path})`, {
       kind: 'configuration',
     });
@@ -1218,6 +1345,24 @@ export const mockApiClient = {
 
   async patch<T>(path: string, _body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    const workspacePath = getWorkspacePathIds(path);
+    if (workspacePath?.memberId) {
+      const member = workspaceMembers.find(
+        (item) =>
+          item.id === workspacePath.memberId && item.workspaceId === workspacePath.workspaceId,
+      );
+      if (!member)
+        throw new ApiClientError('Workspace 멤버를 찾을 수 없습니다.', {
+          kind: 'http',
+          status: 404,
+        });
+      const request = _body as WorkspaceMemberUpdateRequest;
+      if (request.role) member.role = request.role;
+      if (request.status) member.status = request.status;
+      member.updatedAt = now;
+      return cloneWorkspaceMember(member) as T;
+    }
 
     const taskId = getTaskId(path);
     if (!taskId) {
@@ -1273,6 +1418,30 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    const workspacePath = getWorkspacePathIds(path);
+    if (workspacePath?.memberId) {
+      const member = workspaceMembers.find(
+        (item) =>
+          item.id === workspacePath.memberId && item.workspaceId === workspacePath.workspaceId,
+      );
+      if (!member)
+        throw new ApiClientError('Workspace 멤버를 찾을 수 없습니다.', {
+          kind: 'http',
+          status: 404,
+        });
+      member.status = 'REMOVED';
+      member.updatedAt = now;
+      return null as T;
+    }
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}`) {
+      getWorkspace(workspacePath.workspaceId);
+      workspaces.splice(
+        workspaces.findIndex((item) => item.id === workspacePath.workspaceId),
+        1,
+      );
+      return null as T;
+    }
 
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
