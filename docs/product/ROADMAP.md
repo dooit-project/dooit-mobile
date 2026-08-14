@@ -128,6 +128,7 @@ Last updated: 2026-08-13
 - [x] Workspace 기본 관리와 멤버 초대·수락·제거의 타입, API client와 endpoint 회귀 테스트를 추가한다.
 - [x] Workspace 기본 관리와 멤버 흐름을 mock API에서도 검증할 수 있게 한다.
 - [x] Workspace Task CRUD·D-Day 연결·알림 후보 API client와 endpoint 테스트를 추가한다.
+- [x] Workspace D-Day 생성·조회·연결 Task·삭제 API client와 endpoint 테스트를 추가한다.
 - [ ] 초대받은 사용자가 PENDING membership의 `workspaceId`와 `memberId`를 조회하는 계약을 백엔드와 확정한다.
 - [ ] Workspace Task·D-Day·템플릿·알림은 백엔드 API가 제공되기 전까지 화면에 노출하지 않는다.
 - [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.
