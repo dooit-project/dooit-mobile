@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
 import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Button, Card, IconButton, InlineNotice } from '@/components/ui';
-import { useCreateInboxTask } from '@/features/tasks';
+import { getQuickCaptureResultMessage, useQuickCaptureTask } from '@/features/tasks';
 import { radii, sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
-import { taskLimits } from '@/types';
+import type { TaskQuickCaptureResponse } from '@/types';
+import { APP_TIME_ZONE, toApiLocalDate } from '@/utils';
 
 type QuickCaptureProps = {
   isExpanded: boolean;
@@ -14,6 +16,7 @@ type QuickCaptureProps = {
 
 export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps) {
   const theme = useAppTheme();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { screenPadding } = useMobileLayout();
   const containerInsets = {
@@ -23,18 +26,18 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
     paddingTop: screenPadding,
   };
   const inputRef = useRef<TextInput>(null);
-  const createTask = useCreateInboxTask();
+  const quickCapture = useQuickCaptureTask();
   const [title, setTitle] = useState('');
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
-  const [didSave, setDidSave] = useState(false);
+  const [result, setResult] = useState<TaskQuickCaptureResponse | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const canSubmit = title.trim().length > 0 && !createTask.isPending;
+  const canSubmit = title.trim().length > 0 && !quickCapture.isPending;
 
   const handleChange = (value: string) => {
     setTitle(value);
     setValidationMessage(null);
-    setDidSave(false);
-    createTask.reset();
+    setResult(null);
+    quickCapture.reset();
   };
 
   const handleSubmit = () => {
@@ -46,21 +49,17 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
       return;
     }
 
-    createTask.mutate(
+    quickCapture.mutate(
       {
-        title: normalizedTitle,
-        description: null,
-        category: null,
-        type: 'TODO',
-        allDay: false,
-        startAt: null,
-        endAt: null,
+        text: normalizedTitle,
+        referenceDate: toApiLocalDate(),
+        timeZone: APP_TIME_ZONE,
       },
       {
-        onSuccess: () => {
+        onSuccess: (response) => {
           setTitle('');
-          setDidSave(true);
-          inputRef.current?.focus();
+          setResult(response);
+          Keyboard.dismiss();
         },
       },
     );
@@ -73,7 +72,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
   const closeComposer = () => {
     onExpandedChange(false);
     setValidationMessage(null);
-    setDidSave(false);
+    setResult(null);
     Keyboard.dismiss();
   };
 
@@ -98,7 +97,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
           <View style={styles.composerRow}>
             <IconButton
               accessibilityLabel="빠른 기록 닫기"
-              disabled={createTask.isPending}
+              disabled={quickCapture.isPending}
               onPress={closeComposer}
               style={styles.closeButton}
             >
@@ -109,10 +108,10 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
             <TextInput
               ref={inputRef}
               accessibilityLabel="빠르게 할 일 기록"
-              accessibilityHint="입력한 내용은 기록함에 추가됩니다."
-              editable={!createTask.isPending}
+              accessibilityHint="날짜와 시간을 해석해 할 일이나 일정으로 저장합니다."
+              editable={!quickCapture.isPending}
               enterKeyHint="done"
-              maxLength={taskLimits.title}
+              maxLength={100}
               onBlur={() => setIsInputFocused(false)}
               onChangeText={handleChange}
               onFocus={() => setIsInputFocused(true)}
@@ -139,7 +138,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
             />
             <Button
               disabled={!canSubmit}
-              loading={createTask.isPending}
+              loading={quickCapture.isPending}
               size="compact"
               onPress={handleSubmit}
               style={styles.submitButton}
@@ -154,11 +153,30 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
             </AppText>
           ) : null}
 
-          {createTask.error ? (
-            <InlineNotice message={createTask.error.message} tone="danger" />
+          {quickCapture.error ? (
+            <InlineNotice message={quickCapture.error.message} tone="danger" />
           ) : null}
 
-          {didSave ? <InlineNotice message="기록함에 추가했어요." tone="success" /> : null}
+          {result ? (
+            <InlineNotice
+              message={getQuickCaptureResultMessage(result)}
+              tone="success"
+              action={
+                <Button
+                  size="compact"
+                  variant="ghost"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/tasks/[taskId]',
+                      params: { taskId: String(result.task.id) },
+                    })
+                  }
+                >
+                  확인·수정
+                </Button>
+              }
+            />
+          ) : null}
         </Card>
       ) : (
         <Pressable
