@@ -2,6 +2,11 @@ export { taskApi } from './task-api';
 export { taskTemplateApi } from './task-template-api';
 export { TaskTemplateOverview } from './task-template-overview';
 export { taskTemplateQueryKeys } from './task-template-query-keys';
+export {
+  buildTaskTemplateSettingsRequest,
+  getTaskTemplateSettingsValues,
+  templateWeekdays,
+} from './task-template-settings';
 export { ScheduleCard } from './schedule-card';
 export { TaskCard } from './task-card';
 export { TaskDateQuickActions } from './task-date-quick-actions';
