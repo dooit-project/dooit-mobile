@@ -22,6 +22,7 @@ import {
   useCreateTaskFromTemplate,
   useCreateTaskTemplate,
   useDeleteTaskTemplate,
+  useUpdateTaskTemplate,
 } from './use-task-template-mutations';
 import { useTaskTemplates } from './use-task-templates';
 
@@ -34,6 +35,7 @@ export function TaskTemplateOverview() {
   const createTask = useCreateTaskFromTemplate();
   const deleteTemplate = useDeleteTaskTemplate();
   const [isCreating, setIsCreating] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
   const [confirmingDeleteId, setConfirmingDeleteId] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const templates = templatesQuery.data ?? [];
@@ -59,6 +61,7 @@ export function TaskTemplateOverview() {
       onError: (error) => setFeedback({ message: error.message, tone: 'danger' }),
       onSuccess: () => {
         setConfirmingDeleteId(null);
+        setEditingTemplateId(null);
         setFeedback({ message: `“${template.title}” 템플릿을 삭제했어요.`, tone: 'success' });
       },
     });
@@ -122,22 +125,33 @@ export function TaskTemplateOverview() {
           <SectionHeader count={templates.length} title="나의 템플릿" />
           {templates.map((template) => (
             <Card key={template.id} style={styles.card}>
-              <View style={styles.copy}>
-                <AppText numberOfLines={2} weight="semibold">
-                  {template.title}
-                </AppText>
-                {template.description ? (
-                  <AppText numberOfLines={3} tone="secondary" variant="caption">
-                    {template.description}
+              {editingTemplateId === template.id ? (
+                <TaskTemplateEditForm
+                  template={template}
+                  onClose={() => setEditingTemplateId(null)}
+                  onUpdated={() => {
+                    setEditingTemplateId(null);
+                    setFeedback({ message: '템플릿을 수정했어요.', tone: 'success' });
+                  }}
+                />
+              ) : (
+                <View style={styles.copy}>
+                  <AppText numberOfLines={2} weight="semibold">
+                    {template.title}
                   </AppText>
-                ) : null}
-                <AppText tone="muted" variant="caption">
-                  {template.type === 'SCHEDULE' ? '일정' : '할 일'}
-                  {template.category ? ` · ${template.category}` : ''}
-                </AppText>
-              </View>
+                  {template.description ? (
+                    <AppText numberOfLines={3} tone="secondary" variant="caption">
+                      {template.description}
+                    </AppText>
+                  ) : null}
+                  <AppText tone="muted" variant="caption">
+                    {template.type === 'SCHEDULE' ? '일정' : '할 일'}
+                    {template.category ? ` · ${template.category}` : ''}
+                  </AppText>
+                </View>
+              )}
 
-              {confirmingDeleteId === template.id ? (
+              {editingTemplateId === template.id ? null : confirmingDeleteId === template.id ? (
                 <View style={styles.confirmation}>
                   <AppText tone="secondary" variant="caption">
                     이 템플릿을 삭제할까요? 이미 만든 Task는 그대로 남아요.
@@ -163,6 +177,17 @@ export function TaskTemplateOverview() {
               ) : (
                 <View style={styles.actions}>
                   <Button
+                    accessibilityLabel={`${template.title} 템플릿 편집`}
+                    size="compact"
+                    variant="ghost"
+                    onPress={() => {
+                      setConfirmingDeleteId(null);
+                      setEditingTemplateId(template.id);
+                    }}
+                  >
+                    편집
+                  </Button>
+                  <Button
                     accessibilityLabel={`${template.title} 템플릿 삭제`}
                     size="compact"
                     variant="ghost"
@@ -187,6 +212,176 @@ export function TaskTemplateOverview() {
         </View>
       )}
     </Screen>
+  );
+}
+
+function TaskTemplateEditForm({
+  template,
+  onClose,
+  onUpdated,
+}: {
+  template: TaskTemplateResponse;
+  onClose: () => void;
+  onUpdated: () => void;
+}) {
+  const theme = useAppTheme();
+  const updateTemplate = useUpdateTaskTemplate();
+  const [title, setTitle] = useState(template.title);
+  const [description, setDescription] = useState(template.description ?? '');
+  const [category, setCategory] = useState(template.category ?? '');
+  const [titleError, setTitleError] = useState<string | null>(null);
+
+  const submit = () => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setTitleError('템플릿 이름을 입력해 주세요.');
+      return;
+    }
+
+    updateTemplate.mutate(
+      {
+        templateId: template.id,
+        request: {
+          title: trimmedTitle,
+          description: description.trim() || null,
+          category: category.trim() || null,
+          type: template.type,
+          allDay: template.allDay,
+          defaultStartTime: template.defaultStartTime,
+          defaultDurationMinutes: template.defaultDurationMinutes,
+          recurrenceFrequency: template.recurrenceFrequency,
+          recurrenceInterval: template.recurrenceInterval,
+          recurrenceByDays: template.recurrenceByDays,
+        },
+      },
+      { onSuccess: onUpdated },
+    );
+  };
+
+  const resetError = () => {
+    setTitleError(null);
+    updateTemplate.reset();
+  };
+
+  return (
+    <View style={styles.form}>
+      <View style={styles.copy}>
+        <AppText variant="bodyLarge" weight="bold">
+          템플릿 편집
+        </AppText>
+        <AppText tone="secondary" variant="caption">
+          이름과 설명, 분류를 수정할 수 있어요.
+        </AppText>
+      </View>
+      <View style={styles.field}>
+        <View style={styles.labelRow}>
+          <AppText variant="label" weight="bold">
+            이름
+          </AppText>
+          <AppText tone="muted" variant="caption">
+            {title.length}/30
+          </AppText>
+        </View>
+        <TextInput
+          accessibilityLabel="Task 템플릿 이름 편집"
+          editable={!updateTemplate.isPending}
+          maxLength={30}
+          onChangeText={(value) => {
+            setTitle(value);
+            resetError();
+          }}
+          placeholderTextColor={theme.colors.textMuted}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.colors.surfaceMuted,
+              borderColor: titleError ? theme.colors.danger : theme.colors.border,
+              color: theme.colors.text,
+            },
+          ]}
+          value={title}
+        />
+        {titleError ? (
+          <AppText tone="danger" variant="caption">
+            {titleError}
+          </AppText>
+        ) : null}
+      </View>
+      <View style={styles.field}>
+        <View style={styles.labelRow}>
+          <AppText variant="label" weight="bold">
+            설명
+          </AppText>
+          <AppText tone="muted" variant="caption">
+            {description.length}/300
+          </AppText>
+        </View>
+        <TextInput
+          accessibilityLabel="Task 템플릿 설명 편집"
+          editable={!updateTemplate.isPending}
+          maxLength={300}
+          multiline
+          onChangeText={(value) => {
+            setDescription(value);
+            updateTemplate.reset();
+          }}
+          placeholder="설명 없음"
+          placeholderTextColor={theme.colors.textMuted}
+          style={[
+            styles.input,
+            styles.multilineInput,
+            {
+              backgroundColor: theme.colors.surfaceMuted,
+              borderColor: theme.colors.border,
+              color: theme.colors.text,
+            },
+          ]}
+          textAlignVertical="top"
+          value={description}
+        />
+      </View>
+      <View style={styles.field}>
+        <View style={styles.labelRow}>
+          <AppText variant="label" weight="bold">
+            분류
+          </AppText>
+          <AppText tone="muted" variant="caption">
+            {category.length}/30
+          </AppText>
+        </View>
+        <TextInput
+          accessibilityLabel="Task 템플릿 분류 편집"
+          editable={!updateTemplate.isPending}
+          maxLength={30}
+          onChangeText={(value) => {
+            setCategory(value);
+            updateTemplate.reset();
+          }}
+          placeholder="예: 업무, 집안일"
+          placeholderTextColor={theme.colors.textMuted}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.colors.surfaceMuted,
+              borderColor: theme.colors.border,
+              color: theme.colors.text,
+            },
+          ]}
+          value={category}
+        />
+      </View>
+      {updateTemplate.error ? (
+        <InlineNotice message={updateTemplate.error.message} tone="danger" />
+      ) : null}
+      <View style={styles.formActions}>
+        <Button disabled={updateTemplate.isPending} fullWidth variant="secondary" onPress={onClose}>
+          취소
+        </Button>
+        <Button fullWidth loading={updateTemplate.isPending} onPress={submit}>
+          변경 저장
+        </Button>
+      </View>
+    </View>
   );
 }
 
