@@ -44,4 +44,44 @@ describe('Mock task quick capture API', () => {
     expect(response.task.title).toHaveLength(30);
     expect(response.task.description).toBe(originalText);
   });
+
+  test('상대 날짜와 오후 시간을 일정으로 해석한다', async () => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text: '내일 오후 3시 출시 회의',
+        referenceDate: '2026-08-14',
+      },
+    );
+
+    expect(response).toMatchObject({
+      parsed: true,
+      parsedDate: '2026-08-15',
+      parsedTime: '15:00:00',
+      parsedType: 'SCHEDULE',
+      task: {
+        title: '출시 회의',
+        type: 'SCHEDULE',
+        startAt: '2026-08-15T15:00:00',
+      },
+    });
+  });
+
+  test('매주 요일을 가장 가까운 날짜의 반복 일정으로 해석한다', async () => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text: '매주 월요일 운동',
+        referenceDate: '2026-08-14',
+      },
+    );
+
+    expect(response).toMatchObject({
+      parsed: true,
+      parsedDate: '2026-08-17',
+      parsedRecurrenceFrequency: 'WEEKLY',
+      parsedByDays: ['MO'],
+      task: { title: '운동', allDay: true, type: 'SCHEDULE' },
+    });
+  });
 });

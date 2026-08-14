@@ -227,6 +227,103 @@ function cloneGoal(goal: DdayGoalResponse): DdayGoalResponse {
   return { ...goal, daysLeft: getDaysLeft(goal.targetDate) };
 }
 
+const quickCaptureWeekdays = [
+  { pattern: '일(?:요일)?', code: 'SU', day: 0 },
+  { pattern: '월(?:요일)?', code: 'MO', day: 1 },
+  { pattern: '화(?:요일)?', code: 'TU', day: 2 },
+  { pattern: '수(?:요일)?', code: 'WE', day: 3 },
+  { pattern: '목(?:요일)?', code: 'TH', day: 4 },
+  { pattern: '금(?:요일)?', code: 'FR', day: 5 },
+  { pattern: '토(?:요일)?', code: 'SA', day: 6 },
+] as const;
+
+function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
+  const originalText = request.text.trim();
+  const referenceDate = request.referenceDate ?? today;
+  let parsedDate: LocalDateString | null = null;
+  let parsedTime: string | null = null;
+  let recurrenceFrequency: TaskQuickCaptureResponse['parsedRecurrenceFrequency'] = null;
+  let parsedByDays: string[] = [];
+  let title = originalText;
+
+  const relativeDateMatch = originalText.match(/오늘|내일|모레/);
+  if (relativeDateMatch) {
+    const offset = relativeDateMatch[0] === '오늘' ? 0 : relativeDateMatch[0] === '내일' ? 1 : 2;
+    parsedDate = shiftLocalDate(referenceDate, offset);
+    title = title.replace(relativeDateMatch[0], ' ');
+  }
+
+  const explicitDateMatch = originalText.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+  if (explicitDateMatch) {
+    parsedDate = explicitDateMatch[1] as LocalDateString;
+    title = title.replace(explicitDateMatch[0], ' ');
+  }
+
+  const timeMatch = originalText.match(/(오전|오후)?\s*(\d{1,2})시(?:\s*(\d{1,2})분)?/);
+  if (timeMatch) {
+    const meridiem = timeMatch[1];
+    let hour = Number(timeMatch[2]);
+    const minute = Number(timeMatch[3] ?? 0);
+
+    if (meridiem === '오전' && hour === 12) hour = 0;
+    if (meridiem === '오후' && hour < 12) hour += 12;
+    if (!meridiem && hour >= 1 && hour <= 7) hour += 12;
+
+    if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+      parsedTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
+      parsedDate ??= referenceDate;
+      title = title.replace(timeMatch[0], ' ');
+    }
+  }
+
+  for (const weekday of quickCaptureWeekdays) {
+    const weeklyMatch = originalText.match(new RegExp(`매주\\s*${weekday.pattern}`));
+    if (!weeklyMatch) continue;
+
+    recurrenceFrequency = 'WEEKLY';
+    parsedByDays = [weekday.code];
+    parsedDate = getNextMockWeekday(referenceDate, weekday.day);
+    title = title.replace(weeklyMatch[0], ' ');
+    break;
+  }
+
+  const parsed = parsedDate !== null || parsedTime !== null || recurrenceFrequency !== null;
+  const normalizedTitle = title.replace(/\s+/g, ' ').trim() || originalText;
+
+  return {
+    originalText,
+    title: normalizedTitle.slice(0, 30),
+    description: originalText.length > 30 ? originalText : null,
+    parsed,
+    parsedDate,
+    parsedTime,
+    recurrenceFrequency,
+    parsedByDays,
+  };
+}
+
+function getNextMockWeekday(referenceDate: LocalDateString, targetDay: number) {
+  const [year, month, day] = referenceDate.split('-').map(Number);
+  const referenceDay = new Date(Date.UTC(year, month - 1, day, 12)).getUTCDay();
+  const offset = (targetDay - referenceDay + 7) % 7;
+  return shiftLocalDate(referenceDate, offset) ?? referenceDate;
+}
+
+function getMockQuickCaptureEndAt(date: LocalDateString, time: string | null) {
+  if (!time) {
+    const nextDate = shiftLocalDate(date, 1);
+    return nextDate ? `${nextDate}T00:00:00` : null;
+  }
+
+  const hour = Number(time.slice(0, 2));
+  if (hour < 23) {
+    return `${date}T${String(hour + 1).padStart(2, '0')}${time.slice(2)}`;
+  }
+
+  const nextDate = shiftLocalDate(date, 1);
+  return nextDate ? `${nextDate}T00${time.slice(2)}` : null;
+}
+
 function getOwnedIds(store: Map<number, Set<number>>) {
   if (!currentUser || currentUser.id === 1) {
     return null;
@@ -960,17 +1057,23 @@ export const mockApiClient = {
 
     if (path === `${TASKS_PATH}/quick-capture`) {
       const request = body as TaskQuickCaptureRequest;
-      const originalText = request.text.trim();
+      const parsed = parseMockQuickCapture(request);
+      const startAt = parsed.parsedDate
+        ? `${parsed.parsedDate}T${parsed.parsedTime ?? '00:00:00'}`
+        : null;
+      const endAt = parsed.parsedDate
+        ? getMockQuickCaptureEndAt(parsed.parsedDate, parsed.parsedTime)
+        : null;
       const task = createTask({
         id: nextTaskId,
-        title: originalText.slice(0, 30),
-        description: originalText.length > 30 ? originalText : null,
-        type: 'TODO',
-        startAt: null,
-        endAt: null,
-        allDay: false,
+        title: parsed.title,
+        description: parsed.description,
+        type: parsed.parsed ? 'SCHEDULE' : 'TODO',
+        startAt,
+        endAt,
+        allDay: parsed.parsed && !parsed.parsedTime,
         category: request.defaultCategory ?? null,
-        status: 'INBOX',
+        status: parsed.parsed ? 'TODAY' : 'INBOX',
       });
 
       nextTaskId += 1;
@@ -979,13 +1082,13 @@ export const mockApiClient = {
 
       return {
         task: cloneTask(task),
-        parsed: false,
-        originalText,
-        parsedDate: null,
-        parsedTime: null,
-        parsedType: 'TODO',
-        parsedRecurrenceFrequency: null,
-        parsedByDays: [],
+        parsed: parsed.parsed,
+        originalText: parsed.originalText,
+        parsedDate: parsed.parsedDate,
+        parsedTime: parsed.parsedTime,
+        parsedType: parsed.parsed ? 'SCHEDULE' : 'TODO',
+        parsedRecurrenceFrequency: parsed.recurrenceFrequency,
+        parsedByDays: parsed.parsedByDays,
         timeZone: request.timeZone ?? 'Asia/Seoul',
       } satisfies TaskQuickCaptureResponse as T;
     }
