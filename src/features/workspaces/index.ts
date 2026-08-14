@@ -5,6 +5,11 @@ export { workspaceTaskApi } from './workspace-task-api';
 export { WorkspaceOverview } from './workspace-overview';
 export { WorkspaceDetail } from './workspace-detail';
 export {
+  useInviteWorkspaceMember,
+  useRemoveWorkspaceMember,
+  useUpdateWorkspaceMemberRole,
+} from './use-workspace-member-mutations';
+export {
   useCreateWorkspace,
   useWorkspace,
   useWorkspaceMembers,

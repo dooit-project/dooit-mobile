@@ -136,6 +136,7 @@ Last updated: 2026-08-13
 - [ ] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [ ] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [ ] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
+- [x] OWNER 멤버 초대·role 변경·제거 mutation과 ACTIVE 멤버 cache 갱신을 추가한다.
 - [ ] PENDING 초대 목록 API가 준비되면 초대 확인·수락·거절 흐름을 구현한다.
 - [ ] Workspace Task 목록·생성·수정·삭제와 개인 화면 분리를 구현한다.
 - [ ] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
