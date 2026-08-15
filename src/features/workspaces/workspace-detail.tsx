@@ -33,7 +33,12 @@ import {
   useUpdateWorkspaceMemberRole,
 } from './use-workspace-member-mutations';
 import { useWorkspace, useWorkspaceMembers } from './use-workspaces';
-import { useCreateWorkspaceTask, useWorkspaceTasks } from './use-workspace-tasks';
+import {
+  useCreateWorkspaceTask,
+  useDeleteWorkspaceTask,
+  useUpdateWorkspaceTask,
+  useWorkspaceTasks,
+} from './use-workspace-tasks';
 
 const roleLabels: Record<WorkspaceRole, string> = {
   OWNER: '관리자',
@@ -189,7 +194,13 @@ function WorkspaceTaskList({ workspaceId, canEdit }: { workspaceId: number; canE
       ) : tasks.data?.length ? (
         <View style={styles.taskList}>
           {tasks.data.map((task) => (
-            <WorkspaceTaskCard key={task.id} date={today} task={task} />
+            <WorkspaceTaskCard
+              key={task.id}
+              canEdit={canEdit}
+              date={today}
+              task={task}
+              workspaceId={workspaceId}
+            />
           ))}
         </View>
       ) : (
@@ -313,11 +324,148 @@ function CreateWorkspaceTaskForm({
   );
 }
 
-function WorkspaceTaskCard({ task, date }: { task: TaskResponse; date: LocalDateString }) {
-  return task.type === 'SCHEDULE' ? (
-    <ScheduleCard referenceDate={date} task={task} />
-  ) : (
-    <TaskCard showCompletionControl={false} task={task} />
+function WorkspaceTaskCard({
+  task,
+  date,
+  canEdit,
+  workspaceId,
+}: {
+  task: TaskResponse;
+  date: LocalDateString;
+  canEdit: boolean;
+  workspaceId: number;
+}) {
+  const theme = useAppTheme();
+  const update = useUpdateWorkspaceTask(workspaceId);
+  const remove = useDeleteWorkspaceTask(workspaceId);
+  const [mode, setMode] = useState<'idle' | 'edit' | 'delete'>('idle');
+  const [title, setTitle] = useState(task.title);
+  const [validationError, setValidationError] = useState(false);
+  const isRecurring = Boolean(task.recurrenceSeriesId || task.recurrence);
+  const manageable = canEdit && !isRecurring;
+  const submit = () => {
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle) return setValidationError(true);
+    update.mutate(
+      {
+        taskId: task.id,
+        request: {
+          title: normalizedTitle,
+          description: task.description,
+          type: task.type,
+          startAt: task.startAt,
+          endAt: task.endAt,
+          category: task.category,
+          allDay: task.allDay,
+        },
+      },
+      { onSuccess: () => setMode('idle') },
+    );
+  };
+
+  return (
+    <View style={styles.taskItem}>
+      {task.type === 'SCHEDULE' ? (
+        <ScheduleCard referenceDate={date} task={task} />
+      ) : (
+        <TaskCard showCompletionControl={false} task={task} />
+      )}
+      {manageable && mode === 'idle' ? (
+        <View style={styles.taskActions}>
+          <Button size="compact" variant="ghost" onPress={() => setMode('edit')}>
+            제목 수정
+          </Button>
+          <Button size="compact" variant="ghost" onPress={() => setMode('delete')}>
+            삭제
+          </Button>
+        </View>
+      ) : null}
+      {isRecurring && canEdit ? (
+        <AppText tone="secondary" variant="caption">
+          반복 일정의 수정·삭제 범위는 백엔드 계약 확정 후 제공할게요.
+        </AppText>
+      ) : null}
+      {mode === 'edit' ? (
+        <Card style={styles.inlineEditor}>
+          <AppText variant="label" weight="bold">
+            공유 일정 제목 · {title.length}/{taskLimits.title}
+          </AppText>
+          <TextInput
+            accessibilityLabel={`${task.title} 제목 수정`}
+            autoFocus
+            maxLength={taskLimits.title}
+            onChangeText={(value) => {
+              setTitle(value);
+              setValidationError(false);
+            }}
+            onSubmitEditing={submit}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.colors.surfaceMuted,
+                borderColor: validationError ? theme.colors.danger : theme.colors.border,
+                color: theme.colors.text,
+              },
+            ]}
+            value={title}
+          />
+          {validationError ? (
+            <AppText tone="danger" variant="caption">
+              공유 일정 제목을 입력해 주세요.
+            </AppText>
+          ) : null}
+          {update.error ? <InlineNotice message={update.error.message} tone="danger" /> : null}
+          <View style={styles.formActions}>
+            <Button
+              disabled={update.isPending}
+              fullWidth
+              variant="secondary"
+              onPress={() => {
+                setTitle(task.title);
+                setMode('idle');
+              }}
+            >
+              취소
+            </Button>
+            <Button fullWidth loading={update.isPending} onPress={submit}>
+              저장
+            </Button>
+          </View>
+        </Card>
+      ) : null}
+      {mode === 'delete' ? (
+        <View
+          accessibilityLiveRegion="polite"
+          style={[styles.confirmation, { backgroundColor: theme.colors.dangerSoft }]}
+        >
+          <AppText tone="danger" variant="label" weight="bold">
+            “{task.title}” 공유 일정을 삭제할까요?
+          </AppText>
+          <AppText tone="secondary" variant="caption">
+            모든 공간 멤버의 공유 일정 목록에서 사라져요.
+          </AppText>
+          {remove.error ? <InlineNotice message={remove.error.message} tone="danger" /> : null}
+          <View style={styles.formActions}>
+            <Button
+              disabled={remove.isPending}
+              fullWidth
+              variant="secondary"
+              onPress={() => setMode('idle')}
+            >
+              취소
+            </Button>
+            <Button
+              fullWidth
+              loading={remove.isPending}
+              variant="danger"
+              onPress={() => remove.mutate({ taskId: task.id })}
+            >
+              공유 일정 삭제
+            </Button>
+          </View>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -528,6 +676,9 @@ const styles = StyleSheet.create({
   summary: { gap: spacing[1] },
   list: { gap: spacing[3] },
   taskList: { gap: spacing[2] },
+  taskItem: { gap: spacing[2] },
+  taskActions: { flexDirection: 'row', justifyContent: 'flex-end' },
+  inlineEditor: { gap: spacing[3] },
   form: { gap: spacing[4] },
   formHeading: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing[2] },
   formCopy: { flex: 1, gap: spacing[1], minWidth: 0 },

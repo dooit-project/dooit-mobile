@@ -141,7 +141,8 @@ Last updated: 2026-08-13
 - [x] Workspace Task 목록·상세 Query와 생성·수정·삭제 mutation을 workspace별 cache로 격리한다.
 - [x] 공유 공간 상세에 개인 일정과 분리된 오늘의 Workspace Task 목록·빈 상태·오류 복구를 표시한다.
 - [x] OWNER·EDITOR용 오늘의 Workspace Task 기본 생성 화면을 추가하고 VIEWER에게 생성 행동을 숨긴다.
-- [ ] Workspace Task 목록·생성·수정·삭제와 개인 화면 분리를 구현한다.
+- [x] OWNER·EDITOR용 비반복 Workspace Task 제목 수정·삭제 확인 화면을 추가한다.
+- [x] Workspace Task 목록·생성·수정·삭제와 개인 화면 분리를 구현한다.
 - [ ] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
 - [ ] Workspace 반복 Task는 백엔드 수정·삭제 범위가 준비되기 전까지 생성·조회만 허용한다.
 - [ ] Workspace 알림 후보를 계정·workspace별로 격리해 로컬 예약하고 Web에서는 예약하지 않는다.
