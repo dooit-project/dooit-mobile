@@ -1049,7 +1049,15 @@ export const mockApiClient = {
       const taskType = options.query?.taskType ? String(options.query.taskType) : null;
       return getWorkspaceTasks(workspacePath.workspaceId)
         .filter((task) => !taskType || task.type === taskType)
-        .filter((task) => range.some((item) => doesScheduleOverlapDate(task, item)))
+        .filter((task) =>
+          task.type === 'SCHEDULE'
+            ? range.some((item) => doesScheduleOverlapDate(task, item))
+            : range.includes(
+                task.plannedDate ??
+                  task.targetDate ??
+                  (task.startAt?.slice(0, 10) as LocalDateString),
+              ),
+        )
         .map(cloneTask) as T;
     }
     if (workspacePath?.taskId) {

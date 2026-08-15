@@ -21,17 +21,19 @@ import { radii, spacing, useAppTheme } from '@/theme';
 import type {
   LocalDateString,
   TaskResponse,
+  TaskType,
   WorkspaceMemberResponse,
   WorkspaceRole,
 } from '@/types';
-import { formatDateLabel, toApiLocalDate } from '@/utils';
+import { taskLimits } from '@/types';
+import { formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
 import {
   useInviteWorkspaceMember,
   useRemoveWorkspaceMember,
   useUpdateWorkspaceMemberRole,
 } from './use-workspace-member-mutations';
 import { useWorkspace, useWorkspaceMembers } from './use-workspaces';
-import { useWorkspaceTasks } from './use-workspace-tasks';
+import { useCreateWorkspaceTask, useWorkspaceTasks } from './use-workspace-tasks';
 
 const roleLabels: Record<WorkspaceRole, string> = {
   OWNER: '관리자',
@@ -114,7 +116,10 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
                 : '공유 일정과 목표를 함께 관리할 수 있어요.'}
             </AppText>
           </Card>
-          <WorkspaceTaskList workspaceId={workspaceId!} />
+          <WorkspaceTaskList
+            canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
+            workspaceId={workspaceId!}
+          />
           <View style={styles.list}>
             <SectionHeader title="함께하는 사람" count={members.data?.length ?? 0} />
             {members.data?.length ? (
@@ -139,17 +144,35 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
   );
 }
 
-function WorkspaceTaskList({ workspaceId }: { workspaceId: number }) {
+function WorkspaceTaskList({ workspaceId, canEdit }: { workspaceId: number; canEdit: boolean }) {
   const today = toApiLocalDate();
   const tasks = useWorkspaceTasks(workspaceId, { type: 'DAY', date: today });
   const dateLabel = formatDateLabel(today, { month: 'long', day: 'numeric', weekday: 'short' });
+  const [showCreate, setShowCreate] = useState(false);
 
   return (
     <View style={styles.list}>
-      <SectionHeader title={`공유 일정 · ${dateLabel}`} count={tasks.data?.length ?? 0} />
+      <SectionHeader
+        title={`공유 일정 · ${dateLabel}`}
+        count={tasks.data?.length ?? 0}
+        action={
+          canEdit ? (
+            <Button size="compact" variant="secondary" onPress={() => setShowCreate((v) => !v)}>
+              {showCreate ? '닫기' : '일정 추가'}
+            </Button>
+          ) : undefined
+        }
+      />
       <AppText tone="secondary" variant="caption">
         이 공간의 일정만 표시해 개인 일정과 섞이지 않아요.
       </AppText>
+      {showCreate ? (
+        <CreateWorkspaceTaskForm
+          date={today}
+          workspaceId={workspaceId}
+          onClose={() => setShowCreate(false)}
+        />
+      ) : null}
       {tasks.isPending ? (
         <ListSkeleton accessibilityLabel="오늘 공유 일정을 불러오는 중" count={2} />
       ) : tasks.error ? (
@@ -176,6 +199,117 @@ function WorkspaceTaskList({ workspaceId }: { workspaceId: number }) {
         />
       )}
     </View>
+  );
+}
+
+function CreateWorkspaceTaskForm({
+  workspaceId,
+  date,
+  onClose,
+}: {
+  workspaceId: number;
+  date: LocalDateString;
+  onClose: () => void;
+}) {
+  const theme = useAppTheme();
+  const create = useCreateWorkspaceTask(workspaceId);
+  const [title, setTitle] = useState('');
+  const [type, setType] = useState<Extract<TaskType, 'SCHEDULE' | 'TODO'>>('SCHEDULE');
+  const [validationError, setValidationError] = useState(false);
+  const submit = () => {
+    const normalizedTitle = title.trim();
+    const nextDate = shiftLocalDate(date, 1);
+    if (!normalizedTitle || !nextDate) return setValidationError(true);
+    create.mutate(
+      {
+        title: normalizedTitle,
+        type,
+        allDay: true,
+        startAt: `${date}T00:00:00`,
+        endAt: `${nextDate}T00:00:00`,
+      },
+      { onSuccess: onClose },
+    );
+  };
+
+  return (
+    <Card style={styles.form}>
+      <View style={styles.formCopy}>
+        <AppText variant="bodyLarge" weight="bold">
+          오늘 공유 일정 추가
+        </AppText>
+        <AppText tone="secondary" variant="caption">
+          공간의 모든 ACTIVE 멤버가 볼 수 있는 종일 일정으로 등록돼요.
+        </AppText>
+      </View>
+      <View style={styles.field}>
+        <AppText variant="label" weight="bold">
+          제목 · {title.length}/{taskLimits.title}
+        </AppText>
+        <TextInput
+          accessibilityLabel="공유 일정 제목"
+          maxLength={taskLimits.title}
+          onChangeText={(value) => {
+            setTitle(value);
+            setValidationError(false);
+          }}
+          onSubmitEditing={submit}
+          placeholder="예: 출시 체크리스트 검토"
+          placeholderTextColor={theme.colors.textMuted}
+          returnKeyType="done"
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.colors.surfaceMuted,
+              borderColor: validationError ? theme.colors.danger : theme.colors.border,
+              color: theme.colors.text,
+            },
+          ]}
+          value={title}
+        />
+        {validationError ? (
+          <AppText tone="danger" variant="caption">
+            공유 일정 제목을 입력해 주세요.
+          </AppText>
+        ) : null}
+      </View>
+      <View style={styles.field}>
+        <AppText variant="label" weight="bold">
+          종류
+        </AppText>
+        <View style={styles.roleOptions}>
+          {(['SCHEDULE', 'TODO'] as const).map((option) => (
+            <Pressable
+              key={option}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: type === option }}
+              onPress={() => setType(option)}
+              style={[
+                styles.roleOption,
+                {
+                  backgroundColor:
+                    type === option ? theme.colors.primarySoft : theme.colors.surfaceMuted,
+                  borderColor: type === option ? theme.colors.primary : theme.colors.border,
+                },
+              ]}
+            >
+              <AppText tone={type === option ? 'primary' : 'secondary'} weight="bold">
+                {option === 'SCHEDULE' ? '일정' : '할 일'}
+              </AppText>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+      {create.error ? <InlineNotice message={create.error.message} tone="danger" /> : null}
+      <View style={styles.formActions}>
+        <Button disabled={create.isPending} fullWidth variant="secondary" onPress={onClose}>
+          취소
+        </Button>
+        <Button fullWidth loading={create.isPending} onPress={submit}>
+          공유 일정 추가
+        </Button>
+      </View>
+    </Card>
   );
 }
 
@@ -397,6 +531,7 @@ const styles = StyleSheet.create({
   form: { gap: spacing[4] },
   formHeading: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing[2] },
   formCopy: { flex: 1, gap: spacing[1], minWidth: 0 },
+  formActions: { gap: spacing[2] },
   field: { gap: spacing[2] },
   input: {
     borderRadius: radii.md,

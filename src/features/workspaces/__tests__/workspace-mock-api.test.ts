@@ -71,6 +71,17 @@ describe('Mock Workspace API', () => {
       mockApiClient.get<TaskResponse[]>(path, { query: { type: 'DAY', date: '2026-08-16' } }),
     ).resolves.toEqual(expect.arrayContaining([expect.objectContaining({ id: created.id })]));
 
+    const todo = await mockApiClient.post<TaskResponse>(path, {
+      title: '공유 할 일',
+      type: 'TODO',
+      allDay: true,
+      startAt: '2026-08-16T00:00:00',
+      endAt: '2026-08-17T00:00:00',
+    });
+    await expect(
+      mockApiClient.get<TaskResponse[]>(path, { query: { type: 'DAY', date: '2026-08-16' } }),
+    ).resolves.toEqual(expect.arrayContaining([expect.objectContaining({ id: todo.id })]));
+
     const updated = await mockApiClient.put<TaskResponse>(`${path}/${created.id}`, {
       title: '수정된 공유 일정',
       type: 'SCHEDULE',
