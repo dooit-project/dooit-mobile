@@ -9,19 +9,29 @@ import {
   EmptyState,
   IconButton,
   InlineNotice,
+  ListSkeleton,
   PageHeader,
   Screen,
   SectionHeader,
 } from '@/components/ui';
 import { useAuthState } from '@/features/auth';
+import { ScheduleCard, TaskCard } from '@/features/tasks';
+import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
-import type { WorkspaceMemberResponse, WorkspaceRole } from '@/types';
+import type {
+  LocalDateString,
+  TaskResponse,
+  WorkspaceMemberResponse,
+  WorkspaceRole,
+} from '@/types';
+import { formatDateLabel, toApiLocalDate } from '@/utils';
 import {
   useInviteWorkspaceMember,
   useRemoveWorkspaceMember,
   useUpdateWorkspaceMemberRole,
 } from './use-workspace-member-mutations';
 import { useWorkspace, useWorkspaceMembers } from './use-workspaces';
+import { useWorkspaceTasks } from './use-workspace-tasks';
 
 const roleLabels: Record<WorkspaceRole, string> = {
   OWNER: '관리자',
@@ -104,6 +114,7 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
                 : '공유 일정과 목표를 함께 관리할 수 있어요.'}
             </AppText>
           </Card>
+          <WorkspaceTaskList workspaceId={workspaceId!} />
           <View style={styles.list}>
             <SectionHeader title="함께하는 사람" count={members.data?.length ?? 0} />
             {members.data?.length ? (
@@ -125,6 +136,54 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
         </>
       )}
     </Screen>
+  );
+}
+
+function WorkspaceTaskList({ workspaceId }: { workspaceId: number }) {
+  const today = toApiLocalDate();
+  const tasks = useWorkspaceTasks(workspaceId, { type: 'DAY', date: today });
+  const dateLabel = formatDateLabel(today, { month: 'long', day: 'numeric', weekday: 'short' });
+
+  return (
+    <View style={styles.list}>
+      <SectionHeader title={`공유 일정 · ${dateLabel}`} count={tasks.data?.length ?? 0} />
+      <AppText tone="secondary" variant="caption">
+        이 공간의 일정만 표시해 개인 일정과 섞이지 않아요.
+      </AppText>
+      {tasks.isPending ? (
+        <ListSkeleton accessibilityLabel="오늘 공유 일정을 불러오는 중" count={2} />
+      ) : tasks.error ? (
+        <InlineNotice
+          action={
+            <Button size="compact" variant="ghost" onPress={() => void tasks.refetch()}>
+              다시 시도
+            </Button>
+          }
+          message={getUserFacingApiErrorMessage(tasks.error)}
+          title="공유 일정을 불러오지 못했어요"
+          tone="danger"
+        />
+      ) : tasks.data?.length ? (
+        <View style={styles.taskList}>
+          {tasks.data.map((task) => (
+            <WorkspaceTaskCard key={task.id} date={today} task={task} />
+          ))}
+        </View>
+      ) : (
+        <EmptyState
+          title="오늘 공유 일정이 없어요"
+          description="공간 멤버가 함께 볼 일정은 아직 등록되지 않았어요."
+        />
+      )}
+    </View>
+  );
+}
+
+function WorkspaceTaskCard({ task, date }: { task: TaskResponse; date: LocalDateString }) {
+  return task.type === 'SCHEDULE' ? (
+    <ScheduleCard referenceDate={date} task={task} />
+  ) : (
+    <TaskCard showCompletionControl={false} task={task} />
   );
 }
 
@@ -334,6 +393,7 @@ const styles = StyleSheet.create({
   state: { alignItems: 'center', flexDirection: 'row', gap: spacing[2] },
   summary: { gap: spacing[1] },
   list: { gap: spacing[3] },
+  taskList: { gap: spacing[2] },
   form: { gap: spacing[4] },
   formHeading: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing[2] },
   formCopy: { flex: 1, gap: spacing[1], minWidth: 0 },

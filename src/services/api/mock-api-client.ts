@@ -66,6 +66,7 @@ const goalIdsByUser = new Map<number, Set<number>>();
 const taskTemplates: TaskTemplateResponse[] = [];
 const workspaces: WorkspaceResponse[] = [];
 const workspaceMembers: WorkspaceMemberResponse[] = [];
+const workspaceTasks = new Map<number, TaskResponse[]>();
 
 const users: UserResponse[] = [
   {
@@ -851,9 +852,13 @@ function applyTemplateRequest(
 }
 
 function getWorkspacePathIds(path: string) {
-  const match = path.match(/^\/api\/v1\/workspaces\/(\d+)(?:\/members(?:\/(\d+))?)?$/);
+  const match = path.match(/^\/api\/v1\/workspaces\/(\d+)(?:\/(members|tasks)(?:\/(\d+))?)?$/);
   return match
-    ? { workspaceId: Number(match[1]), memberId: match[2] ? Number(match[2]) : null }
+    ? {
+        workspaceId: Number(match[1]),
+        memberId: match[2] === 'members' && match[3] ? Number(match[3]) : null,
+        taskId: match[2] === 'tasks' && match[3] ? Number(match[3]) : null,
+      }
     : null;
 }
 
@@ -871,6 +876,24 @@ function getWorkspace(workspaceId: number) {
 
 function cloneWorkspaceMember(member: WorkspaceMemberResponse) {
   return { ...member };
+}
+
+function getWorkspaceTasks(workspaceId: number) {
+  getWorkspace(workspaceId);
+  const stored = workspaceTasks.get(workspaceId) ?? [];
+  workspaceTasks.set(workspaceId, stored);
+  return stored;
+}
+
+function getWorkspaceTask(workspaceId: number, taskId: number) {
+  const task = getWorkspaceTasks(workspaceId).find((item) => item.id === taskId);
+  if (!task) {
+    throw new ApiClientError('Workspace Task를 찾을 수 없습니다.', {
+      kind: 'http',
+      status: 404,
+    });
+  }
+  return task;
 }
 
 export const mockApiClient = {
@@ -1019,6 +1042,19 @@ export const mockApiClient = {
         )
         .map(cloneWorkspaceMember) as T;
     }
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}/tasks`) {
+      const type = String(options.query?.type ?? 'DAY') as TaskQueryType;
+      const date = String(options.query?.date ?? today) as LocalDateString;
+      const range = getTaskRange(type, date);
+      const taskType = options.query?.taskType ? String(options.query.taskType) : null;
+      return getWorkspaceTasks(workspacePath.workspaceId)
+        .filter((task) => !taskType || task.type === taskType)
+        .filter((task) => range.some((item) => doesScheduleOverlapDate(task, item)))
+        .map(cloneTask) as T;
+    }
+    if (workspacePath?.taskId) {
+      return cloneTask(getWorkspaceTask(workspacePath.workspaceId, workspacePath.taskId)) as T;
+    }
 
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
@@ -1149,6 +1185,23 @@ export const mockApiClient = {
       };
       workspaceMembers.push(member);
       return cloneWorkspaceMember(member) as T;
+    }
+    if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}/tasks`) {
+      const request = body as TaskUpsertRequest;
+      const task = createTask({
+        id: nextTaskId++,
+        title: request.title,
+        description: request.description ?? null,
+        type: request.type ?? 'TODO',
+        startAt: request.startAt ?? null,
+        endAt: request.endAt ?? null,
+        allDay: request.allDay,
+        category: request.category ?? null,
+        status: 'TODAY',
+        plannedDate: (request.startAt?.slice(0, 10) as LocalDateString | undefined) ?? today,
+      });
+      getWorkspaceTasks(workspacePath.workspaceId).unshift(task);
+      return cloneTask(task) as T;
     }
 
     if (path === TASKS_PATH) {
@@ -1329,6 +1382,12 @@ export const mockApiClient = {
     }
 
     const workspacePath = getWorkspacePathIds(path);
+    if (workspacePath?.taskId) {
+      return applyTaskRequest(
+        getWorkspaceTask(workspacePath.workspaceId, workspacePath.taskId),
+        body as TaskUpsertRequest,
+      ) as T;
+    }
     if (workspacePath && path === `${WORKSPACES_PATH}/${workspacePath.workspaceId}`) {
       const workspace = getWorkspace(workspacePath.workspaceId);
       const request = body as WorkspaceRequest;
@@ -1440,6 +1499,14 @@ export const mockApiClient = {
         workspaces.findIndex((item) => item.id === workspacePath.workspaceId),
         1,
       );
+      workspaceTasks.delete(workspacePath.workspaceId);
+      return null as T;
+    }
+    if (workspacePath?.taskId) {
+      const stored = getWorkspaceTasks(workspacePath.workspaceId);
+      const index = stored.findIndex((task) => task.id === workspacePath.taskId);
+      if (index < 0) getWorkspaceTask(workspacePath.workspaceId, workspacePath.taskId);
+      stored.splice(index, 1);
       return null as T;
     }
 
