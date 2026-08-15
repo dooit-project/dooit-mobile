@@ -138,6 +138,7 @@ Last updated: 2026-08-13
 - [x] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
 - [x] OWNER 멤버 초대·role 변경·제거 mutation과 ACTIVE 멤버 cache 갱신을 추가한다.
 - [ ] PENDING 초대 목록 API가 준비되면 초대 확인·수락·거절 흐름을 구현한다.
+- [x] Workspace Task 목록·상세 Query와 생성·수정·삭제 mutation을 workspace별 cache로 격리한다.
 - [ ] Workspace Task 목록·생성·수정·삭제와 개인 화면 분리를 구현한다.
 - [ ] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
 - [ ] Workspace 반복 Task는 백엔드 수정·삭제 범위가 준비되기 전까지 생성·조회만 허용한다.

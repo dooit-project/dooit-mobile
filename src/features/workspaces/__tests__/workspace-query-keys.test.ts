@@ -7,4 +7,29 @@ describe('Workspace query key', () => {
     expect(workspaceQueryKeys.members(3)).toEqual(['workspaces', 'detail', 3, 'members']);
     expect(workspaceQueryKeys.members(3)).not.toEqual(workspaceQueryKeys.members(4));
   });
+
+  test('Task key를 workspace별로 격리한다', () => {
+    const query = { type: 'DAY', date: '2026-08-16' } as const;
+
+    expect(workspaceQueryKeys.tasks(3)).toEqual(['workspaces', 'detail', 3, 'tasks']);
+    expect(workspaceQueryKeys.taskList(3, query)).toEqual([
+      'workspaces',
+      'detail',
+      3,
+      'tasks',
+      'list',
+      query,
+    ]);
+    expect(workspaceQueryKeys.taskDetail(3, 7)).toEqual([
+      'workspaces',
+      'detail',
+      3,
+      'tasks',
+      'detail',
+      7,
+    ]);
+    expect(workspaceQueryKeys.taskList(3, query)).not.toEqual(
+      workspaceQueryKeys.taskList(4, query),
+    );
+  });
 });
