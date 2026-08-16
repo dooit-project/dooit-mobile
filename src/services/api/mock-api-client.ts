@@ -67,6 +67,7 @@ const taskTemplates: TaskTemplateResponse[] = [];
 const workspaces: WorkspaceResponse[] = [];
 const workspaceMembers: WorkspaceMemberResponse[] = [];
 const workspaceTasks = new Map<number, TaskResponse[]>();
+const workspaceDdayGoals = new Map<number, DdayGoalResponse[]>();
 
 const users: UserResponse[] = [
   {
@@ -862,6 +863,17 @@ function getWorkspacePathIds(path: string) {
     : null;
 }
 
+function getWorkspaceDdayPathIds(path: string) {
+  const match = path.match(/^\/api\/v1\/workspaces\/(\d+)\/dday-goals(?:\/(\d+)(?:\/(tasks))?)?$/);
+  return match
+    ? {
+        workspaceId: Number(match[1]),
+        goalId: match[2] ? Number(match[2]) : null,
+        tasks: match[3] === 'tasks',
+      }
+    : null;
+}
+
 function getMockActor() {
   return currentUser ?? users[0];
 }
@@ -894,6 +906,24 @@ function getWorkspaceTask(workspaceId: number, taskId: number) {
     });
   }
   return task;
+}
+
+function getWorkspaceDdayGoals(workspaceId: number) {
+  getWorkspace(workspaceId);
+  const stored = workspaceDdayGoals.get(workspaceId) ?? [];
+  workspaceDdayGoals.set(workspaceId, stored);
+  return stored;
+}
+
+function getWorkspaceDdayGoal(workspaceId: number, goalId: number) {
+  const goal = getWorkspaceDdayGoals(workspaceId).find((item) => item.id === goalId);
+  if (!goal) {
+    throw new ApiClientError('Workspace D-Day를 찾을 수 없습니다.', {
+      kind: 'http',
+      status: 404,
+    });
+  }
+  return goal;
 }
 
 export const mockApiClient = {
@@ -1064,6 +1094,22 @@ export const mockApiClient = {
       return cloneTask(getWorkspaceTask(workspacePath.workspaceId, workspacePath.taskId)) as T;
     }
 
+    const workspaceDdayPath = getWorkspaceDdayPathIds(path);
+    if (workspaceDdayPath && workspaceDdayPath.goalId === null) {
+      return getWorkspaceDdayGoals(workspaceDdayPath.workspaceId).map(cloneGoal) as T;
+    }
+    if (workspaceDdayPath?.goalId && workspaceDdayPath.tasks) {
+      getWorkspaceDdayGoal(workspaceDdayPath.workspaceId, workspaceDdayPath.goalId);
+      return getWorkspaceTasks(workspaceDdayPath.workspaceId)
+        .filter((task) => task.ddayGoalId === workspaceDdayPath.goalId)
+        .map(cloneTask) as T;
+    }
+    if (workspaceDdayPath?.goalId) {
+      return cloneGoal(
+        getWorkspaceDdayGoal(workspaceDdayPath.workspaceId, workspaceDdayPath.goalId),
+      ) as T;
+    }
+
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
       return cloneTask(getTask(taskId)) as T;
@@ -1210,6 +1256,20 @@ export const mockApiClient = {
       });
       getWorkspaceTasks(workspacePath.workspaceId).unshift(task);
       return cloneTask(task) as T;
+    }
+
+    const workspaceDdayPath = getWorkspaceDdayPathIds(path);
+    if (workspaceDdayPath && workspaceDdayPath.goalId === null) {
+      const request = body as DdayGoalRequest;
+      const goal: DdayGoalResponse = {
+        id: nextGoalId++,
+        title: request.title,
+        targetDate: request.targetDate,
+        daysLeft: getDaysLeft(request.targetDate),
+        createdAt: now,
+      };
+      getWorkspaceDdayGoals(workspaceDdayPath.workspaceId).unshift(goal);
+      return cloneGoal(goal) as T;
     }
 
     if (path === TASKS_PATH) {
@@ -1508,6 +1568,7 @@ export const mockApiClient = {
         1,
       );
       workspaceTasks.delete(workspacePath.workspaceId);
+      workspaceDdayGoals.delete(workspacePath.workspaceId);
       return null as T;
     }
     if (workspacePath?.taskId) {
@@ -1515,6 +1576,25 @@ export const mockApiClient = {
       const index = stored.findIndex((task) => task.id === workspacePath.taskId);
       if (index < 0) getWorkspaceTask(workspacePath.workspaceId, workspacePath.taskId);
       stored.splice(index, 1);
+      return null as T;
+    }
+
+    const workspaceDdayPath = getWorkspaceDdayPathIds(path);
+    if (workspaceDdayPath?.goalId && !workspaceDdayPath.tasks) {
+      const stored = getWorkspaceDdayGoals(workspaceDdayPath.workspaceId);
+      const index = stored.findIndex((goal) => goal.id === workspaceDdayPath.goalId);
+      if (index < 0) {
+        getWorkspaceDdayGoal(workspaceDdayPath.workspaceId, workspaceDdayPath.goalId);
+      }
+      stored.splice(index, 1);
+      getWorkspaceTasks(workspaceDdayPath.workspaceId).forEach((task) => {
+        if (task.ddayGoalId === workspaceDdayPath.goalId) {
+          task.ddayGoalId = null;
+          task.ddayGoalTitle = null;
+          task.ddayGoalTargetDate = null;
+          task.ddayDaysLeft = null;
+        }
+      });
       return null as T;
     }
 

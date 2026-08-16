@@ -1,5 +1,10 @@
 import { mockApiClient } from '@/services/api/mock-api-client';
-import type { TaskResponse, WorkspaceMemberResponse, WorkspaceResponse } from '@/types';
+import type {
+  DdayGoalResponse,
+  TaskResponse,
+  WorkspaceMemberResponse,
+  WorkspaceResponse,
+} from '@/types';
 
 describe('Mock Workspace API', () => {
   test('Workspace 생성·조회·수정·삭제 흐름을 지원한다', async () => {
@@ -90,6 +95,28 @@ describe('Mock Workspace API', () => {
       endAt: '2026-08-17T00:00:00',
     });
     expect(updated.title).toBe('수정된 공유 일정');
+
+    await mockApiClient.delete(`${path}/${created.id}`);
+    await expect(mockApiClient.get(`${path}/${created.id}`)).rejects.toMatchObject({ status: 404 });
+  });
+
+  test('Workspace D-Day 생성·조회·연결 Task 조회·삭제를 지원한다', async () => {
+    const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
+      name: '목표팀',
+    });
+    const path = `/api/v1/workspaces/${workspace.id}/dday-goals`;
+    const created = await mockApiClient.post<DdayGoalResponse>(path, {
+      title: '공유 출시일',
+      targetDate: '2026-09-01',
+    });
+
+    await expect(mockApiClient.get<DdayGoalResponse[]>(path)).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: created.id, title: '공유 출시일' })]),
+    );
+    await expect(mockApiClient.get(`${path}/${created.id}`)).resolves.toMatchObject({
+      id: created.id,
+    });
+    await expect(mockApiClient.get(`${path}/${created.id}/tasks`)).resolves.toEqual([]);
 
     await mockApiClient.delete(`${path}/${created.id}`);
     await expect(mockApiClient.get(`${path}/${created.id}`)).rejects.toMatchObject({ status: 404 });
