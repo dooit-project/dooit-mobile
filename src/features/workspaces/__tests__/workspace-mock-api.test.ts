@@ -116,6 +116,28 @@ describe('Mock Workspace API', () => {
     await expect(mockApiClient.get(`${path}/${created.id}`)).resolves.toMatchObject({
       id: created.id,
     });
+    const taskPath = `/api/v1/workspaces/${workspace.id}/tasks`;
+    const task = await mockApiClient.post<TaskResponse>(taskPath, {
+      title: '출시 준비',
+      type: 'TODO',
+      allDay: true,
+      startAt: '2026-08-17T00:00:00',
+      endAt: '2026-08-18T00:00:00',
+    });
+    const connected = await mockApiClient.patch<TaskResponse>(
+      `${taskPath}/${task.id}/dday-goal`,
+      undefined,
+      { query: { ddayGoalId: created.id } },
+    );
+    expect(connected).toMatchObject({ ddayGoalId: created.id, ddayGoalTitle: '공유 출시일' });
+    await expect(mockApiClient.get(`${path}/${created.id}/tasks`)).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: task.id })]),
+    );
+
+    const disconnected = await mockApiClient.delete<TaskResponse>(
+      `${taskPath}/${task.id}/dday-goal`,
+    );
+    expect(disconnected.ddayGoalId).toBeNull();
     await expect(mockApiClient.get(`${path}/${created.id}/tasks`)).resolves.toEqual([]);
 
     await mockApiClient.delete(`${path}/${created.id}`);

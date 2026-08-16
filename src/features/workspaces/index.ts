@@ -10,7 +10,9 @@ export {
 } from './use-workspace-ddays';
 export {
   useCreateWorkspaceTask,
+  useConnectWorkspaceTaskDdayGoal,
   useDeleteWorkspaceTask,
+  useDisconnectWorkspaceTaskDdayGoal,
   useUpdateWorkspaceTask,
   useWorkspaceTaskDetail,
   useWorkspaceTasks,

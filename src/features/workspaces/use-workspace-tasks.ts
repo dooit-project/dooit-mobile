@@ -77,3 +77,41 @@ export function useDeleteWorkspaceTask(workspaceId: number) {
     },
   });
 }
+
+export function useConnectWorkspaceTaskDdayGoal(workspaceId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ taskId, goalId }: { taskId: number; goalId: number }) =>
+      workspaceTaskApi.connectDdayGoal(workspaceId, taskId, goalId),
+    onSuccess: (task, { goalId }) => {
+      queryClient.setQueryData<TaskResponse>(
+        workspaceQueryKeys.taskDetail(workspaceId, task.id),
+        task,
+      );
+      void queryClient.invalidateQueries({ queryKey: workspaceQueryKeys.tasks(workspaceId) });
+      void queryClient.invalidateQueries({
+        queryKey: workspaceQueryKeys.ddayGoalTasks(workspaceId, goalId),
+      });
+    },
+  });
+}
+
+export function useDisconnectWorkspaceTaskDdayGoal(workspaceId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ taskId }: { taskId: number; goalId: number }) =>
+      workspaceTaskApi.disconnectDdayGoal(workspaceId, taskId),
+    onSuccess: (task, { goalId }) => {
+      queryClient.setQueryData<TaskResponse>(
+        workspaceQueryKeys.taskDetail(workspaceId, task.id),
+        task,
+      );
+      void queryClient.invalidateQueries({ queryKey: workspaceQueryKeys.tasks(workspaceId) });
+      void queryClient.invalidateQueries({
+        queryKey: workspaceQueryKeys.ddayGoalTasks(workspaceId, goalId),
+      });
+    },
+  });
+}

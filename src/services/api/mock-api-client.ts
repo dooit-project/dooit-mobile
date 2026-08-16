@@ -874,6 +874,11 @@ function getWorkspaceDdayPathIds(path: string) {
     : null;
 }
 
+function getWorkspaceTaskDdayPathIds(path: string) {
+  const match = path.match(/^\/api\/v1\/workspaces\/(\d+)\/tasks\/(\d+)\/dday-goal$/);
+  return match ? { workspaceId: Number(match[1]), taskId: Number(match[2]) } : null;
+}
+
 function getMockActor() {
   return currentUser ?? users[0];
 }
@@ -1473,6 +1478,24 @@ export const mockApiClient = {
   async patch<T>(path: string, _body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    const workspaceTaskDdayPath = getWorkspaceTaskDdayPathIds(path);
+    if (workspaceTaskDdayPath) {
+      const task = getWorkspaceTask(
+        workspaceTaskDdayPath.workspaceId,
+        workspaceTaskDdayPath.taskId,
+      );
+      const goal = getWorkspaceDdayGoal(
+        workspaceTaskDdayPath.workspaceId,
+        Number(options.query?.ddayGoalId),
+      );
+      task.ddayGoalId = goal.id;
+      task.ddayGoalTitle = goal.title;
+      task.ddayGoalTargetDate = goal.targetDate;
+      task.ddayDaysLeft = goal.daysLeft;
+      task.updatedAt = now;
+      return cloneTask(task) as T;
+    }
+
     const workspacePath = getWorkspacePathIds(path);
     if (workspacePath?.memberId) {
       const member = workspaceMembers.find(
@@ -1545,6 +1568,20 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    const workspaceTaskDdayPath = getWorkspaceTaskDdayPathIds(path);
+    if (workspaceTaskDdayPath) {
+      const task = getWorkspaceTask(
+        workspaceTaskDdayPath.workspaceId,
+        workspaceTaskDdayPath.taskId,
+      );
+      task.ddayGoalId = null;
+      task.ddayGoalTitle = null;
+      task.ddayGoalTargetDate = null;
+      task.ddayDaysLeft = null;
+      task.updatedAt = now;
+      return cloneTask(task) as T;
+    }
 
     const workspacePath = getWorkspacePathIds(path);
     if (workspacePath?.memberId) {
