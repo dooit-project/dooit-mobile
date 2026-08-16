@@ -34,9 +34,12 @@ import {
 } from './use-workspace-member-mutations';
 import { useWorkspace, useWorkspaceMembers } from './use-workspaces';
 import { WorkspaceDdaySection } from './workspace-dday-section';
+import { useWorkspaceDdayGoals } from './use-workspace-ddays';
 import {
+  useConnectWorkspaceTaskDdayGoal,
   useCreateWorkspaceTask,
   useDeleteWorkspaceTask,
+  useDisconnectWorkspaceTaskDdayGoal,
   useUpdateWorkspaceTask,
   useWorkspaceTasks,
 } from './use-workspace-tasks';
@@ -343,7 +346,10 @@ function WorkspaceTaskCard({
   const theme = useAppTheme();
   const update = useUpdateWorkspaceTask(workspaceId);
   const remove = useDeleteWorkspaceTask(workspaceId);
-  const [mode, setMode] = useState<'idle' | 'edit' | 'delete'>('idle');
+  const connect = useConnectWorkspaceTaskDdayGoal(workspaceId);
+  const disconnect = useDisconnectWorkspaceTaskDdayGoal(workspaceId);
+  const goals = useWorkspaceDdayGoals(workspaceId);
+  const [mode, setMode] = useState<'idle' | 'edit' | 'delete' | 'dday'>('idle');
   const [title, setTitle] = useState(task.title);
   const [validationError, setValidationError] = useState(false);
   const isRecurring = Boolean(task.recurrenceSeriesId || task.recurrence);
@@ -377,6 +383,20 @@ function WorkspaceTaskCard({
       )}
       {manageable && mode === 'idle' ? (
         <View style={styles.taskActions}>
+          {task.ddayGoalId ? (
+            <Button
+              loading={disconnect.isPending}
+              size="compact"
+              variant="ghost"
+              onPress={() => disconnect.mutate({ taskId: task.id, goalId: task.ddayGoalId! })}
+            >
+              D-Day 해제
+            </Button>
+          ) : (
+            <Button size="compact" variant="ghost" onPress={() => setMode('dday')}>
+              D-Day 연결
+            </Button>
+          )}
           <Button size="compact" variant="ghost" onPress={() => setMode('edit')}>
             제목 수정
           </Button>
@@ -389,6 +409,62 @@ function WorkspaceTaskCard({
         <AppText tone="secondary" variant="caption">
           반복 일정의 수정·삭제 범위는 백엔드 계약 확정 후 제공할게요.
         </AppText>
+      ) : null}
+      {disconnect.error ? <InlineNotice message={disconnect.error.message} tone="danger" /> : null}
+      {mode === 'dday' ? (
+        <Card style={styles.inlineEditor}>
+          <View style={styles.formCopy}>
+            <AppText variant="label" weight="bold">
+              연결할 공유 D-Day
+            </AppText>
+            <AppText tone="secondary" variant="caption">
+              이 공간에서 만든 목표만 선택할 수 있어요.
+            </AppText>
+          </View>
+          {goals.isPending ? (
+            <ActivityIndicator color={theme.colors.primary} />
+          ) : goals.error ? (
+            <InlineNotice
+              action={
+                <Button size="compact" variant="ghost" onPress={() => void goals.refetch()}>
+                  다시 시도
+                </Button>
+              }
+              message={getUserFacingApiErrorMessage(goals.error)}
+              tone="danger"
+            />
+          ) : goals.data?.length ? (
+            <View style={styles.ddayOptions}>
+              {goals.data.map((goal) => (
+                <Button
+                  key={goal.id}
+                  fullWidth
+                  loading={connect.isPending && connect.variables?.goalId === goal.id}
+                  variant="secondary"
+                  onPress={() =>
+                    connect.mutate(
+                      { taskId: task.id, goalId: goal.id },
+                      { onSuccess: () => setMode('idle') },
+                    )
+                  }
+                >
+                  {goal.title} · {formatDateLabel(goal.targetDate)}
+                </Button>
+              ))}
+            </View>
+          ) : (
+            <InlineNotice message="먼저 아래 공유 D-Day 영역에서 목표를 만들어 주세요." />
+          )}
+          {connect.error ? <InlineNotice message={connect.error.message} tone="danger" /> : null}
+          <Button
+            disabled={connect.isPending}
+            fullWidth
+            variant="ghost"
+            onPress={() => setMode('idle')}
+          >
+            취소
+          </Button>
+        </Card>
       ) : null}
       {mode === 'edit' ? (
         <Card style={styles.inlineEditor}>
@@ -682,7 +758,8 @@ const styles = StyleSheet.create({
   list: { gap: spacing[3] },
   taskList: { gap: spacing[2] },
   taskItem: { gap: spacing[2] },
-  taskActions: { flexDirection: 'row', justifyContent: 'flex-end' },
+  taskActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' },
+  ddayOptions: { gap: spacing[2] },
   inlineEditor: { gap: spacing[3] },
   form: { gap: spacing[4] },
   formHeading: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing[2] },
