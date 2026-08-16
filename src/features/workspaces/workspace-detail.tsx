@@ -33,6 +33,7 @@ import {
   useUpdateWorkspaceMemberRole,
 } from './use-workspace-member-mutations';
 import { useWorkspace, useWorkspaceMembers } from './use-workspaces';
+import { WorkspaceDdaySection } from './workspace-dday-section';
 import {
   useCreateWorkspaceTask,
   useDeleteWorkspaceTask,
@@ -122,6 +123,10 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
             </AppText>
           </Card>
           <WorkspaceTaskList
+            canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
+            workspaceId={workspaceId!}
+          />
+          <WorkspaceDdaySection
             canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
             workspaceId={workspaceId!}
           />

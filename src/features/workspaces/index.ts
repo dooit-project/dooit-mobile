@@ -18,6 +18,7 @@ export {
 export { workspaceTaskApi } from './workspace-task-api';
 export { WorkspaceOverview } from './workspace-overview';
 export { WorkspaceDetail } from './workspace-detail';
+export { WorkspaceDdaySection } from './workspace-dday-section';
 export {
   useInviteWorkspaceMember,
   useRemoveWorkspaceMember,
