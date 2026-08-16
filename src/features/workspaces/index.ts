@@ -15,8 +15,13 @@ export {
   useDisconnectWorkspaceTaskDdayGoal,
   useUpdateWorkspaceTask,
   useWorkspaceTaskDetail,
+  useWorkspaceNotificationCandidates,
   useWorkspaceTasks,
 } from './use-workspace-tasks';
+export {
+  getWorkspaceNotificationIdentifier,
+  shouldScheduleWorkspaceNotifications,
+} from './workspace-notification-policy';
 export { workspaceTaskApi } from './workspace-task-api';
 export { WorkspaceOverview } from './workspace-overview';
 export { WorkspaceDetail } from './workspace-detail';

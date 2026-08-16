@@ -56,4 +56,25 @@ describe('Workspace query key', () => {
       workspaceQueryKeys.ddayGoalTasks(4, 8),
     );
   });
+
+  test('알림 후보 key를 계정·workspace·기간별로 격리한다', () => {
+    const key = workspaceQueryKeys.notificationCandidates(7, 3, '2026-08-17', '2026-09-16');
+
+    expect(key).toEqual([
+      'workspaces',
+      'detail',
+      3,
+      'tasks',
+      'notification-candidates',
+      7,
+      '2026-08-17',
+      '2026-09-16',
+    ]);
+    expect(key).not.toEqual(
+      workspaceQueryKeys.notificationCandidates(8, 3, '2026-08-17', '2026-09-16'),
+    );
+    expect(key).not.toEqual(
+      workspaceQueryKeys.notificationCandidates(7, 4, '2026-08-17', '2026-09-16'),
+    );
+  });
 });

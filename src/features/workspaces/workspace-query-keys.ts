@@ -1,4 +1,4 @@
-import type { TaskListQuery } from '@/types';
+import type { LocalDateString, TaskListQuery } from '@/types';
 
 export const workspaceQueryKeys = {
   all: ['workspaces'] as const,
@@ -16,4 +16,17 @@ export const workspaceQueryKeys = {
     [...workspaceQueryKeys.ddayGoals(workspaceId), 'detail', goalId] as const,
   ddayGoalTasks: (workspaceId: number, goalId: number) =>
     [...workspaceQueryKeys.ddayGoalDetail(workspaceId, goalId), 'tasks'] as const,
+  notificationCandidates: (
+    accountId: number,
+    workspaceId: number,
+    from: LocalDateString,
+    to: LocalDateString,
+  ) =>
+    [
+      ...workspaceQueryKeys.tasks(workspaceId),
+      'notification-candidates',
+      accountId,
+      from,
+      to,
+    ] as const,
 };

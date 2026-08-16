@@ -1,7 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Platform } from 'react-native';
 
-import type { RecurrenceEditScope, TaskListQuery, TaskResponse, TaskUpsertRequest } from '@/types';
+import type {
+  LocalDateString,
+  RecurrenceEditScope,
+  TaskListQuery,
+  TaskResponse,
+  TaskUpsertRequest,
+} from '@/types';
 
 import { workspaceQueryKeys } from './workspace-query-keys';
 import { workspaceTaskApi } from './workspace-task-api';
@@ -24,6 +30,25 @@ export function useWorkspaceTaskDetail(workspaceId: number, taskId: number | nul
         : workspaceQueryKeys.taskDetail(workspaceId, taskId),
     queryFn: ({ signal }) => workspaceTaskApi.get(workspaceId, taskId ?? 0, signal),
     enabled: canFetch && workspaceId > 0 && taskId !== null,
+  });
+}
+
+export function useWorkspaceNotificationCandidates({
+  accountId,
+  workspaceId,
+  from,
+  to,
+}: {
+  accountId: number;
+  workspaceId: number;
+  from: LocalDateString;
+  to: LocalDateString;
+}) {
+  return useQuery({
+    queryKey: workspaceQueryKeys.notificationCandidates(accountId, workspaceId, from, to),
+    queryFn: ({ signal }) =>
+      workspaceTaskApi.getNotificationCandidates(workspaceId, from, to, signal),
+    enabled: canFetch && accountId > 0 && workspaceId > 0,
   });
 }
 

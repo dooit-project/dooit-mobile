@@ -149,6 +149,7 @@ Last updated: 2026-08-13
 - [x] Workspace Task와 D-Day 연결·해제 mutation, cache 갱신과 mock 흐름을 추가한다.
 - [x] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
 - [ ] Workspace 반복 Task는 백엔드 수정·삭제 범위가 준비되기 전까지 생성·조회만 허용한다.
+- [x] Workspace 알림 후보 Query와 식별자를 계정·workspace·기간별로 격리하고 Web 예약 제외 정책을 추가한다.
 - [ ] Workspace 알림 후보를 계정·workspace별로 격리해 로컬 예약하고 Web에서는 예약하지 않는다.
 - [ ] 공유 핵심 흐름을 320px·390px·430px, zoom 150%, keyboard, screen reader에서 검증한다.
 - [ ] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 화면에 노출하지 않는다.
