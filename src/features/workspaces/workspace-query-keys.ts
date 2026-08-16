@@ -10,4 +10,10 @@ export const workspaceQueryKeys = {
     [...workspaceQueryKeys.tasks(workspaceId), 'list', query] as const,
   taskDetail: (workspaceId: number, taskId: number) =>
     [...workspaceQueryKeys.tasks(workspaceId), 'detail', taskId] as const,
+  ddayGoals: (workspaceId: number) =>
+    [...workspaceQueryKeys.detail(workspaceId), 'dday-goals'] as const,
+  ddayGoalDetail: (workspaceId: number, goalId: number) =>
+    [...workspaceQueryKeys.ddayGoals(workspaceId), 'detail', goalId] as const,
+  ddayGoalTasks: (workspaceId: number, goalId: number) =>
+    [...workspaceQueryKeys.ddayGoalDetail(workspaceId, goalId), 'tasks'] as const,
 };

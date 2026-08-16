@@ -2,6 +2,13 @@ export { workspaceApi } from './workspace-api';
 export { workspaceDdayApi } from './workspace-dday-api';
 export { workspaceQueryKeys } from './workspace-query-keys';
 export {
+  useCreateWorkspaceDdayGoal,
+  useDeleteWorkspaceDdayGoal,
+  useWorkspaceDdayGoalDetail,
+  useWorkspaceDdayGoals,
+  useWorkspaceDdayGoalTasks,
+} from './use-workspace-ddays';
+export {
   useCreateWorkspaceTask,
   useDeleteWorkspaceTask,
   useUpdateWorkspaceTask,

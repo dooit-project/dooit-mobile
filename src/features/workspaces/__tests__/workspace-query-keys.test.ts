@@ -32,4 +32,28 @@ describe('Workspace query key', () => {
       workspaceQueryKeys.taskList(4, query),
     );
   });
+
+  test('D-Day key를 workspace와 목표별로 격리한다', () => {
+    expect(workspaceQueryKeys.ddayGoals(3)).toEqual(['workspaces', 'detail', 3, 'dday-goals']);
+    expect(workspaceQueryKeys.ddayGoalDetail(3, 8)).toEqual([
+      'workspaces',
+      'detail',
+      3,
+      'dday-goals',
+      'detail',
+      8,
+    ]);
+    expect(workspaceQueryKeys.ddayGoalTasks(3, 8)).toEqual([
+      'workspaces',
+      'detail',
+      3,
+      'dday-goals',
+      'detail',
+      8,
+      'tasks',
+    ]);
+    expect(workspaceQueryKeys.ddayGoalTasks(3, 8)).not.toEqual(
+      workspaceQueryKeys.ddayGoalTasks(4, 8),
+    );
+  });
 });
