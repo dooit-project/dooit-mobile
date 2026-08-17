@@ -1,10 +1,23 @@
 # 일정 공유 백엔드 요청사항
 
-Last updated: 2026-08-15
+Last updated: 2026-08-17
 
 프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 중인 OpenAPI 순서로 대조한다. 아래 항목은 공유 화면을 완성하기 전에 백엔드에서 확인하거나 보완해야 한다.
 
-## P0. 초대받은 사용자 조회
+## 확인 결과
+
+2026-08-17 backend `c6c6915` 기준 소스·문서와 Workspace·알림·OpenAPI 관련 통합 테스트를 확인했다. 관련 테스트는 `BUILD SUCCESSFUL`로 통과했다.
+
+- PENDING 초대 목록 API: 구현 완료
+- Workspace OpenAPI source·통합 테스트: 구현 완료
+- 반복 Task `recurrenceScope`: 구현 완료
+- 권한별 403과 비멤버 404 계약: 문서·통합 테스트 반영 완료
+- Workspace 알림 억제 정책: 서비스 테스트 반영 완료
+- DB migration: 로컬 production Docker MySQL 적용 이력 확인
+
+남은 외부 확인은 배포된 백엔드 commit SHA, 실행 중인 `/v3/api-docs`, 실제 배포 DB migration 상태다. 아래 내용은 요청 당시 배경과 계약을 보존한다.
+
+## P0. 초대받은 사용자 조회 — 완료
 
 현재 초대 수락은 `workspaceId`와 `memberId`가 필요하지만 Workspace 목록은 ACTIVE membership만, 멤버 목록도 ACTIVE 멤버만 반환한다. PENDING 사용자는 두 ID를 발견할 수 없다.
 
@@ -29,7 +42,7 @@ type WorkspaceInvitationResponse = {
 - 수락 후 목록에서 제거되고 Workspace 목록에 나타난다.
 - REMOVED membership은 반환하지 않는다.
 
-## P0. 실행 OpenAPI 최신화
+## P0. 실행 OpenAPI 최신화 — 소스 완료, 배포 확인 필요
 
 2026-08-15 현재 로컬 `http://localhost:8080/v3/api-docs`에는 전체 59개 path가 있으나 `/api/v1/workspaces/**`가 하나도 없다. 최신 Workspace 커밋이 포함된 서버를 재빌드·재시작한 뒤 아래를 확인해야 한다.
 
@@ -37,7 +50,7 @@ type WorkspaceInvitationResponse = {
 - request·response schema가 `API_V1_FRONTEND.md`와 일치한다.
 - 프론트 real API smoke용 백엔드 commit SHA를 제공한다.
 
-## P1. 반복 Task 수정·삭제 범위
+## P1. 반복 Task 수정·삭제 범위 — 완료
 
 문서상 Workspace 반복 Task 생성과 materialize는 가능하지만 반복 Task 수정·삭제는 아직 HTTP 400이다.
 
@@ -45,14 +58,14 @@ type WorkspaceInvitationResponse = {
 - 지원 전에는 안정적인 error code를 반환한다.
 - 프론트는 지원 확인 전 반복 Workspace Task의 편집·삭제 행동을 숨긴다.
 
-## P1. 권한·오류 계약
+## P1. 권한·오류 계약 — 완료
 
 - OWNER, EDITOR, VIEWER별 endpoint 허용 행렬을 OpenAPI 설명과 통합 테스트에 고정한다.
 - 다른 workspace의 Task/D-Day ID는 404 계열로 숨긴다.
 - 권한 부족은 403, 잘못된 scope 연결은 안정적인 400/404 error code로 구분한다.
 - 마지막 ACTIVE OWNER 제거·탈퇴 실패 error code를 문서화한다.
 
-## P1. Workspace 알림 후보
+## P1. Workspace 알림 후보 — 완료
 
 - 최신 OpenAPI에 `/tasks/notification-candidates`를 노출한다.
 - 개인 후보와 Workspace 후보가 서로 섞이지 않는 invariant를 유지한다.

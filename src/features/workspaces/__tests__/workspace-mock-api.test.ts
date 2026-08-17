@@ -1,6 +1,7 @@
 import { mockApiClient } from '@/services/api/mock-api-client';
 import type {
   DdayGoalResponse,
+  TaskNotificationCandidateResponse,
   TaskResponse,
   WorkspaceMemberResponse,
   WorkspaceResponse,
@@ -98,6 +99,37 @@ describe('Mock Workspace API', () => {
 
     await mockApiClient.delete(`${path}/${created.id}`);
     await expect(mockApiClient.get(`${path}/${created.id}`)).rejects.toMatchObject({ status: 404 });
+  });
+
+  test('Workspace 알림 후보를 workspace와 기간별로 조회한다', async () => {
+    const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
+      name: '알림팀',
+    });
+    const taskPath = `/api/v1/workspaces/${workspace.id}/tasks`;
+    const task = await mockApiClient.post<TaskResponse>(taskPath, {
+      title: '알림 대상 일정',
+      type: 'SCHEDULE',
+      allDay: false,
+      startAt: '2026-08-20T09:00:00',
+      endAt: '2026-08-20T10:00:00',
+    });
+
+    await expect(
+      mockApiClient.get<TaskNotificationCandidateResponse[]>(
+        `${taskPath}/notification-candidates`,
+        { query: { from: '2026-08-17', to: '2026-08-31' } },
+      ),
+    ).resolves.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ notificationKey: `task:${task.id}`, taskId: task.id }),
+      ]),
+    );
+    await expect(
+      mockApiClient.get<TaskNotificationCandidateResponse[]>(
+        `${taskPath}/notification-candidates`,
+        { query: { from: '2026-09-01', to: '2026-09-30' } },
+      ),
+    ).resolves.toEqual([]);
   });
 
   test('Workspace D-Day 생성·조회·연결 Task 조회·삭제를 지원한다', async () => {

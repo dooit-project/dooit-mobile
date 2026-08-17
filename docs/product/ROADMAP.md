@@ -1,6 +1,6 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-13
+Last updated: 2026-08-17
 
 이 문서는 완료 이력이 아니라 현재 제품 기준과 앞으로 할 일을 관리한다. 과거 검증 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md), 실제 배포 전 확인은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 관리한다.
 
@@ -124,20 +124,22 @@ Last updated: 2026-08-13
 - [x] 개인 Task 템플릿 목록, 기본 생성·삭제와 오늘 Task 적용 화면을 추가한다.
 - [x] 기존 개인 Task 템플릿의 이름·설명·분류 편집 화면을 추가한다.
 - [x] 개인 Task 템플릿의 일정·반복 설정 화면을 추가한다.
-- [ ] Workspace 기본 API는 백엔드 배포 확인 후 생성·조회·멤버 관리 범위만 별도 화면으로 연결한다.
+- [x] Workspace 기본 API의 백엔드 구현·문서·OpenAPI 통합 테스트를 backend `c6c6915` 기준으로 확인한다.
+- [ ] 배포된 백엔드 commit SHA와 실행 `/v3/api-docs`의 Workspace path를 확인하고 real API smoke를 통과한다.
 - [x] Workspace 기본 관리와 멤버 초대·수락·제거의 타입, API client와 endpoint 회귀 테스트를 추가한다.
 - [x] Workspace 기본 관리와 멤버 흐름을 mock API에서도 검증할 수 있게 한다.
 - [x] Workspace Task CRUD·D-Day 연결·알림 후보 API client와 endpoint 테스트를 추가한다.
 - [x] Workspace D-Day 생성·조회·연결 Task·삭제 API client와 endpoint 테스트를 추가한다.
-- [ ] 초대받은 사용자가 PENDING membership의 `workspaceId`와 `memberId`를 조회하는 계약을 백엔드와 확정한다.
+- [x] `GET /api/v1/workspace-invitations`의 PENDING 초대 조회·수락 계약을 백엔드와 확정한다.
 - [x] 백엔드 확인·보완 요청을 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md)에 정리한다.
 - [x] Workspace 목록·생성·멤버 목록 Query 상태 계층을 추가한다.
-- [ ] 최신 실행 OpenAPI에 Workspace path가 노출되고 backend commit SHA가 확인되면 더보기에서 공유 공간 진입점을 연다.
-- [ ] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
-- [ ] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
+- [ ] 최신 실행 OpenAPI와 backend commit SHA가 확인되면 real API 모드에서도 공유 공간 진입점을 연다.
+- [x] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
+- [x] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [x] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
 - [x] OWNER 멤버 초대·role 변경·제거 mutation과 ACTIVE 멤버 cache 갱신을 추가한다.
-- [ ] PENDING 초대 목록 API가 준비되면 초대 확인·수락·거절 흐름을 구현한다.
+- [ ] PENDING 초대 목록 Query·mock과 초대 확인·수락 화면을 구현한다.
+- [ ] 초대 거절이 제품에 필요하면 백엔드 status 전이와 endpoint 계약을 별도로 확정한다.
 - [x] Workspace Task 목록·상세 Query와 생성·수정·삭제 mutation을 workspace별 cache로 격리한다.
 - [x] 공유 공간 상세에 개인 일정과 분리된 오늘의 Workspace Task 목록·빈 상태·오류 복구를 표시한다.
 - [x] OWNER·EDITOR용 오늘의 Workspace Task 기본 생성 화면을 추가하고 VIEWER에게 생성 행동을 숨긴다.
@@ -148,9 +150,11 @@ Last updated: 2026-08-13
 - [x] Workspace D-Day 목록·생성·삭제 화면을 추가하고 VIEWER에게 변경 행동을 숨긴다.
 - [x] Workspace Task와 D-Day 연결·해제 mutation, cache 갱신과 mock 흐름을 추가한다.
 - [x] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
-- [ ] Workspace 반복 Task는 백엔드 수정·삭제 범위가 준비되기 전까지 생성·조회만 허용한다.
+- [ ] Workspace 반복 Task 수정·삭제에 `recurrenceScope=THIS|THIS_AND_FUTURE|ALL` 선택 UI와 query 전달을 추가한다.
 - [x] Workspace 알림 후보 Query와 식별자를 계정·workspace·기간별로 격리하고 Web 예약 제외 정책을 추가한다.
+- [x] Workspace 알림 후보 endpoint의 기간 필터와 식별자 생성 흐름을 mock API에 추가한다.
 - [ ] Workspace 알림 후보를 계정·workspace별로 격리해 로컬 예약하고 Web에서는 예약하지 않는다.
+- [ ] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 오류를 real API로 검증하고 403/404 안내를 고정한다.
 - [ ] 공유 핵심 흐름을 320px·390px·430px, zoom 150%, keyboard, screen reader에서 검증한다.
 - [ ] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 화면에 노출하지 않는다.
 - [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.

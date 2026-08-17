@@ -879,6 +879,11 @@ function getWorkspaceTaskDdayPathIds(path: string) {
   return match ? { workspaceId: Number(match[1]), taskId: Number(match[2]) } : null;
 }
 
+function getWorkspaceNotificationCandidatesId(path: string) {
+  const match = path.match(/^\/api\/v1\/workspaces\/(\d+)\/tasks\/notification-candidates$/);
+  return match ? Number(match[1]) : null;
+}
+
 function getMockActor() {
   return currentUser ?? users[0];
 }
@@ -1062,6 +1067,33 @@ export const mockApiClient = {
       return workspaces
         .filter((workspace) => visibleIds.has(workspace.id))
         .map((item) => ({ ...item })) as T;
+    }
+
+    const workspaceNotificationCandidatesId = getWorkspaceNotificationCandidatesId(path);
+    if (workspaceNotificationCandidatesId) {
+      const from = String(options.query?.from ?? today);
+      const to = String(options.query?.to ?? today);
+      return getWorkspaceTasks(workspaceNotificationCandidatesId)
+        .filter(
+          (task) =>
+            !task.completedAt &&
+            Boolean(task.startAt) &&
+            task.recurrenceException !== 'SKIPPED' &&
+            task.startAt!.slice(0, 10) >= from &&
+            task.startAt!.slice(0, 10) <= to,
+        )
+        .map((task) => ({
+          notificationKey:
+            task.recurrenceSeriesId && task.occurrenceDate
+              ? `recurrence:${task.recurrenceSeriesId}:${task.occurrenceDate}`
+              : `task:${task.id}`,
+          taskId: task.id,
+          scheduledAt: task.startAt!,
+          recurrenceSeriesId: task.recurrenceSeriesId ?? null,
+          occurrenceDate: task.occurrenceDate ?? null,
+          suppressLocalNotification: false,
+          task: cloneTask(task),
+        })) as T;
     }
 
     const workspacePath = getWorkspacePathIds(path);
