@@ -4,6 +4,7 @@ import type {
   TaskNotificationCandidateResponse,
   TaskResponse,
   WorkspaceMemberResponse,
+  WorkspaceInvitationResponse,
   WorkspaceResponse,
 } from '@/types';
 
@@ -57,6 +58,50 @@ describe('Mock Workspace API', () => {
     );
     expect(remaining).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ id: invited.id })]),
+    );
+  });
+
+  test('현재 사용자의 PENDING 초대 목록과 수락 흐름을 지원한다', async () => {
+    await mockApiClient.post('/api/v1/auth/login', {
+      email: 'demo@todolab.app',
+      password: 'demo1234',
+    });
+    const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
+      name: '초대팀',
+    });
+    const invited = await mockApiClient.post<WorkspaceMemberResponse>(
+      `/api/v1/workspaces/${workspace.id}/members`,
+      { email: 'member@todolab.app', role: 'VIEWER' },
+    );
+
+    await mockApiClient.post('/api/v1/auth/login', {
+      email: 'member@todolab.app',
+      password: 'member1234',
+    });
+    const invitations = await mockApiClient.get<WorkspaceInvitationResponse[]>(
+      '/api/v1/workspace-invitations',
+    );
+    expect(invitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          workspace: expect.objectContaining({ id: workspace.id }),
+          membership: expect.objectContaining({ id: invited.id, status: 'PENDING' }),
+        }),
+      ]),
+    );
+
+    await mockApiClient.patch(`/api/v1/workspaces/${workspace.id}/members/${invited.id}`, {
+      status: 'ACTIVE',
+    });
+    await expect(
+      mockApiClient.get<WorkspaceInvitationResponse[]>('/api/v1/workspace-invitations'),
+    ).resolves.not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ membership: expect.objectContaining({ id: invited.id }) }),
+      ]),
+    );
+    await expect(mockApiClient.get<WorkspaceResponse[]>('/api/v1/workspaces')).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: workspace.id })]),
     );
   });
 

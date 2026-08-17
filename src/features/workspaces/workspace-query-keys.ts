@@ -3,6 +3,8 @@ import type { LocalDateString, TaskListQuery } from '@/types';
 export const workspaceQueryKeys = {
   all: ['workspaces'] as const,
   list: () => [...workspaceQueryKeys.all, 'list'] as const,
+  invitations: (accountId: number) =>
+    [...workspaceQueryKeys.all, 'invitations', accountId] as const,
   detail: (workspaceId: number) => [...workspaceQueryKeys.all, 'detail', workspaceId] as const,
   members: (workspaceId: number) => [...workspaceQueryKeys.detail(workspaceId), 'members'] as const,
   tasks: (workspaceId: number) => [...workspaceQueryKeys.detail(workspaceId), 'tasks'] as const,

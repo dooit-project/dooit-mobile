@@ -58,6 +58,7 @@ export type {
 export { deferReasonLabels, taskLimits } from './task';
 export type {
   WorkspaceInviteRequest,
+  WorkspaceInvitationResponse,
   WorkspaceMemberResponse,
   WorkspaceMemberStatus,
   WorkspaceMemberUpdateRequest,

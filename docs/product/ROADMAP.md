@@ -138,7 +138,8 @@ Last updated: 2026-08-17
 - [x] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [x] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
 - [x] OWNER 멤버 초대·role 변경·제거 mutation과 ACTIVE 멤버 cache 갱신을 추가한다.
-- [ ] PENDING 초대 목록 Query·mock과 초대 확인·수락 화면을 구현한다.
+- [x] PENDING 초대 목록 타입·API·Query·mock과 수락 mutation을 계정별 cache로 격리한다.
+- [ ] PENDING 초대 확인·수락 화면을 구현한다.
 - [ ] 초대 거절이 제품에 필요하면 백엔드 status 전이와 endpoint 계약을 별도로 확정한다.
 - [x] Workspace Task 목록·상세 Query와 생성·수정·삭제 mutation을 workspace별 cache로 격리한다.
 - [x] 공유 공간 상세에 개인 일정과 분리된 오늘의 Workspace Task 목록·빈 상태·오류 복구를 표시한다.

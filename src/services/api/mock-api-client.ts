@@ -31,6 +31,7 @@ import type {
   TodayOrderDirection,
   UserResponse,
   WorkspaceInviteRequest,
+  WorkspaceInvitationResponse,
   WorkspaceMemberResponse,
   WorkspaceMemberUpdateRequest,
   WorkspaceRequest,
@@ -53,6 +54,7 @@ const TASKS_PATH = '/api/v1/tasks';
 const TASK_TEMPLATES_PATH = '/api/v1/task-templates';
 const DDAYS_PATH = '/api/v1/dday-goals';
 const WORKSPACES_PATH = '/api/v1/workspaces';
+const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 
 let nextUserId = 3;
 let nextTaskId = 100;
@@ -1067,6 +1069,25 @@ export const mockApiClient = {
       return workspaces
         .filter((workspace) => visibleIds.has(workspace.id))
         .map((item) => ({ ...item })) as T;
+    }
+
+    if (path === WORKSPACE_INVITATIONS_PATH) {
+      const actor = getMockActor();
+      if (actor.accountType === 'GUEST') {
+        throw new ApiClientError('게스트 계정은 Workspace 초대를 조회할 수 없습니다.', {
+          kind: 'http',
+          status: 403,
+        });
+      }
+      return workspaceMembers
+        .filter((member) => member.userId === actor.id && member.status === 'PENDING')
+        .map(
+          (membership): WorkspaceInvitationResponse => ({
+            workspace: { ...getWorkspace(membership.workspaceId) },
+            membership: cloneWorkspaceMember(membership),
+            invitedAt: membership.createdAt,
+          }),
+        ) as T;
     }
 
     const workspaceNotificationCandidatesId = getWorkspaceNotificationCandidatesId(path);

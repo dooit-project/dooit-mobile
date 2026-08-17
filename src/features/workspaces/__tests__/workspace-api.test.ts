@@ -39,11 +39,15 @@ describe('Workspace API', () => {
   });
 
   test('멤버 조회·초대·수락·제거 endpoint를 호출한다', async () => {
+    await workspaceApi.listInvitations();
     await workspaceApi.listMembers(3);
     await workspaceApi.inviteMember(3, { email: 'member@example.com', role: 'EDITOR' });
     await workspaceApi.acceptInvite(3, 9);
     await workspaceApi.removeMember(3, 9);
 
+    expect(getMock).toHaveBeenCalledWith('/api/v1/workspace-invitations', {
+      signal: undefined,
+    });
     expect(getMock).toHaveBeenCalledWith('/api/v1/workspaces/3/members', {
       signal: undefined,
     });

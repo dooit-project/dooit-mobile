@@ -1,6 +1,7 @@
 import { apiClient } from '@/services/api';
 import type {
   WorkspaceInviteRequest,
+  WorkspaceInvitationResponse,
   WorkspaceMemberResponse,
   WorkspaceMemberUpdateRequest,
   WorkspaceRequest,
@@ -8,10 +9,15 @@ import type {
 } from '@/types';
 
 const WORKSPACES_PATH = '/api/v1/workspaces';
+const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 
 export const workspaceApi = {
   list(signal?: AbortSignal) {
     return apiClient.get<WorkspaceResponse[]>(WORKSPACES_PATH, { signal });
+  },
+
+  listInvitations(signal?: AbortSignal) {
+    return apiClient.get<WorkspaceInvitationResponse[]>(WORKSPACE_INVITATIONS_PATH, { signal });
   },
 
   get(workspaceId: number, signal?: AbortSignal) {

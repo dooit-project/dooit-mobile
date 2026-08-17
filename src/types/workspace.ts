@@ -38,3 +38,9 @@ export type WorkspaceMemberResponse = {
   createdAt: LocalDateTimeString;
   updatedAt: LocalDateTimeString | null;
 };
+
+export type WorkspaceInvitationResponse = {
+  workspace: WorkspaceResponse;
+  membership: WorkspaceMemberResponse;
+  invitedAt: LocalDateTimeString;
+};

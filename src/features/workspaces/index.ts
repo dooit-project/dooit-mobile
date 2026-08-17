@@ -23,6 +23,7 @@ export {
   shouldScheduleWorkspaceNotifications,
 } from './workspace-notification-policy';
 export { workspaceTaskApi } from './workspace-task-api';
+export { useAcceptWorkspaceInvitation, useWorkspaceInvitations } from './use-workspace-invitations';
 export { WorkspaceOverview } from './workspace-overview';
 export { WorkspaceDetail } from './workspace-detail';
 export { WorkspaceDdaySection } from './workspace-dday-section';
