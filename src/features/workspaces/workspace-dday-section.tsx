@@ -11,7 +11,6 @@ import {
   SectionHeader,
 } from '@/components/ui';
 import { getDdayLabel, validateDdayGoal } from '@/features/dday';
-import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 import { ddayGoalLimits } from '@/types';
 import type { DdayGoalRequest, DdayGoalResponse } from '@/types';
@@ -22,6 +21,7 @@ import {
   useDeleteWorkspaceDdayGoal,
   useWorkspaceDdayGoals,
 } from './use-workspace-ddays';
+import { getWorkspaceActionErrorMessage } from './workspace-error-presentation';
 
 export function WorkspaceDdaySection({
   workspaceId,
@@ -61,7 +61,7 @@ export function WorkspaceDdaySection({
               다시 시도
             </Button>
           }
-          message={getUserFacingApiErrorMessage(goals.error)}
+          message={getWorkspaceActionErrorMessage(goals.error)}
           title="공유 D-Day를 불러오지 못했어요"
           tone="danger"
         />
@@ -177,7 +177,9 @@ function WorkspaceDdayCreateForm({
           </AppText>
         ) : null}
       </View>
-      {create.error ? <InlineNotice message={create.error.message} tone="danger" /> : null}
+      {create.error ? (
+        <InlineNotice message={getWorkspaceActionErrorMessage(create.error)} tone="danger" />
+      ) : null}
       <View style={styles.actions}>
         <Button disabled={create.isPending} fullWidth variant="secondary" onPress={onClose}>
           취소
@@ -234,7 +236,9 @@ function WorkspaceDdayCard({
           <AppText tone="secondary" variant="caption">
             연결된 공유 일정은 유지되고 D-Day 연결만 해제돼요.
           </AppText>
-          {remove.error ? <InlineNotice message={remove.error.message} tone="danger" /> : null}
+          {remove.error ? (
+            <InlineNotice message={getWorkspaceActionErrorMessage(remove.error)} tone="danger" />
+          ) : null}
           <View style={styles.actions}>
             <Button
               disabled={remove.isPending}

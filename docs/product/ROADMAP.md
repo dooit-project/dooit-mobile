@@ -157,7 +157,8 @@ Last updated: 2026-08-17
 - [x] Workspace 알림 후보 Query와 식별자를 계정·workspace·기간별로 격리하고 Web 예약 제외 정책을 추가한다.
 - [x] Workspace 알림 후보 endpoint의 기간 필터와 식별자 생성 흐름을 mock API에 추가한다.
 - [x] Workspace 알림 후보를 계정·workspace별로 격리해 Android·iOS에 로컬 예약하고 Web에서는 예약하지 않는다.
-- [ ] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 오류를 real API로 검증하고 403/404 안내를 고정한다.
+- [x] Workspace 403/404 응답을 권한 변경·탈퇴·삭제 상태로 구분하고 목록 복귀·행동 오류 안내를 고정한다.
+- [ ] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 조합을 real API로 검증한다.
 - [ ] 공유 핵심 흐름을 320px·390px·430px, zoom 150%, keyboard, screen reader에서 검증한다.
 - [ ] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 화면에 노출하지 않는다.
 - [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.

@@ -35,6 +35,10 @@ import {
 } from './use-workspace-member-mutations';
 import { useWorkspace, useWorkspaceMembers } from './use-workspaces';
 import { WorkspaceDdaySection } from './workspace-dday-section';
+import {
+  getWorkspaceAccessErrorPresentation,
+  getWorkspaceActionErrorMessage,
+} from './workspace-error-presentation';
 import { useWorkspaceDdayGoals } from './use-workspace-ddays';
 import {
   useConnectWorkspaceTaskDdayGoal,
@@ -77,6 +81,8 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
     auth.status === 'registered'
       ? members.data?.find((item) => item.userId === auth.user.id)
       : undefined;
+  const accessError = detail.error ?? members.error;
+  const accessErrorPresentation = getWorkspaceAccessErrorPresentation(accessError);
   const retry = () => {
     void detail.refetch();
     void members.refetch();
@@ -109,13 +115,19 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
         </View>
       ) : detail.error || members.error ? (
         <InlineNotice
-          title="공유 정보를 불러오지 못했어요"
-          message={(detail.error ?? members.error)?.message ?? '잠시 후 다시 시도해 주세요.'}
+          title={accessErrorPresentation.title}
+          message={accessErrorPresentation.message}
           tone="danger"
           action={
-            <Button size="compact" variant="ghost" onPress={retry}>
-              다시 시도
-            </Button>
+            accessErrorPresentation.shouldReturnToList ? (
+              <Button size="compact" variant="ghost" onPress={() => router.replace('/workspaces')}>
+                공유 공간 목록
+              </Button>
+            ) : accessErrorPresentation.canRetry ? (
+              <Button size="compact" variant="ghost" onPress={retry}>
+                다시 시도
+              </Button>
+            ) : undefined
           }
         />
       ) : (
@@ -394,7 +406,9 @@ function CreateWorkspaceTaskForm({
           ))}
         </View>
       </View>
-      {create.error ? <InlineNotice message={create.error.message} tone="danger" /> : null}
+      {create.error ? (
+        <InlineNotice message={getWorkspaceActionErrorMessage(create.error)} tone="danger" />
+      ) : null}
       <View style={styles.formActions}>
         <Button disabled={create.isPending} fullWidth variant="secondary" onPress={onClose}>
           취소
@@ -486,7 +500,9 @@ function WorkspaceTaskCard({
           </Button>
         </View>
       ) : null}
-      {disconnect.error ? <InlineNotice message={disconnect.error.message} tone="danger" /> : null}
+      {disconnect.error ? (
+        <InlineNotice message={getWorkspaceActionErrorMessage(disconnect.error)} tone="danger" />
+      ) : null}
       {mode === 'dday' ? (
         <Card style={styles.inlineEditor}>
           <View style={styles.formCopy}>
@@ -531,7 +547,9 @@ function WorkspaceTaskCard({
           ) : (
             <InlineNotice message="먼저 아래 공유 D-Day 영역에서 목표를 만들어 주세요." />
           )}
-          {connect.error ? <InlineNotice message={connect.error.message} tone="danger" /> : null}
+          {connect.error ? (
+            <InlineNotice message={getWorkspaceActionErrorMessage(connect.error)} tone="danger" />
+          ) : null}
           <Button
             disabled={connect.isPending}
             fullWidth
@@ -578,7 +596,9 @@ function WorkspaceTaskCard({
               onChange={setRecurrenceScope}
             />
           ) : null}
-          {update.error ? <InlineNotice message={update.error.message} tone="danger" /> : null}
+          {update.error ? (
+            <InlineNotice message={getWorkspaceActionErrorMessage(update.error)} tone="danger" />
+          ) : null}
           <View style={styles.formActions}>
             <Button
               disabled={update.isPending}
@@ -615,7 +635,9 @@ function WorkspaceTaskCard({
               onChange={setRecurrenceScope}
             />
           ) : null}
-          {remove.error ? <InlineNotice message={remove.error.message} tone="danger" /> : null}
+          {remove.error ? (
+            <InlineNotice message={getWorkspaceActionErrorMessage(remove.error)} tone="danger" />
+          ) : null}
           <View style={styles.formActions}>
             <Button
               disabled={remove.isPending}
@@ -786,7 +808,9 @@ function InviteMemberForm({ workspaceId, onClose }: { workspaceId: number; onClo
           ))}
         </View>
       </View>
-      {invite.error ? <InlineNotice message={invite.error.message} tone="danger" /> : null}
+      {invite.error ? (
+        <InlineNotice message={getWorkspaceActionErrorMessage(invite.error)} tone="danger" />
+      ) : null}
       <Button fullWidth loading={invite.isPending} onPress={submit}>
         초대 보내기
       </Button>
@@ -836,7 +860,7 @@ function WorkspaceMemberCard({
             </AppText>
             {remove.error ? (
               <AppText tone="danger" variant="caption">
-                {remove.error.message}
+                {getWorkspaceActionErrorMessage(remove.error)}
               </AppText>
             ) : null}
             <View style={styles.memberActions}>
@@ -877,7 +901,9 @@ function WorkspaceMemberCard({
           </View>
         )
       ) : null}
-      {updateRole.error ? <InlineNotice message={updateRole.error.message} tone="danger" /> : null}
+      {updateRole.error ? (
+        <InlineNotice message={getWorkspaceActionErrorMessage(updateRole.error)} tone="danger" />
+      ) : null}
     </Card>
   );
 }
