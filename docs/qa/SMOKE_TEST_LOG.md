@@ -75,6 +75,7 @@ Last updated: 2026-08-19
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:auth:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:search:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:workspace-roles:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 ```
@@ -98,6 +99,28 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 
 - 실행 서버 응답에 commit 또는 image tag가 없어 현재 source HEAD와 같은 binary인지는 확정하지 않았다.
 - 권한 조합과 실제 데이터 변경은 real API 시나리오 smoke에서 별도로 확인해야 한다.
+
+## Workspace 권한 real API 기준선
+
+- 날짜: 2026-08-19
+- 환경: local backend `http://localhost:8080`
+- 인접 backend source commit: `5eb6050`
+- 명령: `npm run smoke:workspace-roles:real`
+- 계정: 실행마다 분리된 OWNER·EDITOR·VIEWER·PENDING·REMOVED·비멤버 6개
+
+판정 기준:
+
+- OWNER는 Workspace·Task를 생성하고 Task 정리 후 Workspace를 삭제할 수 있다.
+- EDITOR는 Task를 수정하지만 Workspace 설정은 변경할 수 없다.
+- VIEWER는 Task를 조회하지만 생성할 수 없다.
+- PENDING은 초대만 조회하고 Workspace에는 접근할 수 없다.
+- REMOVED와 비멤버는 Workspace 존재 여부를 확인할 수 없다.
+- 권한 부족은 HTTP 403 `FORBIDDEN`, 비활성·비멤버 접근은 HTTP 404 `WORKSPACE_NOT_FOUND`다.
+
+발견한 백엔드 후속 작업:
+
+- Task가 남아 있는 Workspace를 OWNER가 삭제하면 HTTP 500이 발생했다.
+- 권한 행렬 smoke의 데이터 정리는 Task를 먼저 삭제해 수행하며, Workspace 삭제 정책 보완 후 별도 재검증한다.
 
 ## Android APK 기준선
 

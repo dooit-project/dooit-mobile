@@ -153,6 +153,7 @@ API 단독 smoke는 다음 script를 사용합니다.
 ```bash
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:auth:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:workspace-roles:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 ```

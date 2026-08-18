@@ -1,6 +1,6 @@
 # 일정 공유 백엔드 요청사항
 
-Last updated: 2026-08-17
+Last updated: 2026-08-19
 
 프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 중인 OpenAPI 순서로 대조한다. 아래 항목은 공유 화면을 완성하기 전에 백엔드에서 확인하거나 보완해야 한다.
 
@@ -16,6 +16,17 @@ Last updated: 2026-08-17
 - DB migration: 로컬 production Docker MySQL 적용 이력 확인
 
 남은 외부 확인은 배포된 백엔드 commit SHA, 실행 중인 `/v3/api-docs`, 실제 배포 DB migration 상태다. 아래 내용은 요청 당시 배경과 계약을 보존한다.
+
+## P0. 내용이 있는 Workspace 삭제 — 보완 필요
+
+2026-08-19 local real API 권한 smoke에서 OWNER가 Task가 들어 있는 Workspace에 `DELETE /api/v1/workspaces/{workspaceId}`를 호출하면 HTTP 500 `INTERNAL_SERVER_ERROR`가 발생했다. Task를 먼저 삭제한 뒤 같은 Workspace를 삭제하면 정상 처리된다.
+
+요청사항:
+
+- Workspace 삭제 시 하위 Task·D-Day·반복 series·membership의 cascade 또는 명시적 삭제 순서를 구현한다.
+- 내용이 있는 Workspace를 삭제하지 않는 정책이라면 HTTP 409 등 안정적인 오류 코드와 사용자 복구 방법을 계약에 명시한다.
+- Task와 D-Day가 함께 있는 Workspace 삭제 통합 테스트를 추가한다.
+- 수정 후 `npm run smoke:workspace-roles:real`과 별도 populated Workspace 삭제 시나리오로 재검증할 수 있게 한다.
 
 ## P0. 초대받은 사용자 조회 — 완료
 
@@ -77,3 +88,7 @@ type WorkspaceInvitationResponse = {
 백엔드에는 다음처럼 전달하면 된다.
 
 > 공유 화면에서 초대받은 사용자가 수락에 필요한 workspaceId/memberId를 찾을 방법이 없습니다. 현재 사용자 PENDING 초대 목록 API를 우선 추가해 주세요. 최신 Workspace endpoint가 실행 OpenAPI에 노출되도록 서버도 재빌드·재시작하고, 사용된 backend commit SHA를 알려 주세요. 반복 Workspace Task 수정·삭제는 지원 범위와 error code를 문서화해 주세요.
+
+현재 추가 요청은 다음과 같다.
+
+> OWNER가 Task가 들어 있는 Workspace를 삭제하면 HTTP 500이 발생합니다. 하위 리소스 cascade 삭제 또는 명시적인 삭제 거부 정책을 정하고, 안정적인 응답 코드와 통합 테스트를 추가해 주세요.

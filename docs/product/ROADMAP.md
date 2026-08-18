@@ -159,7 +159,8 @@ Last updated: 2026-08-19
 - [x] Workspace 알림 후보 endpoint의 기간 필터와 식별자 생성 흐름을 mock API에 추가한다.
 - [x] Workspace 알림 후보를 계정·workspace별로 격리해 Android·iOS에 로컬 예약하고 Web에서는 예약하지 않는다.
 - [x] Workspace 403/404 응답을 권한 변경·탈퇴·삭제 상태로 구분하고 목록 복귀·행동 오류 안내를 고정한다.
-- [ ] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 조합을 real API로 검증한다.
+- [x] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 조합을 real API smoke로 검증한다.
+- [ ] Task가 들어 있는 Workspace 삭제가 HTTP 500을 반환하지 않도록 백엔드 삭제 정책과 구현을 보완한 뒤 real API로 재검증한다.
 - [x] 공유 핵심 흐름을 320px·390px·430px와 keyboard에서 검증하고 [`workspace-responsive-2026-08-19`](../audits/workspace-responsive-2026-08-19/README.md)에 기록한다.
 - [ ] 공유 핵심 흐름을 browser zoom 150%에서 검증한다.
 - [ ] iOS VoiceOver·Android TalkBack에서 공유 탭의 읽기 순서와 선택 상태를 실제 기기로 검증한다.
