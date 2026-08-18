@@ -152,7 +152,7 @@ Last updated: 2026-08-17
 - [x] Workspace Task와 D-Day 연결·해제 mutation, cache 갱신과 mock 흐름을 추가한다.
 - [x] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
 - [x] Workspace 반복 Task 수정·삭제 API와 mutation에 `recurrenceScope=THIS|THIS_AND_FUTURE|ALL` query 전달을 추가한다.
-- [ ] Workspace 반복 Task 수정·삭제에 범위 선택 UI를 추가한다.
+- [x] Workspace 반복 Task 수정·삭제에 범위 선택 UI를 추가하고 기본값을 `THIS`로 고정한다.
 - [x] Workspace 알림 후보 Query와 식별자를 계정·workspace·기간별로 격리하고 Web 예약 제외 정책을 추가한다.
 - [x] Workspace 알림 후보 endpoint의 기간 필터와 식별자 생성 흐름을 mock API에 추가한다.
 - [ ] Workspace 알림 후보를 계정·workspace별로 격리해 로컬 예약하고 Web에서는 예약하지 않는다.

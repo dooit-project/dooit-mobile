@@ -20,6 +20,7 @@ import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type {
   LocalDateString,
+  RecurrenceEditScope,
   TaskResponse,
   TaskType,
   WorkspaceMemberResponse,
@@ -49,6 +50,20 @@ const roleLabels: Record<WorkspaceRole, string> = {
   EDITOR: '편집 가능',
   VIEWER: '보기 전용',
 };
+
+const recurrenceScopeOptions: {
+  value: RecurrenceEditScope;
+  label: string;
+  description: string;
+}[] = [
+  { value: 'THIS', label: '이번만', description: '선택한 일정 하나에만 적용해요.' },
+  {
+    value: 'THIS_AND_FUTURE',
+    label: '이후 모두',
+    description: '선택한 날짜와 이후 반복 일정에 적용해요.',
+  },
+  { value: 'ALL', label: '전체', description: '지난 일정을 포함한 반복 묶음 전체에 적용해요.' },
+];
 
 export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null }) {
   const router = useRouter();
@@ -351,9 +366,14 @@ function WorkspaceTaskCard({
   const goals = useWorkspaceDdayGoals(workspaceId);
   const [mode, setMode] = useState<'idle' | 'edit' | 'delete' | 'dday'>('idle');
   const [title, setTitle] = useState(task.title);
+  const [recurrenceScope, setRecurrenceScope] = useState<RecurrenceEditScope>('THIS');
   const [validationError, setValidationError] = useState(false);
   const isRecurring = Boolean(task.recurrenceSeriesId || task.recurrence);
-  const manageable = canEdit && !isRecurring;
+  const manageable = canEdit;
+  const openMode = (nextMode: 'edit' | 'delete' | 'dday') => {
+    setRecurrenceScope('THIS');
+    setMode(nextMode);
+  };
   const submit = () => {
     const normalizedTitle = title.trim();
     if (!normalizedTitle) return setValidationError(true);
@@ -369,6 +389,7 @@ function WorkspaceTaskCard({
           category: task.category,
           allDay: task.allDay,
         },
+        recurrenceScope: isRecurring ? recurrenceScope : undefined,
       },
       { onSuccess: () => setMode('idle') },
     );
@@ -393,22 +414,17 @@ function WorkspaceTaskCard({
               D-Day 해제
             </Button>
           ) : (
-            <Button size="compact" variant="ghost" onPress={() => setMode('dday')}>
+            <Button size="compact" variant="ghost" onPress={() => openMode('dday')}>
               D-Day 연결
             </Button>
           )}
-          <Button size="compact" variant="ghost" onPress={() => setMode('edit')}>
+          <Button size="compact" variant="ghost" onPress={() => openMode('edit')}>
             제목 수정
           </Button>
-          <Button size="compact" variant="ghost" onPress={() => setMode('delete')}>
+          <Button size="compact" variant="ghost" onPress={() => openMode('delete')}>
             삭제
           </Button>
         </View>
-      ) : null}
-      {isRecurring && canEdit ? (
-        <AppText tone="secondary" variant="caption">
-          반복 일정의 수정·삭제 범위는 백엔드 계약 확정 후 제공할게요.
-        </AppText>
       ) : null}
       {disconnect.error ? <InlineNotice message={disconnect.error.message} tone="danger" /> : null}
       {mode === 'dday' ? (
@@ -495,6 +511,13 @@ function WorkspaceTaskCard({
               공유 일정 제목을 입력해 주세요.
             </AppText>
           ) : null}
+          {isRecurring ? (
+            <RecurrenceScopePicker
+              action="수정"
+              value={recurrenceScope}
+              onChange={setRecurrenceScope}
+            />
+          ) : null}
           {update.error ? <InlineNotice message={update.error.message} tone="danger" /> : null}
           <View style={styles.formActions}>
             <Button
@@ -525,6 +548,13 @@ function WorkspaceTaskCard({
           <AppText tone="secondary" variant="caption">
             모든 공간 멤버의 공유 일정 목록에서 사라져요.
           </AppText>
+          {isRecurring ? (
+            <RecurrenceScopePicker
+              action="삭제"
+              value={recurrenceScope}
+              onChange={setRecurrenceScope}
+            />
+          ) : null}
           {remove.error ? <InlineNotice message={remove.error.message} tone="danger" /> : null}
           <View style={styles.formActions}>
             <Button
@@ -539,13 +569,53 @@ function WorkspaceTaskCard({
               fullWidth
               loading={remove.isPending}
               variant="danger"
-              onPress={() => remove.mutate({ taskId: task.id })}
+              onPress={() =>
+                remove.mutate({
+                  taskId: task.id,
+                  recurrenceScope: isRecurring ? recurrenceScope : undefined,
+                })
+              }
             >
               공유 일정 삭제
             </Button>
           </View>
         </View>
       ) : null}
+    </View>
+  );
+}
+
+function RecurrenceScopePicker({
+  action,
+  value,
+  onChange,
+}: {
+  action: '수정' | '삭제';
+  value: RecurrenceEditScope;
+  onChange: (value: RecurrenceEditScope) => void;
+}) {
+  return (
+    <View style={styles.scopePicker}>
+      <AppText variant="label" weight="bold">
+        반복 일정 {action} 범위
+      </AppText>
+      <View style={styles.scopeOptions}>
+        {recurrenceScopeOptions.map((option) => (
+          <Button
+            key={option.value}
+            accessibilityState={{ selected: option.value === value }}
+            size="compact"
+            style={styles.scopeOption}
+            variant={option.value === value ? 'primary' : 'secondary'}
+            onPress={() => onChange(option.value)}
+          >
+            {option.label}
+          </Button>
+        ))}
+      </View>
+      <AppText tone="secondary" variant="caption">
+        {recurrenceScopeOptions.find((option) => option.value === value)?.description}
+      </AppText>
     </View>
   );
 }
@@ -788,4 +858,7 @@ const styles = StyleSheet.create({
   memberCopy: { flex: 1, gap: spacing[1], minWidth: 0 },
   memberActions: { flexDirection: 'row', gap: spacing[2] },
   confirmation: { borderRadius: radii.md, gap: spacing[2], padding: spacing[3] },
+  scopePicker: { gap: spacing[2] },
+  scopeOptions: { flexDirection: 'row', gap: spacing[2] },
+  scopeOption: { flex: 1 },
 });
