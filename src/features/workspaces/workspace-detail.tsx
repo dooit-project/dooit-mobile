@@ -70,6 +70,7 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
   const theme = useAppTheme();
   const auth = useAuthState();
   const [showInvite, setShowInvite] = useState(false);
+  const [section, setSection] = useState<WorkspaceSection>('tasks');
   const detail = useWorkspace(workspaceId ?? 0);
   const members = useWorkspaceMembers(workspaceId ?? 0);
   const me =
@@ -93,13 +94,6 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
               tintColor={theme.colors.text}
             />
           </IconButton>
-        }
-        action={
-          me?.role === 'OWNER' ? (
-            <Button size="compact" variant="secondary" onPress={() => setShowInvite((v) => !v)}>
-              {showInvite ? '닫기' : '멤버 초대'}
-            </Button>
-          ) : undefined
         }
       />
       {workspaceId === null ? (
@@ -126,49 +120,115 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
         />
       ) : (
         <>
-          {showInvite && workspaceId !== null ? (
-            <InviteMemberForm workspaceId={workspaceId} onClose={() => setShowInvite(false)} />
-          ) : null}
           <Card style={styles.summary}>
-            <AppText weight="bold">내 권한</AppText>
-            <AppText tone="primary" variant="bodyLarge" weight="bold">
-              {me ? roleLabels[me.role] : '확인되지 않음'}
-            </AppText>
+            <View style={styles.summaryHeading}>
+              <AppText weight="bold">내 권한</AppText>
+              <AppText tone="primary" weight="bold">
+                {me ? roleLabels[me.role] : '확인되지 않음'}
+              </AppText>
+            </View>
             <AppText tone="secondary" variant="caption">
               {me?.role === 'VIEWER'
                 ? '일정과 목표를 볼 수 있어요.'
                 : '공유 일정과 목표를 함께 관리할 수 있어요.'}
             </AppText>
           </Card>
-          <WorkspaceTaskList
-            canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
-            workspaceId={workspaceId!}
-          />
-          <WorkspaceDdaySection
-            canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
-            workspaceId={workspaceId!}
-          />
-          <View style={styles.list}>
-            <SectionHeader title="함께하는 사람" count={members.data?.length ?? 0} />
-            {members.data?.length ? (
-              members.data.map((member) => (
-                <WorkspaceMemberCard
-                  key={member.id}
-                  canManage={me?.role === 'OWNER'}
-                  member={member}
-                  workspaceId={workspaceId!}
-                />
-              ))
-            ) : (
-              <EmptyState
-                title="멤버 정보를 찾을 수 없어요"
-                description="잠시 후 다시 불러와 주세요."
+          <WorkspaceSectionTabs value={section} onChange={setSection} />
+          {section === 'tasks' ? (
+            <WorkspaceTaskList
+              canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
+              workspaceId={workspaceId!}
+            />
+          ) : section === 'ddays' ? (
+            <WorkspaceDdaySection
+              canEdit={me?.role === 'OWNER' || me?.role === 'EDITOR'}
+              workspaceId={workspaceId!}
+            />
+          ) : (
+            <View style={styles.list}>
+              <SectionHeader
+                title="함께하는 사람"
+                count={members.data?.length ?? 0}
+                action={
+                  me?.role === 'OWNER' ? (
+                    <Button
+                      size="compact"
+                      variant="secondary"
+                      onPress={() => setShowInvite((value) => !value)}
+                    >
+                      {showInvite ? '닫기' : '멤버 초대'}
+                    </Button>
+                  ) : undefined
+                }
               />
-            )}
-          </View>
+              {showInvite && workspaceId !== null ? (
+                <InviteMemberForm workspaceId={workspaceId} onClose={() => setShowInvite(false)} />
+              ) : null}
+              {members.data?.length ? (
+                members.data.map((member) => (
+                  <WorkspaceMemberCard
+                    key={member.id}
+                    canManage={me?.role === 'OWNER'}
+                    member={member}
+                    workspaceId={workspaceId!}
+                  />
+                ))
+              ) : (
+                <EmptyState
+                  title="멤버 정보를 찾을 수 없어요"
+                  description="잠시 후 다시 불러와 주세요."
+                />
+              )}
+            </View>
+          )}
         </>
       )}
     </Screen>
+  );
+}
+
+type WorkspaceSection = 'tasks' | 'ddays' | 'members';
+
+const workspaceSections: { value: WorkspaceSection; label: string }[] = [
+  { value: 'tasks', label: '일정' },
+  { value: 'ddays', label: 'D-Day' },
+  { value: 'members', label: '멤버' },
+];
+
+function WorkspaceSectionTabs({
+  value,
+  onChange,
+}: {
+  value: WorkspaceSection;
+  onChange: (value: WorkspaceSection) => void;
+}) {
+  const theme = useAppTheme();
+
+  return (
+    <View accessibilityRole="tablist" style={styles.sectionTabs}>
+      {workspaceSections.map((item) => {
+        const selected = item.value === value;
+        return (
+          <Pressable
+            key={item.value}
+            accessibilityRole="tab"
+            accessibilityState={{ selected }}
+            onPress={() => onChange(item.value)}
+            style={[
+              styles.sectionTab,
+              {
+                backgroundColor: selected ? theme.colors.primarySoft : 'transparent',
+                borderColor: selected ? theme.colors.primary : 'transparent',
+              },
+            ]}
+          >
+            <AppText tone={selected ? 'primary' : 'secondary'} weight="bold">
+              {item.label}
+            </AppText>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
@@ -825,6 +885,17 @@ const styles = StyleSheet.create({
   screen: { gap: spacing[4], paddingBottom: spacing[8], paddingTop: spacing[3] },
   state: { alignItems: 'center', flexDirection: 'row', gap: spacing[2] },
   summary: { gap: spacing[1] },
+  summaryHeading: { alignItems: 'center', flexDirection: 'row', gap: spacing[2] },
+  sectionTabs: { flexDirection: 'row', gap: spacing[1] },
+  sectionTab: {
+    alignItems: 'center',
+    borderRadius: radii.md,
+    borderWidth: 1,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: spacing[2],
+  },
   list: { gap: spacing[3] },
   taskList: { gap: spacing[2] },
   taskItem: { gap: spacing[2] },

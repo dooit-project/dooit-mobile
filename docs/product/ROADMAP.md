@@ -136,6 +136,7 @@ Last updated: 2026-08-17
 - [ ] 최신 실행 OpenAPI와 backend commit SHA가 확인되면 real API 모드에서도 공유 공간 진입점을 연다.
 - [x] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [x] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
+- [x] Workspace 상세를 일정·D-Day·멤버 탭으로 분리하고 [`WORKSPACE_UI_FLOW.md`](./WORKSPACE_UI_FLOW.md)에 UI 점검 흐름을 정리한다.
 - [x] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
 - [x] OWNER 멤버 초대·role 변경·제거 mutation과 ACTIVE 멤버 cache 갱신을 추가한다.
 - [x] PENDING 초대 목록 타입·API·Query·mock과 수락 mutation을 계정별 cache로 격리한다.
