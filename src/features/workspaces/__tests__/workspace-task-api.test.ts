@@ -19,7 +19,7 @@ describe('Workspace Task API', () => {
     await workspaceTaskApi.list(3, { type: 'MONTH', taskType: 'SCHEDULE', date: '2026-08-15' });
     await workspaceTaskApi.get(3, 7);
     await workspaceTaskApi.create(3, request);
-    await workspaceTaskApi.update(3, 7, request);
+    await workspaceTaskApi.update(3, 7, request, 'THIS_AND_FUTURE');
     await workspaceTaskApi.delete(3, 7, 'THIS');
 
     expect(apiClient.get).toHaveBeenNthCalledWith(1, '/api/v1/workspaces/3/tasks', {
@@ -33,10 +33,27 @@ describe('Workspace Task API', () => {
       signal: undefined,
     });
     expect(apiClient.put).toHaveBeenCalledWith('/api/v1/workspaces/3/tasks/7', request, {
+      query: { recurrenceScope: 'THIS_AND_FUTURE' },
       signal: undefined,
     });
     expect(apiClient.delete).toHaveBeenCalledWith('/api/v1/workspaces/3/tasks/7', {
       query: { recurrenceScope: 'THIS' },
+      signal: undefined,
+    });
+  });
+
+  test('반복 범위를 생략하면 기본 범위를 백엔드에 위임한다', async () => {
+    const request = { title: '공유 일정', allDay: false };
+
+    await workspaceTaskApi.update(3, 7, request);
+    await workspaceTaskApi.delete(3, 7);
+
+    expect(apiClient.put).toHaveBeenCalledWith('/api/v1/workspaces/3/tasks/7', request, {
+      query: { recurrenceScope: undefined },
+      signal: undefined,
+    });
+    expect(apiClient.delete).toHaveBeenCalledWith('/api/v1/workspaces/3/tasks/7', {
+      query: { recurrenceScope: undefined },
       signal: undefined,
     });
   });

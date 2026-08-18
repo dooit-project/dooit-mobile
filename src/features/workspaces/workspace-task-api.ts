@@ -26,8 +26,17 @@ export const workspaceTaskApi = {
     return apiClient.post<TaskResponse>(tasksPath(workspaceId), request, { signal });
   },
 
-  update(workspaceId: number, taskId: number, request: TaskUpsertRequest, signal?: AbortSignal) {
-    return apiClient.put<TaskResponse>(`${tasksPath(workspaceId)}/${taskId}`, request, { signal });
+  update(
+    workspaceId: number,
+    taskId: number,
+    request: TaskUpsertRequest,
+    recurrenceScope?: RecurrenceEditScope,
+    signal?: AbortSignal,
+  ) {
+    return apiClient.put<TaskResponse>(`${tasksPath(workspaceId)}/${taskId}`, request, {
+      query: { recurrenceScope },
+      signal,
+    });
   },
 
   delete(

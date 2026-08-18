@@ -67,14 +67,15 @@ export function useCreateWorkspaceTask(workspaceId: number) {
 type UpdateWorkspaceTaskVariables = {
   taskId: number;
   request: TaskUpsertRequest;
+  recurrenceScope?: RecurrenceEditScope;
 };
 
 export function useUpdateWorkspaceTask(workspaceId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ taskId, request }: UpdateWorkspaceTaskVariables) =>
-      workspaceTaskApi.update(workspaceId, taskId, request),
+    mutationFn: ({ taskId, request, recurrenceScope }: UpdateWorkspaceTaskVariables) =>
+      workspaceTaskApi.update(workspaceId, taskId, request, recurrenceScope),
     onSuccess: (task) => {
       queryClient.setQueryData<TaskResponse>(
         workspaceQueryKeys.taskDetail(workspaceId, task.id),
