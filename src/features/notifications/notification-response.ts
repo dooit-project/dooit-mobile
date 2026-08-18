@@ -37,9 +37,20 @@ export function getTaskIdFromNotificationData(data: unknown) {
   return typeof taskId === 'number' && Number.isInteger(taskId) && taskId > 0 ? taskId : null;
 }
 
+export function getWorkspaceIdFromNotificationData(data: unknown) {
+  if (!data || typeof data !== 'object' || !('workspaceId' in data)) return null;
+
+  const value = (data as { workspaceId?: unknown }).workspaceId;
+  const workspaceId = typeof value === 'string' && value.trim() ? Number(value) : value;
+  return typeof workspaceId === 'number' && Number.isInteger(workspaceId) && workspaceId > 0
+    ? workspaceId
+    : null;
+}
+
 export async function configureTaskNotificationResponses(
   onOpenTask: (taskId: number) => void,
   dependencies: NotificationResponseDependencies,
+  onOpenWorkspace?: (workspaceId: number) => void,
 ) {
   const handledIdentifiers = new Set<string>();
   const handleResponse = (response: NotificationResponseLike) => {
@@ -48,7 +59,13 @@ export async function configureTaskNotificationResponses(
       return;
     }
 
+    const workspaceId = getWorkspaceIdFromNotificationData(request.content.data);
     const taskId = getTaskIdFromNotificationData(request.content.data);
+    if (workspaceId && onOpenWorkspace) {
+      handledIdentifiers.add(request.identifier);
+      onOpenWorkspace(workspaceId);
+      return;
+    }
     if (!taskId) {
       return;
     }
@@ -83,14 +100,21 @@ export async function configureTaskNotificationResponses(
   };
 }
 
-export async function initializeTaskNotificationResponses(onOpenTask: (taskId: number) => void) {
+export async function initializeTaskNotificationResponses(
+  onOpenTask: (taskId: number) => void,
+  onOpenWorkspace?: (workspaceId: number) => void,
+) {
   const Notifications = await import('expo-notifications');
 
-  return configureTaskNotificationResponses(onOpenTask, {
-    setHandler: (handler) => Notifications.setNotificationHandler(handler),
-    addResponseListener: (listener) =>
-      Notifications.addNotificationResponseReceivedListener(listener),
-    getLastResponse: () => Notifications.getLastNotificationResponseAsync(),
-    clearLastResponse: () => Notifications.clearLastNotificationResponse(),
-  });
+  return configureTaskNotificationResponses(
+    onOpenTask,
+    {
+      setHandler: (handler) => Notifications.setNotificationHandler(handler),
+      addResponseListener: (listener) =>
+        Notifications.addNotificationResponseReceivedListener(listener),
+      getLastResponse: () => Notifications.getLastNotificationResponseAsync(),
+      clearLastResponse: () => Notifications.clearLastNotificationResponse(),
+    },
+    onOpenWorkspace,
+  );
 }

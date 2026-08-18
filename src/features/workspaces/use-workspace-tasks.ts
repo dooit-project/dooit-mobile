@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Platform } from 'react-native';
 
+import { requestTaskNotificationSync } from '@/features/notifications';
 import type {
   LocalDateString,
   RecurrenceEditScope,
@@ -60,6 +61,7 @@ export function useCreateWorkspaceTask(workspaceId: number) {
     onSuccess: (task) => {
       queryClient.setQueryData(workspaceQueryKeys.taskDetail(workspaceId, task.id), task);
       void queryClient.invalidateQueries({ queryKey: workspaceQueryKeys.tasks(workspaceId) });
+      requestTaskNotificationSync();
     },
   });
 }
@@ -82,6 +84,7 @@ export function useUpdateWorkspaceTask(workspaceId: number) {
         task,
       );
       void queryClient.invalidateQueries({ queryKey: workspaceQueryKeys.tasks(workspaceId) });
+      requestTaskNotificationSync();
     },
   });
 }
@@ -100,6 +103,7 @@ export function useDeleteWorkspaceTask(workspaceId: number) {
     onSuccess: (_result, { taskId }) => {
       queryClient.removeQueries({ queryKey: workspaceQueryKeys.taskDetail(workspaceId, taskId) });
       void queryClient.invalidateQueries({ queryKey: workspaceQueryKeys.tasks(workspaceId) });
+      requestTaskNotificationSync();
     },
   });
 }

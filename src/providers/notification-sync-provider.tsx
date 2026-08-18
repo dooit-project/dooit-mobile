@@ -6,9 +6,11 @@ import { AppState, Platform } from 'react-native';
 
 import {
   cancelManagedTaskNotifications,
+  cancelManagedWorkspaceNotifications,
   initializeTaskNotificationResponses,
   subscribeTaskNotificationSync,
   syncUpcomingTaskNotifications,
+  syncUpcomingWorkspaceNotifications,
 } from '@/features/notifications';
 import { getAccessToken, subscribeAccessToken } from '@/services/api';
 
@@ -35,7 +37,13 @@ export function createNotificationSyncRunner(sync: NotificationSync) {
 
 export function NotificationSyncProvider({ children }: PropsWithChildren) {
   const router = useRouter();
-  const runSync = useMemo(() => createNotificationSyncRunner(syncUpcomingTaskNotifications), []);
+  const runSync = useMemo(
+    () =>
+      createNotificationSyncRunner(async () => {
+        await Promise.all([syncUpcomingTaskNotifications(), syncUpcomingWorkspaceNotifications()]);
+      }),
+    [],
+  );
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -73,7 +81,7 @@ export function NotificationSyncProvider({ children }: PropsWithChildren) {
       currentToken = nextToken;
 
       if (hadPreviousAccount) {
-        void cancelManagedTaskNotifications()
+        void Promise.all([cancelManagedTaskNotifications(), cancelManagedWorkspaceNotifications()])
           .catch(() => undefined)
           .then(() => {
             if (nextToken) {
@@ -94,9 +102,17 @@ export function NotificationSyncProvider({ children }: PropsWithChildren) {
     let disposed = false;
     let cleanup: (() => void) | undefined;
 
-    void initializeTaskNotificationResponses((taskId) => {
-      router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } } as Href);
-    })
+    void initializeTaskNotificationResponses(
+      (taskId) => {
+        router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } } as Href);
+      },
+      (workspaceId) => {
+        router.push({
+          pathname: '/workspaces/[workspaceId]',
+          params: { workspaceId: String(workspaceId) },
+        } as Href);
+      },
+    )
       .then((nextCleanup) => {
         if (disposed) {
           nextCleanup();
