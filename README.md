@@ -128,7 +128,7 @@ npm run web:mock
 npm run web:real -- --port 8090 --clear
 ```
 
-`web:real`은 `EXPO_PUBLIC_API_MODE_OVERRIDE=real`과 `EXPO_PUBLIC_API_URL_OVERRIDE=http://127.0.0.1:8080`을 사용하므로 `.env.local`이 mock이어도 실제 백엔드에 연결됩니다.
+`web:real`은 `EXPO_PUBLIC_API_MODE_OVERRIDE=real`과 `EXPO_PUBLIC_API_URL_OVERRIDE=http://localhost:8080`을 사용하므로 `.env.local`이 mock이어도 실제 백엔드에 연결됩니다.
 
 ### Smoke test 실행
 
@@ -151,10 +151,10 @@ npm run web:real -- --port 8090 --clear
 API 단독 smoke는 다음 script를 사용합니다.
 
 ```bash
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:auth:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:guest:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:recurrence:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:recurrence-actions:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:auth:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 ```
 
 반복 일정 smoke는 2026-08-02 기준 생성, Today/Calendar occurrence 조회, 완료, 미룸, 건너뛰기, notification candidates 제외 조건까지 통과했습니다. 최신 상태는 [Smoke test 로그](./docs/qa/SMOKE_TEST_LOG.md)를 확인합니다.

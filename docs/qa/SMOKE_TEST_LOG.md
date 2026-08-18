@@ -1,6 +1,6 @@
 # Smoke Test Log
 
-Last updated: 2026-08-12
+Last updated: 2026-08-19
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
@@ -50,7 +50,7 @@ Last updated: 2026-08-12
 ## 최신 real API 기준선
 
 - 날짜: 2026-08-02
-- 환경: local backend `http://127.0.0.1:8080`
+- 환경: local backend `http://localhost:8080`
 - 결과: Auth·Task·Today·Done·Schedule·Search·D-Day·Stale·반복 occurrence action 통과
 
 확인 내용:
@@ -72,12 +72,32 @@ Last updated: 2026-08-12
 실행 명령:
 
 ```bash
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:auth:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:guest:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:search:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:recurrence:real
-EXPO_PUBLIC_API_URL=http://127.0.0.1:8080 npm run smoke:recurrence-actions:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:auth:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:search:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 ```
+
+## Workspace 실행 OpenAPI 기준선
+
+- 날짜: 2026-08-19
+- 환경: local backend `http://localhost:8080`
+- 인접 backend source commit: `5eb6050`
+- 명령: `npm run check:workspace-openapi`
+- 결과: Workspace 23개 operation 통과
+
+확인 내용:
+
+- Workspace 목록·상세·생성·수정·삭제
+- PENDING 초대 조회와 멤버 초대·상태 변경·제거
+- Workspace Task CRUD·D-Day 연결·알림 후보
+- Workspace D-Day CRUD와 연결 Task 조회
+
+제한:
+
+- 실행 서버 응답에 commit 또는 image tag가 없어 현재 source HEAD와 같은 binary인지는 확정하지 않았다.
+- 권한 조합과 실제 데이터 변경은 real API 시나리오 smoke에서 별도로 확인해야 한다.
 
 ## Android APK 기준선
 

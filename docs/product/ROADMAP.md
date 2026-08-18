@@ -125,7 +125,8 @@ Last updated: 2026-08-19
 - [x] 기존 개인 Task 템플릿의 이름·설명·분류 편집 화면을 추가한다.
 - [x] 개인 Task 템플릿의 일정·반복 설정 화면을 추가한다.
 - [x] Workspace 기본 API의 백엔드 구현·문서·OpenAPI 통합 테스트를 backend `c6c6915` 기준으로 확인한다.
-- [ ] 배포된 백엔드 commit SHA와 실행 `/v3/api-docs`의 Workspace path를 확인하고 real API smoke를 통과한다.
+- [x] 로컬 실행 `/v3/api-docs`의 Workspace 23개 operation을 backend source `5eb6050` 옆에서 확인하고 반복 점검 명령을 추가한다.
+- [ ] 배포된 백엔드가 어느 commit/image인지 응답 메타데이터로 확인하고 Workspace real API smoke를 통과한다.
 - [x] Workspace 기본 관리와 멤버 초대·수락·제거의 타입, API client와 endpoint 회귀 테스트를 추가한다.
 - [x] Workspace 기본 관리와 멤버 흐름을 mock API에서도 검증할 수 있게 한다.
 - [x] Workspace Task CRUD·D-Day 연결·알림 후보 API client와 endpoint 테스트를 추가한다.
@@ -133,7 +134,7 @@ Last updated: 2026-08-19
 - [x] `GET /api/v1/workspace-invitations`의 PENDING 초대 조회·수락 계약을 백엔드와 확정한다.
 - [x] 백엔드 확인·보완 요청을 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md)에 정리한다.
 - [x] Workspace 목록·생성·멤버 목록 Query 상태 계층을 추가한다.
-- [ ] 최신 실행 OpenAPI와 backend commit SHA가 확인되면 real API 모드에서도 공유 공간 진입점을 연다.
+- [x] 공유 공간 진입점과 API 계층이 mock·real 모드에서 같은 Workspace 계약을 사용한다.
 - [x] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [x] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
 - [x] Workspace 상세를 일정·D-Day·멤버 탭으로 분리하고 [`WORKSPACE_UI_FLOW.md`](./WORKSPACE_UI_FLOW.md)에 UI 점검 흐름을 정리한다.
