@@ -1,6 +1,6 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-17
+Last updated: 2026-08-19
 
 이 문서는 완료 이력이 아니라 현재 제품 기준과 앞으로 할 일을 관리한다. 과거 검증 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md), 실제 배포 전 확인은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 관리한다.
 
@@ -159,7 +159,9 @@ Last updated: 2026-08-17
 - [x] Workspace 알림 후보를 계정·workspace별로 격리해 Android·iOS에 로컬 예약하고 Web에서는 예약하지 않는다.
 - [x] Workspace 403/404 응답을 권한 변경·탈퇴·삭제 상태로 구분하고 목록 복귀·행동 오류 안내를 고정한다.
 - [ ] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 조합을 real API로 검증한다.
-- [ ] 공유 핵심 흐름을 320px·390px·430px, zoom 150%, keyboard, screen reader에서 검증한다.
+- [x] 공유 핵심 흐름을 320px·390px·430px와 keyboard에서 검증하고 [`workspace-responsive-2026-08-19`](../audits/workspace-responsive-2026-08-19/README.md)에 기록한다.
+- [ ] 공유 핵심 흐름을 browser zoom 150%에서 검증한다.
+- [ ] iOS VoiceOver·Android TalkBack에서 공유 탭의 읽기 순서와 선택 상태를 실제 기기로 검증한다.
 - [ ] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 화면에 노출하지 않는다.
 - [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.
 
