@@ -1,4 +1,5 @@
 const fs = require('node:fs');
+const { getNotificationBuildConfigFailures } = require('./lib/check-notification-build-config');
 
 function readJson(path) {
   return JSON.parse(fs.readFileSync(path, 'utf8'));
@@ -11,6 +12,7 @@ function fail(message) {
 
 const appConfig = readJson('app.json').expo;
 const easConfig = readJson('eas.json');
+const packageJson = readJson('package.json');
 
 const androidPackage = appConfig.android?.package;
 const iosBundleIdentifier = appConfig.ios?.bundleIdentifier;
@@ -68,6 +70,10 @@ for (const profileName of ['preview', 'production']) {
 
 if (buildProfiles.preview?.android?.buildType !== 'apk') {
   fail('preview profile must build an installable Android APK');
+}
+
+for (const message of getNotificationBuildConfigFailures(appConfig, packageJson)) {
+  fail(message);
 }
 
 if (!process.exitCode) {

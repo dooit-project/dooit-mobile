@@ -50,7 +50,7 @@ Last updated: 2026-08-20
 ### P0. 출시 후보 만들기
 
 - [ ] staging·production API URL과 실행 백엔드 commit 또는 image tag를 확정한다.
-- [ ] 현재 `main`과 `expo-notifications`가 포함된 Android preview APK를 빌드한다.
+- [ ] `npm run check:android-apk` 통과 후 현재 `main`과 `expo-notifications`가 포함된 Android preview APK를 빌드한다.
 - [ ] `npm run apk:release-note`로 APK 파일명, frontend commit, EAS build id, API URL을 생성해 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.
 - [ ] 실제 Android 기기에서 Expo Go·Metro 없이 cold start와 최소 하루 사용을 확인한다.
 - [ ] production DB에서 인증·게스트·Today·Calendar·D-Day·Search·Workspace 핵심 흐름을 확인한다.

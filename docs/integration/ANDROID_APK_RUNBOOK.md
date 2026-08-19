@@ -59,6 +59,7 @@ npm run check:eas-setup
 - `eas.json`의 target profile
 - 커밋된 `EXPO_PUBLIC_API_URL`이 있다면 HTTPS인지
 - Android production APK config에서 cleartext traffic 허용을 켜지 않았는지
+- `expo-notifications` production dependency와 native config plugin이 모두 포함됐는지
 - EAS CLI가 설치되어 있고 Expo project id가 연결되어 있는지
 - `preview`, `production` profile의 `EXPO_PUBLIC_API_URL`이 Tailscale HTTPS URL인지
 - `.env.local`이 커밋되지 않았는지
