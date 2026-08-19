@@ -1,6 +1,6 @@
 # UX Review
 
-Last updated: 2026-08-13
+Last updated: 2026-08-20
 
 이 문서는 현재 화면에서 유지할 UX 결정과 아직 검증할 위험만 기록한다. 완료된 수정 과정과 과거 화면별 pass 기록은 보관하지 않는다. 시각 기준은 [`DESIGN.md`](./DESIGN.md), 현재 화면 구조는 [`SCREEN_GUIDE.md`](./SCREEN_GUIDE.md), 앞으로 할 일은 [`ROADMAP.md`](../product/ROADMAP.md)를 따른다.
 
@@ -35,6 +35,13 @@ Last updated: 2026-08-13
 - 게스트 사용자는 현재 데이터가 계정 연결 전임을 이해할 수 있어야 한다.
 - 설정은 앱 사용 가이드, 로컬 알림 권한과 동기화 상태를 제공하며 API·token 진단 정보는 development build에서만 표시한다.
 - 알림 거부 상태에서는 OS 권한 요청을 반복하지 않고 기기 설정 이동을 제공한다.
+
+### Task 상세
+
+- 기본 카드에는 제목·상태·설명, 다음 카드에는 날짜 빠른 변경을 둔다.
+- 일정 정보는 일정·반복·계획일·목표일·종일·카테고리만 같은 그룹으로 표시한다.
+- D-Day 상태는 관리 행동에서 한 번만 표시하고 미룸·이월 기록은 실제 값이 있을 때만 별도 그룹으로 표시한다.
+- 최신 Web 근거는 [`current-p1-2026-08-20`](../audits/current-p1-2026-08-20/README.md)에 둔다.
 
 ### 문장과 줄바꿈
 
@@ -119,11 +126,8 @@ Last updated: 2026-08-13
 
 ## 다음 리뷰 순서
 
-1. 공통 빈 상태 구조와 Calendar·Completed·하루 정리의 다음 행동
-2. 시작·인증·도움말·설정 문구의 길이와 한국어 줄바꿈
-3. 더보기 메뉴의 계정·작업 도구·앱 설정 구분
-4. 최신 Android preview APK에서 최초 사용과 로그인·게스트 흐름
-5. 320dp·390dp·430dp, font scale 1.5, light·dark, 키보드·navigation bar
-6. 알림 권한 허용·거부와 시간·종일 일정 수신
-7. TalkBack 핵심 흐름과 Task 완료·알림 선택 피드백
-8. production API 지연·offline·계정 전환 상태
+1. 최신 Android preview APK에서 최초 사용과 로그인·게스트 흐름
+2. 320dp·390dp·430dp, font scale 1.5, light·dark, 키보드·navigation bar
+3. 알림 권한 허용·거부와 시간·종일 일정 수신
+4. TalkBack 핵심 흐름과 Task 완료·알림 선택 피드백
+5. production API 지연·offline·계정 전환 상태

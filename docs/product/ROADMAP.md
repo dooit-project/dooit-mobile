@@ -43,12 +43,12 @@ Last updated: 2026-08-20
 - mock/real API 분리, real API smoke와 Workspace OpenAPI·권한 검사
 - 운영 Web export의 real mode·HTTPS API URL 강제
 - Expo/EAS 프로젝트, Android package, iOS bundle identifier와 APK 저장·검증 도구
+- 최신 UI P1 재점검과 Task 상세 정보 그룹 개선은 [`current-p1-2026-08-20`](../audits/current-p1-2026-08-20/README.md)에 기록
 
 ## 다음 우선순위
 
 ### P0. 출시 후보 만들기
 
-- [ ] 전체 UI/UX 감사에서 남은 P1 항목을 반영한다.
 - [ ] staging·production API URL과 실행 백엔드 commit 또는 image tag를 확정한다.
 - [ ] 현재 `main`과 `expo-notifications`가 포함된 Android preview APK를 빌드한다.
 - [ ] APK 파일명, frontend commit, EAS build id, API URL을 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.

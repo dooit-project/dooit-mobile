@@ -207,6 +207,7 @@ function TaskDetail({
   const status = statusLabels[task.status];
   const scheduleLabel = getScheduleLabel(task);
   const recurrenceLabel = getRecurrenceLabel(task);
+  const hasManagementHistory = Boolean(task.deferReasonLabel) || task.carryOverCount > 0;
 
   return (
     <View style={styles.detail}>
@@ -258,7 +259,7 @@ function TaskDetail({
       <TaskDateQuickActions task={task} />
 
       <Card variant="outlined" style={styles.section}>
-        <SectionHeader title="정보" />
+        <SectionHeader title="일정 정보" />
         <InfoRow label="일정" value={scheduleLabel} />
         <InfoRow label="반복" value={recurrenceLabel ?? '없음'} />
         <InfoRow
@@ -271,9 +272,6 @@ function TaskDetail({
         />
         <InfoRow label="종일" value={task.allDay ? '예' : '아니오'} />
         <InfoRow label="카테고리" value={task.category ?? '없음'} />
-        <InfoRow label="D-Day" value={getDdayLabel(task)} />
-        <InfoRow label="미룬 이유" value={task.deferReasonLabel ?? '없음'} />
-        <InfoRow label="이월 횟수" value={`${task.carryOverCount}회`} />
       </Card>
 
       <Button
@@ -373,6 +371,18 @@ function TaskDetail({
 
           {taskDdayGoal.error ? (
             <InlineNotice message={taskDdayGoal.error.message} tone="danger" />
+          ) : null}
+        </Card>
+      ) : null}
+
+      {hasManagementHistory ? (
+        <Card variant="outlined" style={styles.section}>
+          <SectionHeader title="관리 기록" />
+          {task.deferReasonLabel ? (
+            <InfoRow label="미룬 이유" value={task.deferReasonLabel} />
+          ) : null}
+          {task.carryOverCount > 0 ? (
+            <InfoRow label="이월 횟수" value={`${task.carryOverCount}회`} />
           ) : null}
         </Card>
       ) : null}
