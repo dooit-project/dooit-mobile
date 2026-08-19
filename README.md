@@ -130,6 +130,16 @@ npm run web:real -- --port 8090 --clear
 
 `web:real`은 `EXPO_PUBLIC_API_MODE_OVERRIDE=real`과 `EXPO_PUBLIC_API_URL_OVERRIDE=http://localhost:8080`을 사용하므로 `.env.local`이 mock이어도 실제 백엔드에 연결됩니다.
 
+운영 Web export는 mock 혼입과 HTTP API 연결을 막는 전용 명령을 사용합니다.
+
+```bash
+EXPO_PUBLIC_API_MODE=real \
+EXPO_PUBLIC_API_URL=https://api.example.com \
+npm run web:export:production
+```
+
+검사를 통과해야 `expo export --platform web`이 실행됩니다. 실제 운영 API URL은 배포 환경에서 주입하고 저장소에는 비밀 값이나 로컬 환경 파일을 커밋하지 않습니다.
+
 ### Smoke test 실행
 
 백엔드 없이 앱 흐름을 먼저 확인하려면 `.env.local`을 mock 모드로 둡니다.

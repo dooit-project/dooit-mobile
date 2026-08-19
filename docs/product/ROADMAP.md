@@ -1,6 +1,6 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
 이 문서는 완료 이력이 아니라 현재 제품 기준과 앞으로 할 일을 관리한다. 과거 검증 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md), 실제 배포 전 확인은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 관리한다.
 
@@ -171,7 +171,8 @@ Last updated: 2026-08-19
 
 모바일 로드맵의 기능·회귀·배포 검증을 마친 뒤 진행한다. Web에서는 로컬 알림을 제공하지 않는다.
 
-- [ ] 운영 Web 빌드에 `EXPO_PUBLIC_API_MODE=real`과 HTTPS API URL을 주입하고 mock 모드 혼입을 막는다.
+- [x] 운영 Web export가 `EXPO_PUBLIC_API_MODE=real`과 HTTPS API URL 없이는 실행되지 않도록 mock 혼입 검사를 추가한다.
+- [ ] 실제 운영 Web 배포 환경에 확정된 HTTPS API URL을 주입하고 export 결과를 검증한다.
 - [ ] 운영 Web origin의 CORS, `Authorization` header, preflight와 API의 `no-store` 정책을 확인한다.
 - [ ] 신규 게스트 → Task 작성 → 새로고침 → 게스트 복원 → 로그인·회원가입 연결을 실제 브라우저에서 확인한다.
 - [ ] 로그인 → 새로고침 → 세션 만료 → 재로그인 → 계정 전환에서 token과 React Query cache가 격리되는지 확인한다.
