@@ -2,6 +2,13 @@
 
 이 폴더는 모바일 클라이언트 문서를 관심사별로 나눠 관리한다. 새 문서를 추가할 때는 먼저 아래 분류 중 어디에 속하는지 확인한다.
 
+## 현재 상태를 확인하는 순서
+
+1. [`product/ROADMAP.md`](./product/ROADMAP.md): 구현된 범위와 남은 우선순위
+2. [`qa/SMOKE_TEST_LOG.md`](./qa/SMOKE_TEST_LOG.md): 현재 검증 기준선과 알려진 한계
+3. [`qa/RELEASE_CHECKLIST.md`](./qa/RELEASE_CHECKLIST.md): 출시 후보 판정 기준
+4. [`api/SHARING_BACKEND_REQUESTS.md`](./api/SHARING_BACKEND_REQUESTS.md): 일정 공유의 남은 백엔드 요청
+
 ## 문서 패키지
 
 | 디렉터리                                                      | 역할                                               | 대표 문서                                                                             |

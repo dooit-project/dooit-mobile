@@ -1,94 +1,65 @@
 # 일정 공유 백엔드 요청사항
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
-프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 중인 OpenAPI 순서로 대조한다. 아래 항목은 공유 화면을 완성하기 전에 백엔드에서 확인하거나 보완해야 한다.
+프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 `/v3/api-docs` 순서로 대조한다. 이 문서에는 현재 남은 요청과 재검증 조건만 둔다.
 
-## 확인 결과
+## 현재 확인된 계약
 
-2026-08-17 backend `c6c6915` 기준 소스·문서와 Workspace·알림·OpenAPI 관련 통합 테스트를 확인했다. 관련 테스트는 `BUILD SUCCESSFUL`로 통과했다.
+local backend source `5eb6050` 옆에서 다음 항목을 확인했다.
 
-- PENDING 초대 목록 API: 구현 완료
-- Workspace OpenAPI source·통합 테스트: 구현 완료
-- 반복 Task `recurrenceScope`: 구현 완료
-- 권한별 403과 비멤버 404 계약: 문서·통합 테스트 반영 완료
-- Workspace 알림 억제 정책: 서비스 테스트 반영 완료
-- DB migration: 로컬 production Docker MySQL 적용 이력 확인
+- PENDING 초대 목록과 자기 membership 수락
+- Workspace Task·D-Day·멤버·알림 후보 OpenAPI 23개 operation
+- 반복 Task `recurrenceScope=THIS|THIS_AND_FUTURE|ALL`
+- OWNER·EDITOR·VIEWER와 PENDING·REMOVED·비멤버 권한 행렬
+- 개인/Workspace scope 분리와 Workspace 알림 억제 정책
 
-남은 외부 확인은 배포된 백엔드 commit SHA, 실행 중인 `/v3/api-docs`, 실제 배포 DB migration 상태다. 아래 내용은 요청 당시 배경과 계약을 보존한다.
+프론트 검증 명령:
 
-## P0. 내용이 있는 Workspace 삭제 — 보완 필요
+```bash
+npm run check:workspace-openapi
+npm run smoke:workspace-roles:real
+```
 
-2026-08-19 local real API 권한 smoke에서 OWNER가 Task가 들어 있는 Workspace에 `DELETE /api/v1/workspaces/{workspaceId}`를 호출하면 HTTP 500 `INTERNAL_SERVER_ERROR`가 발생했다. Task를 먼저 삭제한 뒤 같은 Workspace를 삭제하면 정상 처리된다.
+## P0. 내용이 있는 Workspace 삭제
 
-요청사항:
+2026-08-19 local real API에서 OWNER가 Task가 들어 있는 Workspace에 `DELETE /api/v1/workspaces/{workspaceId}`를 호출하면 HTTP 500 `INTERNAL_SERVER_ERROR`가 발생했다. Task를 먼저 삭제한 뒤 Workspace를 삭제하면 정상 처리된다.
 
-- Workspace 삭제 시 하위 Task·D-Day·반복 series·membership의 cascade 또는 명시적 삭제 순서를 구현한다.
-- 내용이 있는 Workspace를 삭제하지 않는 정책이라면 HTTP 409 등 안정적인 오류 코드와 사용자 복구 방법을 계약에 명시한다.
+백엔드 요청:
+
+- 하위 Task·D-Day·반복 series·membership의 cascade 또는 명시적 삭제 순서를 구현한다.
+- 삭제를 허용하지 않는 정책이면 HTTP 409 등 안정적인 오류 코드와 사용자 복구 방법을 계약에 명시한다.
 - Task와 D-Day가 함께 있는 Workspace 삭제 통합 테스트를 추가한다.
-- 수정 후 `npm run smoke:workspace-roles:real`과 별도 populated Workspace 삭제 시나리오로 재검증할 수 있게 한다.
 
-## P0. 초대받은 사용자 조회 — 완료
+완료 판단:
 
-현재 초대 수락은 `workspaceId`와 `memberId`가 필요하지만 Workspace 목록은 ACTIVE membership만, 멤버 목록도 ACTIVE 멤버만 반환한다. PENDING 사용자는 두 ID를 발견할 수 없다.
+- 내용이 있는 Workspace 삭제가 HTTP 500을 반환하지 않는다.
+- 선택한 삭제 정책과 error code가 `SHARING_CONTRACT.md`와 OpenAPI에 반영된다.
+- 프론트 real API smoke에서 같은 결과를 확인한다.
 
-다음과 같은 현재 사용자 전용 endpoint가 필요하다.
+## P0. 배포 버전 식별
 
-```http
-GET /api/v1/workspace-invitations
-```
+현재 실행 OpenAPI와 인접 backend source HEAD는 확인할 수 있지만, 서버 응답만으로 실행 binary가 어느 commit 또는 image인지 확정할 수 없다.
 
-```ts
-type WorkspaceInvitationResponse = {
-  workspace: WorkspaceResponse;
-  membership: WorkspaceMemberResponse; // status=PENDING
-  invitedAt: string;
-};
-```
+백엔드·배포 요청:
 
-요구사항:
+- health/info 또는 배포 metadata에서 commit SHA나 image tag를 제공한다.
+- Workspace migration 적용 상태를 배포 기록에 남긴다.
+- staging·production API URL과 해당 버전을 프론트 smoke 기록에 연결한다.
 
-- 현재 로그인 사용자의 PENDING membership만 반환한다.
-- guest는 빈 목록 또는 명시적인 403 정책 중 하나를 문서화한다.
-- 수락 후 목록에서 제거되고 Workspace 목록에 나타난다.
-- REMOVED membership은 반환하지 않는다.
+완료 판단:
 
-## P0. 실행 OpenAPI 최신화 — 소스 완료, 배포 확인 필요
+- 실행 서버 version metadata, OpenAPI와 DB migration이 같은 배포 단위를 가리킨다.
+- [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 API URL과 backend version을 기록한다.
 
-2026-08-15 현재 로컬 `http://localhost:8080/v3/api-docs`에는 전체 59개 path가 있으나 `/api/v1/workspaces/**`가 하나도 없다. 최신 Workspace 커밋이 포함된 서버를 재빌드·재시작한 뒤 아래를 확인해야 한다.
+## 조건부 후속 계약
 
-- 문서에 적힌 Workspace Task/D-Day/멤버 endpoint가 OpenAPI에 모두 노출된다.
-- request·response schema가 `API_V1_FRONTEND.md`와 일치한다.
-- 프론트 real API smoke용 백엔드 commit SHA를 제공한다.
+현재 프론트 화면에는 노출하지 않는다.
 
-## P1. 반복 Task 수정·삭제 범위 — 완료
+- 초대 거절: 제품 필요성이 확인되면 status 전이와 endpoint를 추가한다.
+- Workspace 템플릿: 개인 템플릿과 분리된 scope·권한·적용 계약이 필요하다.
+- 서버 push 설정: 실제 발송을 도입할 때 local/push 중복 방지와 이력 정책이 필요하다.
 
-문서상 Workspace 반복 Task 생성과 materialize는 가능하지만 반복 Task 수정·삭제는 아직 HTTP 400이다.
+## 백엔드 전달 문구
 
-- `recurrenceScope=THIS|THIS_AND_FUTURE|ALL` 지원 범위를 개인 Task API와 맞춘다.
-- 지원 전에는 안정적인 error code를 반환한다.
-- 프론트는 지원 확인 전 반복 Workspace Task의 편집·삭제 행동을 숨긴다.
-
-## P1. 권한·오류 계약 — 완료
-
-- OWNER, EDITOR, VIEWER별 endpoint 허용 행렬을 OpenAPI 설명과 통합 테스트에 고정한다.
-- 다른 workspace의 Task/D-Day ID는 404 계열로 숨긴다.
-- 권한 부족은 403, 잘못된 scope 연결은 안정적인 400/404 error code로 구분한다.
-- 마지막 ACTIVE OWNER 제거·탈퇴 실패 error code를 문서화한다.
-
-## P1. Workspace 알림 후보 — 완료
-
-- 최신 OpenAPI에 `/tasks/notification-candidates`를 노출한다.
-- 개인 후보와 Workspace 후보가 서로 섞이지 않는 invariant를 유지한다.
-- 서버 push가 도입되면 동일 `notificationKey`에 `suppressLocalNotification=true`를 반환한다.
-- Workspace별 세부 알림 설정은 별도 계약 전까지 프론트에 노출하지 않는다.
-
-## 전달 요청 문구
-
-백엔드에는 다음처럼 전달하면 된다.
-
-> 공유 화면에서 초대받은 사용자가 수락에 필요한 workspaceId/memberId를 찾을 방법이 없습니다. 현재 사용자 PENDING 초대 목록 API를 우선 추가해 주세요. 최신 Workspace endpoint가 실행 OpenAPI에 노출되도록 서버도 재빌드·재시작하고, 사용된 backend commit SHA를 알려 주세요. 반복 Workspace Task 수정·삭제는 지원 범위와 error code를 문서화해 주세요.
-
-현재 추가 요청은 다음과 같다.
-
-> OWNER가 Task가 들어 있는 Workspace를 삭제하면 HTTP 500이 발생합니다. 하위 리소스 cascade 삭제 또는 명시적인 삭제 거부 정책을 정하고, 안정적인 응답 코드와 통합 테스트를 추가해 주세요.
+> OWNER가 Task가 들어 있는 Workspace를 삭제하면 HTTP 500이 발생합니다. 하위 리소스 cascade 삭제 또는 명시적인 삭제 거부 정책을 정하고 안정적인 응답 코드와 통합 테스트를 추가해 주세요. 또한 실행 서버가 어느 commit 또는 image인지 health/info 응답에서 확인할 수 있게 해 주세요.

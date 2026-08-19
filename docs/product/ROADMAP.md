@@ -2,207 +2,126 @@
 
 Last updated: 2026-08-20
 
-이 문서는 완료 이력이 아니라 현재 제품 기준과 앞으로 할 일을 관리한다. 과거 검증 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md), 실제 배포 전 확인은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 관리한다.
+이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
-## 현재 기준선
+## 현재 상태
 
-- Expo SDK 56, React Native 0.85, React 19, TypeScript 6 기반 Android·iOS·Web 클라이언트다.
-- 하단 탭은 `오늘`, `달력`, `더보기`이며 기록함은 Today의 `정리할 항목`에서 다룬다.
-- 인증이 없는 신규 사용자는 데이터 화면보다 먼저 `/start`에서 `로그인 없이 시작`, `로그인 또는 계정 만들기`, `기능 둘러보기`를 선택한다.
-- 로그인 없이 시작은 순수 로컬 모드가 아니라 서버 게스트 계정이다. 이후 로그인·회원가입 시 게스트 데이터를 계정에 연결한다.
-- mock과 real API 모드를 분리하며 실제 비밀 값과 로컬 환경 파일은 커밋하지 않는다.
-- 날짜·시간 기준은 백엔드 계약과 동일한 `LocalDate`, `LocalDateTime`, `Asia/Seoul`이다.
-- 로컬 알림은 백엔드 후보를 원본으로 삼는 best-effort 기능이며 서버 push와 중복되지 않아야 한다.
+- 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
+- `npm run validate`의 최신 기준선은 64 suites, 349 tests 통과다.
+- mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
+- 따라서 현재 단계는 **기능 구현 마무리, 출시 검증 전**이다.
 
-## 구현된 핵심 기능
+## 현재 구현 범위
 
 ### 인증과 최초 사용
 
 - 게스트 발급·복원·갱신, 회원가입 승격, 기존 계정 로그인, 로그아웃, 세션 만료 복구
-- 저장 token 확인 실패와 게스트 token 만료를 구분하고 새 guest id 자동 발급 방지
-- 최초 실행 선택 화면, 선택형 기능 둘러보기, 게스트 생성 실패 재시도·로그인 우회
-- Today·Calendar·D-Day 맥락형 도움말과 Settings의 가이드 다시 보기
-- 계정 연결 결과의 Task·일정·D-Day·반복 series 병합 요약
+- 최초 실행 선택, 기능 둘러보기, 실패 재시도와 로그인 우회
+- 계정 연결 뒤 Task·일정·D-Day·반복 series 병합 결과 안내
+- API mode·URL·token 진단 정보는 development build에서만 노출
 
 ### Task와 일정
 
-- Inbox·Today·Done 조회, 빠른 기록, 생성·수정·삭제·완료·재개·날짜 이동
-- Today 순서 변경, 미룸 사유, 오래된 기록 정리, D-Day 목표 연결
-- Calendar 3주 흐름, 하루·여러 날·종일 일정 표시
-- 반복 없음·매일·매주·매월·사용자 지정과 occurrence 범위 수정·삭제·건너뛰기
-- 통합 검색, 상태·종류·날짜·D-Day filter, cursor pagination
+- Inbox·Today·Done 조회와 빠른 등록, 생성·수정·삭제·완료·재개·날짜 이동·재정렬
+- Calendar 하루·여러 날·종일 일정, D-Day, 검색과 cursor pagination
+- 반복 일정 생성, occurrence 수정·삭제·건너뛰기와 범위 선택
+- 개인 Task 템플릿 CRUD와 Today 적용
 
-### 로컬 알림
+### Workspace 공유
 
-- 최초 실행이 아닌 첫 미래 일정 저장 또는 Settings의 사용자 행동 뒤 권한 요청
-- 향후 30일 후보 중 실제 전달 시각이 가까운 50개 예약
-- 시간 일정은 시작 시각, 종일 일정은 해당 날짜 오전 9시에 전달
-- fingerprint 기반 증분 동기화와 Task 변경·앱 활성화 시 갱신
-- 완료·삭제·건너뜀·Inbox 이동·로그아웃·계정 전환 시 예약 정리
-- foreground 표시와 알림 선택 시 Task 상세 이동
-- `suppressLocalNotification=true` 후보 제외
+- Workspace 생성·목록, PENDING 초대 조회·수락, OWNER 멤버·권한 관리
+- OWNER·EDITOR·VIEWER별 일정·D-Day·멤버 UI와 권한 제한
+- Workspace Task CRUD, 반복 범위, D-Day 연결, 알림 후보와 로컬 예약
+- 개인/Workspace scope, 계정·Workspace query cache와 알림 식별자 격리
+- 공유 템플릿과 서버 push 설정은 계약 전까지 숨김
+- 화면은 일정·D-Day·멤버 탭으로 나누고 320px·390px·430px와 Web 키보드 점검 완료
 
 ### 품질과 배포 기반
 
-- 공통 design token과 responsive 기준, light·dark theme, 접근성 label·state·focus
-- mock Web 주요 화면과 최초 사용 흐름 캡처
-- `npm run validate`에 typecheck, lint, format, 문서 링크, release static check, test 통합
-- Expo project, Android package, iOS bundle identifier, EAS profile, Android signing credential 구성
-- Android preview APK 저장·검증 script와 real API smoke script
+- 공통 design token, light·dark theme, responsive·접근성 role/state/focus 기준
+- 로컬 알림 증분 동기화, 계정 전환 정리, 알림 선택 Task 이동
+- mock/real API 분리, real API smoke와 Workspace OpenAPI·권한 검사
+- 운영 Web export의 real mode·HTTPS API URL 강제
+- Expo/EAS 프로젝트, Android package, iOS bundle identifier와 APK 저장·검증 도구
 
-## 앞으로 할 일
+## 다음 우선순위
 
-### P0. 사용자 화면의 개발 정보 제거
+### P0. 출시 후보 만들기
 
-- [x] 비밀번호 재설정 API가 준비되기 전에는 로그인 화면의 진입점을 숨기거나 실제 지원 행동만 제공하고, `백엔드 계약`과 API 목록을 사용자 화면에서 제거한다.
-- [x] Settings의 API mode, API URL, Access Token 상태는 development build에서만 보이는 진단 영역으로 분리한다.
-- [ ] 전체 UI/UX 감사와 [`shadcn-ui-2026-08-13`](../audits/shadcn-ui-2026-08-13/README.md)의 P1 개선 항목을 순서대로 반영한다.
-
-### P0. 최신 Android APK와 실제 사용 검증
-
-- [ ] 현재 `main`과 `expo-notifications` 네이티브 모듈이 포함된 preview APK를 새로 빌드한다.
+- [ ] 전체 UI/UX 감사에서 남은 P1 항목을 반영한다.
+- [ ] staging·production API URL과 실행 백엔드 commit 또는 image tag를 확정한다.
+- [ ] 현재 `main`과 `expo-notifications`가 포함된 Android preview APK를 빌드한다.
 - [ ] APK 파일명, frontend commit, EAS build id, API URL을 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.
-- [ ] 실제 Android 기기에 설치해 Expo Go와 Metro 없이 cold start 되는지 확인한다.
-- [ ] 회원가입·로그인·게스트 시작·재실행·로그아웃·계정 전환을 production DB 범위로 확인한다.
-- [ ] Today 조회·추가·수정·완료·재개·재정렬과 Calendar·D-Day·Search를 실제 API로 확인한다.
-- [ ] 앱 강제 종료, 기기 재부팅, Wi-Fi·모바일 데이터 전환, API timeout 뒤 상태 복구를 확인한다.
+- [ ] 실제 Android 기기에서 Expo Go·Metro 없이 cold start와 최소 하루 사용을 확인한다.
+- [ ] production DB에서 인증·게스트·Today·Calendar·D-Day·Search·Workspace 핵심 흐름을 확인한다.
 
-### P0. 네이티브 알림 QA
+### P0. 외부 차단 해소
 
-- [ ] Android에서 권한 미결정·허용·거부·기기 설정 복귀 상태를 확인한다.
-- [ ] 시간 일정은 시작 시각, 종일 일정은 오전 9시에 한 번만 수신되는지 확인한다.
-- [ ] foreground, background, cold start에서 알림 선택 시 해당 Task 상세로 이동하는지 확인한다.
-- [ ] 일정 수정·완료·삭제·Inbox 이동·반복 occurrence 건너뛰기 후 기존 예약이 제거되는지 확인한다.
-- [ ] 로그아웃·다른 계정 로그인 후 이전 계정 제목이 알림에 남지 않는지 확인한다.
-- [ ] 시간대·기기 날짜 변경 후 앱 활성화 동기화가 예약 시각을 다시 맞추는지 확인한다.
-- [ ] 같은 시나리오를 iOS simulator 또는 실기기에서 확인한다.
+- [ ] Task가 들어 있는 Workspace 삭제의 HTTP 500을 백엔드에서 수정하고 real API로 재검증한다.
+- [ ] 배포 백엔드가 어느 commit/image인지 응답 메타데이터로 확인한다.
+- [ ] 비밀번호 재설정 request·verify·confirm과 메일 deep link를 백엔드에 구현·배포한다.
 
-### P1. 최초 사용과 오류 복구 회귀
+백엔드 전달 내용은 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md), 인증 계약은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)를 기준으로 한다.
 
-- [ ] Android/iOS에서 최초 설치, 앱 재실행, offline, API 4xx·5xx, 저장 token 확인 실패, 게스트 만료를 확인한다.
-- [ ] 게스트 생성·로그인·회원가입·병합 실패 시 기존 게스트 token과 데이터가 유지되는지 확인한다.
-- [ ] 강제 병합 실패와 네트워크 중단 뒤 재시도가 데이터를 중복 생성하지 않는지 real API로 확인한다.
-- [ ] 앱 삭제 후 재설치 시 서버 게스트 데이터의 복구 한계가 안내 문구와 일치하는지 확인한다.
-- [ ] 320px·390px·430dp, font scale 1.5, 키보드에서 시작 선택과 오류 복구 행동이 가려지지 않는지 확인한다.
+### P1. 네이티브·복구 QA
+
+- [ ] Android/iOS에서 최초 설치, 재실행, offline, API 4xx·5xx, 저장 token 확인 실패와 게스트 만료를 확인한다.
+- [ ] 게스트 병합 실패·네트워크 중단·재시도에서 데이터 유실과 중복이 없는지 확인한다.
+- [ ] 앱 강제 종료, 기기 재부팅, 네트워크 전환과 API timeout 뒤 상태 복구를 확인한다.
+- [ ] 알림 권한 미결정·허용·거부·설정 복귀와 시간·종일 일정 실제 수신을 확인한다.
+- [ ] foreground·background·cold start 알림 선택과 일정 변경 뒤 예약 제거를 확인한다.
+- [ ] 로그아웃·계정 전환·시간대 변경 뒤 알림 격리와 재동기화를 확인한다.
 
 ### P1. 접근성·레이아웃·성능
 
-- [x] 공통 빈 상태를 icon·title·description·primary action·secondary action 구조로 정리하고 Today·Calendar부터 적용한다.
-- [x] Calendar 빈 날짜에 해당 날짜의 일정 또는 Task를 추가하는 행동을 제공한다.
-- [x] Completed와 하루 정리 빈 상태에 Today로 돌아가는 행동을 제공하고, 검색 전 상태와 검색 결과 없음을 구분한다.
-- [x] 더보기 메뉴를 계정·작업 도구·앱 설정 그룹으로 나누고 기능 허브 역할에 맞게 탭 이름을 `더보기`로 확정한다.
-- [x] 시작·로그인·회원가입·도움말·설정의 긴 문장을 줄이고, 제목의 강제 개행과 본문의 자동 개행 기준을 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)에 맞춘다.
-- [x] Web 320px·390px·430px와 browser zoom 100%·150%에서 고립된 마지막 줄, 조사·서술어 분리, 중요 문구 말줄임을 점검한다.
-- [ ] Android·iOS 320dp·390dp·430dp와 font scale 1.0·1.5에서 같은 문장·말줄임 기준을 실기기로 확인한다.
-- [ ] iOS VoiceOver와 Android TalkBack에서 Today → Calendar → 더보기 핵심 흐름을 점검한다.
-- [x] checkbox, 일정 bar, tab, 빠른 기록, 알림 설정의 코드상 역할·상태·읽기 순서를 확인하고 누락된 상태 label을 보완한다.
-- [x] 공통 Screen, 하단 tab, 빠른 기록과 인증 form의 safe area·keyboard inset 코드를 점검하고 중복 키보드 보정을 제거한다.
-- [ ] 375pt iPhone과 430dp Android에서 home indicator, navigation bar, 키보드 겹침을 실기기로 확인한다.
-- [x] 제목·주요 CTA·오류 문구의 코드상 말줄임·고정 높이를 점검하고 light·dark 주요 text surface 대비 테스트를 보강한다.
-- [ ] Android·iOS light·dark와 font scale 1.5에서 제목·주요 CTA·오류 문구를 실기기로 확인한다.
-- [x] 긴 Today·Completed 목록은 20개씩 점진 렌더링하고 Calendar 밀집 일정은 제한된 lane과 overflow로 마운트 수를 제한한다.
-- [ ] 실제 API 지연과 대량 운영 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
+- [ ] Android/iOS 320dp·390dp·430dp와 font scale 1.0·1.5에서 줄바꿈과 핵심 행동을 확인한다.
+- [ ] VoiceOver·TalkBack에서 Today → Calendar → 더보기와 Workspace 탭 흐름을 확인한다.
+- [ ] iPhone home indicator, Android navigation bar, 키보드와 safe area 겹침을 확인한다.
+- [ ] Workspace 흐름을 browser zoom 150%에서 확인한다.
+- [ ] 실제 API 지연과 대량 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
 
-### P1. 배포 준비
+### P1. Web 운영 검증
 
-- [ ] staging·production API URL과 백엔드 배포 버전을 확정한다.
-- [ ] 비밀번호 재설정 request·verify·confirm과 메일 deep link를 백엔드에 구현·배포하고 real 복구를 확인한다.
-- [ ] API 생성 요청의 idempotency 또는 client request id 정책을 백엔드와 확정한다.
-- [ ] refresh token 또는 장기 세션 정책과 게스트 보존 기간을 최종 확정한다.
+- [ ] 운영 배포 환경에 확정된 HTTPS API URL을 주입하고 `npm run web:export:production` 결과를 확인한다.
+- [ ] 운영 origin의 CORS, `Authorization` header, preflight와 API `no-store` 정책을 확인한다.
+- [ ] 게스트 생성·새로고침·복원·계정 연결과 로그인 세션 만료·계정 전환을 실제 브라우저에서 확인한다.
+- [ ] Web token 저장 보완 정책과 CSP를 확정한다.
+- [ ] `/login`, `/calendar`, `/tasks/{id}` 직접 접근과 정적 host route fallback을 확인한다.
+- [ ] 브라우저·도메인 변경과 storage 삭제 시 게스트 복구 한계를 안내와 맞춘다.
+- [ ] 320px부터 desktop, keyboard, zoom 150%, cache 갱신 결과를 smoke log에 기록한다.
+
+### P2. 계약 또는 제품 결정 뒤 진행
+
+- [ ] 일정별 알림 preference와 `notifyAt`이 백엔드에 제공되면 편집 UI와 로컬 예약에 연결한다.
+- [ ] API 생성 요청의 idempotency 또는 client request id 정책을 확정한다.
+- [ ] refresh token 또는 장기 세션 정책과 게스트 보존 기간을 확정한다.
 - [ ] 오류 로깅 도구를 선정하고 [`ERROR_LOGGING_PRIVACY.md`](../qa/ERROR_LOGGING_PRIVACY.md)의 비수집 기준을 적용한다.
-- [ ] Android 개인 배포가 안정되면 Play Store, iOS, Web 배포 범위와 버전 정책을 결정한다.
-- [ ] runtimeVersion과 OTA updates 사용 여부를 결정한다.
-
-### P2. 후속 제품 기능
-
-- [x] 일정별 알림 설정의 저장 책임, 반복 범위와 후보 시각 요구 계약을 [`TASK_NOTIFICATION_TIMING_CONTRACT.md`](../api/TASK_NOTIFICATION_TIMING_CONTRACT.md)에 정리한다.
-- [ ] 백엔드가 일정별 알림 preference와 실제 후보 `notifyAt`을 제공하면 생성·편집 UI와 로컬 예약에 연결한다.
-- [ ] 서버 push가 필요해지면 push token 등록, source 중복 방지, 발송 이력 UX를 별도 설계한다.
-- [x] 자연어 빠른 등록의 request·response 타입, API client, mock fallback과 endpoint 회귀 테스트를 추가한다.
-- [x] 빠른 기록 composer를 자연어 빠른 등록 API에 연결하고 파싱 결과를 사용자가 확인·수정할 수 있게 한다.
-- [x] 개인 Task 템플릿의 타입, CRUD·Task 적용 API client, mock과 endpoint 회귀 테스트를 추가한다.
-- [x] 개인 Task 템플릿 목록, 기본 생성·삭제와 오늘 Task 적용 화면을 추가한다.
-- [x] 기존 개인 Task 템플릿의 이름·설명·분류 편집 화면을 추가한다.
-- [x] 개인 Task 템플릿의 일정·반복 설정 화면을 추가한다.
-- [x] Workspace 기본 API의 백엔드 구현·문서·OpenAPI 통합 테스트를 backend `c6c6915` 기준으로 확인한다.
-- [x] 로컬 실행 `/v3/api-docs`의 Workspace 23개 operation을 backend source `5eb6050` 옆에서 확인하고 반복 점검 명령을 추가한다.
-- [ ] 배포된 백엔드가 어느 commit/image인지 응답 메타데이터로 확인하고 Workspace real API smoke를 통과한다.
-- [x] Workspace 기본 관리와 멤버 초대·수락·제거의 타입, API client와 endpoint 회귀 테스트를 추가한다.
-- [x] Workspace 기본 관리와 멤버 흐름을 mock API에서도 검증할 수 있게 한다.
-- [x] Workspace Task CRUD·D-Day 연결·알림 후보 API client와 endpoint 테스트를 추가한다.
-- [x] Workspace D-Day 생성·조회·연결 Task·삭제 API client와 endpoint 테스트를 추가한다.
-- [x] `GET /api/v1/workspace-invitations`의 PENDING 초대 조회·수락 계약을 백엔드와 확정한다.
-- [x] 백엔드 확인·보완 요청을 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md)에 정리한다.
-- [x] Workspace 목록·생성·멤버 목록 Query 상태 계층을 추가한다.
-- [x] 공유 공간 진입점과 API 계층이 mock·real 모드에서 같은 Workspace 계약을 사용한다.
-- [x] 공유 공간 목록·생성·빈 상태·오류 복구 화면을 구현하고 Product Design 화면 캡처 audit을 통과한다.
-- [x] 공유 공간 상세·ACTIVE 멤버 목록과 현재 사용자 권한 안내를 구현하고 Product Design 화면 캡처 audit을 통과한다.
-- [x] Workspace 상세를 일정·D-Day·멤버 탭으로 분리하고 [`WORKSPACE_UI_FLOW.md`](./WORKSPACE_UI_FLOW.md)에 UI 점검 흐름을 정리한다.
-- [x] OWNER용 이메일 초대·role 변경·멤버 제거 화면을 구현하고 VIEWER에게 변경 행동을 숨긴다.
-- [x] OWNER 멤버 초대·role 변경·제거 mutation과 ACTIVE 멤버 cache 갱신을 추가한다.
-- [x] PENDING 초대 목록 타입·API·Query·mock과 수락 mutation을 계정별 cache로 격리한다.
-- [x] PENDING 초대 확인·수락 화면을 구현하고 초대 수락 뒤 참여 공간으로 즉시 전환한다.
-- [ ] 초대 거절이 제품에 필요하면 백엔드 status 전이와 endpoint 계약을 별도로 확정한다.
-- [x] Workspace Task 목록·상세 Query와 생성·수정·삭제 mutation을 workspace별 cache로 격리한다.
-- [x] 공유 공간 상세에 개인 일정과 분리된 오늘의 Workspace Task 목록·빈 상태·오류 복구를 표시한다.
-- [x] OWNER·EDITOR용 오늘의 Workspace Task 기본 생성 화면을 추가하고 VIEWER에게 생성 행동을 숨긴다.
-- [x] OWNER·EDITOR용 비반복 Workspace Task 제목 수정·삭제 확인 화면을 추가한다.
-- [x] Workspace Task 목록·생성·수정·삭제와 개인 화면 분리를 구현한다.
-- [x] Workspace D-Day 목록·상세·연결 Task Query와 생성·삭제 mutation을 workspace별 cache로 격리한다.
-- [x] Workspace D-Day 생성·조회·연결 Task 조회·삭제 흐름을 mock API에 추가한다.
-- [x] Workspace D-Day 목록·생성·삭제 화면을 추가하고 VIEWER에게 변경 행동을 숨긴다.
-- [x] Workspace Task와 D-Day 연결·해제 mutation, cache 갱신과 mock 흐름을 추가한다.
-- [x] Workspace D-Day 목록·생성·삭제·Task 연결을 구현한다.
-- [x] Workspace 반복 Task 수정·삭제 API와 mutation에 `recurrenceScope=THIS|THIS_AND_FUTURE|ALL` query 전달을 추가한다.
-- [x] Workspace 반복 Task 수정·삭제에 범위 선택 UI를 추가하고 기본값을 `THIS`로 고정한다.
-- [x] Workspace 알림 후보 Query와 식별자를 계정·workspace·기간별로 격리하고 Web 예약 제외 정책을 추가한다.
-- [x] Workspace 알림 후보 endpoint의 기간 필터와 식별자 생성 흐름을 mock API에 추가한다.
-- [x] Workspace 알림 후보를 계정·workspace별로 격리해 Android·iOS에 로컬 예약하고 Web에서는 예약하지 않는다.
-- [x] Workspace 403/404 응답을 권한 변경·탈퇴·삭제 상태로 구분하고 목록 복귀·행동 오류 안내를 고정한다.
-- [x] OWNER·EDITOR·VIEWER, PENDING·REMOVED·비멤버 조합을 real API smoke로 검증한다.
-- [ ] Task가 들어 있는 Workspace 삭제가 HTTP 500을 반환하지 않도록 백엔드 삭제 정책과 구현을 보완한 뒤 real API로 재검증한다.
-- [x] 공유 핵심 흐름을 320px·390px·430px와 keyboard에서 검증하고 [`workspace-responsive-2026-08-19`](../audits/workspace-responsive-2026-08-19/README.md)에 기록한다.
-- [ ] 공유 핵심 흐름을 browser zoom 150%에서 검증한다.
-- [ ] iOS VoiceOver·Android TalkBack에서 공유 탭의 읽기 순서와 선택 상태를 실제 기기로 검증한다.
-- [x] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 기능 노출 정책과 회귀 테스트로 숨긴다.
-- [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.
-
-### P2. Web 운영 검증
-
-모바일 로드맵의 기능·회귀·배포 검증을 마친 뒤 진행한다. Web에서는 로컬 알림을 제공하지 않는다.
-
-- [x] 운영 Web export가 `EXPO_PUBLIC_API_MODE=real`과 HTTPS API URL 없이는 실행되지 않도록 mock 혼입 검사를 추가한다.
-- [ ] 실제 운영 Web 배포 환경에 확정된 HTTPS API URL을 주입하고 export 결과를 검증한다.
-- [ ] 운영 Web origin의 CORS, `Authorization` header, preflight와 API의 `no-store` 정책을 확인한다.
-- [ ] 신규 게스트 → Task 작성 → 새로고침 → 게스트 복원 → 로그인·회원가입 연결을 실제 브라우저에서 확인한다.
-- [ ] 로그인 → 새로고침 → 세션 만료 → 재로그인 → 계정 전환에서 token과 React Query cache가 격리되는지 확인한다.
-- [ ] Web token 저장 방식을 HttpOnly cookie 또는 localStorage 보완 정책 중 하나로 확정하고 CSP를 적용한다.
-- [ ] `/login`, `/calendar`, `/tasks/{id}` 직접 접근과 새로고침이 정적 host의 route fallback에서 동작하는지 확인한다.
-- [ ] 브라우저·기기·도메인 변경과 storage 삭제 시 게스트 데이터 복구 한계를 사용자 안내와 일치시킨다.
-- [ ] 320px부터 desktop 폭까지 keyboard navigation, zoom 150%, 캐시 갱신과 real API 전체 흐름을 smoke log에 기록한다.
+- [ ] Workspace 초대 거절, 하위 작업, 주간 리포트의 필요성과 우선순위를 검증한다.
+- [ ] 서버 push가 필요해질 때 token 등록, local/push 중복 방지와 발송 이력 UX를 설계한다.
+- [ ] Store, iOS, Web 공개 범위와 version·runtimeVersion·OTA 정책을 결정한다.
 
 ## 외부 의존성
 
-| 의존성                       | 필요한 작업                                                                 | 완료 판단                                 |
-| ---------------------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
-| 최신 백엔드 배포             | guest refresh, mergeResult, notification candidates가 포함된 동일 버전 배포 | real smoke와 앱 화면이 같은 계약으로 통과 |
-| Android 실기기 또는 emulator | APK 설치, 알림, 네트워크, TalkBack, 성능 검증                               | 기기·OS·결과가 smoke log에 기록됨         |
-| iOS simulator 또는 실기기    | safe area, VoiceOver, 알림, cold start 검증                                 | 기기·OS·결과가 smoke log에 기록됨         |
-| 배포 URL·운영 정책           | staging·production URL, 세션, logging, store 범위 확정                      | release checklist에 값과 담당이 기록됨    |
+| 의존성                | 필요한 결과                                                 | 완료 판단                              |
+| --------------------- | ----------------------------------------------------------- | -------------------------------------- |
+| 최신 백엔드 배포      | 배포 version metadata, Workspace 삭제 수정, 비밀번호 재설정 | 같은 배포 버전으로 real smoke 통과     |
+| Android 기기·emulator | APK, 알림, 네트워크, TalkBack, 성능 검증                    | 기기·OS·결과가 smoke log에 기록됨      |
+| iOS simulator·실기기  | safe area, VoiceOver, 알림, cold start 검증                 | 기기·OS·결과가 smoke log에 기록됨      |
+| 운영 도메인·정책      | API URL, CORS, CSP, token, logging 정책                     | release checklist에 값과 담당이 기록됨 |
 
-## 완료 기준
+## 출시 완료 기준
 
-- 신규 사용자가 인증 오류 화면을 보지 않고 게스트 또는 정식 계정 시작 방식을 선택한다.
-- 게스트 데이터는 로그인·회원가입·실패·재시도 과정에서 유실되거나 중복되지 않는다.
-- Today, Calendar, Search, D-Day, Completed의 핵심 흐름이 mock과 real API에서 일관된다.
-- 알림 권한을 강요하지 않으며 예약·취소·계정 격리가 실제 기기에서 검증된다.
-- Web은 알림 없이 real API 인증·게스트 복원·데이터 동기화·직접 경로 접근이 운영 도메인에서 검증된다.
-- Android APK가 Expo Go·Metro 없이 시작되고 최소 하루 실제 사용에서 치명적 오류가 없다.
+- 신규 사용자가 인증 오류 없이 게스트 또는 계정 시작 방식을 선택한다.
+- 게스트 데이터가 계정 연결·실패·재시도 과정에서 유실되거나 중복되지 않는다.
+- 개인과 Workspace의 핵심 흐름이 production API에서 일관된다.
+- Android/iOS 알림 예약·취소·선택·계정 격리가 실제 기기에서 검증된다.
+- Web은 알림 없이 인증·게스트 복원·데이터 동기화·직접 경로 접근이 운영 도메인에서 동작한다.
+- 최신 APK가 Expo Go·Metro 없이 시작되고 치명적 오류 없이 사용된다.
 - `npm run validate`와 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)가 통과한다.
 
 ## 범위 밖
 
 - 모바일에서 데이터베이스를 직접 조회하거나 수정하지 않는다.
-- IP 주소, 광고 ID, 하드웨어 식별자를 사용자 인증 수단으로 사용하지 않는다.
+- IP 주소, 광고 ID, 하드웨어 식별자를 인증 수단으로 사용하지 않는다.
 - 실제 비밀 값과 로컬 환경 파일을 저장소에 기록하지 않는다.
-- 서버 push 발송, Store 제출, OTA 배포는 해당 범위를 명시적으로 결정하기 전 자동으로 확대하지 않는다.
+- 서버 push 발송, Store 제출, OTA 배포는 범위를 명시적으로 결정하기 전 자동으로 확대하지 않는다.

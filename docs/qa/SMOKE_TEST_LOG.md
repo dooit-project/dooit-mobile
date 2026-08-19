@@ -1,16 +1,17 @@
 # Smoke Test Log
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
 ## 자동 검증 기준선
 
-- 날짜: 2026-08-12
+- 날짜: 2026-08-20
+- frontend commit: `d04074d`
 - 명령: `npm run validate`
 - 결과: 통과
 - 범위: TypeScript, ESLint, Prettier, 문서 링크, release asset·Android APK 정적 설정, Jest
-- 테스트: 47 suites, 284 tests
+- 테스트: 64 suites, 349 tests
 
 자동 검증에 포함된 주요 회귀:
 
@@ -20,6 +21,8 @@ Last updated: 2026-08-19
 - 검색·D-Day·Today section·Task cache
 - 앱 preference와 contextual tip
 - 알림 권한 정책·전달 시각·후보 동기화·증분 예약·예약 상한·알림 선택
+- Workspace API·mock·권한·반복·D-Day·알림 후보와 기능 노출 정책
+- 운영 Web export의 real mode·HTTPS API URL 검사
 
 자동 검증만으로 확정할 수 없는 항목:
 
@@ -98,7 +101,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 제한:
 
 - 실행 서버 응답에 commit 또는 image tag가 없어 현재 source HEAD와 같은 binary인지는 확정하지 않았다.
-- 권한 조합과 실제 데이터 변경은 real API 시나리오 smoke에서 별도로 확인해야 한다.
+- 권한 조합과 실제 데이터 변경 결과는 아래 Workspace 권한 real API 기준선에 기록한다.
 
 ## Workspace 권한 real API 기준선
 
