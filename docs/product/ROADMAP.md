@@ -164,7 +164,7 @@ Last updated: 2026-08-19
 - [x] 공유 핵심 흐름을 320px·390px·430px와 keyboard에서 검증하고 [`workspace-responsive-2026-08-19`](../audits/workspace-responsive-2026-08-19/README.md)에 기록한다.
 - [ ] 공유 핵심 흐름을 browser zoom 150%에서 검증한다.
 - [ ] iOS VoiceOver·Android TalkBack에서 공유 탭의 읽기 순서와 선택 상태를 실제 기기로 검증한다.
-- [ ] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 화면에 노출하지 않는다.
+- [x] Workspace 템플릿과 서버 push 설정은 별도 계약 전까지 기능 노출 정책과 회귀 테스트로 숨긴다.
 - [ ] 하위 작업과 주간 리포트의 필요성과 우선순위를 검증한다.
 
 ### P2. Web 운영 검증

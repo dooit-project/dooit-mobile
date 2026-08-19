@@ -22,6 +22,11 @@ export {
   getWorkspaceNotificationIdentifier,
   shouldScheduleWorkspaceNotifications,
 } from './workspace-notification-policy';
+export {
+  getVisibleWorkspaceSections,
+  isWorkspaceFeatureVisible,
+  workspaceFeatureStatus,
+} from './workspace-feature-policy';
 export { workspaceTaskApi } from './workspace-task-api';
 export { useAcceptWorkspaceInvitation, useWorkspaceInvitations } from './use-workspace-invitations';
 export { WorkspaceOverview } from './workspace-overview';

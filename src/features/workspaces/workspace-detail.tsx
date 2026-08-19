@@ -39,6 +39,7 @@ import {
   getWorkspaceAccessErrorPresentation,
   getWorkspaceActionErrorMessage,
 } from './workspace-error-presentation';
+import { getVisibleWorkspaceSections, type WorkspaceSection } from './workspace-feature-policy';
 import { useWorkspaceDdayGoals } from './use-workspace-ddays';
 import {
   useConnectWorkspaceTaskDdayGoal,
@@ -199,14 +200,6 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
   );
 }
 
-type WorkspaceSection = 'tasks' | 'ddays' | 'members';
-
-const workspaceSections: { value: WorkspaceSection; label: string }[] = [
-  { value: 'tasks', label: '일정' },
-  { value: 'ddays', label: 'D-Day' },
-  { value: 'members', label: '멤버' },
-];
-
 function WorkspaceSectionTabs({
   value,
   onChange,
@@ -218,7 +211,7 @@ function WorkspaceSectionTabs({
 
   return (
     <View accessibilityRole="tablist" style={styles.sectionTabs}>
-      {workspaceSections.map((item) => {
+      {getVisibleWorkspaceSections().map((item) => {
         const selected = item.value === value;
         return (
           <Pressable
