@@ -97,6 +97,17 @@ EAS artifact URL을 받은 뒤에는 APK를 Git 저장소 밖 개인 보관 위�
 npm run apk:save -- --url <EAS_APK_ARTIFACT_URL>
 ```
 
+빌드 id와 배포된 백엔드 버전을 받은 뒤 smoke log에 붙여 넣을 release note를 생성한다.
+
+```bash
+npm run apk:release-note -- \
+  --build-id <EAS_BUILD_ID> \
+  --backend <BACKEND_COMMIT_OR_IMAGE> \
+  --device <DEVICE_AND_OS>
+```
+
+현재 앱 version, versionCode, frontend commit, preview API mode·URL과 예상 APK 파일명은 저장소 설정에서 자동으로 채운다. 아직 확인하지 않은 migration, rollback, smoke 결과는 `확인 필요` 또는 `BLOCKED`로 남겨 추측으로 통과 처리하지 않는다.
+
 기본 저장 위치와 파일명:
 
 ```text

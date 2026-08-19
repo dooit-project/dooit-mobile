@@ -61,6 +61,7 @@
     "check:workspace-openapi": "node scripts/check-workspace-openapi.js",
     "check:web-production-config": "node scripts/check-web-production-config.js",
     "apk:filename": "node scripts/get-android-apk-filename.js",
+    "apk:release-note": "node scripts/get-android-release-note.js",
     "apk:save": "node scripts/save-eas-apk.js",
     "smoke:auth:real": "node scripts/smoke-auth-real.js",
     "smoke:guest:real": "node scripts/smoke-guest-real.js",
