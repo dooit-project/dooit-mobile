@@ -23,7 +23,7 @@ API URL:
 - [ ] 실제 비밀 값, `.env.local`, 로컬 인증 정보가 포함되지 않았다.
 - [ ] `npm run validate`가 통과했다.
 - [ ] Android APK 후보라면 `npm run check:release-static`이 통과했다.
-- [ ] EAS 빌드 후보라면 `npm run check:eas-setup`이 통과했다.
+- [ ] EAS 빌드 후보라면 `npm run check:eas-setup`으로 계정 로그인, project 연결, 로컬 상태 Git 제외를 확인했다.
 - [ ] 새 의존성을 추가했다면 Expo SDK 56, React Native 0.85 호환성을 확인했다.
 - [ ] 플랫폼별 코드 변경이 있으면 Android, iOS, Web 영향 범위를 기록했다.
 - [ ] 이번 릴리즈에 포함된 주요 변경을 `README.md`, `ROADMAP.md`, 관련 문서에 반영했다.

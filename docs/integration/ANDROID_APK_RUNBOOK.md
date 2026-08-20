@@ -60,12 +60,13 @@ npm run check:eas-setup
 - 커밋된 `EXPO_PUBLIC_API_URL`이 있다면 HTTPS인지
 - Android production APK config에서 cleartext traffic 허용을 켜지 않았는지
 - `expo-notifications` production dependency와 native config plugin이 모두 포함됐는지
-- EAS CLI가 설치되어 있고 Expo project id가 연결되어 있는지
+- EAS CLI가 설치되어 있고 `eas whoami` 로그인과 Expo project id 연결이 확인되는지
+- `.expo` 로컬 상태가 실제로 Git에서 제외되는지
 - `preview`, `production` profile의 `EXPO_PUBLIC_API_URL`이 Tailscale HTTPS URL인지
 - `.env.local`이 커밋되지 않았는지
 - 백엔드 production API가 Tailscale HTTPS로 접근 가능한지
 
-`npm run check:eas-setup`은 Expo 로그인과 `eas init` 전에는 실패하는 것이 정상이다. 실패 메시지에서 남은 준비 항목을 확인한다.
+`npm run check:eas-setup`은 Expo 로그인과 `eas init` 전에는 실패하는 것이 정상이다. 계정 확인에는 `api.expo.dev` 네트워크 접근이 필요하며, 실패 메시지에서 로그인·네트워크·project 연결·Git 제외 중 남은 준비 항목을 확인한다.
 
 ## 5. EAS project 연결
 

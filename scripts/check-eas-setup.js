@@ -22,12 +22,33 @@ const easVersion = spawnSync('eas', ['--version'], {
   shell: false,
 });
 
+const easIdentity = spawnSync('eas', ['whoami'], {
+  encoding: 'utf8',
+  shell: false,
+  timeout: 15_000,
+});
+
+const expoStateIgnored = spawnSync('git', ['check-ignore', '-q', '.expo'], {
+  encoding: 'utf8',
+  shell: false,
+});
+
 addCheck(
   'EAS CLI installed',
   easVersion.status === 0,
   easVersion.status === 0
     ? easVersion.stdout.trim()
     : 'Install with `npm install --global eas-cli` or use `npx eas-cli` when network is available.',
+);
+
+addCheck(
+  'Expo account authenticated',
+  easIdentity.status === 0,
+  easIdentity.status === 0
+    ? easIdentity.stdout.trim().split('\n')[0]
+    : easIdentity.error?.code === 'ETIMEDOUT'
+      ? 'EAS account check timed out; check network access and retry.'
+      : 'Run `eas login`, then retry while api.expo.dev is reachable.',
 );
 
 addCheck(
@@ -56,10 +77,12 @@ addCheck(
 
 addCheck(
   'Local Expo state ignored',
-  exists('.expo'),
-  exists('.expo')
-    ? '.expo exists locally and is ignored by Git.'
-    : '.expo does not exist yet; it may be created by Expo/EAS commands.',
+  expoStateIgnored.status === 0,
+  expoStateIgnored.status === 0
+    ? exists('.expo')
+      ? '.expo exists locally and is ignored by Git.'
+      : '.expo is ignored and may be created by Expo/EAS commands.'
+    : 'Add .expo to .gitignore before running Expo/EAS commands.',
 );
 
 for (const check of checks) {
@@ -68,7 +91,14 @@ for (const check of checks) {
 }
 
 const blockingFailures = checks.filter(
-  (check) => !check.passed && ['EAS CLI installed', 'Expo project id linked'].includes(check.name),
+  (check) =>
+    !check.passed &&
+    [
+      'EAS CLI installed',
+      'Expo account authenticated',
+      'Expo project id linked',
+      'Local Expo state ignored',
+    ].includes(check.name),
 );
 
 if (blockingFailures.length > 0) {
