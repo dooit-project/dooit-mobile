@@ -5,6 +5,7 @@ import { usePathname } from 'expo-router';
 
 import { Button, InlineNotice, Screen } from '@/components/ui';
 import { FirstUseOverview } from '@/features/auth';
+import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import {
   authApi,
   initializeAccessToken,
@@ -226,10 +227,8 @@ export function AuthTokenBootstrap({ children }: PropsWithChildren) {
           setStatus('starting-guest');
           void createGuestSession()
             .then(() => setStatus('ready'))
-            .catch(() => {
-              setGuestErrorMessage(
-                '인터넷 연결을 확인하고 다시 시도하거나, 기존 계정으로 로그인해 주세요.',
-              );
+            .catch((error) => {
+              setGuestErrorMessage(getAuthSubmissionErrorMessage(error, false));
               setStatus('first-use');
             });
         }}
