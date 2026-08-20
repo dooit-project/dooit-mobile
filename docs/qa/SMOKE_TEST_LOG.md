@@ -161,3 +161,12 @@ API mode / URL:
 5. 완료·삭제·건너뜀·로그아웃 뒤 예약 제거
 6. production API에서 Today·Calendar·D-Day·Search 전체 흐름
 7. 네트워크 전환·offline·기기 재부팅·날짜 경계
+
+## Production 배포 식별 확인
+
+- 날짜: 2026-08-21
+- 환경: `https://macmini.tail68d2d1.ts.net`
+- readiness: `GET /actuator/health/readiness` HTTP 200, `UP`
+- 전체 health: mail `DOWN`으로 HTTP 503이지만 DB·readiness·schema는 `UP`
+- 배포 metadata: `GET /actuator/info`가 로그인으로 HTTP 302 redirect되어 commit/image tag 확인 불가
+- 판정: `BLOCKED` — readiness와 별개로 배포 식별 metadata 공개 계약 보완 필요

@@ -44,12 +44,14 @@ npm run smoke:workspace-roles:real
 백엔드·배포 요청:
 
 - health/info 또는 배포 metadata에서 commit SHA나 image tag를 제공한다.
+- `/actuator/health/readiness`는 인증 없이 `UP`을 확인할 수 있게 유지하고, `/actuator/info` 또는 별도 metadata endpoint는 로그인 redirect 없이 비밀 값이 아닌 commit SHA나 image tag를 반환한다.
 - Workspace migration 적용 상태를 배포 기록에 남긴다.
 - staging·production API URL과 해당 버전을 프론트 smoke 기록에 연결한다.
 
 완료 판단:
 
 - 실행 서버 version metadata, OpenAPI와 DB migration이 같은 배포 단위를 가리킨다.
+- 프론트에서 `EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-deployment`가 통과한다.
 - [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 API URL과 backend version을 기록한다.
 
 ## 조건부 후속 계약
