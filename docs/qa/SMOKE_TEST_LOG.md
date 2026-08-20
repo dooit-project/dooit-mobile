@@ -137,6 +137,18 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 - 이 APK는 이후 최초 사용·게스트 복구·알림 기능을 포함하지 않아 현재 release 후보가 아니다.
 - 현재 `main` 기준 preview APK를 새로 빌드해야 한다.
 
+### 최신 preview APK 빌드
+
+- 제출 날짜: 2026-08-21
+- EAS build id: `38acdebc-b5ba-4027-9a43-aacc368bf33f`
+- 상태: `IN_QUEUE`
+- profile: `preview`
+- frontend commit: `2898493a203965fb651be066a30c01806f4c5e9c`
+- API mode / URL: `real` / `https://macmini.tail68d2d1.ts.net`
+- app version / versionCode: `1.0.0` / `1`
+- 포함 기준: `expo-notifications` production dependency와 native config plugin 정적 검사 통과
+- 후속: build 완료 뒤 artifact를 저장하고 실제 Android 기기에서 Tailscale 연결 상태로 cold start·게스트 시작·알림 smoke를 수행한다.
+
 ## 다음 기록 양식
 
 ```text
