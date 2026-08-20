@@ -82,6 +82,30 @@
 - TalkBack에서 날짜 cell과 Task checkbox 역할이 읽힌다.
 - adaptive icon과 monochrome icon preview가 깨지지 않는다.
 
+#### Preview APK 최초 사용
+
+검증 전:
+
+1. EAS build id, frontend commit, `preview` profile을 [`SMOKE_TEST_LOG.md`](./SMOKE_TEST_LOG.md)의 후보와 대조한다.
+2. 휴대폰 Tailscale을 켜고 APK의 API URL과 같은 tailnet에 로그인한다.
+3. 휴대폰 브라우저에서 `<API_URL>/actuator/health/readiness`를 열어 HTTP 200과 `UP`을 확인한다.
+4. 기존 앱 데이터 영향을 피하려면 앱을 제거한 뒤 후보 APK를 새로 설치한다.
+
+최초 사용:
+
+1. Expo Go와 Metro 없이 cold start하고 최초 사용 화면이 열린다.
+2. `로그인 없이 시작`을 한 번 누르면 진행 표시가 나타나고 Today로 이동한다.
+3. Task를 하나 작성한 뒤 앱을 완전히 종료하고 다시 열어 같은 게스트 데이터가 유지되는지 확인한다.
+4. 로그인 또는 회원가입으로 연결한 뒤 기존 게스트 Task가 유지되는지 확인한다.
+
+연결 실패 복구:
+
+1. 앱 데이터를 다시 초기화하고 Tailscale을 끈 상태에서 `로그인 없이 시작`을 누른다.
+2. timeout 뒤 버튼이 다시 활성화되고 network 또는 timeout 안내가 표시되는지 확인한다.
+3. Tailscale을 다시 연결하고 같은 버튼으로 재시도해 Today 진입이 성공하는지 확인한다.
+
+readiness가 휴대폰 브라우저에서 열리지 않으면 앱 결함으로 판정하지 않고 VPN·tailnet·백엔드 실행 상태를 먼저 복구한다. Quick Tunnel의 `*.trycloudflare.com` 주소는 APK 후보에 사용하지 않는다.
+
 ### iOS
 
 - safe area와 home indicator가 composer, tab, CTA를 가리지 않는다.

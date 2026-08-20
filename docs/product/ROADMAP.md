@@ -53,7 +53,7 @@ Last updated: 2026-08-20
 - [ ] `npm run check:android-apk` 통과 후 현재 `main`과 `expo-notifications`가 포함된 Android preview APK를 빌드한다.
   - 2026-08-21 `2898493` 기준 EAS build `38acdebc-b5ba-4027-9a43-aacc368bf33f` 제출, 현재 `IN_QUEUE`
 - [ ] `npm run apk:release-note`로 APK 파일명, frontend commit, EAS build id, API URL을 생성해 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.
-- [ ] 실제 Android 기기에서 Expo Go·Metro 없이 cold start와 최소 하루 사용을 확인한다.
+- [ ] [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md)의 preview APK 순서로 실제 Android 기기에서 Expo Go·Metro 없이 cold start와 최소 하루 사용을 확인한다.
 - [ ] production DB에서 인증·게스트·Today·Calendar·D-Day·Search·Workspace 핵심 흐름을 확인한다.
 
 ### P0. 외부 차단 해소
