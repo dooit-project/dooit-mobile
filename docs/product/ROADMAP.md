@@ -1,13 +1,13 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-20
+Last updated: 2026-08-21
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
-- `npm run validate`의 최신 기준선은 64 suites, 349 tests 통과다.
+- `npm run validate`의 최신 기준선은 67 suites, 359 tests 통과다.
 - mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
 - 따라서 현재 단계는 **기능 구현 마무리, 출시 검증 전**이다.
 
@@ -80,6 +80,16 @@ Last updated: 2026-08-20
 - [ ] iPhone home indicator, Android navigation bar, 키보드와 safe area 겹침을 확인한다.
 - [ ] Workspace 흐름을 browser zoom 150%에서 확인한다.
 - [ ] 실제 API 지연과 대량 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
+
+### P1. Today·Navigation 행동 위계
+
+- [ ] Today 상단의 독립 월 제목과 미사용 `TodayHeader`, 외곽선과 날짜 열 구분선을 제거하고 월 경계 날짜와 일정 유무 표시를 보완한다.
+- [ ] 빠른 기록 성공 영역에 방금 만든 제목, 저장 위치, `오늘 할 일로 이동`, `내용 확인`을 제공하고 cache 갱신을 검증한다.
+- [ ] 오늘 완료한 일이 있으면 최근 3개를 기본으로 펼치고 `전체 N개 보기`와 `접기` 동작을 제공한다.
+- [ ] Task 상세의 `수정`을 종류 metadata에서 분리해 PageHeader icon+label action으로 이동한다.
+- [ ] 하단 tab의 활성 label 색·굵기와 선택 indicator를 강화하고 icon만으로 현재 위치를 전달하지 않는지 확인한다.
+- [ ] Workspace Task의 D-Day 연결·제목 수정·삭제 action을 주요 행동과 overflow menu로 정리할지 Product Design 캡처로 재점검한다.
+- [ ] 위 변경을 320px·390px·430px, font scale 1.5, light·dark와 VoiceOver·TalkBack에서 검증한다.
 
 ### P1. Web 운영 검증
 

@@ -62,10 +62,15 @@ API URL:
 [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)와 [`DESIGN.md`](../design/DESIGN.md)를 기준으로 확인한다.
 
 - [ ] 첫 viewport에서 오늘의 일정 또는 오늘 할 일을 바로 볼 수 있다.
-- [ ] Today 주간 strip의 외부 경계와 내부 세로선이 날짜 cell과 맞는다.
+- [ ] Today는 중복된 화면명·월 제목 없이 주간 strip부터 시작한다.
+- [ ] Today 주간 strip은 외곽선과 내부 세로선 없이도 날짜 cell과 오늘 선택 상태를 구분할 수 있다.
+- [ ] 월 경계 날짜와 일정 유무가 각각 월 표기와 표시점으로 구분된다.
 - [ ] Calendar column rule, 하루 일정 label, 기간 bar가 cell 밖으로 튀지 않는다.
 - [ ] 일정, 오늘 할 일, 완료 section 색이 배경과 충분히 구분된다.
-- [ ] 빠른 입력 placeholder와 저장 feedback이 짧고 자연스럽다.
+- [ ] 빠른 입력 결과에 생성된 제목, 저장 위치, 오늘로 이동·내용 확인 action이 즉시 보인다.
+- [ ] 오늘 완료한 일은 최근 3개가 기본으로 보이고 전체 보기·접기가 동작한다.
+- [ ] Task 상세의 수정 action이 PageHeader에서 icon과 label로 명확히 보인다.
+- [ ] 현재 하단 탭이 icon, label, indicator로 함께 구분된다.
 - [ ] 정리할 항목 action copy가 실제 동작과 맞다.
 - [ ] Profile shortcut row가 다른 row와 같은 밀도와 radius를 가진다.
 - [ ] 320px, 375pt, 430dp, 720px에서 horizontal overflow가 없다.

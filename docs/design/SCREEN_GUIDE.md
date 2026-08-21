@@ -18,14 +18,14 @@ ToDoLab Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서�
 
 | Route             | 화면            | 문서화 | Product Design audit | 남은 확인                                    |
 | ----------------- | --------------- | ------ | -------------------- | -------------------------------------------- |
-| `/`               | Today           | 완료   | 완료                 | native font scale, safe area, screen reader  |
-| `/calendar`       | Calendar        | 완료   | 완료                 | native font scale, 일정 label overflow       |
-| `/profile`        | Profile         | 완료   | 완료                 | native bottom tab overlap, screen reader     |
+| `/`               | Today           | 완료   | 재점검               | 주간 strip, 빠른 기록 결과, 완료 기본 노출   |
+| `/calendar`       | Calendar        | 완료   | 재점검               | 하단 활성 tab, 일정 label overflow           |
+| `/profile`        | Profile         | 완료   | 재점검               | 하단 활성 tab, native overlap, screen reader |
 | `/today/review`   | 정리할 항목     | 완료   | 완료                 | 상태별 empty/success/error                   |
 | `/search`         | Search          | 완료   | 완료                 | real pagination, native keyboard             |
 | `/completed`      | Completed       | 완료   | 완료                 | 긴 제목, 다시 열기 affordance native 확인    |
 | `/dday`           | D-Day           | 완료   | 완료                 | real API, 긴 목표 제목, screen reader        |
-| `/tasks/[taskId]` | Task 상세       | 완료   | 완료                 | 반복 scope action, 긴 상세 내용              |
+| `/tasks/[taskId]` | Task 상세       | 완료   | 재점검               | header 수정 action, 반복 scope, 긴 상세 내용 |
 | `/tasks/new`      | Task 작성       | 완료   | 완료                 | native keyboard, 알림 권한 안내              |
 | `/login`          | 로그인          | 완료   | 완료                 | native keyboard, screen reader, brand asset  |
 | `/register`       | 계정 만들기     | 완료   | 완료                 | native keyboard, password reset 진입         |
@@ -74,7 +74,7 @@ docs/screenshots/
 
 사용 흐름:
 
-1. 앱을 열면 Today 화면에서 오늘 날짜와 주간 날짜 strip을 확인한다.
+1. 앱을 열면 별도 중복 제목 없이 첫 콘텐츠인 주간 날짜 strip에서 오늘 선택 상태를 확인한다.
 2. 오늘 일정이 있으면 먼저 확인한다.
 3. 오늘 할 일을 체크해 완료한다.
 4. 생각난 일은 하단 빠른 기록으로 추가한다.
@@ -82,11 +82,11 @@ docs/screenshots/
 
 주요 UI:
 
-- 주간 날짜 strip
+- 외곽선·세로 구분선 없이 오늘과 월 경계만 강조하는 주간 날짜 strip
 - 일정 section
 - 오늘 할 일 section
 - 정리할 항목 진입 row
-- 접힌 완료 목록
+- 최근 3개가 기본으로 펼쳐지는 완료 목록
 - 빠른 기록 composer
 
 개발 참고:
@@ -108,7 +108,8 @@ docs/screenshots/
 1. 하단 빠른 기록 버튼을 누른다.
 2. 할 일을 한 줄로 입력한다.
 3. 추가 버튼으로 저장한다.
-4. 저장된 항목은 정리할 항목 또는 기록함에서 다시 Today로 옮길 수 있다.
+4. 저장 직후 방금 만든 제목과 저장 위치를 확인한다.
+5. 날짜 없는 항목은 결과 영역의 `오늘 할 일로 이동` 또는 `내용 확인`을 선택한다.
 
 주요 UI:
 
@@ -116,7 +117,7 @@ docs/screenshots/
 - 닫기 버튼
 - 입력창
 - 추가 버튼
-- 저장 성공 feedback
+- 저장한 제목, 목적지, Today 이동·상세 action이 포함된 성공 feedback
 
 개발 참고:
 

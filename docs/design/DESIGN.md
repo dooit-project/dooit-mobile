@@ -229,21 +229,22 @@ Today, Task, Calendar, 프로필은 tablet·Web에서도 기본 720px 단일 열
 Today의 기본 정보 순서는 다음과 같다.
 
 ```text
-compact header
+주간 날짜 strip
 → 존재하는 일정
 → 오늘 실행 Task
 → 정리할 항목 진입점
-→ 접힌 완료
+→ 최근 완료 3개
 ```
 
-- header는 화면명과 날짜만으로 충분하면 별도 추가 버튼이나 보조 메뉴를 두지 않는다.
+- Today는 하단 tab과 오늘 선택 원이 현재 맥락을 전달하므로 별도 화면명·월·날짜 header를 두지 않는다.
+- 주간 strip은 기본적으로 외곽선과 날짜 열 구분선 없이 표시하고 월 경계 날짜만 `9/1`처럼 월을 포함한다.
 - 큰 인사말은 상시 navigation 요소가 아니며 빈 상태나 의미 있는 피드백에서만 사용한다.
 - 날짜를 top bar와 별도 대형 카드에서 중복 표시하지 않는다.
 - 일정은 시간 약속과 하루의 제약 조건을 먼저 파악할 수 있도록 Task보다 위에 두되, 데이터가 있을 때만 표시한다.
 - 오늘 실행 Task는 사용자가 스크롤하기 전에 최소 한 개 이상 보여야 한다.
 - 여러 날에 걸친 일정은 오늘과 시간이 겹치면 표시하고 `진행 중 · 7월 3일–5일`처럼 전체 기간과 현재 상태를 함께 알린다.
 - 지난 미완료, 추천, 기록함은 Today 안에서 카드로 펼치지 않고 한 손으로 닫기 쉬운 bottom sheet 또는 전용 정리 화면에서 처리한다.
-- 완료 목록은 기본적으로 접고 완료 수와 펼치기 affordance를 제공한다.
+- 완료 목록은 항목이 있으면 최근 3개를 기본으로 보여 주고 완료 수, 전체 보기와 접기 affordance를 제공한다.
 - 일정 section은 데이터가 있을 때만 표시한다.
 
 ## 8. Components
@@ -260,6 +261,7 @@ compact header
 - loading 중에는 중복 입력을 막고 spinner와 busy 상태를 제공한다.
 - 한 화면에서 primary CTA를 경쟁적으로 여러 개 배치하지 않는다.
 - 목록 항목마다 여러 개의 텍스트 버튼을 상시 노출하지 않고 swipe, overflow menu, context action을 우선한다.
+- 화면 전체를 수정하는 행동은 카드 metadata 옆 ghost text보다 `PageHeader`의 icon+label secondary action을 우선한다.
 
 ### Card
 
@@ -301,6 +303,8 @@ compact header
 - section 사이에는 16–20px, 같은 목록 항목 사이는 8px을 기본으로 해 “전부 같은 카드”처럼 보이지 않게 리듬을 만든다.
 - 주요 section에는 필요할 때만 16–20px symbol 또는 작은 tinted icon background를 한 개 사용한다.
 - 완료 시 check 변화, 짧은 success feedback, 선택적 haptic을 150–220ms 안에 제공하되 confetti나 큰 점수 animation은 사용하지 않는다.
+- Today의 완료 목록은 항목이 있으면 최근 3개를 기본 노출하고 더 많은 항목만 사용자 요청으로 펼친다.
+- 빠른 기록 결과는 저장 위치만 알리지 않고 방금 만든 제목과 `오늘 할 일로 이동`·`내용 확인` 행동을 함께 제공한다.
 - 빈 상태 illustration은 화면 기능을 설명할 때만 사용하고 일상적으로 자주 비는 목록에는 짧은 문구와 CTA를 우선한다.
 - pressed, selected, focused 상태는 surface·outline·opacity 중 최소 두 가지 단서로 구분한다.
 - 매력은 색의 개수보다 정렬, 여백, 즉시 반응, 일관된 문구에서 만든다.
@@ -399,19 +403,19 @@ compact header
 - Quick Capture와 sheet형 입력의 focus 상태는 브라우저 기본 파란 outline처럼 튀지 않게 한다. focus는 primary-soft border와 흰 surface 전환으로 표시하고, 오류 상태만 danger border를 사용한다.
 - Task 상세는 hero·날짜·정보·목표를 낮은 outline section으로 구분하고 metadata 행에는 얇은 rule을 사용한다.
 - 과거 기록 검색은 프로필의 보조 목적지로 두고 날짜·키워드·상태를 함께 탐색할 수 있게 한다.
-- active tab은 테마 primary 색과 옅은 pill 배경을 사용하고, inactive tab은 text-muted를 사용해 선택된 탭이 즉시 구분되게 한다.
+- active tab은 icon의 테마 primary·옅은 pill뿐 아니라 label의 primary 색·굵기와 indicator를 함께 사용하고, inactive tab은 text-muted를 사용한다.
 - iOS는 SF Symbols, Android와 Web은 대응하는 Material 계열 symbol을 사용한다.
 - 아이콘 의미와 접근성 label은 플랫폼 간 동일해야 한다.
 
 ### Today weekly strip
 
-- Today 상단은 `월 제목 → 요일 7개 → 날짜 7개 → 상태 점/기간 bar` 순서의 compact weekly strip을 사용한다.
-- Today 주간 strip은 바깥 outline card 없이 7등분 grid 자체의 얇은 border와 세로 rule만 사용해 작은 달력처럼 읽히게 한다.
+- Today 상단은 별도 월·화면 제목 없이 `요일 7개 → 날짜 7개 → 상태 점/기간 bar` 순서의 compact weekly strip을 사용한다.
+- Today 주간 strip은 외곽선과 세로 rule 없이 간격과 선택 상태로 읽히게 한다. Calendar의 3주 grid 경계는 일정 bar 정렬을 위해 유지할 수 있다.
 - 일정·오늘 할 일·완료 section marker는 각각 amber·powder blue·sage 의미색을 사용한다.
 - 탭 루트의 `오늘`, `달력`, `프로필` 상단에는 하단 탭과 중복되는 `PageHeader` title을 두지 않는다.
 - light theme의 section marker는 진한 semantic 원색이 아니라 amber·powder blue·sage highlighter token을 직접 사용한다.
 - pastel section marker는 밝은 paper 위에서도 구분되도록 같은 의미의 semantic outline을 1px 사용한다.
-- Today 주간 strip은 하루 일정 제목 label이 있으므로 별도의 일정 존재 dot을 중복 표시하지 않는다.
+- Today 주간 strip에 일정 제목 label이 보이지 않는 compact 상태에서는 작은 일정 존재 dot을 사용하고, 제목 label과 dot을 동시에 반복하지 않는다.
 - Calendar의 date dot은 일정 개수가 아니라 “오늘”을 표시할 때만 사용한다.
 - Calendar 하단에는 일정/완료/D-Day filter chip을 기본 노출하지 않는다. 날짜를 선택하면 바로 해당 날짜의 `예정`과 `완료` 목록으로 이어져야 한다.
 - Profile 목적지는 좌우 inset이 있는 독립 rounded row와 목적별 accent icon을 사용한다.
@@ -424,7 +428,7 @@ compact header
 
 ### Screen patterns
 
-- Today: compact header, 존재하는 일정 card, Task card, `정리할 항목`, 접힌 완료 순서만 기본 노출한다.
+- Today: 주간 날짜 strip, 존재하는 일정 card, Task card, `정리할 항목`, 최근 완료 3개 순서만 기본 노출한다.
 - Today의 진행 요약 card, 과부하 meter, 기록함 Task 전체 목록은 기본 화면에 상시 노출하지 않는다.
 - 지난 미완료, 추천, 기록함은 `정리할 항목` 한 줄 진입점과 sheet 또는 별도 화면으로 합친다.
 - Calendar: compact 월 header, 선택일 기준 3주 grid, 선택 날짜 compact 목록 순서를 유지한다.

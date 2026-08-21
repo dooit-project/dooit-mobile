@@ -1,17 +1,17 @@
 # Smoke Test Log
 
-Last updated: 2026-08-20
+Last updated: 2026-08-21
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
 ## 자동 검증 기준선
 
-- 날짜: 2026-08-20
-- frontend commit: `d04074d`
+- 날짜: 2026-08-21
+- frontend commit: `5120deb`
 - 명령: `npm run validate`
 - 결과: 통과
 - 범위: TypeScript, ESLint, Prettier, 문서 링크, release asset·Android APK 정적 설정, Jest
-- 테스트: 64 suites, 349 tests
+- 테스트: 67 suites, 359 tests
 
 자동 검증에 포함된 주요 회귀:
 
