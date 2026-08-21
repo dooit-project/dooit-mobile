@@ -4,17 +4,19 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui';
 import { getWeekDates } from '@/features/calendar/calendar-date';
-import { getCalendarColumnBoundaryPercent } from '@/features/calendar/calendar-layout';
-import {
-  CalendarPeriodBars,
-  CalendarSingleDayLabels,
-} from '@/features/calendar/calendar-period-bars';
 import { useCalendarRangeTasks } from '@/features/calendar/use-calendar-range-tasks';
 import { radii, spacing, useAppTheme, useMobileLayout } from '@/theme';
 import type { LocalDateString } from '@/types';
-import { formatDateLabel } from '@/utils';
+import { doesScheduleOverlapDate, formatDateLabel } from '@/utils';
 
 const weekdayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+
+export function getTodayWeekDateLabel(date: LocalDateString) {
+  const month = Number(date.slice(5, 7));
+  const day = Number(date.slice(8, 10));
+
+  return day === 1 ? `${month}/${day}` : String(day);
+}
 
 type TodayWeekStripProps = {
   today: LocalDateString;
@@ -33,40 +35,12 @@ export function TodayWeekStrip({ today }: TodayWeekStripProps) {
   };
 
   return (
-    <View
-      accessibilityLabel={`${formatDateLabel(today, { month: 'long' })} 주간 일정`}
-      style={styles.container}
-    >
-      <AppText variant="bodyLarge" weight="bold">
-        {formatDateLabel(today, { month: 'long' })}
-      </AppText>
-      <View
-        style={[
-          styles.calendarGrid,
-          isDenseCalendar && styles.calendarGridDense,
-          {
-            borderColor: theme.colors.border,
-            backgroundColor: theme.colors.surfaceElevated,
-          },
-        ]}
-      >
-        <View style={styles.dayColumnRules}>
-          {Array.from({ length: 6 }, (_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dayColumnRule,
-                {
-                  backgroundColor: theme.colors.rule,
-                  left: getCalendarColumnBoundaryPercent(index),
-                },
-              ]}
-            />
-          ))}
-        </View>
+    <View accessibilityLabel="이번 주 일정" style={styles.container}>
+      <View style={[styles.calendarGrid, isDenseCalendar && styles.calendarGridDense]}>
         <View style={styles.days}>
           {dates.map((date, index) => {
             const isToday = date === today;
+            const hasSchedule = schedules.some((task) => doesScheduleOverlapDate(task, date));
 
             return (
               <Pressable
@@ -74,7 +48,7 @@ export function TodayWeekStrip({ today }: TodayWeekStripProps) {
                   month: 'long',
                   day: 'numeric',
                   weekday: 'long',
-                })}${isToday ? ', 오늘' : ''}, 달력에서 보기`}
+                })}${isToday ? ', 오늘' : ''}${hasSchedule ? ', 일정 있음' : ''}, 달력에서 보기`}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isToday }}
                 key={date}
@@ -105,36 +79,19 @@ export function TodayWeekStrip({ today }: TodayWeekStripProps) {
                     weight="bold"
                     style={isToday ? { color: theme.colors.surface } : undefined}
                   >
-                    {Number(date.slice(-2))}
+                    {getTodayWeekDateLabel(date)}
                   </AppText>
                 </View>
+                <View
+                  style={[
+                    styles.scheduleDot,
+                    { backgroundColor: hasSchedule ? theme.colors.primary : 'transparent' },
+                  ]}
+                />
               </Pressable>
             );
           })}
         </View>
-        <CalendarSingleDayLabels
-          compact
-          dates={dates}
-          tasks={schedules}
-          onOpen={(taskId) =>
-            router.push({
-              pathname: '/tasks/[taskId]',
-              params: { taskId: String(taskId) },
-            })
-          }
-          onSelectDate={openCalendarDate}
-        />
-        <CalendarPeriodBars
-          dates={dates}
-          minimal
-          tasks={schedules}
-          onOpen={(taskId) =>
-            router.push({
-              pathname: '/tasks/[taskId]',
-              params: { taskId: String(taskId) },
-            })
-          }
-        />
       </View>
     </View>
   );
@@ -145,29 +102,11 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   calendarGrid: {
-    borderRadius: radii.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    minHeight: 96,
-    overflow: 'hidden',
+    minHeight: 64,
     position: 'relative',
   },
   calendarGridDense: {
-    minHeight: 86,
-  },
-  dayColumnRules: {
-    bottom: 0,
-    left: 0,
-    opacity: 0.35,
-    pointerEvents: 'none',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  dayColumnRule: {
-    bottom: 0,
-    position: 'absolute',
-    top: 0,
-    width: StyleSheet.hairlineWidth,
+    minHeight: 58,
   },
   days: {
     flexDirection: 'row',
@@ -184,7 +123,7 @@ const styles = StyleSheet.create({
   },
   dayDense: {
     gap: 0,
-    minHeight: 50,
+    minHeight: 56,
   },
   date: {
     alignItems: 'center',
@@ -192,5 +131,10 @@ const styles = StyleSheet.create({
     height: 30,
     justifyContent: 'center',
     width: 30,
+  },
+  scheduleDot: {
+    borderRadius: radii.full,
+    height: 4,
+    width: 4,
   },
 });

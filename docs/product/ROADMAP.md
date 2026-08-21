@@ -7,7 +7,7 @@ Last updated: 2026-08-21
 ## 현재 상태
 
 - 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
-- `npm run validate`의 최신 기준선은 67 suites, 359 tests 통과다.
+- `npm run validate`의 최신 기준선은 68 suites, 361 tests 통과다.
 - mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
 - 따라서 현재 단계는 **기능 구현 마무리, 출시 검증 전**이다.
 
@@ -83,7 +83,7 @@ Last updated: 2026-08-21
 
 ### P1. Today·Navigation 행동 위계
 
-- [ ] Today 상단의 독립 월 제목과 미사용 `TodayHeader`, 외곽선과 날짜 열 구분선을 제거하고 월 경계 날짜와 일정 유무 표시를 보완한다.
+- [x] Today 상단의 독립 월 제목과 미사용 `TodayHeader`, 외곽선과 날짜 열 구분선을 제거하고 월 경계 날짜와 일정 유무 표시를 보완한다.
 - [ ] 빠른 기록 성공 영역에 방금 만든 제목, 저장 위치, `오늘 할 일로 이동`, `내용 확인`을 제공하고 cache 갱신을 검증한다.
 - [ ] 오늘 완료한 일이 있으면 최근 3개를 기본으로 펼치고 `전체 N개 보기`와 `접기` 동작을 제공한다.
 - [ ] Task 상세의 `수정`을 종류 metadata에서 분리해 PageHeader icon+label action으로 이동한다.

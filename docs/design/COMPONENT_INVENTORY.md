@@ -52,7 +52,6 @@ Task row 기준:
 
 | 컴포넌트            | 위치                                         | 역할                                 | 주의점                                 |
 | ------------------- | -------------------------------------------- | ------------------------------------ | -------------------------------------- |
-| `TodayHeader`       | `src/features/today/today-header.tsx`        | 미사용 legacy 상단 제목              | 주간 strip 정리 시 export와 함께 제거  |
 | `TodayWeekStrip`    | `src/features/today/today-week-strip.tsx`    | 주간 mini calendar                   | 경계 제거, 월 경계·일정 dot 확인       |
 | `TodayOverview`     | `src/features/today/today-overview.tsx`      | 일정, 오늘 할 일, 정리, 완료 section | 첫 viewport에서 핵심 목록이 보여야 함  |
 | `QuickCapture`      | `src/features/today/quick-capture.tsx`       | 하단 빠른 기록 composer/FAB          | keyboard, safe area, tab bar 겹침 확인 |
