@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 
-import { TabBarIcon } from '@/components/navigation';
-import { typography, useAppTheme } from '@/theme';
+import { TabBarIcon, TabBarLabel } from '@/components/navigation';
+import { useAppTheme } from '@/theme';
 
 export default function TabLayout() {
   const theme = useAppTheme();
@@ -13,10 +13,6 @@ export default function TabLayout() {
         tabBarActiveTintColor: theme.colors.primaryPressed,
         tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarHideOnKeyboard: true,
-        tabBarLabelStyle: {
-          fontSize: typography.size.caption,
-          fontWeight: typography.weight.semibold,
-        },
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
@@ -28,6 +24,7 @@ export default function TabLayout() {
         options={{
           title: '오늘',
           tabBarAccessibilityLabel: '오늘',
+          tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="오늘" />,
           tabBarIcon: ({ color, focused, size }) => (
             <TabBarIcon
               color={color}
@@ -47,6 +44,7 @@ export default function TabLayout() {
         options={{
           title: '달력',
           tabBarAccessibilityLabel: '캘린더',
+          tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="달력" />,
           tabBarIcon: ({ color, focused, size }) => (
             <TabBarIcon
               color={color}
@@ -62,6 +60,7 @@ export default function TabLayout() {
         options={{
           title: '더보기',
           tabBarAccessibilityLabel: '더보기',
+          tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="더보기" />,
           tabBarIcon: ({ color, focused, size }) => (
             <TabBarIcon
               color={color}

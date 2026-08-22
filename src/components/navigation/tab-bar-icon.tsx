@@ -29,6 +29,9 @@ export function TabBarIcon({ color, focused = false, name, size }: TabBarIconPro
           weight="semibold"
         />
       )}
+      {focused ? (
+        <View style={[styles.indicator, { backgroundColor: theme.colors.primary }]} />
+      ) : null}
     </View>
   );
 }
@@ -80,6 +83,14 @@ const styles = StyleSheet.create({
     minHeight: 28,
     minWidth: 44,
     paddingHorizontal: spacing[2],
+    position: 'relative',
+  },
+  indicator: {
+    borderRadius: radii.full,
+    bottom: -3,
+    height: 2,
+    position: 'absolute',
+    width: 18,
   },
   webCalendarIcon: {
     borderRadius: radii.sm,
