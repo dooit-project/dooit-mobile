@@ -4,7 +4,11 @@ import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Button, Card, IconButton, InlineNotice } from '@/components/ui';
-import { getQuickCaptureResultMessage, useQuickCaptureTask } from '@/features/tasks';
+import {
+  getQuickCaptureResultMessage,
+  useMoveTaskToToday,
+  useQuickCaptureTask,
+} from '@/features/tasks';
 import { radii, sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
 import type { TaskQuickCaptureResponse } from '@/types';
 import { APP_TIME_ZONE, toApiLocalDate } from '@/utils';
@@ -26,7 +30,9 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
     paddingTop: screenPadding,
   };
   const inputRef = useRef<TextInput>(null);
+  const today = toApiLocalDate();
   const quickCapture = useQuickCaptureTask();
+  const moveToToday = useMoveTaskToToday(today);
   const [title, setTitle] = useState('');
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [result, setResult] = useState<TaskQuickCaptureResponse | null>(null);
@@ -38,6 +44,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
     setValidationMessage(null);
     setResult(null);
     quickCapture.reset();
+    moveToToday.reset();
   };
 
   const handleSubmit = () => {
@@ -73,7 +80,16 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
     onExpandedChange(false);
     setValidationMessage(null);
     setResult(null);
+    moveToToday.reset();
     Keyboard.dismiss();
+  };
+
+  const handleMoveToToday = () => {
+    if (!result) return;
+
+    moveToToday.mutate(result.task.id, {
+      onSuccess: (task) => setResult((current) => (current ? { ...current, task } : current)),
+    });
   };
 
   useEffect(() => {
@@ -159,23 +175,44 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
 
           {result ? (
             <InlineNotice
+              actionPosition="bottom"
               message={getQuickCaptureResultMessage(result)}
+              title={result.task.title}
               tone="success"
               action={
-                <Button
-                  size="compact"
-                  variant="ghost"
-                  onPress={() =>
-                    router.push({
-                      pathname: '/tasks/[taskId]',
-                      params: { taskId: String(result.task.id) },
-                    })
-                  }
-                >
-                  확인·수정
-                </Button>
+                <View style={styles.resultActions}>
+                  {result.task.status === 'INBOX' ? (
+                    <Button
+                      disabled={moveToToday.isPending}
+                      loading={moveToToday.isPending}
+                      size="compact"
+                      variant="secondary"
+                      onPress={handleMoveToToday}
+                      style={styles.resultAction}
+                    >
+                      오늘 할 일로 이동
+                    </Button>
+                  ) : null}
+                  <Button
+                    disabled={moveToToday.isPending}
+                    size="compact"
+                    variant="ghost"
+                    onPress={() =>
+                      router.push({
+                        pathname: '/tasks/[taskId]',
+                        params: { taskId: String(result.task.id) },
+                      })
+                    }
+                    style={styles.resultAction}
+                  >
+                    내용 확인
+                  </Button>
+                </View>
               }
             />
+          ) : null}
+          {moveToToday.error ? (
+            <InlineNotice message={moveToToday.error.message} tone="danger" />
           ) : null}
         </Card>
       ) : (
@@ -247,6 +284,14 @@ const styles = StyleSheet.create({
   submitButton: {
     borderRadius: radii.full,
     minWidth: 52,
+  },
+  resultActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[1],
+  },
+  resultAction: {
+    flexGrow: 1,
   },
   quickBar: {
     alignItems: 'center',

@@ -9,6 +9,10 @@ const recurrenceLabels = {
 } as const;
 
 export function getQuickCaptureResultMessage(response: TaskQuickCaptureResponse) {
+  if (response.task.status === 'TODAY') {
+    return '오늘 할 일에 저장했어요.';
+  }
+
   if (!response.parsed) {
     return '날짜 정보 없이 기록함에 저장했어요.';
   }

@@ -12,9 +12,16 @@ type InlineNoticeProps = {
   title?: string;
   tone?: InlineNoticeTone;
   action?: ReactNode;
+  actionPosition?: 'inline' | 'bottom';
 };
 
-export function InlineNotice({ message, title, tone = 'default', action }: InlineNoticeProps) {
+export function InlineNotice({
+  message,
+  title,
+  tone = 'default',
+  action,
+  actionPosition = 'inline',
+}: InlineNoticeProps) {
   const theme = useAppTheme();
   const appearances = {
     default: {
@@ -47,6 +54,7 @@ export function InlineNotice({ message, title, tone = 'default', action }: Inlin
       accessibilityRole={accessibilityRole}
       style={[
         styles.container,
+        actionPosition === 'bottom' && styles.containerStacked,
         {
           backgroundColor: appearance.backgroundColor,
           borderColor: appearance.borderColor,
@@ -83,5 +91,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing[1],
     minWidth: 0,
+  },
+  containerStacked: {
+    alignItems: 'stretch',
+    flexDirection: 'column',
   },
 });

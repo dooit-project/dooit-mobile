@@ -3,7 +3,7 @@ import type { TaskQuickCaptureResponse } from '@/types';
 
 function response(overrides: Partial<TaskQuickCaptureResponse>): TaskQuickCaptureResponse {
   return {
-    task: {} as TaskQuickCaptureResponse['task'],
+    task: { status: 'INBOX' } as TaskQuickCaptureResponse['task'],
     parsed: true,
     originalText: '내일 3시 출시 회의',
     parsedDate: '2026-08-15',
@@ -34,5 +34,13 @@ describe('빠른 등록 결과 문구', () => {
     expect(getQuickCaptureResultMessage(response({ parsed: false }))).toBe(
       '날짜 정보 없이 기록함에 저장했어요.',
     );
+  });
+
+  test('오늘로 옮긴 결과는 현재 저장 위치를 안내한다', () => {
+    expect(
+      getQuickCaptureResultMessage(
+        response({ task: { status: 'TODAY' } as TaskQuickCaptureResponse['task'] }),
+      ),
+    ).toBe('오늘 할 일에 저장했어요.');
   });
 });
