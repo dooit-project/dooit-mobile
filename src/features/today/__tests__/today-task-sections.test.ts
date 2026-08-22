@@ -1,6 +1,10 @@
 import type { TaskResponse, TaskType } from '@/types';
 
-import { getTodaySchedulePreview, splitTodayTasks } from '../today-task-sections';
+import {
+  getTodayCompletedPreview,
+  getTodaySchedulePreview,
+  splitTodayTasks,
+} from '../today-task-sections';
 
 function createTask(id: number, type: TaskType): TaskResponse {
   return {
@@ -59,5 +63,17 @@ describe('getTodaySchedulePreview', () => {
     const schedules = [1, 2, 3].map((id) => createTask(id, 'SCHEDULE'));
 
     expect(getTodaySchedulePreview(schedules)).toEqual(schedules.slice(0, 2));
+  });
+});
+
+describe('getTodayCompletedPreview', () => {
+  it('완료 항목이 많아도 최근 세 개만 기본으로 표시한다', () => {
+    const completedTasks = [2, 4, 1, 3].map((id) => ({
+      ...createTask(id, 'TODO'),
+      status: 'DONE' as const,
+      completedAt: `2026-06-28T0${id}:00:00`,
+    }));
+
+    expect(getTodayCompletedPreview(completedTasks).map((task) => task.id)).toEqual([4, 3, 2]);
   });
 });

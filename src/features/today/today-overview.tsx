@@ -18,7 +18,12 @@ import { getUserFacingApiErrorMessage } from '@/services/api';
 import { motion, radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 
-import { getTodaySchedulePreview, splitTodayTasks } from './today-task-sections';
+import {
+  getTodayCompletedPreview,
+  getTodaySchedulePreview,
+  sortTodayCompletedTasks,
+  splitTodayTasks,
+} from './today-task-sections';
 import { TodayTaskList } from './today-task-list';
 import { useTodayOverview } from './use-today-overview';
 
@@ -59,13 +64,23 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
   const reviewItemCount = staleTasks.length + recommendations.length + inboxTasks.length;
   const sortedScheduleTasks = [...scheduleTasks].sort(compareScheduleTasks);
   const schedulePreview = getTodaySchedulePreview(sortedScheduleTasks);
-  const visibleDoneTasks = doneTasks.slice(0, completedVisibleCount);
+  const sortedDoneTasks = sortTodayCompletedTasks(doneTasks);
+  const completedPreview = getTodayCompletedPreview(sortedDoneTasks);
+  const visibleDoneTasks = isCompletedExpanded
+    ? sortedDoneTasks.slice(0, completedVisibleCount)
+    : completedPreview;
   const remainingDoneCount = Math.max(0, doneTasks.length - visibleDoneTasks.length);
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
   };
   const showFeedback = (message: string) => {
     setFeedback({ tone: 'success', message });
+  };
+  const toggleCompleted = () => {
+    setIsCompletedExpanded((current) => {
+      if (current) setCompletedVisibleCount(COMPLETED_RENDER_BATCH_SIZE);
+      return !current;
+    });
   };
   if (isPending) {
     return <ListSkeleton accessibilityLabel="Today 정보를 불러오는 중" />;
@@ -241,28 +256,33 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
           title="오늘 완료한 일"
           action={
             <View style={styles.completedSectionActions}>
-              <AppText tone="success" variant="label" weight="bold">
-                {doneTasks.length}개
-              </AppText>
-              {doneTasks.length > 0 ? (
+              {doneTasks.length > completedPreview.length ? (
                 <Button
-                  accessibilityLabel={`완료한 일 목록 ${isCompletedExpanded ? '접기' : '펼치기'}`}
+                  accessibilityLabel={
+                    isCompletedExpanded
+                      ? '완료한 일 목록 접기'
+                      : `완료한 일 전체 ${doneTasks.length}개 보기`
+                  }
                   variant="ghost"
-                  onPress={() => setIsCompletedExpanded((current) => !current)}
+                  onPress={toggleCompleted}
                   style={styles.completedToggleButton}
                 >
-                  {isCompletedExpanded ? '접기' : '펼치기'}
+                  {isCompletedExpanded ? '접기' : `전체 ${doneTasks.length}개 보기`}
                 </Button>
-              ) : null}
+              ) : (
+                <AppText tone="success" variant="label" weight="bold">
+                  {doneTasks.length}개
+                </AppText>
+              )}
             </View>
           }
         />
 
-        {isCompletedExpanded && reopenTask.error ? (
+        {reopenTask.error ? (
           <InlineNotice message={reopenTask.error.message} tone="danger" />
         ) : null}
 
-        {isCompletedExpanded && doneTasks.length > 0 ? (
+        {doneTasks.length > 0 ? (
           <View style={styles.taskList}>
             {visibleDoneTasks.map((task) => (
               <TaskCard
@@ -278,7 +298,7 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
                 }
               />
             ))}
-            {remainingDoneCount > 0 ? (
+            {isCompletedExpanded && remainingDoneCount > 0 ? (
               <Button
                 accessibilityLabel={`완료한 일 ${remainingDoneCount}개 더 보기`}
                 onPress={() =>
