@@ -47,6 +47,11 @@ export default function TaskDetailScreen() {
   const [editScope, setEditScope] = useState<RecurrenceEditScope>('THIS');
   const [deleteScope, setDeleteScope] = useState<RecurrenceEditScope>('THIS');
 
+  const startEditing = () => {
+    setEditScope('THIS');
+    setIsEditing(true);
+  };
+
   const handleSubmit = (request: TaskUpsertRequest) => {
     if (parsedTaskId === null) {
       return;
@@ -99,6 +104,26 @@ export default function TaskDetailScreen() {
               tintColor={theme.colors.text}
             />
           </IconButton>
+        }
+        action={
+          taskQuery.data && !isEditing ? (
+            <Button
+              accessibilityLabel="할 일 수정"
+              disabled={deleteTask.isPending || isConfirmingDelete}
+              leading={
+                <SymbolView
+                  name={{ ios: 'square.and.pencil', android: 'edit', web: 'edit' }}
+                  size={16}
+                  tintColor={theme.colors.primary}
+                />
+              }
+              size="compact"
+              variant="secondary"
+              onPress={startEditing}
+            >
+              수정
+            </Button>
+          ) : null
         }
       />
 
@@ -162,10 +187,6 @@ export default function TaskDetailScreen() {
           }}
           onConfirmDelete={handleDelete}
           onDeleteScopeChange={setDeleteScope}
-          onEdit={() => {
-            setEditScope('THIS');
-            setIsEditing(true);
-          }}
           onRequestDelete={() => {
             setDeleteScope('THIS');
             setIsConfirmingDelete(true);
@@ -186,7 +207,6 @@ function TaskDetail({
   onCancelDelete,
   onConfirmDelete,
   onDeleteScopeChange,
-  onEdit,
   onRequestDelete,
 }: {
   task: TaskResponse;
@@ -198,7 +218,6 @@ function TaskDetail({
   onCancelDelete: () => void;
   onConfirmDelete: () => void;
   onDeleteScopeChange: (scope: RecurrenceEditScope) => void;
-  onEdit: () => void;
   onRequestDelete: () => void;
 }) {
   const theme = useAppTheme();
@@ -230,14 +249,9 @@ function TaskDetail({
               {status}
             </AppText>
           </View>
-          <View style={styles.statusTrailing}>
-            <AppText tone="secondary" variant="caption" weight="semibold">
-              {typeLabels[task.type]}
-            </AppText>
-            <Button disabled={isDeleting} size="compact" variant="ghost" onPress={onEdit}>
-              수정
-            </Button>
-          </View>
+          <AppText tone="secondary" variant="caption" weight="semibold">
+            {typeLabels[task.type]}
+          </AppText>
         </View>
 
         <View style={styles.titleBlock}>
@@ -651,11 +665,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing[2],
     justifyContent: 'space-between',
-  },
-  statusTrailing: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing[1],
   },
   statusBadge: {
     borderRadius: radii.full,
