@@ -1,13 +1,13 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-22
+Last updated: 2026-08-23
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
-- `npm run validate`의 최신 기준선은 70 suites, 368 tests 통과다.
+- `npm run validate`의 최신 기준선은 71 suites, 371 tests 통과다.
 - mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
 - 따라서 현재 단계는 **기능 구현 마무리, 출시 검증 전**이다.
 
@@ -109,7 +109,8 @@ Last updated: 2026-08-22
 - [ ] 백엔드 OpenAPI·CORS가 `Idempotency-Key`를 지원하면 생성 mutation과 timeout 재시도에 적용한다.
 - [x] refresh token·장기 세션과 게스트 90일 보존 목표는 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
 - [ ] 백엔드 refresh 계약이 준비되면 `expiresAt` 저장, 만료 전 선제 갱신과 동시 요청 단일화를 구현한다.
-- [ ] 오류 로깅 도구를 선정하고 [`ERROR_LOGGING_PRIVACY.md`](../qa/ERROR_LOGGING_PRIVACY.md)의 비수집 기준을 적용한다.
+- [x] 오류 로깅 도구로 Sentry를 선정하고 [`ERROR_LOGGING_PRIVACY.md`](../qa/ERROR_LOGGING_PRIVACY.md)의 비수집 이벤트 경계를 적용한다.
+- [ ] Sentry project·DSN과 운영 책임자가 정해지면 SDK, route ErrorBoundary, source map 업로드를 연결하고 Android·iOS·Web에서 검증한다.
 - [ ] Workspace 초대 거절, 하위 작업, 주간 리포트의 필요성과 우선순위를 검증한다.
 - [ ] 서버 push가 필요해질 때 token 등록, local/push 중복 방지와 발송 이력 UX를 설계한다.
 - [ ] Store, iOS, Web 공개 범위와 version·runtimeVersion·OTA 정책을 결정한다.
