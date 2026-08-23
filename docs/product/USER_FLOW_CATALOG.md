@@ -101,13 +101,14 @@ flowchart LR
 
 현재 근거:
 
+- [UF-03 최신 캡처와 판정 (2026-08-24)](../audits/uf-03-task-crud-2026-08-24/README.md)
 - [Task 작성](../screenshots/task-new.png), [Task 상세](../screenshots/task-detail.png)
 - [Task 상세 수정 행동 재점검](../audits/task-detail-edit-2026-08-23/README.md)
 
 남은 캡처:
 
-- 작성 기본/추가 정보 펼침/validation/저장 중/오류
-- 상세 수정 진입/저장/취소와 삭제 확인/오류
+- 작성 기본·추가 정보 펼침은 확인했다. 별도 validation 상태는 없으며 저장 중·오류가 남았다.
+- 상세 수정 진입·취소와 삭제 확인·취소·완료는 확인했다. 수정 저장과 mutation 오류가 남았다.
 - 긴 제목·설명, 일정·종일·날짜 없음, D-Day 연결 전후
 
 ## UF-04. 반복 Task occurrence
