@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Button, Card, IconButton, InlineNotice } from '@/components/ui';
@@ -78,13 +78,13 @@ export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: Quick
     onExpandedChange(true);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
-  const closeComposer = () => {
+  const closeComposer = useCallback(() => {
     onExpandedChange(false);
     setValidationMessage(null);
     setResult(null);
     moveToToday.reset();
     Keyboard.dismiss();
-  };
+  }, [moveToToday, onExpandedChange]);
 
   const handleMoveToToday = () => {
     if (!result) return;
@@ -99,6 +99,20 @@ export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: Quick
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [isExpanded]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !isExpanded || quickCapture.isPending) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+
+      event.preventDefault();
+      closeComposer();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [closeComposer, isExpanded, quickCapture.isPending]);
 
   return (
     <View style={[styles.container, containerInsets]}>
@@ -133,6 +147,15 @@ export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: Quick
               onBlur={() => setIsInputFocused(false)}
               onChangeText={handleChange}
               onFocus={() => setIsInputFocused(true)}
+              onKeyPress={(event) => {
+                if (
+                  Platform.OS === 'web' &&
+                  event.nativeEvent.key === 'Escape' &&
+                  !quickCapture.isPending
+                ) {
+                  closeComposer();
+                }
+              }}
               onSubmitEditing={handleSubmit}
               placeholder="할 일을 입력하세요"
               placeholderTextColor={theme.colors.textMuted}

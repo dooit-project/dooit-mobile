@@ -105,7 +105,7 @@ Last updated: 2026-08-23
 
 - [x] mock Web static export, 22개 route 산출물, 200 fallback과 service worker 비포함을 [`WEB_MOCK_VALIDATION_2026-08-23.md`](../qa/WEB_MOCK_VALIDATION_2026-08-23.md)에 기록한다.
 - [ ] 연결된 브라우저에서 mock 로그인·게스트·Today·Calendar·Workspace, 직접 경로·새로고침·zoom 150%·keyboard를 캡처 검증한다.
-  - 로그인·게스트 전환·Today·Calendar·Workspace 빈 목록·직접 경로 새로고침·320/390/430px·기본 focus는 통과했다. Workspace 생성·상세, zoom 150%, 빠른 기록 Escape 동작은 남아 있다.
+  - 로그인·게스트 전환·Today·Calendar·Workspace 빈 목록·직접 경로 새로고침·320/390/430px·기본 focus와 빠른 기록 Escape 닫기는 통과했다. Workspace 생성·상세와 zoom 150%는 남아 있다.
 - [ ] 운영 배포 환경에 확정된 HTTPS API URL을 주입하고 `npm run web:export:production` 결과를 확인한다.
 - [ ] 운영 origin의 CORS, `Authorization` header, preflight와 API `no-store` 정책을 확인한다.
 - [ ] 게스트 생성·새로고침·복원·계정 연결과 로그인 세션 만료·계정 전환을 실제 브라우저에서 확인한다.

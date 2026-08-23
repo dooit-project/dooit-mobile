@@ -26,7 +26,7 @@ Last updated: 2026-08-23
 
 ### 발견 사항
 
-- 빠른 등록 composer에 focus가 있을 때 `Escape`를 눌러도 composer가 닫히지 않는다. 명시적 닫기 버튼은 정상 동작한다.
+- 빠른 등록 composer는 input focus와 저장 성공 상태에서 `Escape`로 닫히며, 입력 중 닫은 draft는 다시 열었을 때 유지된다. 2026-08-24 재검증했다.
 - mock 추천 API가 날짜 없는 Inbox 항목을 그대로 추천에도 포함해 같은 Task가 `추천`과 `기록함` 양쪽에 나타나고 Today의 정리 개수에도 두 번 합산된다. 최신 기록 preview와 `하루 정리`를 분리하는 제품안 구현 시 중복 노출을 함께 제거해야 한다.
 - 연결된 Chrome에서 zoom 단축키를 보냈지만 CSS viewport와 device pixel ratio가 변하지 않아 150% 적용을 판정할 수 없었다.
 - mock 계정으로 보이는 Workspace가 없어 목록의 빈 상태까지만 확인했다. 생성·상세·역할별 흐름은 별도 검증이 필요하다.
@@ -88,7 +88,7 @@ EXPO_PUBLIC_API_MODE_OVERRIDE=mock npx expo export --platform web
 | Today·Calendar·Workspace 클릭 흐름        | 부분 통과       | Workspace 생성·상세는 추가 검증             |
 | 직접 경로 주소 입력과 새로고침            | local mock 통과 | 운영 host fallback은 별도 검증              |
 | browser zoom 150% reflow                  | 미검증          | 320px부터 desktop viewport를 제어할 browser |
-| Tab·Shift+Tab·Enter·Escape와 focus 표시   | 부분 통과       | Escape composer 동작 보완 후 재검증         |
+| Tab·Shift+Tab·Enter·Escape와 focus 표시   | 통과            | Escape composer 동작을 2026-08-24 재검증    |
 | cache response header                     | 미검증          | 실제 정적 host                              |
 | Web 인증·CORS·production 데이터           | 차단            | 운영 backend URL·CORS·DB                    |
 
