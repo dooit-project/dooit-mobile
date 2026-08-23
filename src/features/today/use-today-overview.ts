@@ -4,6 +4,8 @@ import { Platform } from 'react-native';
 import { taskApi, taskQueryKeys } from '@/features/tasks';
 import type { LocalDateString } from '@/types';
 
+import { separateTodayReviewItems } from './today-review-items';
+
 export function useTodayOverview(date: LocalDateString) {
   const canFetch = Platform.OS !== 'web' || typeof window !== 'undefined';
   const todayQuery = useQuery({
@@ -34,13 +36,17 @@ export function useTodayOverview(date: LocalDateString) {
   const coreQueries = [todayQuery, doneQuery, inboxQuery];
   const supplementalQueries = [staleQuery, recommendationsQuery];
   const queries = [...coreQueries, ...supplementalQueries];
+  const reviewItems = separateTodayReviewItems(
+    recommendationsQuery.data ?? [],
+    inboxQuery.data ?? [],
+  );
 
   return {
     todayTasks: todayQuery.data ?? [],
-    recommendations: recommendationsQuery.data ?? [],
+    recommendations: reviewItems.recommendations,
     doneTasks: doneQuery.data ?? [],
     staleTasks: staleQuery.data ?? [],
-    inboxTasks: inboxQuery.data ?? [],
+    inboxTasks: reviewItems.inboxTasks,
     isPending: coreQueries.some((query) => query.isPending),
     isRefreshing: queries.some((query) => query.isFetching),
     error: coreQueries.find((query) => query.error)?.error ?? null,
