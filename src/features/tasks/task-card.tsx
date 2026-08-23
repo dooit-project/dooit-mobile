@@ -159,11 +159,10 @@ export function TaskCard({
             ) : null}
           </View>
         </Pressable>
+        {compact && action ? <View style={styles.inlineAction}>{action}</View> : null}
         {trailing}
       </View>
-      {action ? (
-        <View style={[styles.actionRow, compact && styles.actionRowCompact]}>{action}</View>
-      ) : null}
+      {!compact && action ? <View style={styles.actionRow}>{action}</View> : null}
     </View>
   );
 }
@@ -227,8 +226,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[2],
     paddingHorizontal: spacing[2],
   },
-  actionRowCompact: {
-    paddingBottom: spacing[1],
+  inlineAction: {
+    flexShrink: 0,
   },
   doneTitle: {
     textDecorationLine: 'line-through',
