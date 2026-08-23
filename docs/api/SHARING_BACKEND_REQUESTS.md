@@ -61,6 +61,7 @@ npm run smoke:workspace-roles:real
 - 초대 거절: 제품 필요성이 확인되면 status 전이와 endpoint를 추가한다.
 - Workspace 템플릿: 개인 템플릿과 분리된 scope·권한·적용 계약이 필요하다.
 - 서버 push 설정: 실제 발송을 도입할 때 local/push 중복 방지와 이력 정책이 필요하다.
+- Workspace·Task·D-Day·초대 생성의 timeout 재시도는 [`API_IDEMPOTENCY.md`](./API_IDEMPOTENCY.md)의 `Idempotency-Key` 계약을 백엔드 OpenAPI와 CORS에 반영한 뒤 활성화한다.
 
 ## 백엔드 전달 문구
 

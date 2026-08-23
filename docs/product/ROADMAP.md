@@ -105,7 +105,8 @@ Last updated: 2026-08-22
 ### P2. 계약 또는 제품 결정 뒤 진행
 
 - [ ] 일정별 알림 preference와 `notifyAt`이 백엔드에 제공되면 편집 UI와 로컬 예약에 연결한다.
-- [ ] API 생성 요청의 idempotency 또는 client request id 정책을 확정한다.
+- [x] API 생성 요청은 [`API_IDEMPOTENCY.md`](../api/API_IDEMPOTENCY.md)의 `Idempotency-Key` 정책을 사용한다.
+- [ ] 백엔드 OpenAPI·CORS가 `Idempotency-Key`를 지원하면 생성 mutation과 timeout 재시도에 적용한다.
 - [ ] refresh token 또는 장기 세션 정책과 게스트 보존 기간을 확정한다.
 - [ ] 오류 로깅 도구를 선정하고 [`ERROR_LOGGING_PRIVACY.md`](../qa/ERROR_LOGGING_PRIVACY.md)의 비수집 기준을 적용한다.
 - [ ] Workspace 초대 거절, 하위 작업, 주간 리포트의 필요성과 우선순위를 검증한다.
