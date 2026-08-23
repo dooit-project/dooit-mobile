@@ -23,6 +23,16 @@
         "EXPO_PUBLIC_API_URL": "https://macmini.tail68d2d1.ts.net"
       }
     },
+    "cloudflare-test": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_MODE": "real",
+        "EXPO_PUBLIC_API_URL": "https://bullet-applicant-divine-search.trycloudflare.com"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "env": {
