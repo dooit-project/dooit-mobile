@@ -1,6 +1,6 @@
 # 일정 공유 백엔드 요청사항
 
-Last updated: 2026-08-20
+Last updated: 2026-08-23
 
 프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 `/v3/api-docs` 순서로 대조한다. 이 문서에는 현재 남은 요청과 재검증 조건만 둔다.
 
@@ -58,14 +58,42 @@ npm run smoke:workspace-roles:real
 
 현재 프론트 화면에는 노출하지 않는다.
 
-- 초대 거절: 제품 필요성이 확인되면 status 전이와 endpoint를 추가한다.
 - Workspace 템플릿: 개인 템플릿과 분리된 scope·권한·적용 계약이 필요하다.
 - 서버 push 설정: 실제 발송을 도입할 때 [`API_PUSH_NOTIFICATIONS.md`](./API_PUSH_NOTIFICATIONS.md)의 기기 등록, local/push 소유권 전환과 발송 멱등성 계약이 필요하다.
 - Workspace·Task·D-Day·초대 생성의 timeout 재시도는 [`API_IDEMPOTENCY.md`](./API_IDEMPOTENCY.md)의 `Idempotency-Key` 계약을 백엔드 OpenAPI와 CORS에 반영한 뒤 활성화한다.
 
+## P1. Workspace 초대 거절
+
+현재 PENDING 초대는 수락만 가능해 사용자가 원치 않는 초대를 목록에서 정리할 수 없다. [`WORKSPACE_FOLLOWUP_PRIORITIES.md`](../product/WORKSPACE_FOLLOWUP_PRIORITIES.md)의 제품 결정에 따라 자기 초대 거절 계약을 요청한다.
+
+제안 계약:
+
+```http
+PATCH /api/v1/workspaces/{workspaceId}/members/{memberId}
+Authorization: Bearer <access-token>
+Content-Type: application/json
+
+{
+  "status": "REMOVED"
+}
+```
+
+- 해당 `memberId`의 PENDING 사용자가 자기 초대만 거절할 수 있다.
+- OWNER·EDITOR·VIEWER role 변경과 초대 거절 권한을 혼동하지 않는다.
+- 성공 응답은 최종 membership 또는 `204 No Content` 중 하나로 OpenAPI에 고정한다.
+- 이미 수락·취소·거절된 초대는 안정적인 `404` 또는 `409`와 error code를 반환한다.
+- 거절한 초대는 PENDING 목록과 Workspace 접근 결과에서 즉시 제외한다.
+- 같은 사용자를 다시 초대할 수 있는지와 재초대 cooldown이 있다면 계약에 명시한다.
+
+기존 member PATCH의 request 구조와 충돌한다면 `POST .../decline` 같은 명시적 action endpoint도 가능하다. 최종 path보다 자기 PENDING membership만 상태 전이할 수 있다는 권한 규칙이 우선이다.
+
 ## 백엔드 전달 문구
 
 > OWNER가 Task가 들어 있는 Workspace를 삭제하면 HTTP 500이 발생합니다. 하위 리소스 cascade 삭제 또는 명시적인 삭제 거부 정책을 정하고 안정적인 응답 코드와 통합 테스트를 추가해 주세요. 또한 실행 서버가 어느 commit 또는 image인지 health/info 응답에서 확인할 수 있게 해 주세요.
+
+초대 거절 추가 전달:
+
+> PENDING 초대를 받은 사용자가 자기 membership을 거절할 수 있는 endpoint와 권한 규칙을 추가해 주세요. 이미 상태가 바뀐 초대의 404/409 error code, 성공 응답과 재초대 정책을 OpenAPI에 명시해 주세요.
 
 서버 push를 시작할 때 추가 전달:
 

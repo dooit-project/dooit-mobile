@@ -111,7 +111,9 @@ Last updated: 2026-08-23
 - [ ] 백엔드 refresh 계약이 준비되면 `expiresAt` 저장, 만료 전 선제 갱신과 동시 요청 단일화를 구현한다.
 - [x] 오류 로깅 도구로 Sentry를 선정하고 [`ERROR_LOGGING_PRIVACY.md`](../qa/ERROR_LOGGING_PRIVACY.md)의 비수집 이벤트 경계를 적용한다.
 - [ ] Sentry project·DSN과 운영 책임자가 정해지면 SDK, route ErrorBoundary, source map 업로드를 연결하고 Android·iOS·Web에서 검증한다.
-- [ ] Workspace 초대 거절, 하위 작업, 주간 리포트의 필요성과 우선순위를 검증한다.
+- [x] Workspace 초대 거절, 하위 작업, 주간 리포트의 1차 우선순위는 [`WORKSPACE_FOLLOWUP_PRIORITIES.md`](./WORKSPACE_FOLLOWUP_PRIORITIES.md)를 따른다.
+- [ ] 백엔드가 자기 PENDING 초대 거절 계약을 제공하면 수락의 보조 행동으로 구현하고 Product Design 캡처를 점검한다.
+- [ ] 하위 작업과 주간 리포트는 반복적인 사용자 요구나 사용 지표가 확인될 때 재검토한다.
 - [x] 서버 push의 token 등록, local/push 중복 방지와 발송 이력 UX는 [`API_PUSH_NOTIFICATIONS.md`](../api/API_PUSH_NOTIFICATIONS.md)를 따른다.
 - [ ] 실제 사용에서 로컬 예약 갱신 누락이 확인되고 백엔드 push 계약이 준비되면 로그인한 Android·iOS 계정부터 구현한다.
 - [x] Store, iOS, Web 공개 범위와 version·runtimeVersion·OTA 기준은 [`RELEASE_SCOPE_POLICY.md`](./RELEASE_SCOPE_POLICY.md)를 따른다.
