@@ -7,7 +7,7 @@ Last updated: 2026-08-22
 ## 현재 상태
 
 - 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
-- `npm run validate`의 최신 기준선은 68 suites, 363 tests 통과다.
+- `npm run validate`의 최신 기준선은 69 suites, 366 tests 통과다.
 - mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
 - 따라서 현재 단계는 **기능 구현 마무리, 출시 검증 전**이다.
 
@@ -97,7 +97,8 @@ Last updated: 2026-08-22
 - [ ] 운영 origin의 CORS, `Authorization` header, preflight와 API `no-store` 정책을 확인한다.
 - [ ] 게스트 생성·새로고침·복원·계정 연결과 로그인 세션 만료·계정 전환을 실제 브라우저에서 확인한다.
 - [x] Web token 저장 보완 정책과 CSP를 확정한다. 실제 운영 header 적용은 배포 검증에서 확인한다.
-- [ ] `/login`, `/calendar`, `/tasks/{id}` 직접 접근과 정적 host route fallback을 확인한다.
+- [x] 정적 host용 200 route fallback과 회귀 검사를 추가한다.
+- [ ] 운영 host에서 `/login`, `/calendar`, `/tasks/{id}`, `/workspaces/{id}` 직접 접근과 새로고침을 확인한다.
 - [ ] 브라우저·도메인 변경과 storage 삭제 시 게스트 복구 한계를 안내와 맞춘다.
 - [ ] 320px부터 desktop, keyboard, zoom 150%, cache 갱신 결과를 smoke log에 기록한다.
 

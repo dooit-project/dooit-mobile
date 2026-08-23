@@ -44,6 +44,18 @@ location ~* \.(js|css|png|jpg|jpeg|gif|svg|webp|woff2?)$ {
 
 SPA fallback을 사용하는 경우에도 fallback으로 내려가는 `index.html`에는 장기 캐시를 적용하지 않는다.
 
+## 직접 경로와 정적 host fallback
+
+Expo static export는 `/login`, `/calendar` 같은 고정 route의 HTML을 만들지만 `/tasks/123`, `/workspaces/7`처럼 값이 있는 동적 route는 host가 앱 진입점으로 연결해야 한다.
+
+- `public/_redirects`의 `/* /index.html 200`은 Cloudflare Pages·Netlify 계열 host에서 실제 파일을 우선하고 찾지 못한 경로를 앱 진입점으로 rewrite한다.
+- `302` redirect를 사용하면 주소와 route parameter가 사라질 수 있으므로 반드시 내부 `200` rewrite를 사용한다.
+- 다른 host를 선택하면 같은 의미의 rewrite를 해당 CDN·object storage 설정에 옮긴다.
+- fallback HTML에는 `no-cache, must-revalidate`를 적용한다.
+- API가 같은 host path를 사용하게 되면 `/api/**`는 fallback보다 먼저 백엔드로 전달해야 한다.
+
+`npm run check:web-route-fallback`은 static export 설정과 저장소의 기본 rewrite가 함께 유지되는지 검사한다. 실제 host 적용 여부는 배포 응답으로 별도 확인한다.
+
 ### CDN 또는 object storage
 
 - `index.html`: metadata/header를 `Cache-Control: no-cache, must-revalidate`로 설정한다.
@@ -70,6 +82,7 @@ SPA fallback을 사용하는 경우에도 fallback으로 내려가는 `index.htm
 4. 대표 JS/CSS asset 응답 header가 `immutable` 장기 캐시인지 확인한다.
 5. 새 배포 후 기존 브라우저 tab에서 reload 또는 재진입 시 최신 화면이 보이는지 확인한다.
 6. API 응답에 token, 사용자 데이터가 중간 캐시에 저장될 만한 header가 없는지 확인한다.
+7. `/login`, `/calendar`, `/tasks/123`, `/workspaces/1`을 주소창에서 직접 열고 새로고침해 같은 route가 유지되는지 확인한다.
 
 ## 확인 명령 예시
 

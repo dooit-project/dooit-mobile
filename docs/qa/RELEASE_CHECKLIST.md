@@ -123,6 +123,8 @@ Web 배포 후보라면 [`WEB_DEPLOYMENT_CACHE.md`](../integration/WEB_DEPLOYMEN
 - [ ] API 응답, 인증, 개인정보 관련 endpoint가 정적 asset 장기 캐시 정책과 섞이지 않는다.
 - [ ] service worker/PWA cache를 쓰지 않는다면 배포 산출물에 의도치 않은 service worker가 없다.
 - [ ] 새 Web 배포 후 사용자가 브라우저 캐시를 수동 초기화하지 않아도 최신 화면으로 진입한다.
+- [ ] 정적 host가 `public/_redirects` 또는 동등한 200 rewrite를 적용한다.
+- [ ] `/login`, `/calendar`, `/tasks/{id}`, `/workspaces/{id}` 직접 접근과 새로고침이 404 없이 같은 route를 유지한다.
 
 ## 9-1. Web 인증과 CSP
 
