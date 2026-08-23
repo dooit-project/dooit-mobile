@@ -60,9 +60,13 @@ npm run smoke:workspace-roles:real
 
 - 초대 거절: 제품 필요성이 확인되면 status 전이와 endpoint를 추가한다.
 - Workspace 템플릿: 개인 템플릿과 분리된 scope·권한·적용 계약이 필요하다.
-- 서버 push 설정: 실제 발송을 도입할 때 local/push 중복 방지와 이력 정책이 필요하다.
+- 서버 push 설정: 실제 발송을 도입할 때 [`API_PUSH_NOTIFICATIONS.md`](./API_PUSH_NOTIFICATIONS.md)의 기기 등록, local/push 소유권 전환과 발송 멱등성 계약이 필요하다.
 - Workspace·Task·D-Day·초대 생성의 timeout 재시도는 [`API_IDEMPOTENCY.md`](./API_IDEMPOTENCY.md)의 `Idempotency-Key` 계약을 백엔드 OpenAPI와 CORS에 반영한 뒤 활성화한다.
 
 ## 백엔드 전달 문구
 
 > OWNER가 Task가 들어 있는 Workspace를 삭제하면 HTTP 500이 발생합니다. 하위 리소스 cascade 삭제 또는 명시적인 삭제 거부 정책을 정하고 안정적인 응답 코드와 통합 테스트를 추가해 주세요. 또한 실행 서버가 어느 commit 또는 image인지 health/info 응답에서 확인할 수 있게 해 주세요.
+
+서버 push를 시작할 때 추가 전달:
+
+> 로그인 계정의 설치 단위 token 등록·해제 API와 발송 멱등성을 구현해 주세요. 서버가 발송을 확실히 소유하는 후보만 `suppressLocalNotification=true`로 반환하고, token 만료 시 suppression을 먼저 해제해야 합니다. 상세 계약은 `API_PUSH_NOTIFICATIONS.md`를 기준으로 합니다.

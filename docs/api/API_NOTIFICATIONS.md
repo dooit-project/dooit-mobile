@@ -52,6 +52,7 @@ type TaskNotificationCandidateResponse = {
 - 서버 push가 활성화된 후보는 `suppressLocalNotification=true`로 내려야 한다.
 - 모바일은 이 값을 신뢰해 같은 Task의 로컬 예약을 만들지 않는다.
 - 서버 push source와 전송 이력은 백엔드 계약이며 현재 모바일의 로컬 예약 상태와 섞지 않는다.
+- 향후 token 등록, 소유권 전환과 발송 멱등성은 [`API_PUSH_NOTIFICATIONS.md`](./API_PUSH_NOTIFICATIONS.md)를 따른다.
 
 ## 실패 처리
 
