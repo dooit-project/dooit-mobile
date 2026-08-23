@@ -97,6 +97,7 @@ Last updated: 2026-08-23
 ### P1. 사용자 흐름 시각 문서화
 
 - [x] 프론트엔드 핵심 시나리오와 상태별 캡처 커버리지를 [`USER_FLOW_CATALOG.md`](./USER_FLOW_CATALOG.md)에 통합한다.
+- [x] UF-01 최초 시작·계정 연결의 최신 mock 캡처를 만들고 FigJam 보드에 흐름도·화면·검토 이슈를 구성한다.
 - [ ] mock Web의 최신 기본·완료·빈 상태 캡처를 flow ID별로 갱신한다.
 - [ ] 오류·복구와 Workspace 역할별 흐름을 보강한 뒤 승인된 캡처를 FigJam 공유 보드에 배치한다.
 

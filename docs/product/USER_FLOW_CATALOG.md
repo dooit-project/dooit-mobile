@@ -40,14 +40,16 @@ flowchart LR
 
 현재 근거:
 
+- [UF-01 최신 캡처와 판정 (2026-08-23)](../audits/uf-01-first-use-2026-08-23/README.md)
 - [최초 사용 흐름 390px](../audits/first-use-2026-08-11/README.md)
 - [로그인](../screenshots/login.png), [계정 만들기](../screenshots/register.png), [비밀번호 재설정](../screenshots/password-reset.png)
 
 남은 캡처:
 
-- 로그인 loading·입력 오류·network/timeout·401 만료
+- 로그인 loading·network/timeout·401 만료. 입력 오류는 최신 캡처에서 확인했다.
 - 게스트 생성 실패·재시도와 계정 연결 병합 성공/실패
 - 앱 재실행과 브라우저 새로고침 뒤 session 복원
+- 로그인 화면의 비밀번호 재설정 진입점을 숨길지, 안내 화면으로 연결할지 제품 결정
 
 ## UF-02. Today 실행과 빠른 기록
 
