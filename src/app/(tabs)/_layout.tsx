@@ -1,7 +1,8 @@
 import { Tabs } from 'expo-router';
+import { Platform } from 'react-native';
 
 import { TabBarIcon, TabBarLabel } from '@/components/navigation';
-import { useAppTheme } from '@/theme';
+import { sizes, spacing, useAppTheme } from '@/theme';
 
 export default function TabLayout() {
   const theme = useAppTheme();
@@ -16,6 +17,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
+          height: Platform.OS === 'web' ? sizes.bottomTabHeight : undefined,
+          paddingBottom: Platform.OS === 'web' ? spacing[1] : undefined,
+          paddingTop: Platform.OS === 'web' ? spacing[1] : undefined,
         },
       }}
     >
