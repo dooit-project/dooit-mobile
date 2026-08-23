@@ -67,7 +67,7 @@ type ApiEnvelope<T> = {
 토큰 저장 보안 기준:
 
 - iOS와 Android는 `expo-secure-store`를 사용해 OS 보안 저장소에 access token을 저장한다.
-- Web은 브라우저 제약상 `localStorage` fallback을 사용하되, 운영 Web에서는 XSS 방지와 배포 CSP를 별도 점검한다.
+- Web은 브라우저 제약상 `localStorage` fallback을 사용한다. 현재 허용 범위, HttpOnly cookie 전환 조건과 운영 CSP는 [`WEB_SECURITY_POLICY.md`](./WEB_SECURITY_POLICY.md)를 따른다.
 - 앱 시작 시 저장된 token을 먼저 메모리로 복원한 뒤 API 요청을 보낸다.
 - token은 로그, 오류 메시지, smoke test 출력에 남기지 않는다.
 - 정식 계정 refresh token은 현재 도입하지 않으며 access token 만료 시 다시 로그인한다.

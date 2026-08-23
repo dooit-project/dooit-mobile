@@ -11,16 +11,16 @@
 
 ## 문서 패키지
 
-| 디렉터리                                                      | 역할                                               | 대표 문서                                                                             |
-| ------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [`product`](./product/ROADMAP.md)                             | 제품 방향, 로드맵, 우선순위                        | `ROADMAP.md`                                                                          |
-| [`design`](./design/DESIGN.md)                                | 디자인 시스템, UX 리뷰, 화면 가이드, 컴포넌트 기준 | `DESIGN.md`, `SCREEN_GUIDE.md`, `UX_REVIEW_LOG.md`                                    |
-| [`api`](./api/API_DATE_TIME.md)                               | 모바일이 요구하거나 참조하는 API 계약              | `API_SEARCH_FILTER.md`, `API_RECURRENCE.md`, `API_PASSWORD_RESET.md`                  |
-| [`integration`](./integration/BACKEND_INTEGRATION_RUNBOOK.md) | 실제 백엔드 연동 절차와 환경 기준                  | `BACKEND_INTEGRATION_RUNBOOK.md`, `ANDROID_APK_RUNBOOK.md`, `WEB_DEPLOYMENT_CACHE.md` |
-| [`qa`](./qa/RELEASE_CHECKLIST.md)                             | smoke test, release, 접근성, 성능, 플랫폼 품질     | `SMOKE_TEST_LOG.md`, `RELEASE_CHECKLIST.md`                                           |
-| [`marketing`](./marketing/APP_STORE_ASSETS.md)                | 앱 마켓, 소개 이미지, 문구 산출물                  | `APP_STORE_ASSETS.md`                                                                 |
-| [`screenshots`](./screenshots/.gitkeep)                       | 실제 앱 화면 캡쳐                                  | 화면별 PNG                                                                            |
-| [`audits`](./audits/product-design-2026-08-12/README.md)      | 최신 사용자 흐름의 화면 근거                       | 전체 UI/UX 감사, shadcn/ui 참고 점검, 최초 사용 Web 반응형 점검                       |
+| 디렉터리                                                      | 역할                                               | 대표 문서                                                                                                       |
+| ------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [`product`](./product/ROADMAP.md)                             | 제품 방향, 로드맵, 우선순위                        | `ROADMAP.md`                                                                                                    |
+| [`design`](./design/DESIGN.md)                                | 디자인 시스템, UX 리뷰, 화면 가이드, 컴포넌트 기준 | `DESIGN.md`, `SCREEN_GUIDE.md`, `UX_REVIEW_LOG.md`                                                              |
+| [`api`](./api/API_DATE_TIME.md)                               | 모바일이 요구하거나 참조하는 API 계약              | `API_SEARCH_FILTER.md`, `API_RECURRENCE.md`, `API_PASSWORD_RESET.md`                                            |
+| [`integration`](./integration/BACKEND_INTEGRATION_RUNBOOK.md) | 실제 백엔드 연동 절차와 환경 기준                  | `BACKEND_INTEGRATION_RUNBOOK.md`, `ANDROID_APK_RUNBOOK.md`, `WEB_DEPLOYMENT_CACHE.md`, `WEB_SECURITY_POLICY.md` |
+| [`qa`](./qa/RELEASE_CHECKLIST.md)                             | smoke test, release, 접근성, 성능, 플랫폼 품질     | `SMOKE_TEST_LOG.md`, `RELEASE_CHECKLIST.md`                                                                     |
+| [`marketing`](./marketing/APP_STORE_ASSETS.md)                | 앱 마켓, 소개 이미지, 문구 산출물                  | `APP_STORE_ASSETS.md`                                                                                           |
+| [`screenshots`](./screenshots/.gitkeep)                       | 실제 앱 화면 캡쳐                                  | 화면별 PNG                                                                                                      |
+| [`audits`](./audits/product-design-2026-08-12/README.md)      | 최신 사용자 흐름의 화면 근거                       | 전체 UI/UX 감사, shadcn/ui 참고 점검, 최초 사용 Web 반응형 점검                                                 |
 
 현재 `screenshots/`에는 mock Web 390×844 기준 실제 화면 PNG가 있다. 마켓용 편집 이미지는 `marketing/`에 초안으로 생성되어 있으며, 최종 제출 전에는 [`marketing/APP_STORE_ASSETS.md`](./marketing/APP_STORE_ASSETS.md)의 규격에 맞춰 다시 export한다.
 

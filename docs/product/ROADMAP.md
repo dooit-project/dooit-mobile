@@ -1,6 +1,6 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-21
+Last updated: 2026-08-22
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
@@ -96,7 +96,7 @@ Last updated: 2026-08-21
 - [ ] 운영 배포 환경에 확정된 HTTPS API URL을 주입하고 `npm run web:export:production` 결과를 확인한다.
 - [ ] 운영 origin의 CORS, `Authorization` header, preflight와 API `no-store` 정책을 확인한다.
 - [ ] 게스트 생성·새로고침·복원·계정 연결과 로그인 세션 만료·계정 전환을 실제 브라우저에서 확인한다.
-- [ ] Web token 저장 보완 정책과 CSP를 확정한다.
+- [x] Web token 저장 보완 정책과 CSP를 확정한다. 실제 운영 header 적용은 배포 검증에서 확인한다.
 - [ ] `/login`, `/calendar`, `/tasks/{id}` 직접 접근과 정적 host route fallback을 확인한다.
 - [ ] 브라우저·도메인 변경과 storage 삭제 시 게스트 복구 한계를 안내와 맞춘다.
 - [ ] 320px부터 desktop, keyboard, zoom 150%, cache 갱신 결과를 smoke log에 기록한다.

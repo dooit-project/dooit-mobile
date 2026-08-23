@@ -124,6 +124,17 @@ Web 배포 후보라면 [`WEB_DEPLOYMENT_CACHE.md`](../integration/WEB_DEPLOYMEN
 - [ ] service worker/PWA cache를 쓰지 않는다면 배포 산출물에 의도치 않은 service worker가 없다.
 - [ ] 새 Web 배포 후 사용자가 브라우저 캐시를 수동 초기화하지 않아도 최신 화면으로 진입한다.
 
+## 9-1. Web 인증과 CSP
+
+Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_POLICY.md)를 기준으로 확인한다.
+
+- [ ] CSP의 `connect-src`가 실제 HTTPS API origin만 허용한다.
+- [ ] `script-src`에 `unsafe-inline`과 `unsafe-eval`이 없다.
+- [ ] CSP, `nosniff`, frame 차단, referrer와 permissions header가 HTML 응답에 적용된다.
+- [ ] preview report-only 점검 뒤 로그인·게스트·Today·Calendar·Workspace에 필요한 요청만 허용된다.
+- [ ] 로그아웃·401·계정 전환 뒤 access token이 제거되고 token 값이 URL·로그·오류 보고에 남지 않는다.
+- [ ] `localStorage` token은 임시 정책임을 확인하고 HttpOnly refresh cookie 계약 여부를 release 제한에 기록한다.
+
 ## 10. 배포 식별자와 빌드
 
 출시 빌드 전 확정해야 한다.
