@@ -14,7 +14,7 @@ ToDoLab Web의 인증 정보 저장과 Content Security Policy 적용 기준이�
 
 ## 목표 인증 구조
 
-백엔드가 Web 전용 세션 계약을 제공하면 다음 구조로 교체한다.
+백엔드가 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)의 Web 세션 계약을 제공하면 다음 구조로 교체한다.
 
 1. 짧은 수명의 access token은 메모리에만 둔다.
 2. refresh credential은 `Secure`, `HttpOnly`, `SameSite` cookie로 백엔드가 발급한다.

@@ -70,8 +70,8 @@ type ApiEnvelope<T> = {
 - Web은 브라우저 제약상 `localStorage` fallback을 사용한다. 현재 허용 범위, HttpOnly cookie 전환 조건과 운영 CSP는 [`WEB_SECURITY_POLICY.md`](./WEB_SECURITY_POLICY.md)를 따른다.
 - 앱 시작 시 저장된 token을 먼저 메모리로 복원한 뒤 API 요청을 보낸다.
 - token은 로그, 오류 메시지, smoke test 출력에 남기지 않는다.
-- 정식 계정 refresh token은 현재 도입하지 않으며 access token 만료 시 다시 로그인한다.
-- 게스트는 만료 전 `guest/refresh`로 같은 guest user id의 access token을 갱신한다.
+- 정식 계정 refresh token은 현재 도입하지 않아 access token 만료 시 다시 로그인한다. 목표 세션 수명과 cookie·SecureStore 계약은 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
+- 게스트는 만료 전 `guest/refresh`로 같은 guest user id의 access token을 갱신한다. 현재 `expiresAt` 기반 선제 갱신과 서버 데이터 보존 기간은 미구현이다.
 
 | Method | Path                            | 용도                                  |
 | ------ | ------------------------------- | ------------------------------------- |
@@ -221,6 +221,6 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 - 반복 Task·일정의 생성 계약, 상태 문서 정합성, real smoke 결과와 모바일 저장 UI 노출 시점
 - 검색 결과의 relevance 기준, 기간 filter, timezone 경계
 - D-Day 목표 삭제 시 연결된 Task 처리 방식
-- refresh token 또는 silent re-auth 도입 여부
+- [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)의 등록·게스트 refresh와 보존 기간 적용 여부
 - idempotency 또는 client request id 정책
 - Today 순서 일괄 저장 API는 drag and drop 고도화 시점까지 후순위로 둔다.
