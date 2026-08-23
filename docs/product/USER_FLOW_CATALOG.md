@@ -72,12 +72,12 @@ flowchart LR
 
 - [UF-02 최신 캡처와 판정 (2026-08-23)](../audits/uf-02-today-quick-capture-2026-08-23/README.md)
 - [Today](../screenshots/today.png), [빠른 기록 성공](../screenshots/quick-capture.png), [정리할 항목](../screenshots/organize.png)
-- 최신 기록 preview와 하루 정리 분리는 [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)의 구현 전 상태다.
+- 최신 기록 preview와 하루 정리 분리는 [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)에 따라 구현했다.
 
 남은 캡처:
 
 - 빠른 기록 저장 중·실패. 입력·성공은 확인했고 Escape 닫기는 동작하지 않았다.
-- composer를 닫은 뒤 최신 기록 preview
+- composer를 닫은 뒤 최신 기록 preview는 확인했다.
 - 기록함 0개·1개와 하루 정리 0개. 여러 개 상태에서는 추천·기록함 중복 노출을 확인했다.
 - 완료 0개·1~3개. 4개 이상 펼침/접힘은 확인했다.
 

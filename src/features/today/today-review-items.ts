@@ -18,3 +18,10 @@ export function separateTodayReviewItems(
     inboxTasks: inboxTasks.filter((task) => !recommendationTaskIds.has(task.id)),
   };
 }
+
+export function getLatestInboxTask(inboxTasks: TaskResponse[]) {
+  return [...inboxTasks].sort((left, right) => {
+    const createdAtComparison = right.createdAt.localeCompare(left.createdAt);
+    return createdAtComparison === 0 ? right.id - left.id : createdAtComparison;
+  })[0];
+}

@@ -14,7 +14,7 @@ export function getQuickCaptureResultMessage(response: TaskQuickCaptureResponse)
   }
 
   if (!response.parsed) {
-    return '날짜 정보 없이 기록함에 저장했어요.';
+    return '기록함에 저장했어요. 날짜는 나중에 정해도 괜찮아요.';
   }
 
   const parts = [

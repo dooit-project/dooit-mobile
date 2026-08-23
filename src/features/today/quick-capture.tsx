@@ -16,9 +16,10 @@ import { APP_TIME_ZONE, toApiLocalDate } from '@/utils';
 type QuickCaptureProps = {
   isExpanded: boolean;
   onExpandedChange: (isExpanded: boolean) => void;
+  onCaptured?: (response: TaskQuickCaptureResponse) => void;
 };
 
-export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps) {
+export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: QuickCaptureProps) {
   const theme = useAppTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -66,6 +67,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
         onSuccess: (response) => {
           setTitle('');
           setResult(response);
+          onCaptured?.(response);
           Keyboard.dismiss();
         },
       },
@@ -132,7 +134,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
               onChangeText={handleChange}
               onFocus={() => setIsInputFocused(true)}
               onSubmitEditing={handleSubmit}
-              placeholder="오늘 할 일"
+              placeholder="할 일을 입력하세요"
               placeholderTextColor={theme.colors.textMuted}
               returnKeyType="done"
               style={[
@@ -190,7 +192,7 @@ export function QuickCapture({ isExpanded, onExpandedChange }: QuickCaptureProps
                       onPress={handleMoveToToday}
                       style={styles.resultAction}
                     >
-                      오늘 할 일로 이동
+                      오늘로 옮기기
                     </Button>
                   ) : null}
                   <Button

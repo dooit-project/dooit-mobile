@@ -24,6 +24,7 @@ import {
   sortTodayCompletedTasks,
   splitTodayTasks,
 } from './today-task-sections';
+import { getLatestInboxTask } from './today-review-items';
 import { TodayTaskList } from './today-task-list';
 import { useTodayOverview } from './use-today-overview';
 
@@ -31,6 +32,7 @@ type TodayOverviewProps = {
   date: LocalDateString;
   onOpenQuickCapture?: () => void;
   overview: ReturnType<typeof useTodayOverview>;
+  recentCapturedTaskId?: number | null;
 };
 
 type FeedbackMessage = {
@@ -40,7 +42,12 @@ type FeedbackMessage = {
 
 const COMPLETED_RENDER_BATCH_SIZE = 20;
 
-export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverviewProps) {
+export function TodayOverview({
+  date,
+  onOpenQuickCapture,
+  overview,
+  recentCapturedTaskId,
+}: TodayOverviewProps) {
   const router = useRouter();
   const theme = useAppTheme();
   const {
@@ -59,9 +66,11 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
   const [isCompletedExpanded, setIsCompletedExpanded] = useState(false);
   const [completedVisibleCount, setCompletedVisibleCount] = useState(COMPLETED_RENDER_BATCH_SIZE);
+  const [isInboxFocused, setIsInboxFocused] = useState(false);
   const [isReviewFocused, setIsReviewFocused] = useState(false);
   const { scheduleTasks, executionTasks } = splitTodayTasks(todayTasks);
-  const reviewItemCount = staleTasks.length + recommendations.length + inboxTasks.length;
+  const reviewItemCount = staleTasks.length + recommendations.length;
+  const latestInboxTask = getLatestInboxTask(inboxTasks);
   const sortedScheduleTasks = [...scheduleTasks].sort(compareScheduleTasks);
   const schedulePreview = getTodaySchedulePreview(sortedScheduleTasks);
   const sortedDoneTasks = sortTodayCompletedTasks(doneTasks);
@@ -220,11 +229,47 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
         />
       ) : null}
 
+      {latestInboxTask ? (
+        <View style={styles.reviewSection}>
+          <Pressable
+            accessibilityHint="기록함에서 날짜와 내용을 정리하는 화면을 엽니다."
+            accessibilityLabel={`기록함 ${inboxTasks.length}개, 최신 기록 ${latestInboxTask.title}`}
+            accessibilityRole="button"
+            onBlur={() => setIsInboxFocused(false)}
+            onFocus={() => setIsInboxFocused(true)}
+            onPress={() => router.push('/today/review')}
+            style={({ pressed }) => [
+              styles.reviewRow,
+              {
+                backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
+                borderColor: isInboxFocused ? theme.colors.primarySoft : theme.colors.border,
+              },
+            ]}
+          >
+            <View style={styles.reviewCopy}>
+              <View style={styles.inboxTitleRow}>
+                <AppText weight="semibold">기록함</AppText>
+                <AppText tone="secondary" variant="caption">
+                  {inboxTasks.length}개
+                </AppText>
+              </View>
+              <AppText numberOfLines={1} tone="secondary" variant="caption">
+                {recentCapturedTaskId === latestInboxTask.id ? '방금 기록 · ' : ''}
+                {latestInboxTask.title}
+              </AppText>
+            </View>
+            <AppText tone="secondary" variant="caption" weight="bold">
+              정리하기 ›
+            </AppText>
+          </Pressable>
+        </View>
+      ) : null}
+
       {reviewItemCount > 0 ? (
         <View style={styles.reviewSection}>
           <Pressable
-            accessibilityHint="지난 미완료, 추천, 기록함을 정리하는 화면을 엽니다."
-            accessibilityLabel={`정리할 항목 ${reviewItemCount}개`}
+            accessibilityHint="지난 미완료와 추천을 오늘 계획으로 정리하는 화면을 엽니다."
+            accessibilityLabel={`하루 정리 ${reviewItemCount}개`}
             accessibilityRole="button"
             onBlur={() => setIsReviewFocused(false)}
             onFocus={() => setIsReviewFocused(true)}
@@ -238,10 +283,9 @@ export function TodayOverview({ date, onOpenQuickCapture, overview }: TodayOverv
             ]}
           >
             <View style={styles.reviewCopy}>
-              <AppText weight="semibold">정리할 항목</AppText>
+              <AppText weight="semibold">하루 정리</AppText>
               <AppText tone="secondary" variant="caption">
-                미완료 {staleTasks.length} · 추천 {recommendations.length} · 기록함{' '}
-                {inboxTasks.length}
+                미완료 {staleTasks.length} · 추천 {recommendations.length}
               </AppText>
             </View>
             <AppText tone="secondary" variant="label" weight="bold">
@@ -370,6 +414,11 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing[1],
     minWidth: 0,
+  },
+  inboxTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing[2],
   },
   completedSectionActions: {
     alignItems: 'center',

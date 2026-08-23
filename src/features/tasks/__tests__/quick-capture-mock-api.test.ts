@@ -1,5 +1,5 @@
 import { mockApiClient } from '@/services/api/mock-api-client';
-import type { TaskQuickCaptureResponse } from '@/types';
+import type { TaskQuickCaptureResponse, TaskRecommendationResponse } from '@/types';
 
 describe('Mock task quick capture API', () => {
   test('파싱되지 않은 원문을 Inbox TODO로 저장한다', async () => {
@@ -31,6 +31,11 @@ describe('Mock task quick capture API', () => {
         type: 'TODO',
       },
     });
+
+    const recommendations = await mockApiClient.get<TaskRecommendationResponse[]>(
+      '/api/v1/tasks/today/recommendations',
+    );
+    expect(recommendations.map(({ task }) => task.id)).not.toContain(response.task.id);
   });
 
   test('30자를 넘는 원문은 전체 내용을 description에 보존한다', async () => {

@@ -55,6 +55,7 @@ const TASK_TEMPLATES_PATH = '/api/v1/task-templates';
 const DDAYS_PATH = '/api/v1/dday-goals';
 const WORKSPACES_PATH = '/api/v1/workspaces';
 const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
+const recommendedTaskIds = new Set([6]);
 
 let nextUserId = 3;
 let nextTaskId = 100;
@@ -989,8 +990,10 @@ export const mockApiClient = {
 
     if (path === `${TASKS_PATH}/today/recommendations`) {
       const recommendations: TaskRecommendationResponse[] = getVisibleTasks()
-        .filter((task) => task.status === 'INBOX' && !task.staleCarryOver)
-        .slice(0, 3)
+        .filter(
+          (task) =>
+            task.status === 'INBOX' && !task.staleCarryOver && recommendedTaskIds.has(task.id),
+        )
         .map((task) => ({
           task: cloneTask(task),
           reason: 'Mock mode 추천: 날짜 없이 남아 있어 오늘 가볍게 처리하기 좋아요.',

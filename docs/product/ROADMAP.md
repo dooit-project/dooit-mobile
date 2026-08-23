@@ -90,7 +90,7 @@ Last updated: 2026-08-23
 - [x] 오늘 완료한 일이 있으면 최근 3개를 기본으로 펼치고 `전체 N개 보기`와 `접기` 동작을 제공한다.
 - [x] Task 상세의 `수정`을 종류 metadata에서 분리해 PageHeader icon+label action으로 이동한다.
 - [x] 하단 tab의 활성 label 색·굵기와 선택 indicator를 강화하고 icon만으로 현재 위치를 전달하지 않는지 확인한다.
-- [ ] [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)의 최신 기록 1개 preview와 `하루 정리` 분리를 캡처 비교한 뒤 구현한다.
+- [x] [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)의 최신 기록 1개 preview와 `하루 정리` 분리를 캡처 비교한 뒤 구현한다.
 - [ ] Workspace Task의 D-Day 연결·제목 수정·삭제 action을 주요 행동과 overflow menu로 정리할지 Product Design 캡처로 재점검한다.
 - [ ] 위 변경을 320px·390px·430px, font scale 1.5, light·dark와 VoiceOver·TalkBack에서 검증한다.
 

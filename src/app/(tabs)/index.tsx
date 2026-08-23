@@ -22,6 +22,7 @@ export default function TodayScreen() {
   const today = toApiLocalDate(now);
   const overview = useTodayOverview(today);
   const [isQuickCaptureExpanded, setIsQuickCaptureExpanded] = useState(false);
+  const [recentCapturedTaskId, setRecentCapturedTaskId] = useState<number | null>(null);
   const [linkedNoticeMessage] = useState(() =>
     params.linked === '1' ? getGuestMergeNoticeMessage(params) : null,
   );
@@ -63,6 +64,7 @@ export default function TodayScreen() {
         <TodayOverview
           date={today}
           overview={overview}
+          recentCapturedTaskId={recentCapturedTaskId}
           onOpenQuickCapture={() => setIsQuickCaptureExpanded(true)}
         />
       </Screen>
@@ -72,6 +74,7 @@ export default function TodayScreen() {
       >
         <QuickCapture
           isExpanded={isQuickCaptureExpanded}
+          onCaptured={(response) => setRecentCapturedTaskId(response.task.id)}
           onExpandedChange={setIsQuickCaptureExpanded}
         />
       </KeyboardAvoidingView>

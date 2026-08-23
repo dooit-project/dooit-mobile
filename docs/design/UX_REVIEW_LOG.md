@@ -23,7 +23,7 @@ Last updated: 2026-08-21
 - 빠른 기록은 날짜 없는 Inbox seed를 만드는 짧은 입력이다. 상세 필드는 Task 작성 화면에서 다룬다.
 - 날짜를 해석하지 못한 빠른 기록은 저장 직후 제목, `기록함에 저장` 상태, `오늘 할 일로 이동`, `내용 확인`을 같은 결과 영역에서 보여 준다.
 - Inbox는 독립 tab이 아니라 Today의 `정리할 항목`으로 진입한다.
-- 빠른 등록 결과가 composer 종료 뒤 사라지는 문제는 [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](../product/QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)의 최신 기록 1개 preview와 지난 미완료·추천 `하루 정리` 분리안을 캡처 비교한 뒤 확정한다.
+- 빠른 등록 결과는 composer 종료 뒤 최신 기록 1개 preview로 유지하고, 지난 미완료·추천은 `하루 정리`로 분리했다. 기준은 [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](../product/QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)를 따른다.
 - 빈 Today는 인증 오류나 샘플 데이터를 보여 주지 않고 첫 Task 작성 CTA를 제공한다.
 - 오늘 완료한 일은 결과 피드백이므로 항목이 있으면 최근 3개를 기본으로 펼치고, 나머지는 `전체 N개 보기`로 확장한다.
 

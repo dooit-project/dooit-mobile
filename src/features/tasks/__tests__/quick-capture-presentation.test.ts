@@ -32,7 +32,7 @@ describe('빠른 등록 결과 문구', () => {
 
   test('해석하지 못한 입력은 기록함 저장을 안내한다', () => {
     expect(getQuickCaptureResultMessage(response({ parsed: false }))).toBe(
-      '날짜 정보 없이 기록함에 저장했어요.',
+      '기록함에 저장했어요. 날짜는 나중에 정해도 괜찮아요.',
     );
   });
 

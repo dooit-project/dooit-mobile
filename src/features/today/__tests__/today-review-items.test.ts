@@ -1,6 +1,6 @@
 import type { TaskRecommendationResponse, TaskResponse } from '@/types';
 
-import { separateTodayReviewItems } from '../today-review-items';
+import { getLatestInboxTask, separateTodayReviewItems } from '../today-review-items';
 
 function createInboxTask(id: number): TaskResponse {
   return {
@@ -56,5 +56,17 @@ describe('separateTodayReviewItems', () => {
       recommendations: [recommendation],
       inboxTasks: [inboxTask],
     });
+  });
+});
+
+describe('getLatestInboxTask', () => {
+  it('가장 최근에 만든 기록을 반환한다', () => {
+    const olderTask = createInboxTask(1);
+    const newerTask = {
+      ...createInboxTask(2),
+      createdAt: '2026-08-23T13:00:00',
+    };
+
+    expect(getLatestInboxTask([olderTask, newerTask])).toEqual(newerTask);
   });
 });
