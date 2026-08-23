@@ -1,10 +1,12 @@
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
+
+import { getGuestRecoveryMessage } from './guest-recovery-copy';
 
 type FirstUseOverviewProps = {
   errorMessage?: string | null;
@@ -55,6 +57,9 @@ export function FirstUseOverview({
           </AppText>
           <AppText tone="secondary" variant="body">
             게스트로 시작하고 나중에 만든 내용을 계정에 연결할 수 있어요.
+          </AppText>
+          <AppText tone="warning" variant="caption">
+            {getGuestRecoveryMessage(Platform.OS === 'web')}
           </AppText>
         </View>
         <Button fullWidth loading={isStartingGuest} onPress={onStartGuest} size="large">

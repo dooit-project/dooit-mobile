@@ -1,5 +1,6 @@
 export { LoginOverview } from './login-overview';
 export { FirstUseOverview } from './first-use-overview';
+export { getGuestContinueMessage, getGuestRecoveryMessage } from './guest-recovery-copy';
 export { getAuthSubmissionErrorMessage } from './auth-submission-error';
 export { replaceUserQueryCache } from './auth-query-cache';
 export { shouldShowFirstUseReturn } from './auth-return-navigation';

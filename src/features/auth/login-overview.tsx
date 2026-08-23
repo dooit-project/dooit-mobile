@@ -2,13 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
 import { shouldShowFirstUseReturn } from '@/features/auth/auth-return-navigation';
 import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
+import { getGuestContinueMessage } from '@/features/auth/guest-recovery-copy';
 import { useAuthState } from '@/features/auth/use-auth-state';
 import { authApi } from '@/services/api';
 import { radii, spacing, typography, useAppTheme } from '@/theme';
@@ -205,7 +206,7 @@ export function LoginOverview() {
       {authState.status === 'guest' ? (
         <View style={styles.secondaryAction}>
           <AppText tone="secondary" variant="label">
-            지금 연결하지 않아도 작성한 내용은 유지돼요.
+            {getGuestContinueMessage(Platform.OS === 'web')}
           </AppText>
           <Button
             disabled={login.isPending}

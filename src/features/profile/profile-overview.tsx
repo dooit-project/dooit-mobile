@@ -8,7 +8,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { ColorValue } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
-import { useAuthState } from '@/features/auth';
+import { getGuestRecoveryMessage, useAuthState } from '@/features/auth';
 import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
 import { authApi } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
@@ -154,7 +154,7 @@ export function ProfileOverview() {
         <InlineNotice
           tone="warning"
           title="임시 계정으로 사용하고 있어요"
-          message="로그인하기 전에 앱을 삭제하거나 앱 데이터를 지우면 현재 내용을 복구할 수 없어요."
+          message={getGuestRecoveryMessage(Platform.OS === 'web')}
         />
       ) : null}
 
