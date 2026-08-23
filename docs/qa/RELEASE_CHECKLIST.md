@@ -150,6 +150,8 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 - [x] Android signing credential 운영 기준과 비밀 값 제외 원칙
 - [x] EAS project 연결 후 Android signing credential 생성과 접근 권한 확인
 - [x] EAS preview/production `EXPO_PUBLIC_API_URL` 등록: `https://macmini.tail68d2d1.ts.net`
+- [x] 현재 공개 범위와 version·runtimeVersion·OTA 기준 문서화
+- [ ] 공개 대상 플랫폼이 [`RELEASE_SCOPE_POLICY.md`](../product/RELEASE_SCOPE_POLICY.md)의 승격 조건을 통과했다.
 - [ ] 앱 아이콘, splash, favicon 최종 asset
 
 `npm run check:release-static`으로 앱 이름, slug, scheme, icon/splash/favicon 파일 존재, PNG 크기, Android APK profile과 public 환경값을 함께 확인한다. `npm run check:eas-setup`은 Expo 로그인과 EAS project 연결 후 별도로 실행한다.

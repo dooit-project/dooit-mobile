@@ -113,7 +113,8 @@ Last updated: 2026-08-23
 - [ ] Sentry project·DSN과 운영 책임자가 정해지면 SDK, route ErrorBoundary, source map 업로드를 연결하고 Android·iOS·Web에서 검증한다.
 - [ ] Workspace 초대 거절, 하위 작업, 주간 리포트의 필요성과 우선순위를 검증한다.
 - [ ] 서버 push가 필요해질 때 token 등록, local/push 중복 방지와 발송 이력 UX를 설계한다.
-- [ ] Store, iOS, Web 공개 범위와 version·runtimeVersion·OTA 정책을 결정한다.
+- [x] Store, iOS, Web 공개 범위와 version·runtimeVersion·OTA 기준은 [`RELEASE_SCOPE_POLICY.md`](./RELEASE_SCOPE_POLICY.md)를 따른다.
+- [ ] Android Store·iOS·Web은 각 승격 조건을 통과한 플랫폼부터 별도로 공개 승인한다.
 
 ## 외부 의존성
 

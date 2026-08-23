@@ -154,7 +154,8 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 - `npm run check:release-assets`로 앱 이름, slug, scheme, icon/splash/favicon 경로와 PNG 크기를 자동 점검한다.
 - `eas.json`에 `development`, `preview`, `production` profile을 추가했다.
 - Expo project `owner`는 `hyunseung2`, project id는 `f49103dc-1d93-47a9-8972-4b5a4cc9e395`로 연결했다.
-- `runtimeVersion`, OTA `updates` 정책은 아직 정하지 않았다.
+- 현재 공개 범위와 version·runtimeVersion·OTA 기준은 [`RELEASE_SCOPE_POLICY.md`](../product/RELEASE_SCOPE_POLICY.md)에 확정했다.
+- 현재는 `expo-updates`, `updates` URL과 `runtimeVersion`을 설정하지 않아 OTA를 사용하지 않는다.
 
 확정 시 입력 위치:
 
