@@ -1,10 +1,10 @@
 # ToDoLab 사용자 흐름 카탈로그
 
-Last updated: 2026-08-23
+Last updated: 2026-08-24
 
-이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 세부 시각 판단은 [`audits`](../audits/product-design-2026-08-12/README.md)를 따른다.
+이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 최신 화면을 나란히 보는 시각적 원본은 [`USER_FLOW_BOARD.md`](./USER_FLOW_BOARD.md), 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 세부 시각 판단은 각 audit README를 따른다.
 
-Figma·FigJam은 공유와 토론용 사본으로 사용하고, 구현과 함께 갱신해야 하는 route·상태·검증 여부는 이 문서를 기준으로 한다.
+사용자 흐름, 최신 캡처, 판정은 모두 이 저장소의 Markdown과 이미지로 관리한다. 외부 보드는 필요할 때 이 문서를 바탕으로 만드는 공유용 사본이며 원본으로 취급하지 않는다.
 
 ## 관리 단위
 
@@ -257,18 +257,18 @@ flowchart LR
 | Workspace          | 분산됨    | 일부 | 일부      | 부족      | 접근 오류 일부 | 역할 문서만      | 부족 | 누락 큼   |
 | 설정·알림·세션     | 설정만    | 부족 | 해당 없음 | 해당 없음 | 부족           | 알림 권한 문서만 | 부족 | 누락 큼   |
 
-## 캡처와 보드 갱신 순서
+## 캡처와 Markdown 보드 갱신 순서
 
 1. mock Web 390×844에서 각 흐름의 기본·완료·빈 상태를 다시 캡처한다.
 2. 320px와 430px는 줄바꿈이나 행동 위계가 달라지는 단계만 추가한다.
 3. network·timeout·4xx·5xx와 mutation rollback은 재현 조건을 캡처명과 함께 기록한다.
 4. Android·iOS 전용 권한, 키보드, safe area, VoiceOver·TalkBack은 실제 기기 캡처로 분리한다.
-5. 승인된 최신 캡처만 FigJam의 흐름별 section에 좌→우로 배치한다.
-6. FigJam card에는 flow ID, 단계, 상태, route, 검증 날짜와 연결 문서만 둔다.
+5. 승인된 최신 캡처를 [`USER_FLOW_BOARD.md`](./USER_FLOW_BOARD.md)의 흐름별 표에 좌→우로 배치한다.
+6. 보드에는 flow ID, 단계, 상태, 검증 날짜와 상세 audit 문서 링크를 둔다.
 
 ## 완료 기준
 
 - 각 flow가 정상 경로와 최소 한 개의 실패·복구 경로를 가진다.
 - diagram의 모든 화면 단계가 최신 캡처 또는 명시적인 `캡처 불가/미구현` 상태와 연결된다.
 - 화면 구조 변경 시 같은 flow ID와 캡처명을 갱신한다.
-- FigJam과 이 문서가 충돌하면 Git 이력과 가까운 이 문서를 먼저 갱신하고 FigJam을 동기화한다.
+- 캡처 보드와 이 문서가 충돌하면 Git 이력과 실제 코드에 가까운 audit 판정을 먼저 갱신한다.
