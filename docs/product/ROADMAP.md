@@ -62,7 +62,7 @@ Last updated: 2026-08-23
 - [ ] 배포 백엔드가 어느 commit/image인지 응답 메타데이터로 확인한다.
 - [ ] 비밀번호 재설정 request·verify·confirm과 메일 deep link를 백엔드에 구현·배포한다.
 
-백엔드 전달 내용은 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md), 인증 계약은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)를 기준으로 한다.
+백엔드 전체 전달 내용은 복사·전달용 [`BACKEND_REQUESTS_HANDOFF.md`](../api/BACKEND_REQUESTS_HANDOFF.md)를 기준으로 한다. Workspace 세부 내용은 [`SHARING_BACKEND_REQUESTS.md`](../api/SHARING_BACKEND_REQUESTS.md), 인증 계약은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)를 참고한다.
 
 ### P1. 네이티브·복구 QA
 
@@ -90,11 +90,21 @@ Last updated: 2026-08-23
 - [x] 오늘 완료한 일이 있으면 최근 3개를 기본으로 펼치고 `전체 N개 보기`와 `접기` 동작을 제공한다.
 - [x] Task 상세의 `수정`을 종류 metadata에서 분리해 PageHeader icon+label action으로 이동한다.
 - [x] 하단 tab의 활성 label 색·굵기와 선택 indicator를 강화하고 icon만으로 현재 위치를 전달하지 않는지 확인한다.
+- [ ] [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)의 최신 기록 1개 preview와 `하루 정리` 분리를 캡처 비교한 뒤 구현한다.
 - [ ] Workspace Task의 D-Day 연결·제목 수정·삭제 action을 주요 행동과 overflow menu로 정리할지 Product Design 캡처로 재점검한다.
 - [ ] 위 변경을 320px·390px·430px, font scale 1.5, light·dark와 VoiceOver·TalkBack에서 검증한다.
 
+### P1. 사용자 흐름 시각 문서화
+
+- [x] 프론트엔드 핵심 시나리오와 상태별 캡처 커버리지를 [`USER_FLOW_CATALOG.md`](./USER_FLOW_CATALOG.md)에 통합한다.
+- [ ] mock Web의 최신 기본·완료·빈 상태 캡처를 flow ID별로 갱신한다.
+- [ ] 오류·복구와 Workspace 역할별 흐름을 보강한 뒤 승인된 캡처를 FigJam 공유 보드에 배치한다.
+
 ### P1. Web 운영 검증
 
+- [x] mock Web static export, 22개 route 산출물, 200 fallback과 service worker 비포함을 [`WEB_MOCK_VALIDATION_2026-08-23.md`](../qa/WEB_MOCK_VALIDATION_2026-08-23.md)에 기록한다.
+- [ ] 연결된 브라우저에서 mock 로그인·게스트·Today·Calendar·Workspace, 직접 경로·새로고침·zoom 150%·keyboard를 캡처 검증한다.
+  - 로그인·게스트 전환·Today·Calendar·Workspace 빈 목록·직접 경로 새로고침·320/390/430px·기본 focus는 통과했다. Workspace 생성·상세, zoom 150%, 빠른 기록 Escape 동작은 남아 있다.
 - [ ] 운영 배포 환경에 확정된 HTTPS API URL을 주입하고 `npm run web:export:production` 결과를 확인한다.
 - [ ] 운영 origin의 CORS, `Authorization` header, preflight와 API `no-store` 정책을 확인한다.
 - [ ] 게스트 생성·새로고침·복원·계정 연결과 로그인 세션 만료·계정 전환을 실제 브라우저에서 확인한다.

@@ -9,6 +9,8 @@
 3. [`qa/RELEASE_CHECKLIST.md`](./qa/RELEASE_CHECKLIST.md): 출시 후보 판정 기준
 4. [`api/SHARING_BACKEND_REQUESTS.md`](./api/SHARING_BACKEND_REQUESTS.md): 일정 공유의 남은 백엔드 요청
 
+프론트엔드의 화면별 사용자 시나리오와 캡처 커버리지는 [`product/USER_FLOW_CATALOG.md`](./product/USER_FLOW_CATALOG.md)에서 확인한다.
+
 ## 문서 패키지
 
 | 디렉터리                                                      | 역할                                               | 대표 문서                                                                                                              |
