@@ -4,6 +4,8 @@ Last updated: 2026-08-23
 
 프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 `/v3/api-docs` 순서로 대조한다. 이 문서에는 현재 남은 요청과 재검증 조건만 둔다.
 
+백엔드에 전체 요청사항을 한 번에 전달할 때는 복사·전달용 [`BACKEND_REQUESTS_HANDOFF.md`](./BACKEND_REQUESTS_HANDOFF.md)를 사용한다.
+
 ## 현재 확인된 계약
 
 local backend source `5eb6050` 옆에서 다음 항목을 확인했다.
