@@ -80,6 +80,8 @@ Last updated: 2026-08-23
 - [ ] iPhone home indicator, Android navigation bar, 키보드와 safe area 겹침을 확인한다.
 - [ ] Workspace 흐름을 browser zoom 150%에서 확인한다.
 - [ ] 실제 API 지연과 대량 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
+- [x] 흰색 splash mark가 보이도록 primary 배경과 정적 회귀 검사를 적용한다.
+- [ ] [`BRAND_ASSET_REVIEW.md`](../design/BRAND_ASSET_REVIEW.md)를 기준으로 임시 `A` 심볼을 ToDoLab 고유 icon·favicon·adaptive 자산으로 교체한다.
 
 ### P1. Today·Navigation 행동 위계
 

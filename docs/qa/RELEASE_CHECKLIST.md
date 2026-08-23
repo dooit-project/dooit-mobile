@@ -95,6 +95,7 @@ API URL:
 - [ ] Android adaptive icon, monochrome icon preview가 깨지지 않는다.
 - [ ] iOS icon이 라운드 마스크 안에서 자연스럽다.
 - [ ] Splash에서 첫 화면으로 넘어갈 때 배경 전환이 튀지 않는다.
+- [x] 흰색 splash mark와 설정 배경의 정적 대비가 확보됐다.
 - [ ] Status bar와 safe area가 light/dark에서 자연스럽다.
 - [ ] iOS home indicator, Android navigation bar, 하단 tab이 composer나 CTA를 가리지 않는다.
 - [ ] Android back 버튼 첫 동작이 키보드 닫기인지 확인했다.

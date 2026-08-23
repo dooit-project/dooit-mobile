@@ -53,6 +53,10 @@ const expectPngSize = (relativePath, width, height, results) => {
 
 const app = readJson('app.json').expo;
 const results = [];
+const splashPlugin = app.plugins?.find(
+  (plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
+);
+const splashOptions = Array.isArray(splashPlugin) ? splashPlugin[1] : undefined;
 
 expect(
   app.name === 'ToDoLab',
@@ -73,9 +77,15 @@ expect(
   results,
 );
 expect(
-  app.plugins?.some((plugin) => Array.isArray(plugin) && plugin[0] === 'expo-splash-screen'),
+  Boolean(splashPlugin),
   'Splash screen plugin is configured',
   'expo-splash-screen plugin is missing',
+  results,
+);
+expect(
+  splashOptions?.backgroundColor === '#526879',
+  'Splash background keeps the white mark visible',
+  'Splash background must be #526879 so the white mark stays visible',
   results,
 );
 
