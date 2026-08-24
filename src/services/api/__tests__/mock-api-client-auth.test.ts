@@ -130,4 +130,49 @@ describe('Mock auth API', () => {
       }),
     );
   });
+
+  it('반복 일정 생성과 수정에서 recurrence 응답을 유지한다', async () => {
+    const created = await mockApiClient.post<TaskResponse>('/api/v1/tasks', {
+      title: '매일 계획 점검',
+      type: 'SCHEDULE',
+      allDay: false,
+      startAt: '2099-01-02T09:00:00',
+      endAt: null,
+      recurrence: {
+        frequency: 'DAILY',
+        interval: 1,
+        recurrenceRule: 'FREQ=DAILY',
+        timeZone: 'Asia/Seoul',
+      },
+    });
+
+    expect(created).toMatchObject({
+      recurrenceSeriesId: created.id,
+      recurrenceRule: 'FREQ=DAILY',
+      recurrenceTimeZone: 'Asia/Seoul',
+      occurrenceDate: '2099-01-02',
+      recurrence: {
+        id: created.id,
+        frequency: 'DAILY',
+        interval: 1,
+        recurrenceRule: 'FREQ=DAILY',
+      },
+    });
+
+    const updated = await mockApiClient.put<TaskResponse>(`/api/v1/tasks/${created.id}`, {
+      title: created.title,
+      type: created.type,
+      allDay: created.allDay,
+      startAt: created.startAt,
+      endAt: created.endAt,
+      recurrence: null,
+    });
+
+    expect(updated).toMatchObject({
+      recurrenceSeriesId: null,
+      recurrenceRule: null,
+      occurrenceDate: null,
+      recurrence: null,
+    });
+  });
 });

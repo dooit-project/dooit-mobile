@@ -6,16 +6,16 @@ Last updated: 2026-08-24
 
 ## 진행 현황
 
-| Flow  | 범위                         | 최신 캡처 | 판정      | 상세 근거                                                                       |
-| ----- | ---------------------------- | --------- | --------- | ------------------------------------------------------------------------------- |
-| UF-01 | 최초 시작·계정 연결          | 10장      | 보강 필요 | [2026-08-23 audit](../audits/uf-01-first-use-2026-08-23/README.md)              |
-| UF-02 | Today 실행·빠른 기록         | 9장       | 보강 필요 | [2026-08-23 audit](../audits/uf-02-today-quick-capture-2026-08-23/README.md)    |
-| UF-03 | Task 생성·조회·수정·삭제     | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-03-task-crud-2026-08-24/README.md)              |
-| UF-04 | 반복 Task occurrence         | 준비 중   | 누락 큼   | [Workspace 반복 범위 참고](../audits/workspace-recurrence-2026-08-18/README.md) |
-| UF-05 | Calendar·검색·완료 기록 탐색 | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)             |
-| UF-06 | D-Day 목표                   | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)             |
-| UF-07 | Workspace                    | 분산됨    | 누락 큼   | [Workspace UI 흐름](./WORKSPACE_UI_FLOW.md)                                     |
-| UF-08 | 설정·알림·세션 복구          | 준비 중   | 누락 큼   | [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md#uf-08-설정알림세션-복구)          |
+| Flow  | 범위                         | 최신 캡처 | 판정      | 상세 근거                                                                    |
+| ----- | ---------------------------- | --------- | --------- | ---------------------------------------------------------------------------- |
+| UF-01 | 최초 시작·계정 연결          | 10장      | 보강 필요 | [2026-08-23 audit](../audits/uf-01-first-use-2026-08-23/README.md)           |
+| UF-02 | Today 실행·빠른 기록         | 9장       | 보강 필요 | [2026-08-23 audit](../audits/uf-02-today-quick-capture-2026-08-23/README.md) |
+| UF-03 | Task 생성·조회·수정·삭제     | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-03-task-crud-2026-08-24/README.md)           |
+| UF-04 | 반복 Task occurrence         | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-04-recurrence-2026-08-24/README.md)          |
+| UF-05 | Calendar·검색·완료 기록 탐색 | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)          |
+| UF-06 | D-Day 목표                   | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)          |
+| UF-07 | Workspace                    | 분산됨    | 누락 큼   | [Workspace UI 흐름](./WORKSPACE_UI_FLOW.md)                                  |
+| UF-08 | 설정·알림·세션 복구          | 준비 중   | 누락 큼   | [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md#uf-08-설정알림세션-복구)       |
 
 ## UF-01. 최초 시작과 계정 연결
 
@@ -78,6 +78,27 @@ flowchart LR
 | ![새 Task 기본](../audits/uf-03-task-crud-2026-08-24/01-new-task-default.png) | ![추가 정보 펼침](../audits/uf-03-task-crud-2026-08-24/02-new-task-more-fields.png) | ![Task 입력 완료](../audits/uf-03-task-crud-2026-08-24/03-new-task-filled.png)          | ![생성된 Task 상세](../audits/uf-03-task-crud-2026-08-24/04-task-detail-created.png) |
 | 05 Task 수정                                                                  | 06 삭제 확인                                                                        | 07 삭제 후 Today                                                                        |                                                                                      |
 | ![Task 수정](../audits/uf-03-task-crud-2026-08-24/05-task-edit.png)           | ![삭제 확인](../audits/uf-03-task-crud-2026-08-24/06-task-delete-confirm.png)       | ![삭제 후 Today](../audits/uf-03-task-crud-2026-08-24/07-task-deleted-return-today.png) |                                                                                      |
+
+## UF-04. 반복 Task occurrence
+
+```mermaid
+flowchart LR
+  A[새 반복 일정] --> B[반복 Task 상세]
+  B --> C{수정 범위}
+  C -->|이번만| D[현재 occurrence]
+  C -->|이후 모두| E[현재와 이후]
+  C -->|전체| F[반복 묶음 전체]
+  B --> G{삭제 범위}
+  G -->|이번만| H[현재 occurrence 삭제]
+  G -->|이후 모두| I[현재와 이후 삭제]
+  G -->|전체| J[반복 묶음 삭제]
+```
+
+| 01 반복 기본                                                                                       | 02 매일 반복 입력                                                                       | 03 반복 상세                                                                          | 04 수정 이번만                                                                    |
+| -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| ![새 일정 반복 기본](../audits/uf-04-recurrence-2026-08-24/01-new-schedule-recurrence-default.jpg) | ![매일 반복 입력](../audits/uf-04-recurrence-2026-08-24/02-daily-recurrence-filled.jpg) | ![반복 Task 상세](../audits/uf-04-recurrence-2026-08-24/03-recurring-task-detail.jpg) | ![수정 범위 이번만](../audits/uf-04-recurrence-2026-08-24/04-edit-scope-this.jpg) |
+| 05 수정 이후 모두                                                                                  | 06 삭제 이번만                                                                          | 07 삭제 전체                                                                          |                                                                                   |
+| ![수정 범위 이후 모두](../audits/uf-04-recurrence-2026-08-24/05-edit-scope-future.jpg)             | ![삭제 범위 이번만](../audits/uf-04-recurrence-2026-08-24/06-delete-scope-this.jpg)     | ![삭제 범위 전체](../audits/uf-04-recurrence-2026-08-24/07-delete-scope-all.jpg)      |                                                                                   |
 
 ## 갱신 규칙
 

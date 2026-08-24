@@ -127,13 +127,14 @@ flowchart LR
 
 현재 근거:
 
-- 개인 반복 흐름은 API 문서와 real smoke 기록만 있고 단계별 최신 화면 묶음은 없다.
+- [UF-04 최신 캡처와 판정 (2026-08-24)](../audits/uf-04-recurrence-2026-08-24/README.md)
 - Workspace 반복 범위는 [수정·삭제 캡처](../audits/workspace-recurrence-2026-08-18/README.md)가 있다.
 
 남은 캡처:
 
-- 개인 Task의 이번 occurrence·이후·전체 수정/삭제
-- 건너뛰기와 Today·Calendar 반영
+- 수정·삭제의 이번 occurrence·이후·전체 범위 선택은 확인했다. 각 범위의 mutation 완료 결과가 남았다.
+- 개인 반복 Task에 별도 건너뛰기 행동이 없어 `이번만 삭제`와의 표현 기준을 결정해야 한다.
+- 매주·매월·직접 설정, 건너뛰기와 Today·Calendar 반영
 - mutation 실패 rollback
 
 ## UF-05. Calendar·검색·완료 기록 탐색

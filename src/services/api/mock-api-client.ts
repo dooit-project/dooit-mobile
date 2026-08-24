@@ -557,9 +557,51 @@ function applyTaskRequest(task: TaskResponse, request: TaskUpsertRequest) {
   task.allDay = request.allDay;
   task.startAt = request.startAt ?? null;
   task.endAt = request.endAt ?? null;
+  applyTaskRecurrence(task, request);
   task.updatedAt = now;
 
   return cloneTask(task);
+}
+
+function applyTaskRecurrence(task: TaskResponse, request: TaskUpsertRequest) {
+  const recurrence = request.recurrence;
+
+  if (!recurrence || !request.startAt) {
+    task.recurrenceSeriesId = null;
+    task.recurrenceRule = null;
+    task.recurrenceTimeZone = null;
+    task.recurrenceStartAt = null;
+    task.recurrenceUntil = null;
+    task.recurrenceCount = null;
+    task.occurrenceDate = null;
+    task.originalOccurrenceDate = null;
+    task.recurrenceException = null;
+    task.recurrence = null;
+    return;
+  }
+
+  const recurrenceRule = recurrence.recurrenceRule ?? `FREQ=${recurrence.frequency}`;
+  const timeZone = recurrence.timeZone ?? 'Asia/Seoul';
+
+  task.recurrenceSeriesId = task.id;
+  task.recurrenceRule = recurrenceRule;
+  task.recurrenceTimeZone = timeZone;
+  task.recurrenceStartAt = request.startAt;
+  task.recurrenceUntil = recurrence.recurrenceUntil ?? null;
+  task.recurrenceCount = recurrence.recurrenceCount ?? null;
+  task.occurrenceDate = request.startAt.slice(0, 10) as LocalDateString;
+  task.originalOccurrenceDate = task.occurrenceDate;
+  task.recurrenceException = null;
+  task.recurrence = {
+    id: task.id,
+    frequency: recurrence.frequency,
+    interval: recurrence.interval ?? 1,
+    recurrenceRule,
+    timeZone,
+    recurrenceStartAt: request.startAt,
+    recurrenceUntil: recurrence.recurrenceUntil ?? null,
+    recurrenceCount: recurrence.recurrenceCount ?? null,
+  };
 }
 
 function setTaskStatus(task: TaskResponse, status: TaskStatus, date?: LocalDateString) {
@@ -1346,6 +1388,7 @@ export const mockApiClient = {
         category: request.category ?? null,
         status: request.type === 'SCHEDULE' ? 'TODAY' : 'INBOX',
       });
+      applyTaskRecurrence(task, request);
 
       nextTaskId += 1;
       tasks.unshift(task);
