@@ -594,7 +594,6 @@ type SearchResultRowProps = {
 
 function SearchResultRow({ item, focused, onBlur, onFocus, onPress }: SearchResultRowProps) {
   const theme = useAppTheme();
-  const typeLabel = getTaskTypeLabel(item.task.type);
 
   return (
     <Pressable
@@ -619,10 +618,7 @@ function SearchResultRow({ item, focused, onBlur, onFocus, onPress }: SearchResu
           {item.task.title}
         </AppText>
         <AppText numberOfLines={1} tone="secondary" variant="caption">
-          {dateSourceLabels[item.dateSource]} ·{' '}
-          {formatDateLabel(item.relevantDate, { month: 'long', day: 'numeric', weekday: 'short' })}{' '}
-          · {typeLabel}
-          {item.task.category ? ` · ${item.task.category}` : ''}
+          {getSearchResultMeta(item)}
         </AppText>
       </View>
       <AppText tone="muted" variant="bodyLarge">
@@ -630,6 +626,17 @@ function SearchResultRow({ item, focused, onBlur, onFocus, onPress }: SearchResu
       </AppText>
     </Pressable>
   );
+}
+
+export function getSearchResultMeta(item: TaskSearchItem) {
+  const parts = [
+    dateSourceLabels[item.dateSource],
+    formatDateLabel(item.relevantDate, { month: 'long', day: 'numeric', weekday: 'short' }),
+    getTaskTypeLabel(item.task.type),
+    item.task.category,
+  ].filter((value): value is string => Boolean(value));
+
+  return [...new Set(parts)].join(' · ');
 }
 
 function getTaskTypeLabel(type: TaskType) {

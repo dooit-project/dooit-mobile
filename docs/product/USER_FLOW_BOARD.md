@@ -12,7 +12,7 @@ Last updated: 2026-08-24
 | UF-02 | Today 실행·빠른 기록         | 9장       | 보강 필요 | [2026-08-23 audit](../audits/uf-02-today-quick-capture-2026-08-23/README.md) |
 | UF-03 | Task 생성·조회·수정·삭제     | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-03-task-crud-2026-08-24/README.md)           |
 | UF-04 | 반복 Task occurrence         | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-04-recurrence-2026-08-24/README.md)          |
-| UF-05 | Calendar·검색·완료 기록 탐색 | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)          |
+| UF-05 | Calendar·검색·완료 기록 탐색 | 10장      | 보강 필요 | [2026-08-25 audit](../audits/uf-05-explore-2026-08-25/README.md)             |
 | UF-06 | D-Day 목표                   | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)          |
 | UF-07 | Workspace                    | 분산됨    | 누락 큼   | [Workspace UI 흐름](./WORKSPACE_UI_FLOW.md)                                  |
 | UF-08 | 설정·알림·세션 복구          | 준비 중   | 누락 큼   | [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md#uf-08-설정알림세션-복구)       |
@@ -99,6 +99,29 @@ flowchart LR
 | ![새 일정 반복 기본](../audits/uf-04-recurrence-2026-08-24/01-new-schedule-recurrence-default.jpg) | ![매일 반복 입력](../audits/uf-04-recurrence-2026-08-24/02-daily-recurrence-filled.jpg) | ![반복 Task 상세](../audits/uf-04-recurrence-2026-08-24/03-recurring-task-detail.jpg) | ![수정 범위 이번만](../audits/uf-04-recurrence-2026-08-24/04-edit-scope-this.jpg) |
 | 05 수정 이후 모두                                                                                  | 06 삭제 이번만                                                                          | 07 삭제 전체                                                                          |                                                                                   |
 | ![수정 범위 이후 모두](../audits/uf-04-recurrence-2026-08-24/05-edit-scope-future.jpg)             | ![삭제 범위 이번만](../audits/uf-04-recurrence-2026-08-24/06-delete-scope-this.jpg)     | ![삭제 범위 전체](../audits/uf-04-recurrence-2026-08-24/07-delete-scope-all.jpg)      |                                                                                   |
+
+## UF-05. Calendar·검색·완료 기록 탐색
+
+```mermaid
+flowchart LR
+  A[Calendar] --> B[날짜 선택]
+  B --> C{항목}
+  C -->|있음| D[예정·완료 목록]
+  C -->|없음| E[빈 날짜·일정 추가]
+  F[검색] --> G{검색 결과}
+  G -->|있음| H[Task 상세]
+  H --> F
+  G -->|없음| I[조건 초기화]
+  J[완료 기록] --> K[날짜 선택]
+  K --> L[완료 Task 다시 열기]
+  L --> M[완료·주간 집계 갱신]
+```
+
+| 01 Calendar 안내                                                           | 02 Calendar 일정 있음                                                               | 03 Calendar 빈 날짜                                                                | 04 검색 기본                                                                    | 05 검색 결과                                                                    |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| ![Calendar 안내](../audits/uf-05-explore-2026-08-25/01-calendar-guide.jpg) | ![Calendar 일정 있음](../audits/uf-05-explore-2026-08-25/02-calendar-populated.jpg) | ![Calendar 빈 날짜](../audits/uf-05-explore-2026-08-25/03-calendar-empty-date.jpg) | ![검색 기본](../audits/uf-05-explore-2026-08-25/04-search-default.jpg)          | ![검색 결과](../audits/uf-05-explore-2026-08-25/05-search-results.jpg)          |
+| 06 검색 복원                                                               | 07 검색 결과 없음                                                                   | 08 완료 기록 기본                                                                  | 09 완료 빈 날짜                                                                 | 10 완료 다시 열기                                                               |
+| ![검색 복원](../audits/uf-05-explore-2026-08-25/06-search-restored.jpg)    | ![검색 결과 없음](../audits/uf-05-explore-2026-08-25/07-search-empty.jpg)           | ![완료 기록 기본](../audits/uf-05-explore-2026-08-25/08-completed-default.jpg)     | ![완료 빈 날짜](../audits/uf-05-explore-2026-08-25/09-completed-empty-date.jpg) | ![완료 다시 열기](../audits/uf-05-explore-2026-08-25/10-completed-reopened.jpg) |
 
 ## 갱신 규칙
 

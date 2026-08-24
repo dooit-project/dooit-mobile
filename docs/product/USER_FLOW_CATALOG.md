@@ -155,13 +155,14 @@ flowchart LR
 
 현재 근거:
 
+- [UF-05 최신 캡처와 판정 (2026-08-25)](../audits/uf-05-explore-2026-08-25/README.md)
 - [Calendar](../screenshots/calendar.png), [검색](../screenshots/search.png), [완료 기록](../screenshots/completed.png)
 
 남은 캡처:
 
-- Calendar 일정 없음·여러 날 일정·`+N` overflow·월 선택
-- 검색 전·결과 있음·결과 없음·다음 페이지·오류·상세 왕복 복원
-- 완료 없음·여러 개·다시 열기 성공/실패
+- Calendar 일정 없음과 여러 날 일정은 확인했다. `+N` overflow·월 선택·주 이동이 남았다.
+- 검색 전·결과 있음·결과 없음·상세 왕복 복원은 확인했다. 다음 페이지·오류·상세 필터가 남았다.
+- 완료 없음·여러 개·다시 열기 성공은 확인했다. 다시 열기 실패와 Today 반영이 남았다.
 
 ## UF-06. D-Day 목표
 
