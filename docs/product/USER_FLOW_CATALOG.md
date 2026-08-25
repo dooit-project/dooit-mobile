@@ -209,14 +209,15 @@ flowchart LR
 
 현재 근거:
 
+- [UF-07 최신 캡처와 판정 (2026-08-25)](../audits/uf-07-workspace-2026-08-25/README.md)
 - 기준 흐름은 [`WORKSPACE_UI_FLOW.md`](./WORKSPACE_UI_FLOW.md)에 있다.
 - [초대 수락](../audits/workspace-invitation-2026-08-18/README.md), [탭 이동](../audits/workspace-navigation-2026-08-18/README.md), [반응형·키보드](../audits/workspace-responsive-2026-08-19/README.md), [접근 오류](../audits/workspace-access-error-2026-08-19/README.md)
 
 남은 캡처:
 
-- 공간 생성·수정·삭제 성공/실패
-- OWNER·EDITOR·VIEWER별 일정·D-Day·멤버 행동 차이
-- 초대 거절 계약 구현 뒤 확인/성공/404·409
+- 공간 생성과 OWNER의 일정·D-Day 생성, 멤버 조회, 초대 발송은 확인했다. 공간 수정·삭제 성공/실패가 남았다.
+- OWNER·EDITOR·VIEWER별 일정·D-Day·멤버 행동 차이와 반복 범위, 연결·해제가 남았다.
+- 초대 수락은 이전 audit에 있다. 거절 계약 구현 뒤 확인/성공/404·409와 대기 초대 조회·취소가 남았다.
 - Task가 있는 Workspace 삭제 500 수정 뒤 real 검증
 
 ## UF-08. 설정·알림·세션 복구

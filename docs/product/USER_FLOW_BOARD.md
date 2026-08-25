@@ -1,6 +1,6 @@
 # ToDoLab 사용자 흐름 보드
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 이 문서는 구현과 함께 갱신하는 사용자 흐름의 시각적 원본이다. 전체 시나리오와 미검증 상태는 [`USER_FLOW_CATALOG.md`](./USER_FLOW_CATALOG.md), 화면별 판정과 재현 조건은 각 audit README에서 확인한다.
 
@@ -14,7 +14,7 @@ Last updated: 2026-08-24
 | UF-04 | 반복 Task occurrence         | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-04-recurrence-2026-08-24/README.md)          |
 | UF-05 | Calendar·검색·완료 기록 탐색 | 10장      | 보강 필요 | [2026-08-25 audit](../audits/uf-05-explore-2026-08-25/README.md)             |
 | UF-06 | D-Day 목표                   | 13장      | 보강 필요 | [2026-08-25 audit](../audits/uf-06-dday-2026-08-25/README.md)                |
-| UF-07 | Workspace                    | 분산됨    | 누락 큼   | [Workspace UI 흐름](./WORKSPACE_UI_FLOW.md)                                  |
+| UF-07 | Workspace                    | 15장      | 보강 필요 | [2026-08-25 audit](../audits/uf-07-workspace-2026-08-25/README.md)           |
 | UF-08 | 설정·알림·세션 복구          | 준비 중   | 누락 큼   | [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md#uf-08-설정알림세션-복구)       |
 
 ## UF-01. 최초 시작과 계정 연결
@@ -148,6 +148,29 @@ flowchart LR
 | ![목표 생성 완료](../audits/uf-06-dday-2026-08-25/06-dday-created.jpg)        | ![연결 Task 없음](../audits/uf-06-dday-2026-08-25/07-dday-linked-tasks-empty.jpg) | ![Today Task 생성](../audits/uf-06-dday-2026-08-25/08-dday-today-task-form.jpg) | ![연결 Task 생성 완료](../audits/uf-06-dday-2026-08-25/09-dday-linked-task-created.jpg) | ![연결 Task 상세](../audits/uf-06-dday-2026-08-25/10-dday-task-detail.jpg) |
 | 11 삭제 확인                                                                  | 12 삭제 완료                                                                      | 13 빈 상태                                                                      |                                                                                         |                                                                            |
 | ![목표 삭제 확인](../audits/uf-06-dday-2026-08-25/11-dday-delete-confirm.jpg) | ![목표 삭제 완료](../audits/uf-06-dday-2026-08-25/12-dday-deleted.jpg)            | ![D-Day 빈 상태](../audits/uf-06-dday-2026-08-25/13-dday-empty.jpg)             |                                                                                         |                                                                            |
+
+## UF-07. Workspace 초대·일정·목표·멤버
+
+```mermaid
+flowchart LR
+  A[공간 없음] --> B[공간 만들기]
+  B -->|입력 오류| B
+  B --> C[OWNER 공간]
+  C --> D[공유 일정]
+  D -->|추가| E[일정 관리]
+  C --> F[공유 D-Day]
+  F -->|추가| G[목표 카드]
+  C --> H[멤버]
+  H -->|초대| I[발송 완료]
+```
+
+| 01 공간 없음                                                                           | 02 공간 생성 기본                                                                       | 03 공간 validation                                                                          | 04 공간 입력 완료                                                                           | 05 공간 생성 완료                                                                    |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| ![공간 없음](../audits/uf-07-workspace-2026-08-25/01-workspace-empty.jpg)              | ![공간 생성 기본](../audits/uf-07-workspace-2026-08-25/02-workspace-create-default.jpg) | ![공간 validation](../audits/uf-07-workspace-2026-08-25/03-workspace-create-validation.jpg) | ![공간 입력 완료](../audits/uf-07-workspace-2026-08-25/04-workspace-create-filled.jpg)      | ![공간 생성 완료](../audits/uf-07-workspace-2026-08-25/05-workspace-created.jpg)     |
+| 06 일정 없음                                                                           | 07 일정 form                                                                            | 08 일정 생성 완료                                                                           | 09 D-Day 없음                                                                               | 10 D-Day form                                                                        |
+| ![일정 없음](../audits/uf-07-workspace-2026-08-25/06-workspace-tasks-empty.jpg)        | ![일정 form](../audits/uf-07-workspace-2026-08-25/07-workspace-task-form.jpg)           | ![일정 생성 완료](../audits/uf-07-workspace-2026-08-25/08-workspace-task-created.jpg)       | ![D-Day 없음](../audits/uf-07-workspace-2026-08-25/09-workspace-dday-empty.jpg)             | ![D-Day form](../audits/uf-07-workspace-2026-08-25/10-workspace-dday-form.jpg)       |
+| 11 D-Day 생성 완료                                                                     | 12 멤버 목록                                                                            | 13 초대 form                                                                                | 14 초대 validation                                                                          | 15 초대 발송 완료                                                                    |
+| ![D-Day 생성 완료](../audits/uf-07-workspace-2026-08-25/11-workspace-dday-created.jpg) | ![멤버 목록](../audits/uf-07-workspace-2026-08-25/12-workspace-members.jpg)             | ![초대 form](../audits/uf-07-workspace-2026-08-25/13-workspace-invite-form.jpg)             | ![초대 validation](../audits/uf-07-workspace-2026-08-25/14-workspace-invite-validation.jpg) | ![초대 발송 완료](../audits/uf-07-workspace-2026-08-25/15-workspace-invite-sent.jpg) |
 
 ## 갱신 규칙
 
