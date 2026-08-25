@@ -179,13 +179,14 @@ flowchart LR
 
 현재 근거:
 
+- [UF-06 최신 캡처와 판정 (2026-08-25)](../audits/uf-06-dday-2026-08-25/README.md)
 - [D-Day 목록](../screenshots/dday.png), [D-Day 생성 audit](../audits/product-design-2026-08-12/09b-dday-create.png)
 
 남은 캡처:
 
-- 목표 없음·생성 form·validation·생성 성공/실패
-- 목표별 연결 Task 0개·여러 개
-- Today Task 생성과 기존 Task 연결·해제·삭제
+- 목표 없음·생성 form·validation·생성 성공은 확인했다. 생성·삭제 실패가 남았다.
+- 목표별 연결 Task 0개·1개는 확인했다. 여러 개와 완료 상태가 남았다.
+- 목표 기반 Today Task 생성은 확인했다. 기존 Task 연결·변경·해제와 목표 삭제 뒤 처리 확인이 남았다.
 
 ## UF-07. Workspace 초대·일정·목표·멤버
 

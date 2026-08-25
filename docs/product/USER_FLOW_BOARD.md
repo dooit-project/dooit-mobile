@@ -13,7 +13,7 @@ Last updated: 2026-08-24
 | UF-03 | Task 생성·조회·수정·삭제     | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-03-task-crud-2026-08-24/README.md)           |
 | UF-04 | 반복 Task occurrence         | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-04-recurrence-2026-08-24/README.md)          |
 | UF-05 | Calendar·검색·완료 기록 탐색 | 10장      | 보강 필요 | [2026-08-25 audit](../audits/uf-05-explore-2026-08-25/README.md)             |
-| UF-06 | D-Day 목표                   | 준비 중   | 보강 필요 | [기존 전체 UI audit](../audits/product-design-2026-08-12/README.md)          |
+| UF-06 | D-Day 목표                   | 13장      | 보강 필요 | [2026-08-25 audit](../audits/uf-06-dday-2026-08-25/README.md)                |
 | UF-07 | Workspace                    | 분산됨    | 누락 큼   | [Workspace UI 흐름](./WORKSPACE_UI_FLOW.md)                                  |
 | UF-08 | 설정·알림·세션 복구          | 준비 중   | 누락 큼   | [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md#uf-08-설정알림세션-복구)       |
 
@@ -122,6 +122,32 @@ flowchart LR
 | ![Calendar 안내](../audits/uf-05-explore-2026-08-25/01-calendar-guide.jpg) | ![Calendar 일정 있음](../audits/uf-05-explore-2026-08-25/02-calendar-populated.jpg) | ![Calendar 빈 날짜](../audits/uf-05-explore-2026-08-25/03-calendar-empty-date.jpg) | ![검색 기본](../audits/uf-05-explore-2026-08-25/04-search-default.jpg)          | ![검색 결과](../audits/uf-05-explore-2026-08-25/05-search-results.jpg)          |
 | 06 검색 복원                                                               | 07 검색 결과 없음                                                                   | 08 완료 기록 기본                                                                  | 09 완료 빈 날짜                                                                 | 10 완료 다시 열기                                                               |
 | ![검색 복원](../audits/uf-05-explore-2026-08-25/06-search-restored.jpg)    | ![검색 결과 없음](../audits/uf-05-explore-2026-08-25/07-search-empty.jpg)           | ![완료 기록 기본](../audits/uf-05-explore-2026-08-25/08-completed-default.jpg)     | ![완료 빈 날짜](../audits/uf-05-explore-2026-08-25/09-completed-empty-date.jpg) | ![완료 다시 열기](../audits/uf-05-explore-2026-08-25/10-completed-reopened.jpg) |
+
+## UF-06. D-Day 목표
+
+```mermaid
+flowchart LR
+  A[D-Day 목록] --> B[새 목표]
+  B -->|입력 오류| B
+  B -->|생성| C[목표 카드]
+  C --> D{연결 Task}
+  D -->|없음| E[빈 상태]
+  E --> F[Today Task 만들기]
+  F --> G[연결 Task 목록]
+  G --> H[Task 상세·D-Day 표시]
+  C --> I{목표 삭제}
+  I -->|취소| C
+  I -->|영구 삭제| A
+  A -->|0개| J[D-Day 빈 상태]
+```
+
+| 01 안내                                                                       | 02 목록                                                                           | 03 생성 기본                                                                    | 04 validation                                                                           | 05 생성 입력                                                               |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| ![D-Day 안내](../audits/uf-06-dday-2026-08-25/01-dday-guide.jpg)              | ![D-Day 목록](../audits/uf-06-dday-2026-08-25/02-dday-list.jpg)                   | ![새 목표 기본](../audits/uf-06-dday-2026-08-25/03-dday-create-default.jpg)     | ![생성 validation](../audits/uf-06-dday-2026-08-25/04-dday-create-validation.jpg)       | ![새 목표 입력](../audits/uf-06-dday-2026-08-25/05-dday-create-filled.jpg) |
+| 06 생성 완료                                                                  | 07 연결 Task 없음                                                                 | 08 Today Task 생성                                                              | 09 연결 Task 생성 완료                                                                  | 10 연결 Task 상세                                                          |
+| ![목표 생성 완료](../audits/uf-06-dday-2026-08-25/06-dday-created.jpg)        | ![연결 Task 없음](../audits/uf-06-dday-2026-08-25/07-dday-linked-tasks-empty.jpg) | ![Today Task 생성](../audits/uf-06-dday-2026-08-25/08-dday-today-task-form.jpg) | ![연결 Task 생성 완료](../audits/uf-06-dday-2026-08-25/09-dday-linked-task-created.jpg) | ![연결 Task 상세](../audits/uf-06-dday-2026-08-25/10-dday-task-detail.jpg) |
+| 11 삭제 확인                                                                  | 12 삭제 완료                                                                      | 13 빈 상태                                                                      |                                                                                         |                                                                            |
+| ![목표 삭제 확인](../audits/uf-06-dday-2026-08-25/11-dday-delete-confirm.jpg) | ![목표 삭제 완료](../audits/uf-06-dday-2026-08-25/12-dday-deleted.jpg)            | ![D-Day 빈 상태](../audits/uf-06-dday-2026-08-25/13-dday-empty.jpg)             |                                                                                         |                                                                            |
 
 ## 갱신 규칙
 
