@@ -1,21 +1,21 @@
 # ToDoLab 사용자 흐름 보드
 
-Last updated: 2026-08-25
+Last updated: 2026-08-26
 
 이 문서는 구현과 함께 갱신하는 사용자 흐름의 시각적 원본이다. 전체 시나리오와 미검증 상태는 [`USER_FLOW_CATALOG.md`](./USER_FLOW_CATALOG.md), 화면별 판정과 재현 조건은 각 audit README에서 확인한다.
 
 ## 진행 현황
 
-| Flow  | 범위                         | 최신 캡처 | 판정      | 상세 근거                                                                    |
-| ----- | ---------------------------- | --------- | --------- | ---------------------------------------------------------------------------- |
-| UF-01 | 최초 시작·계정 연결          | 10장      | 보강 필요 | [2026-08-23 audit](../audits/uf-01-first-use-2026-08-23/README.md)           |
-| UF-02 | Today 실행·빠른 기록         | 9장       | 보강 필요 | [2026-08-23 audit](../audits/uf-02-today-quick-capture-2026-08-23/README.md) |
-| UF-03 | Task 생성·조회·수정·삭제     | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-03-task-crud-2026-08-24/README.md)           |
-| UF-04 | 반복 Task occurrence         | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-04-recurrence-2026-08-24/README.md)          |
-| UF-05 | Calendar·검색·완료 기록 탐색 | 10장      | 보강 필요 | [2026-08-25 audit](../audits/uf-05-explore-2026-08-25/README.md)             |
-| UF-06 | D-Day 목표                   | 13장      | 보강 필요 | [2026-08-25 audit](../audits/uf-06-dday-2026-08-25/README.md)                |
-| UF-07 | Workspace                    | 15장      | 보강 필요 | [2026-08-25 audit](../audits/uf-07-workspace-2026-08-25/README.md)           |
-| UF-08 | 설정·알림·세션 복구          | 준비 중   | 누락 큼   | [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md#uf-08-설정알림세션-복구)       |
+| Flow  | 범위                         | 최신 캡처 | 판정      | 상세 근거                                                                               |
+| ----- | ---------------------------- | --------- | --------- | --------------------------------------------------------------------------------------- |
+| UF-01 | 최초 시작·계정 연결          | 10장      | 보강 필요 | [2026-08-23 audit](../audits/uf-01-first-use-2026-08-23/README.md)                      |
+| UF-02 | Today 실행·빠른 기록         | 9장       | 보강 필요 | [2026-08-23 audit](../audits/uf-02-today-quick-capture-2026-08-23/README.md)            |
+| UF-03 | Task 생성·조회·수정·삭제     | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-03-task-crud-2026-08-24/README.md)                      |
+| UF-04 | 반복 Task occurrence         | 7장       | 보강 필요 | [2026-08-24 audit](../audits/uf-04-recurrence-2026-08-24/README.md)                     |
+| UF-05 | Calendar·검색·완료 기록 탐색 | 10장      | 보강 필요 | [2026-08-25 audit](../audits/uf-05-explore-2026-08-25/README.md)                        |
+| UF-06 | D-Day 목표                   | 13장      | 보강 필요 | [2026-08-25 audit](../audits/uf-06-dday-2026-08-25/README.md)                           |
+| UF-07 | Workspace                    | 15장      | 보강 필요 | [2026-08-25 audit](../audits/uf-07-workspace-2026-08-25/README.md)                      |
+| UF-08 | 설정·알림·세션 복구          | 6장       | 보강 필요 | [2026-08-26 audit](../audits/uf-08-settings-notifications-session-2026-08-26/README.md) |
 
 ## UF-01. 최초 시작과 계정 연결
 
@@ -171,6 +171,25 @@ flowchart LR
 | ![일정 없음](../audits/uf-07-workspace-2026-08-25/06-workspace-tasks-empty.jpg)        | ![일정 form](../audits/uf-07-workspace-2026-08-25/07-workspace-task-form.jpg)           | ![일정 생성 완료](../audits/uf-07-workspace-2026-08-25/08-workspace-task-created.jpg)       | ![D-Day 없음](../audits/uf-07-workspace-2026-08-25/09-workspace-dday-empty.jpg)             | ![D-Day form](../audits/uf-07-workspace-2026-08-25/10-workspace-dday-form.jpg)       |
 | 11 D-Day 생성 완료                                                                     | 12 멤버 목록                                                                            | 13 초대 form                                                                                | 14 초대 validation                                                                          | 15 초대 발송 완료                                                                    |
 | ![D-Day 생성 완료](../audits/uf-07-workspace-2026-08-25/11-workspace-dday-created.jpg) | ![멤버 목록](../audits/uf-07-workspace-2026-08-25/12-workspace-members.jpg)             | ![초대 form](../audits/uf-07-workspace-2026-08-25/13-workspace-invite-form.jpg)             | ![초대 validation](../audits/uf-07-workspace-2026-08-25/14-workspace-invite-validation.jpg) | ![초대 발송 완료](../audits/uf-07-workspace-2026-08-25/15-workspace-invite-sent.jpg) |
+
+## UF-08. 설정·알림·세션 복구
+
+```mermaid
+flowchart LR
+  A[더보기] --> B[설정]
+  B --> C[Web 알림 지원 범위]
+  B --> D[사용 가이드 초기화]
+  D --> E[화면별 안내 재표시]
+  F[등록 세션 만료] --> G[재로그인 안내]
+  H[게스트 세션 만료] --> I[기존 계정 로그인 안내]
+  G -->|재인증| J[Today·동기화 데이터 복구]
+```
+
+| 01 더보기                                                                                           | 02 Web 설정                                                                                                 | 03 가이드 초기화 성공                                                                                       |
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ![더보기](../audits/uf-08-settings-notifications-session-2026-08-26/01-more.jpg)                    | ![Web 설정](../audits/uf-08-settings-notifications-session-2026-08-26/02-settings-web.jpg)                  | ![가이드 초기화 성공](../audits/uf-08-settings-notifications-session-2026-08-26/03-guide-reset-success.jpg) |
+| 04 등록 세션 만료                                                                                   | 05 게스트 세션 만료                                                                                         | 06 재로그인 완료                                                                                            |
+| ![등록 세션 만료](../audits/uf-08-settings-notifications-session-2026-08-26/04-session-expired.jpg) | ![게스트 세션 만료](../audits/uf-08-settings-notifications-session-2026-08-26/05-guest-session-expired.jpg) | ![재로그인 완료](../audits/uf-08-settings-notifications-session-2026-08-26/06-session-reauthenticated.jpg)  |
 
 ## 갱신 규칙
 

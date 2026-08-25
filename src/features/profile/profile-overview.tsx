@@ -76,7 +76,7 @@ const profileItemGroups: { title: string; items: ProfileItem[] }[] = [
       {
         accent: 'blue',
         title: '설정',
-        description: '테마, 알림, 개인 설정',
+        description: '알림, 사용 가이드',
         href: '/settings',
         icon: { ios: 'gearshape.fill', android: 'settings', web: 'settings' },
         webIcon: 'settings',
