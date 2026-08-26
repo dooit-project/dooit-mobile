@@ -120,10 +120,10 @@ export function TaskCard({
         ) : null}
 
         <Pressable
+          accessible={Boolean(onOpen)}
           accessibilityHint={onOpen ? '할 일 상세 화면을 엽니다.' : undefined}
-          accessibilityLabel={detailAccessibilityLabel}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !onOpen }}
+          accessibilityLabel={onOpen ? detailAccessibilityLabel : undefined}
+          accessibilityRole={onOpen ? 'button' : undefined}
           disabled={!onOpen}
           onBlur={() => setFocusedControl(null)}
           onFocus={() => setFocusedControl('content')}

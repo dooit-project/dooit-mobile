@@ -81,10 +81,10 @@ export function ScheduleCard({
         </Pressable>
       ) : null}
       <Pressable
+        accessible={Boolean(onOpen)}
         accessibilityHint={onOpen ? '일정 상세 화면을 엽니다.' : undefined}
-        accessibilityLabel={`${scheduleAccessibilityLabel}, 상세 보기`}
-        accessibilityRole="button"
-        accessibilityState={{ disabled: !onOpen }}
+        accessibilityLabel={onOpen ? `${scheduleAccessibilityLabel}, 상세 보기` : undefined}
+        accessibilityRole={onOpen ? 'button' : undefined}
         disabled={!onOpen}
         onBlur={() => setFocusedControl(null)}
         onFocus={() => setFocusedControl('content')}
@@ -117,9 +117,11 @@ export function ScheduleCard({
             ) : null}
           </View>
         </View>
-        <AppText tone="muted" variant="bodyLarge">
-          ›
-        </AppText>
+        {onOpen ? (
+          <AppText tone="muted" variant="bodyLarge">
+            ›
+          </AppText>
+        ) : null}
       </Pressable>
     </View>
   );

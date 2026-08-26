@@ -210,6 +210,7 @@ flowchart LR
 현재 근거:
 
 - [UF-07 최신 캡처와 판정 (2026-08-25)](../audits/uf-07-workspace-2026-08-25/README.md)
+- [Workspace Task 행동 위계 개선 (2026-08-26)](../audits/workspace-task-actions-2026-08-26/README.md)
 - 기준 흐름은 [`WORKSPACE_UI_FLOW.md`](./WORKSPACE_UI_FLOW.md)에 있다.
 - [초대 수락](../audits/workspace-invitation-2026-08-18/README.md), [탭 이동](../audits/workspace-navigation-2026-08-18/README.md), [반응형·키보드](../audits/workspace-responsive-2026-08-19/README.md), [접근 오류](../audits/workspace-access-error-2026-08-19/README.md)
 

@@ -431,7 +431,7 @@ function WorkspaceTaskCard({
   const connect = useConnectWorkspaceTaskDdayGoal(workspaceId);
   const disconnect = useDisconnectWorkspaceTaskDdayGoal(workspaceId);
   const goals = useWorkspaceDdayGoals(workspaceId);
-  const [mode, setMode] = useState<'idle' | 'edit' | 'delete' | 'dday'>('idle');
+  const [mode, setMode] = useState<'idle' | 'menu' | 'edit' | 'delete' | 'dday'>('idle');
   const [title, setTitle] = useState(task.title);
   const [recurrenceScope, setRecurrenceScope] = useState<RecurrenceEditScope>('THIS');
   const [validationError, setValidationError] = useState(false);
@@ -485,11 +485,27 @@ function WorkspaceTaskCard({
               D-Day 연결
             </Button>
           )}
+          <IconButton
+            accessibilityHint="제목 수정과 삭제 행동을 표시합니다."
+            accessibilityLabel={`${task.title} 일정 메뉴 열기`}
+            onPress={() => setMode('menu')}
+          >
+            <AppText tone="secondary" weight="bold">
+              ⋯
+            </AppText>
+          </IconButton>
+        </View>
+      ) : null}
+      {mode === 'menu' ? (
+        <View style={[styles.taskMenu, { borderColor: theme.colors.border }]}>
           <Button size="compact" variant="ghost" onPress={() => openMode('edit')}>
             제목 수정
           </Button>
           <Button size="compact" variant="ghost" onPress={() => openMode('delete')}>
             삭제
+          </Button>
+          <Button size="compact" variant="ghost" onPress={() => setMode('idle')}>
+            닫기
           </Button>
         </View>
       ) : null}
@@ -919,6 +935,14 @@ const styles = StyleSheet.create({
   taskList: { gap: spacing[2] },
   taskItem: { gap: spacing[2] },
   taskActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' },
+  taskMenu: {
+    borderRadius: radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    padding: spacing[1],
+  },
   ddayOptions: { gap: spacing[2] },
   inlineEditor: { gap: spacing[3] },
   form: { gap: spacing[4] },
