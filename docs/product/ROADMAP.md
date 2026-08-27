@@ -93,7 +93,8 @@ Last updated: 2026-08-23
 - [x] [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)의 최신 기록 1개 preview와 `하루 정리` 분리를 캡처 비교한 뒤 구현한다.
 - [x] Workspace Task의 D-Day 연결·제목 수정·삭제 action을 주요 행동과 overflow menu로 정리하고 [`workspace-task-actions-2026-08-26`](../audits/workspace-task-actions-2026-08-26/README.md)에서 전후 캡처를 점검한다.
 - [x] Workspace Task 행동 위계를 Web 320px·390px·430px에서 [`workspace-task-responsive-2026-08-26`](../audits/workspace-task-responsive-2026-08-26/README.md)으로 검증한다.
-- [ ] 위 변경을 font scale 1.5, light·dark와 VoiceOver·TalkBack에서 검증한다.
+- [x] Workspace Task 행동 위계를 Web 390px light와 접근성 트리에서 [`workspace-task-theme-accessibility-2026-08-27`](../audits/workspace-task-theme-accessibility-2026-08-27/README.md)로 검증한다.
+- [ ] 위 변경을 font scale 1.5, dark와 VoiceOver·TalkBack에서 검증한다.
 
 ### P1. 사용자 흐름 시각 문서화
 
