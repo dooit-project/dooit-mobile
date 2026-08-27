@@ -1,5 +1,7 @@
 const REQUIRED_OPERATIONS = [
   ['get', '/api/v1/system/metadata'],
+  ['post', '/api/v1/auth/guest'],
+  ['post', '/api/v1/auth/login'],
   ['post', '/api/v1/auth/refresh'],
   ['post', '/api/v1/auth/guest/refresh'],
   ['post', '/api/v1/auth/logout'],
@@ -55,15 +57,36 @@ function findSchemasWithFields(document, fields) {
     .map(([name]) => name);
 }
 
+function normalizePathTemplate(path) {
+  return path.replace(/\{[^}]+\}/g, '{}');
+}
+
+function findPathItem(document, expectedPath) {
+  const normalizedExpected = normalizePathTemplate(expectedPath);
+  const actualPath = Object.keys(document.paths ?? {}).find(
+    (path) => normalizePathTemplate(path) === normalizedExpected,
+  );
+  return actualPath ? document.paths[actualPath] : undefined;
+}
+
+function hasSuccessResponse(operation) {
+  return Object.keys(operation?.responses ?? {}).some((status) => /^2\d\d$/.test(status));
+}
+
 function validateLatestBackendOpenApi(document) {
   const missing = [];
 
   for (const [method, path] of REQUIRED_OPERATIONS) {
-    if (!document.paths?.[path]?.[method]) missing.push(`${method.toUpperCase()} ${path}`);
+    const operation = findPathItem(document, path)?.[method];
+    if (!operation) {
+      missing.push(`${method.toUpperCase()} ${path}`);
+    } else if (!hasSuccessResponse(operation)) {
+      missing.push(`${method.toUpperCase()} ${path} 2xx response`);
+    }
   }
 
   for (const path of IDEMPOTENT_CREATE_PATHS) {
-    const pathItem = document.paths?.[path];
+    const pathItem = findPathItem(document, path);
     const operation = pathItem?.post;
     if (!operation) {
       missing.push(`POST ${path}`);
@@ -158,6 +181,8 @@ if (require.main === module) {
 
 module.exports = {
   checkLatestBackendOpenApi,
+  findPathItem,
   findSchemasWithFields,
+  normalizePathTemplate,
   validateLatestBackendOpenApi,
 };

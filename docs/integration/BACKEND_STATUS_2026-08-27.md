@@ -26,6 +26,8 @@
 
 ## production 반영 전 확인
 
+2026-08-28 현재 설정된 배포를 `check:backend-ready`로 확인한 결과 readiness와 metadata는 통과했지만 최신 OpenAPI 검사는 중단됐다. auth guest·login·refresh·guest refresh·logout과 비밀번호 재설정 request·verify·confirm 8개 POST에 성공(2xx) 응답 문서가 없고, token response schema의 `refreshToken`·`refreshExpiresAt`도 확인할 수 없다. 백엔드 OpenAPI annotation을 보완한 배포 후 재검증한다.
+
 1. 필요한 backend commit과 migration을 하나의 배포 단위로 반영한다.
 2. `GET /actuator/health/readiness`와 `GET /api/v1/system/metadata`를 확인한다.
 3. metadata의 commit/image가 실행 OpenAPI와 migration 기록에 대응하는지 확인한다.

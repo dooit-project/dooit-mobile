@@ -197,3 +197,12 @@ API mode / URL:
 - 판정: `BLOCKED` — readiness와 별개로 배포 식별 metadata 공개 계약 보완 필요
 
 위 기록은 당시 배포 기준이다. 현재 `check:backend-deployment`는 완료된 공개 계약인 `GET /api/v1/system/metadata`에서 `commitSha`·`imageTag`·`version`을 확인하므로 최신 production 배포 후 다시 실행해 이 판정을 갱신한다.
+
+### 2026-08-28 통합 backend readiness 재검사
+
+- readiness: 통과 (`UP`)
+- metadata: 통과 (`commitSha`, `imageTag`, `version` 응답 확인)
+- 최신 OpenAPI: 실패
+- 확인된 누락: auth guest·login·refresh·guest refresh·logout과 비밀번호 재설정 request·verify·confirm의 성공(2xx) response, token response schema
+- 참고: task-template·D-Day task endpoint의 path parameter가 `{id}`인 것은 정상이며 checker가 변수명을 무시하도록 보완했다.
+- 판정: `BLOCKED` — 백엔드 OpenAPI 성공 응답 문서 보완 후 `npm run check:backend-ready` 재실행

@@ -1,11 +1,15 @@
 const {
   checkLatestBackendOpenApi,
+  findPathItem,
   findSchemasWithFields,
+  normalizePathTemplate,
   validateLatestBackendOpenApi,
 } = require('../check-latest-backend-openapi');
 
 const requiredPaths = [
   ['get', '/api/v1/system/metadata'],
+  ['post', '/api/v1/auth/guest'],
+  ['post', '/api/v1/auth/login'],
   ['post', '/api/v1/auth/refresh'],
   ['post', '/api/v1/auth/guest/refresh'],
   ['post', '/api/v1/auth/logout'],
@@ -66,7 +70,7 @@ function documentFixture() {
 describe('latest backend OpenAPI contract', () => {
   it('최신 endpoint, 멱등성, session과 알림 schema를 확인한다', () => {
     expect(validateLatestBackendOpenApi(documentFixture())).toEqual({
-      requiredOperationCount: 7,
+      requiredOperationCount: 9,
       idempotentCreateCount: 11,
       tokenSchemas: ['TokenResponse'],
       notificationSchemas: ['TaskRequest', 'TaskResponse'],
@@ -84,6 +88,15 @@ describe('latest backend OpenAPI contract', () => {
     );
   });
 
+  it('endpoint 성공 응답이 빠지면 실패한다', () => {
+    const document = documentFixture();
+    document.paths['/api/v1/auth/refresh'].post.responses = { 401: {} };
+
+    expect(() => validateLatestBackendOpenApi(document)).toThrow(
+      'POST /api/v1/auth/refresh 2xx response',
+    );
+  });
+
   it('지정한 OpenAPI URL에서 문서를 읽는다', async () => {
     const request = jest.fn().mockResolvedValue({
       ok: true,
@@ -98,6 +111,21 @@ describe('latest backend OpenAPI contract', () => {
       headers: { Accept: 'application/json' },
       signal: expect.any(AbortSignal),
     });
+  });
+});
+
+describe('OpenAPI path template', () => {
+  it('path parameter 이름이 달라도 같은 endpoint로 찾는다', () => {
+    const document = documentFixture();
+    document.paths['/api/v1/task-templates/{id}/tasks'] =
+      document.paths['/api/v1/task-templates/{templateId}/tasks'];
+    delete document.paths['/api/v1/task-templates/{templateId}/tasks'];
+
+    expect(normalizePathTemplate('/api/v1/task-templates/{id}/tasks')).toBe(
+      '/api/v1/task-templates/{}/tasks',
+    );
+    expect(findPathItem(document, '/api/v1/task-templates/{templateId}/tasks')).toBeDefined();
+    expect(() => validateLatestBackendOpenApi(document)).not.toThrow();
   });
 });
 
