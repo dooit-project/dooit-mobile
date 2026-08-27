@@ -62,7 +62,7 @@ Last updated: 2026-08-27
 - [x] Task·D-Day·반복 series·membership이 있는 Workspace cascade 삭제와 통합 테스트가 백엔드에 구현됐다.
 - [x] `GET /api/v1/system/metadata`에서 backend commit/image/version을 식별하는 계약이 구현됐다.
 - [x] 비밀번호 재설정 request·verify·confirm, 30분 token, rate limit과 `todolab://password-reset` link 계약이 구현됐다.
-- [ ] 비밀번호 재설정 이메일 입력·token 검증·새 비밀번호 저장 UI와 deep link를 연결한다.
+- [x] 비밀번호 재설정 이메일 입력·token 검증·새 비밀번호 저장 UI와 `todolab://password-reset` route를 연결한다.
 - [ ] 최신 백엔드 배포에서 내용 있는 Workspace 삭제와 metadata endpoint를 real smoke로 재검증한다.
 - [ ] 메일 발송 환경을 포함한 최신 백엔드 배포에서 비밀번호 재설정 전체 흐름을 확인한다.
 

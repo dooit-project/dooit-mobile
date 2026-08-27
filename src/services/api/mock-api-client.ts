@@ -1285,11 +1285,11 @@ export const mockApiClient = {
     }
 
     if (path === `${AUTH_PATH}/password-reset/request`) {
-      return { accepted: true } as T;
+      return { requested: true, ttlSeconds: 1800 } as T;
     }
 
     if (path === `${AUTH_PATH}/password-reset/verify`) {
-      return { valid: true, emailHint: 'm***@example.com' } as T;
+      return { valid: true, maskedEmail: 'm***@example.com' } as T;
     }
 
     if (path === `${AUTH_PATH}/password-reset/confirm`) {

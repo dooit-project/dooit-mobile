@@ -21,6 +21,7 @@ export function LoginOverview() {
     expired?: string;
     guestExpired?: string;
     registered?: string;
+    reset?: string;
   }>();
   const queryClient = useQueryClient();
   const authState = useAuthState();
@@ -184,6 +185,13 @@ export function LoginOverview() {
             message="새 게스트 계정을 만들지 않았어요. 기존 계정으로 로그인해 주세요."
           />
         ) : null}
+        {params.reset === '1' ? (
+          <InlineNotice
+            tone="success"
+            title="비밀번호를 변경했어요"
+            message="새 비밀번호로 로그인해 주세요."
+          />
+        ) : null}
         {errorMessage ? <InlineNotice tone="danger" message={errorMessage} /> : null}
 
         <Button fullWidth loading={login.isPending} onPress={submit} size="large">
@@ -192,6 +200,13 @@ export function LoginOverview() {
       </View>
 
       <View style={styles.secondaryAction}>
+        <Button
+          disabled={login.isPending}
+          onPress={() => router.push('/password-reset' as Href)}
+          variant="ghost"
+        >
+          비밀번호를 잊으셨나요?
+        </Button>
         <AppText tone="secondary" variant="label">
           처음 사용하시나요?
         </AppText>

@@ -30,7 +30,8 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번
 {
   "status": "success",
   "data": {
-    "accepted": true
+    "requested": true,
+    "ttlSeconds": 1800
   },
   "timestamp": "2026-08-06T00:00:00Z"
 }
@@ -61,7 +62,7 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번
   "status": "success",
   "data": {
     "valid": true,
-    "emailHint": "u***@example.com"
+    "maskedEmail": "u***@example.com"
   },
   "timestamp": "2026-08-06T00:00:00Z"
 }

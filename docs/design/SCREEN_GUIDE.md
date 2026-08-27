@@ -29,7 +29,7 @@ ToDoLab Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서�
 | `/tasks/new`      | Task 작성       | 완료   | 완료                 | native keyboard, 알림 권한 안내              |
 | `/login`          | 로그인          | 완료   | 완료                 | native keyboard, screen reader, brand asset  |
 | `/register`       | 계정 만들기     | 완료   | 완료                 | native keyboard, password reset 진입         |
-| `/password-reset` | 비밀번호 재설정 | 부분   | API client만 구현    | 이메일·token·새 비밀번호 UI와 real 검증      |
+| `/password-reset` | 비밀번호 재설정 | 완료   | mock·API client 구현 | production 메일·deep link real 검증          |
 | `/settings`       | 설정            | 완료   | 완료                 | native 알림 권한·기기 설정 복귀              |
 
 남은 공통 확인은 최신 native 화면의 keyboard, font scale, screen reader, 실제 API 오류·빈 상태와 알림 권한 상태다.
@@ -321,7 +321,7 @@ docs/screenshots/
 개발 참고:
 
 - 첫 설치 상태에서 access token 없이 받은 401은 세션 만료 안내로 보여주지 않는다.
-- 비밀번호 재설정 API 계약은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)를 따른다. 현재 안내 화면을 실제 복구 form으로 교체해야 한다.
+- 비밀번호 재설정 API 계약은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)를 따른다. 이메일 요청, token 검증, 새 비밀번호 저장과 로그인 완료 안내를 제공한다.
 - 현재 `assets/images/icon.png`는 Expo 기본 icon이므로 최종 brand asset 확정 후 인증 화면의 임시 `T` mark를 함께 교체한다.
 
 ## 캡쳐 후 업데이트 체크리스트

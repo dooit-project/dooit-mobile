@@ -30,7 +30,8 @@ export type PasswordResetRequest = {
 };
 
 export type PasswordResetRequestResponse = {
-  accepted: boolean;
+  requested: boolean;
+  ttlSeconds: number;
 };
 
 export type PasswordResetVerifyRequest = {
@@ -39,7 +40,7 @@ export type PasswordResetVerifyRequest = {
 
 export type PasswordResetVerifyResponse = {
   valid: boolean;
-  emailHint: string | null;
+  maskedEmail: string | null;
 };
 
 export type PasswordResetConfirmRequest = {

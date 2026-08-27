@@ -246,7 +246,7 @@ describe('Auth API', () => {
   });
 
   it('비밀번호 재설정 메일 요청 API를 호출한다', async () => {
-    postMock.mockResolvedValue({ accepted: true });
+    postMock.mockResolvedValue({ requested: true, ttlSeconds: 1800 });
     const request = { email: 'user@example.com' };
 
     await authApi.requestPasswordReset(request);
@@ -257,7 +257,7 @@ describe('Auth API', () => {
   });
 
   it('비밀번호 재설정 token 검증 API를 호출한다', async () => {
-    postMock.mockResolvedValue({ valid: true, emailHint: 'u***@example.com' });
+    postMock.mockResolvedValue({ valid: true, maskedEmail: 'u***@example.com' });
     const request = { token: 'reset-token' };
 
     await authApi.verifyPasswordResetToken(request);
