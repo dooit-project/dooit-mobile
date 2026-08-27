@@ -62,7 +62,7 @@ type ApiEnvelope<T> = {
 
 ## 3. 인증 계약
 
-모바일은 로그인 성공 시 `accessToken`만 저장하고, 이후 요청에 `Authorization: Bearer <accessToken>`을 자동 첨부한다.
+모바일은 현재 로그인 성공 시 `accessToken`만 저장하고, 이후 요청에 `Authorization: Bearer <accessToken>`을 자동 첨부한다. 백엔드는 refresh credential도 반환하므로 아래 미연결 상태를 출시 전에 해소한다.
 
 토큰 저장 보안 기준:
 
@@ -70,8 +70,8 @@ type ApiEnvelope<T> = {
 - Web은 브라우저 제약상 `localStorage` fallback을 사용한다. 현재 허용 범위, HttpOnly cookie 전환 조건과 운영 CSP는 [`WEB_SECURITY_POLICY.md`](./WEB_SECURITY_POLICY.md)를 따른다.
 - 앱 시작 시 저장된 token을 먼저 메모리로 복원한 뒤 API 요청을 보낸다.
 - token은 로그, 오류 메시지, smoke test 출력에 남기지 않는다.
-- 정식 계정 refresh token은 현재 도입하지 않아 access token 만료 시 다시 로그인한다. 목표 세션 수명과 cookie·SecureStore 계약은 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
-- 게스트는 만료 전 `guest/refresh`로 같은 guest user id의 access token을 갱신한다. 현재 `expiresAt` 기반 선제 갱신과 서버 데이터 보존 기간은 미구현이다.
+- 백엔드는 등록·게스트 refresh token, rotation·reuse detection, logout과 idle 30일·absolute 90일 계약을 제공한다.
+- 모바일은 아직 refresh token 저장과 `expiresAt` 기반 선제 갱신을 연결하지 않았다. native SecureStore와 동시 요청 단일화 기준은 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
 
 | Method | Path                            | 용도                                  |
 | ------ | ------------------------------- | ------------------------------------- |
@@ -79,6 +79,8 @@ type ApiEnvelope<T> = {
 | `POST` | `/api/v1/auth/guest/refresh`    | 같은 게스트 ID의 token 갱신           |
 | `POST` | `/api/v1/auth/register`         | 회원가입·게스트 승격                  |
 | `POST` | `/api/v1/auth/login`            | 로그인·게스트 데이터 병합, token 저장 |
+| `POST` | `/api/v1/auth/refresh`          | refresh token 회전과 access 갱신      |
+| `POST` | `/api/v1/auth/logout`           | 서버 refresh session 폐기             |
 | `GET`  | `/api/v1/auth/me`               | 현재 사용자와 계정 유형 확인          |
 | `POST` | `/api/v1/auth/password-reset/*` | 비밀번호 재설정 계약, 배포 여부 확인  |
 
@@ -183,8 +185,8 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 9. 중복 요청 방지
    - 빠른 기록, 일정 생성, 반복 occurrence 생성처럼 사용자가 여러 번 누를 수 있는 요청에 idempotency 또는 client request id 정책이 필요한지 결정한다.
 10. 비밀번호 재설정
-
-- request, verify, confirm endpoint와 메일 deep link가 배포됐는지 확인한다. 미구현 환경에서는 UI 계약만 검증하고 실제 복구가 가능하다고 판정하지 않는다.
+    - request, verify, confirm endpoint와 `todolab://password-reset` link의 source 구현은 완료됐다.
+    - 대상 배포의 메일 설정과 앱 deep link를 확인하고 전체 복구가 성공해야 실제 사용 가능으로 판정한다.
 
 ## 7. real 모드 smoke test 순서
 
@@ -216,11 +218,13 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 
 자세한 화면별 확인 항목은 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md)를 따른다.
 
-## 8. 현재 보류 또는 추가 확정이 필요한 계약
+## 8. 현재 프론트 연결 또는 추가 확정이 필요한 계약
 
 - 반복 Task·일정의 생성 계약, 상태 문서 정합성, real smoke 결과와 모바일 저장 UI 노출 시점
 - 검색 결과의 relevance 기준, 기간 filter, timezone 경계
 - D-Day 목표 삭제 시 연결된 Task 처리 방식
-- [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)의 등록·게스트 refresh와 보존 기간 적용 여부
-- idempotency 또는 client request id 정책
+- [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)의 refresh credential 저장·선제 갱신·동시 요청 단일화
+- 생성 API의 `Idempotency-Key` 발급·timeout 재시도 정책
+- Task `notificationEnabled`·`notifyAt` 편집과 로컬 예약
+- Workspace 초대 거절 UI와 cache 복구
 - Today 순서 일괄 저장 API는 drag and drop 고도화 시점까지 후순위로 둔다.

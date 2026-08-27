@@ -1,14 +1,27 @@
 # ToDoLab 백엔드 요청사항 전달본
 
-Last updated: 2026-08-23
+Last updated: 2026-08-27
 
-아래 내용은 프론트 출시 준비와 후속 기능 구현에 필요한 백엔드 요청사항 전체입니다. 이 문서 본문을 그대로 백엔드 팀에 전달하면 됩니다.
+아래 내용은 프론트 출시 준비를 위해 전달했던 백엔드 요청사항과 완료 상태를 보존한다. 2026-08-27 local backend source `fd2a7e3` 기준 P0 1~4와 P1 5~8은 구현됐고 `./gradlew test --rerun-tasks`가 통과했다. 남은 일은 해당 source·migration·환경 설정을 같은 production 배포에 반영하고 모바일에서 계약을 연결·검증하는 것이다. 상세 근거는 [`BACKEND_STATUS_2026-08-27.md`](../integration/BACKEND_STATUS_2026-08-27.md)에 있다.
+
+## 완료 현황
+
+| 요청                     | 백엔드 source                                      | 모바일 후속                 |
+| ------------------------ | -------------------------------------------------- | --------------------------- |
+| 내용 있는 Workspace 삭제 | cascade 삭제와 통합 테스트 완료                    | 배포 후 real smoke          |
+| 배포 버전 식별           | `GET /api/v1/system/metadata` 완료                 | production version 기록     |
+| 비밀번호 재설정          | request·verify·confirm과 deep link 계약 완료       | 복구 UI·deep link 연결      |
+| CORS·cache               | `Authorization`·`Idempotency-Key`, `no-store` 완료 | 운영 origin smoke           |
+| 생성 멱등성              | 24시간 replay와 409 계약 완료                      | 생성 mutation에 key 적용    |
+| refresh·logout           | rotation·reuse detection과 30/90일 계약 완료       | SecureStore·선제 갱신 연결  |
+| Task 알림 시각           | `notificationEnabled`·`notifyAt` 완료              | 편집 UI·로컬 예약 연결      |
+| Workspace 초대 거절      | PENDING → REMOVED와 권한 테스트 완료               | 거절 UI·cache mutation 연결 |
 
 ---
 
 ## 전달 메시지
 
-안녕하세요. ToDoLab 프론트의 현재 구현을 기준으로 백엔드에서 확인·구현이 필요한 내용을 우선순위별로 정리했습니다.
+아래는 2026-08-23에 전달한 원 요청 기록이다. 신규 전달보다 배포 체크리스트와 모바일 후속 구현의 근거로 사용한다.
 
 프론트는 개인 Task·D-Day·반복·빠른 등록·템플릿과 Workspace 생성·초대 수락·멤버 권한·Task·D-Day·알림 후보까지 구현되어 있습니다. 아래 항목은 백엔드 구현과 배포가 확인되어야 프론트의 real API 연결 및 출시 검증을 완료할 수 있습니다.
 
@@ -359,7 +372,7 @@ accountId + installationId + scope + notificationKey + notifyAt
 - 프론트에서 추가로 확인할 사항:
 ```
 
-우선 P0 1~4의 처리 여부와 예상 순서를 회신 부탁드립니다. P1은 백엔드 계약이 OpenAPI에 반영된 항목부터 프론트가 순서대로 연결하겠습니다. P2는 별도의 도입 결정 전까지 구현하지 않아도 됩니다.
+P0 1~4와 P1 5~8은 source 기준 완료됐다. production 반영 시 commit/image, migration, API URL, 메일·CORS 환경 설정을 함께 기록하고 같은 배포 버전으로 모바일 real smoke를 수행한다. P2는 별도의 도입 결정 전까지 범위를 확대하지 않는다.
 
 ---
 

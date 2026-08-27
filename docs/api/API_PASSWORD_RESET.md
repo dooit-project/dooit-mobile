@@ -1,6 +1,8 @@
 # Password Reset API 요구 계약
 
-ToDoLab Mobile의 이메일/비밀번호 기반 로그인에서 필요한 비밀번호 찾기/재설정 API 계약 초안이다.
+Last updated: 2026-08-27
+
+ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번호 재설정 API 계약이다. 백엔드 source 구현과 통합 테스트는 완료됐고 모바일 UI·deep link·production 메일 발송 검증이 남아 있다.
 
 ## 목표
 
@@ -8,7 +10,7 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에서 필요한 비밀
 - access token이 없는 상태에서도 안전하게 시작할 수 있다.
 - reset token은 짧은 수명, 1회성, 로그/응답 비노출을 기본으로 한다.
 
-## 제안 API
+## 채택된 API
 
 ### 1. 재설정 메일 요청
 
@@ -108,11 +110,18 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에서 필요한 비밀
 4. deep link로 reset token을 받으면 token 검증 화면으로 이동한다.
 5. 새 비밀번호 저장 성공 후 `/login?reset=1`로 이동해 완료 안내를 보여준다.
 
-## 백엔드 확인 필요 항목
+## 확인된 백엔드 정책
 
-- reset link URL 형식과 deep link scheme
-- token TTL
-- rate limit 기준
-- 비밀번호 정책
-- 성공 후 기존 session/access token 폐기 여부
-- 오류 code와 사용자 노출 message
+- 기본 link: `todolab://password-reset?token={token}`. production template은 환경변수로 변경할 수 있다.
+- token TTL: 30분, URL-safe opaque token, 원본 대신 SHA-256 hash 저장
+- rate limit: normalized email 기준 기본 5건/1시간, 초과 시 429/`11006`
+- 비밀번호 정책: 회원가입과 동일
+- confirm 성공 시 token과 refresh session을 폐기한다. 이미 발급된 access token은 `exp`까지 유효할 수 있다.
+- 없거나 만료·사용·변조된 token은 400/`11005`다.
+
+## 모바일 남은 작업
+
+- 이메일 요청, token 검증, 새 비밀번호 저장 상태를 `/password-reset`에 구현한다.
+- deep link의 token을 안전하게 route state로 전달하고 로그·telemetry에 남기지 않는다.
+- 성공 뒤 `/login?reset=1`로 이동해 완료 안내를 표시한다.
+- production 메일 발송, 앱 link와 Web fallback을 실제 기기에서 검증한다.

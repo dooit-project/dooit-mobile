@@ -48,7 +48,7 @@ flowchart LR
 - 초대 수락·거절과 만료·404·409 복구
 - OWNER·EDITOR·VIEWER별 노출 및 차단 행동
 - 게스트 접근 제한, 320·430 너비, 모바일 키보드·safe area, 스크린 리더
-- 실제 백엔드에서 Task가 있는 Workspace 삭제 500 수정 후 회귀 검증
+- 백엔드 source의 cascade 삭제 수정은 완료됐다. 최신 배포에서 Task가 있는 Workspace 삭제를 회귀 검증
 
 ## 관련 근거
 

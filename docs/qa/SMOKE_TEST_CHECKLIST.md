@@ -24,7 +24,7 @@
 3. 회원가입 화면에서 이메일, 이름, 비밀번호를 입력해 계정을 만들 수 있다.
 4. 회원가입 성공 후 로그인 화면으로 돌아온다.
 5. 로그인 화면의 비밀번호 재설정 진입점이 열린다.
-6. 비밀번호 재설정 API 연결 전에는 안내 화면과 로그인 복귀 버튼이 표시된다.
+6. 비밀번호 재설정 이메일 요청, deep link token 검증과 새 비밀번호 저장 뒤 로그인 완료 안내가 표시된다.
 7. 로그인 후 프로필에 사용자 이메일이 표시된다.
 8. 로그아웃 후 프로필이 로그인 필요 상태로 돌아간다.
 9. 401 응답을 받으면 access token이 삭제되고 로그인 화면에 세션 만료 안내가 표시된다.
@@ -147,7 +147,7 @@ readiness가 휴대폰 브라우저에서 열리지 않으면 앱 결함으로 �
 ### Real
 
 - 로그인, 내 정보 조회, 401 세션 만료 흐름이 동작한다.
-- 비밀번호 재설정은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)의 백엔드 계약이 준비되기 전까지 안내 화면으로만 노출한다.
+- 비밀번호 재설정은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)의 request·verify·confirm, 메일 link와 token 폐기를 실제 배포에서 확인한다.
 - Today와 Calendar가 같은 날짜 기준으로 같은 일정을 보여준다.
 - Calendar 범위 조회가 3주 화면에 필요한 일정과 여러 날 일정 원본 ID를 중복 없이 내려준다.
 - Search는 `/api/v1/tasks/search` real API로 검색어, 상태 filter, 상세 filter, 빈 상태, cursor pagination을 확인한다.

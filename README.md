@@ -51,6 +51,7 @@ src/
 | [컴포넌트 인벤토리](./docs/design/COMPONENT_INVENTORY.md)                | 공통 UI와 주요 도메인 컴포넌트 사용 기준           |
 | [UX 리뷰 로그](./docs/design/UX_REVIEW_LOG.md)                           | 화면별 불편점, 결정 이유, 다음 UI/UX 수정 후보     |
 | [백엔드 연동 Runbook](./docs/integration/BACKEND_INTEGRATION_RUNBOOK.md) | real API 연결 전 환경, endpoint, smoke test 순서   |
+| [백엔드 요청 완료 상태](./docs/integration/BACKEND_STATUS_2026-08-27.md) | 완료된 서버 계약, 배포 한계와 프론트 후속 순서     |
 | [Android 개인 APK Runbook](./docs/integration/ANDROID_APK_RUNBOOK.md)    | EAS APK 빌드, Tailscale API URL, 설치 smoke 절차   |
 | [Web 배포 캐시 정책](./docs/integration/WEB_DEPLOYMENT_CACHE.md)         | 새 버전 자동 반영을 위한 index/asset cache 기준    |
 | [오류 로깅과 개인정보 기준](./docs/qa/ERROR_LOGGING_PRIVACY.md)          | 오류 로깅 수집 범위와 원문 데이터 비수집 기준      |

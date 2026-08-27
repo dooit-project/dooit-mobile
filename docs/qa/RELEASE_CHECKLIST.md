@@ -36,7 +36,7 @@ API URL:
 - [ ] `EXPO_PUBLIC_API_URL`이 대상 환경을 가리킨다.
 - [ ] `EXPO_PUBLIC_*`에 secret, token, password, API key가 없다.
 - [ ] real 모드에서는 [`BACKEND_INTEGRATION_RUNBOOK.md`](../integration/BACKEND_INTEGRATION_RUNBOOK.md)에 따라 Auth, Today, Calendar, D-Day, Search 흐름을 확인했다.
-- [ ] 비밀번호 재설정은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md) 기준 request·verify·confirm과 메일 deep link가 대상 백엔드에 실제 배포됐는지 확인했다. 미구현 환경은 release 제한으로 기록했다.
+- [ ] 비밀번호 재설정은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md) 기준 request·verify·confirm과 메일 deep link가 대상 백엔드에 실제 배포됐는지 확인했다. source 완료만 확인된 환경은 release 제한으로 기록했다.
 - [ ] 401 세션 만료 시 access token 삭제와 로그인 동선이 자연스럽다.
 - [ ] network, timeout, 5xx 오류에서 기존 데이터 유지, 오류 문구, retry가 동작한다.
 - [ ] 백엔드 변경이 필요하면 모바일 요구 계약만 문서화하고 백엔드 저장소에서 별도로 추적한다.

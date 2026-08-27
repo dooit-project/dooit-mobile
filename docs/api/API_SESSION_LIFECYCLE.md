@@ -1,6 +1,8 @@
 # 인증 세션과 게스트 보존 계약
 
-ToDoLab의 앱·Web 세션 수명, refresh credential과 게스트 데이터 보존 기준이다. 현재 백엔드는 access token과 guest refresh만 제공하므로 아래 목표 계약이 OpenAPI에 반영되기 전에는 기존 동작을 유지한다.
+Last updated: 2026-08-27
+
+ToDoLab의 앱·Web 세션 수명, refresh credential과 게스트 데이터 보존 기준이다. 백엔드는 등록·게스트 refresh, logout, token rotation·reuse detection과 idle 30일·absolute 90일 계약을 제공한다. 현재 남은 일은 모바일 저장·갱신 흐름과 Web credential 방식을 연결하는 것이다.
 
 ## 제품 기준
 
@@ -73,21 +75,24 @@ token 응답에는 최소 다음 필드를 둔다.
 - offline이면 기존 화면과 입력을 유지하고 연결 복구 뒤 갱신한다. refresh 만료가 확정됐을 때만 로그인 또는 새 게스트 선택으로 보낸다.
 - 401에서 refresh가 가능한 계정은 한 번 갱신 후 원 요청을 한 번만 재시도한다.
 
-## 현재 구현과 차이
+## 현재 프론트 구현과 차이
 
 - 프론트는 `expiresAt`을 응답으로 받지만 아직 저장·판정하지 않는다.
-- 등록 계정 refresh endpoint와 refresh credential은 없다.
+- 백엔드 응답의 `refreshToken`, `refreshExpiresAt`을 프론트 타입과 SecureStore에 반영하지 않았다.
 - 게스트 refresh는 앱 시작의 `/auth/me` 성공 뒤와 foreground 24시간 간격으로만 시도한다.
-- guest server data의 실제 보존 기간과 삭제 정책은 확인되지 않았다.
+- 등록 계정 refresh, 동시 요청 단일화, 401 뒤 1회 재시도와 서버 logout 호출은 아직 없다.
+- Web은 access token을 `localStorage`에 저장하며 HttpOnly cookie 계약을 연결하지 않았다.
 
-현재 access token 기간을 15분으로 줄이면 등록 사용자가 반복 로그아웃될 수 있다. 백엔드 refresh 계약과 프론트 선제 갱신을 같은 배포 단위로 준비한 뒤 목표 기간을 적용한다.
+백엔드 source 계약은 준비됐지만 production 반영과 프론트 연결 전에는 access token 수명을 단독으로 줄이지 않는다.
 
-## 백엔드 요청과 완료 판단
+## 프론트 연결과 완료 판단
 
-- 등록·게스트 refresh credential, 회전, reuse detection, idle·absolute 만료를 구현한다.
-- guest 데이터 90일 보존과 삭제 기준을 API 문서·개인정보 안내에 반영한다.
-- Web cookie·CORS·CSRF 계약과 native response 계약을 구분한다.
-- OpenAPI에 `refreshExpiresAt`, 오류 code와 logout의 서버 session 폐기를 명시한다.
+- `TokenResponse`에 `refreshToken`, `refreshExpiresAt`을 반영한다.
+- native는 refresh credential을 별도 SecureStore key에 저장하고 계정 전환·logout에서 정리한다.
+- refresh 요청은 하나만 실행하고 대기 요청이 같은 결과를 공유한다.
+- access 만료 전 선제 갱신과 401 뒤 원 요청 1회 재시도를 구현한다.
+- logout은 서버 session 폐기를 호출한 뒤 로컬 credential을 안전하게 제거한다.
+- Web cookie 계약을 채택하면 credentials·CSRF·CORS를 production origin에서 검증한다.
 - 프론트 real smoke에서 만료 임박, offline 복귀, 동시 요청, token 재사용, guest 90일 경계를 검증한다.
 
 보안 근거는 [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)와 [IETF OAuth 2.0 for Browser-Based Applications](https://datatracker.ietf.org/doc/draft-ietf-oauth-browser-based-apps/)의 서버 측 만료·refresh 회전 원칙을 따른다.
