@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const { randomUUID } = require('node:crypto');
+
 const apiUrl = (process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080').replace(/\/$/, '');
 const runId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `mobile-guest-smoke-${runId}@example.com`;
@@ -12,6 +14,19 @@ const ddayTaskTitle = `GDT-${runId.slice(-11)}`;
 const promotionEmail = `mobile-guest-promote-${runId}@example.com`;
 const promotionPassword = `M-promote-${runId}`;
 const promotionTaskTitle = `GP-${runId.slice(-12)}`;
+const scheduleDate = getSeoulDate(2);
+const scheduleStartAt = `${scheduleDate}T09:00:00`;
+const scheduleNotifyAt = `${scheduleDate}T08:50:00`;
+
+function getSeoulDate(daysFromNow) {
+  const date = new Date(Date.now() + daysFromNow * 86_400_000);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
 
 async function readJsonBody(response) {
   const text = await response.text();
@@ -69,10 +84,18 @@ async function main() {
   assert(registeredUser?.email === email, 'merge target registration mismatch');
   console.log('✓ merge target registered');
 
-  const session = await request('/api/v1/auth/guest', { method: 'POST' });
+  const session = await request('/api/v1/auth/guest', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': randomUUID() },
+  });
   assert(session?.tokenType === 'Bearer', 'guest tokenType must be Bearer');
   assert(typeof session.accessToken === 'string' && session.accessToken, 'guest token missing');
   assert(typeof session.expiresAt === 'string' && session.expiresAt, 'guest expiresAt missing');
+  assert(typeof session.refreshToken === 'string' && session.refreshToken, 'guest refresh missing');
+  assert(
+    typeof session.refreshExpiresAt === 'string' && session.refreshExpiresAt,
+    'guest refresh expiration missing',
+  );
   assert(session.user?.accountType === 'GUEST', 'guest user accountType mismatch');
   assert(session.user.email === null, 'guest user email must be null');
   assert(session.user.displayName === null, 'guest user displayName must be null');
@@ -89,16 +112,22 @@ async function main() {
 
   const refreshedSession = await request('/api/v1/auth/guest/refresh', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${session.accessToken}` },
+    body: JSON.stringify({ refreshToken: session.refreshToken }),
   });
   assert(refreshedSession.user?.id === session.user.id, 'guest refresh changed user id');
   assert(refreshedSession.accessToken, 'refreshed guest token missing');
-  console.log('✓ guest token refreshed with same user id');
+  assert(refreshedSession.refreshToken, 'rotated guest refresh token missing');
+  assert(
+    refreshedSession.refreshToken !== session.refreshToken,
+    'guest refresh token was not rotated',
+  );
+  console.log('✓ guest refresh token rotated with same user id');
 
   const guestHeaders = { Authorization: `Bearer ${refreshedSession.accessToken}` };
-  const guestTask = await request('/api/v1/tasks', {
+  const taskIdempotencyKey = randomUUID();
+  const guestTaskRequest = {
     method: 'POST',
-    headers: guestHeaders,
+    headers: { ...guestHeaders, 'Idempotency-Key': taskIdempotencyKey },
     body: JSON.stringify({
       title: taskTitle,
       description: '게스트 병합 smoke',
@@ -106,9 +135,12 @@ async function main() {
       category: 'Smoke',
       allDay: false,
     }),
-  });
+  };
+  const guestTask = await request('/api/v1/tasks', guestTaskRequest);
   assert(guestTask?.title === taskTitle, 'guest task creation mismatch');
-  console.log('✓ guest task created');
+  const replayedGuestTask = await request('/api/v1/tasks', guestTaskRequest);
+  assert(replayedGuestTask?.id === guestTask.id, 'idempotency replay created another task');
+  console.log('✓ guest task idempotency replay returned the same resource');
 
   const guestSchedule = await request('/api/v1/tasks', {
     method: 'POST',
@@ -117,10 +149,12 @@ async function main() {
       title: scheduleTitle,
       description: '게스트 반복 일정 병합 smoke',
       type: 'SCHEDULE',
-      startAt: '2026-08-18T09:00:00',
-      endAt: '2026-08-18T10:00:00',
+      startAt: scheduleStartAt,
+      endAt: `${scheduleDate}T10:00:00`,
       category: 'Smoke',
       allDay: false,
+      notificationEnabled: true,
+      notifyAt: scheduleNotifyAt,
       recurrence: {
         frequency: 'DAILY',
         interval: 1,
@@ -129,7 +163,21 @@ async function main() {
     }),
   });
   assert(guestSchedule?.recurrenceSeriesId, 'guest recurrence series missing');
-  console.log('✓ guest recurring schedule created');
+  assert(guestSchedule.notifyAt === scheduleNotifyAt, 'guest schedule notifyAt mismatch');
+  const notificationCandidates = await request(
+    `/api/v1/tasks/notification-candidates?from=${scheduleDate}&to=${scheduleDate}`,
+    { headers: guestHeaders },
+  );
+  assert(
+    notificationCandidates.some(
+      (candidate) =>
+        candidate.taskId === guestSchedule.id &&
+        candidate.notifyAt === scheduleNotifyAt &&
+        candidate.scheduledAt === scheduleNotifyAt,
+    ),
+    'guest schedule notification candidate mismatch',
+  );
+  console.log('✓ guest recurring schedule notifyAt candidate verified');
 
   const guestDday = await request('/api/v1/dday-goals', {
     method: 'POST',
@@ -320,11 +368,15 @@ async function main() {
   );
 }
 
-main().catch((error) => {
-  if (error?.name === 'AbortError') {
-    console.error(`Guest auth smoke timed out while connecting to ${apiUrl}`);
-  } else {
-    console.error(error instanceof Error ? error.message : error);
-  }
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    if (error?.name === 'AbortError') {
+      console.error(`Guest auth smoke timed out while connecting to ${apiUrl}`);
+    } else {
+      console.error(error instanceof Error ? error.message : error);
+    }
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { getSeoulDate };

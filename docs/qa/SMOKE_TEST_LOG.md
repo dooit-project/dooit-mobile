@@ -68,7 +68,7 @@ Last updated: 2026-08-21
 
 재실행 필요:
 
-- 이후 추가된 게스트 refresh·mergeResult·최초 사용 UI와 최신 백엔드 배포 조합
+- 최신 백엔드 배포에서 갱신된 `smoke:guest:real`의 refresh rotation·동일-key replay·`notifyAt` 후보
 - `expo-notifications`가 포함된 최신 APK의 실제 후보 예약
 - production DB와 staging·production URL
 
@@ -82,6 +82,13 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:workspace-roles:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 ```
+
+`smoke:guest:real`은 실행마다 별도 계정과 데이터를 만들며 다음 최신 계약을 함께 확인한다.
+
+- guest 응답의 access·refresh credential과 만료 시각
+- refresh token body 전송, 같은 guest ID 유지와 token rotation
+- 같은 `Idempotency-Key`·payload replay가 동일 Task를 반환하는지
+- 일정의 `notificationEnabled`·`notifyAt` 저장과 후보 `scheduledAt` 일치
 
 ## Workspace 실행 OpenAPI 기준선
 

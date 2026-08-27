@@ -224,6 +224,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 - 검색 결과의 relevance 기준, 기간 filter, timezone 경계
 - D-Day 목표 삭제 시 연결된 Task 처리 방식
 - [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)의 refresh credential 저장·선제 갱신·동시 요청 단일화
+- `smoke:guest:real`의 refresh rotation·생성 replay·Task `notifyAt` 후보 검증
 - 생성 API의 `Idempotency-Key` 발급·timeout 재시도 정책
 - Task `notificationEnabled`·`notifyAt` 편집과 로컬 예약
 - Workspace 초대 거절 UI와 cache 복구
