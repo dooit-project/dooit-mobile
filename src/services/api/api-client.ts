@@ -1,3 +1,5 @@
+import * as Crypto from 'expo-crypto';
+
 import { env, requireApiUrl } from '@/config';
 import type { TokenResponse } from '@/types';
 import { parseApiLocalDateTime } from '@/utils';
@@ -18,6 +20,19 @@ import { mockApiClient } from './mock-api-client';
 const DEFAULT_TIMEOUT_MS = 10_000;
 const PROACTIVE_REFRESH_WINDOW_MS = 2 * 60 * 1_000;
 const AUTH_PATH = '/api/v1/auth';
+const IDEMPOTENT_CREATE_PATHS = [
+  /^\/api\/v1\/auth\/guest$/,
+  /^\/api\/v1\/tasks$/,
+  /^\/api\/v1\/tasks\/quick-capture$/,
+  /^\/api\/v1\/task-templates$/,
+  /^\/api\/v1\/task-templates\/\d+\/tasks$/,
+  /^\/api\/v1\/dday-goals$/,
+  /^\/api\/v1\/dday-goals\/\d+\/tasks$/,
+  /^\/api\/v1\/workspaces$/,
+  /^\/api\/v1\/workspaces\/\d+\/members$/,
+  /^\/api\/v1\/workspaces\/\d+\/tasks$/,
+  /^\/api\/v1\/workspaces\/\d+\/dday-goals$/,
+];
 
 type QueryValue = string | number | boolean | null | undefined;
 type QueryParams = Record<string, QueryValue>;
@@ -40,9 +55,19 @@ type ApiRequestOptions = Omit<RequestInit, 'body' | 'method'> & {
   timeoutMs?: number;
   skipAuthRefresh?: boolean;
   retriedAfterRefresh?: boolean;
+  idempotencyKey?: string;
+  retriedAfterTimeout?: boolean;
 };
 
 let refreshPromise: Promise<TokenResponse> | null = null;
+
+function createIdempotencyKey() {
+  return Crypto.randomUUID();
+}
+
+export function supportsIdempotency(path: string, method: HttpMethod = 'POST') {
+  return method === 'POST' && IDEMPOTENT_CREATE_PATHS.some((pattern) => pattern.test(path));
+}
 
 function canRefreshRequest(path: string) {
   return ![
@@ -159,8 +184,13 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
     signal: externalSignal,
     skipAuthRefresh = false,
     retriedAfterRefresh = false,
+    idempotencyKey: requestedIdempotencyKey,
+    retriedAfterTimeout = false,
     ...requestOptions
   } = options;
+  const idempotencyKey =
+    requestedIdempotencyKey ??
+    (supportsIdempotency(path, method) ? createIdempotencyKey() : undefined);
 
   if (!skipAuthRefresh && canRefreshRequest(path) && shouldRefreshAccessToken()) {
     try {
@@ -175,6 +205,9 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
   let timedOut = false;
 
   headers.set('Accept', 'application/json');
+  if (idempotencyKey) {
+    headers.set('Idempotency-Key', idempotencyKey);
+  }
   const accessToken = getAccessToken();
   if (accessToken && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${accessToken}`);
@@ -271,6 +304,14 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
     }
 
     if (timedOut) {
+      if (idempotencyKey && !retriedAfterTimeout) {
+        return request<T>(path, {
+          ...options,
+          idempotencyKey,
+          retriedAfterTimeout: true,
+        });
+      }
+
       throw new ApiClientError('요청 시간이 초과되었습니다. 다시 시도해 주세요.', {
         kind: 'timeout',
         cause: error,

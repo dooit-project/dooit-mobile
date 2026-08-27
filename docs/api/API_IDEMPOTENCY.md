@@ -1,6 +1,6 @@
 # API 생성 요청 Idempotency 계약
 
-네트워크 timeout이나 사용자의 재시도로 같은 Task·일정·Workspace가 중복 생성되지 않게 하는 프론트·백엔드 계약이다. 현재 백엔드 계약에는 아직 포함되지 않았으므로, OpenAPI와 CORS 반영 전까지 프론트가 임의 header를 보내지 않는다.
+네트워크 timeout이나 사용자의 재시도로 같은 Task·일정·Workspace가 중복 생성되지 않게 하는 프론트·백엔드 계약이다. 백엔드 OpenAPI·CORS와 24시간 replay 저장이 준비됐고, 프론트도 우선 대상 POST에 header와 timeout 1회 재시도를 적용한다.
 
 ## 전송 계약
 
@@ -70,11 +70,11 @@ Web 배포를 위해 API CORS에 다음을 반영한다.
 
 ## 프론트 적용 순서
 
-1. 백엔드 OpenAPI와 CORS에 계약을 반영한다.
-2. API client의 POST option에 `idempotencyKey`를 추가한다.
-3. 각 생성 mutation이 최초 submit에서 key를 만들고 불확실한 실패 재시도에 재사용한다.
-4. 성공 또는 확정적 client error 뒤 key를 폐기한다.
-5. mock API에서 같은 key·payload의 응답 재생과 다른 payload의 409를 구현한다.
+1. 백엔드 OpenAPI와 CORS에 계약을 반영한다. (완료)
+2. API client가 우선 대상 POST 경로에 UUID v4 `Idempotency-Key`를 자동 첨부한다. (완료)
+3. timeout이면 최초 요청과 같은 key·payload로 한 번만 자동 재시도한다. (완료)
+4. 성공 또는 확정적 client error 뒤 key를 폐기한다. (완료)
+5. mock API의 replay·payload 충돌 시뮬레이션은 real API smoke를 보완할 필요가 생기면 추가한다.
 6. timeout 직후 재시도해 Task·D-Day·Workspace가 한 개만 생성되는 real API smoke를 추가한다.
 
 ## 완료 판단
