@@ -46,6 +46,24 @@ async function expectHttpFailure(path, expectedStatus, options = {}) {
   throw new Error(`${path} unexpectedly succeeded`);
 }
 
+function assertTokenResponse(token, label = 'token') {
+  if (token?.tokenType !== 'Bearer') {
+    throw new Error(`${label} tokenType must be Bearer`);
+  }
+  if (typeof token.accessToken !== 'string' || !token.accessToken) {
+    throw new Error(`${label} accessToken missing`);
+  }
+  if (typeof token.expiresAt !== 'string' || !token.expiresAt) {
+    throw new Error(`${label} expiresAt missing`);
+  }
+  if (typeof token.refreshToken !== 'string' || !token.refreshToken) {
+    throw new Error(`${label} refreshToken missing`);
+  }
+  if (typeof token.refreshExpiresAt !== 'string' || !token.refreshExpiresAt) {
+    throw new Error(`${label} refreshExpiresAt missing`);
+  }
+}
+
 async function readJsonBody(response) {
   const text = await response.text();
 
@@ -77,13 +95,24 @@ async function main() {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
-  if (token.tokenType !== 'Bearer' || !token.accessToken || !token.expiresAt) {
-    throw new Error('login response token contract mismatch');
+  assertTokenResponse(token, 'login');
+  console.log('✓ login access and refresh credential');
+
+  const refreshedToken = await request('/api/v1/auth/refresh', {
+    method: 'POST',
+    body: JSON.stringify({ refreshToken: token.refreshToken }),
+  });
+  assertTokenResponse(refreshedToken, 'refresh');
+  if (refreshedToken.user?.id !== token.user?.id) {
+    throw new Error('refresh changed registered user id');
   }
-  console.log('✓ login');
+  if (refreshedToken.refreshToken === token.refreshToken) {
+    throw new Error('refresh token was not rotated');
+  }
+  console.log('✓ registered refresh token rotation');
 
   const me = await request('/api/v1/auth/me', {
-    headers: { Authorization: `Bearer ${token.accessToken}` },
+    headers: { Authorization: `Bearer ${refreshedToken.accessToken}` },
   });
   if (me.email !== email) {
     throw new Error('me response email mismatch');
@@ -98,14 +127,29 @@ async function main() {
   });
   console.log('✓ invalid token rejected');
 
+  await request('/api/v1/auth/logout', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${refreshedToken.accessToken}` },
+    body: JSON.stringify({ refreshToken: refreshedToken.refreshToken }),
+  });
+  await expectHttpFailure('/api/v1/auth/refresh', 401, {
+    method: 'POST',
+    body: JSON.stringify({ refreshToken: refreshedToken.refreshToken }),
+  });
+  console.log('✓ logout revoked the registered refresh session');
+
   console.log('Auth smoke passed. Token and password were not printed.');
 }
 
-main().catch((error) => {
-  if (error?.name === 'AbortError') {
-    console.error(`Auth smoke timed out while connecting to ${apiUrl}`);
-  } else {
-    console.error(error instanceof Error ? error.message : error);
-  }
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    if (error?.name === 'AbortError') {
+      console.error(`Auth smoke timed out while connecting to ${apiUrl}`);
+    } else {
+      console.error(error instanceof Error ? error.message : error);
+    }
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { assertTokenResponse };

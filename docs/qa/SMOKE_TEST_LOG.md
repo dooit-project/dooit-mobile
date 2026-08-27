@@ -90,6 +90,8 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 - 같은 `Idempotency-Key`·payload replay가 동일 Task를 반환하는지
 - 일정의 `notificationEnabled`·`notifyAt` 저장과 후보 `scheduledAt` 일치
 
+`smoke:auth:real`은 등록 계정 로그인 응답의 access·refresh credential, refresh token rotation, 회전된 access로 `/me` 조회, logout 뒤 refresh session 폐기를 확인한다.
+
 ## Workspace 실행 OpenAPI 기준선
 
 - 날짜: 2026-08-19
