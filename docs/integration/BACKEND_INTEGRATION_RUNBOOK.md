@@ -226,6 +226,14 @@ EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-deployment
 
 검사기는 `GET /actuator/health/readiness`의 `UP`과 `GET /api/v1/system/metadata`의 `commitSha`·`imageTag`·`version` 중 하나 이상을 요구하며, 제공된 값을 모두 출력해 smoke log에 기록할 수 있게 한다.
 
+최신 백엔드 배포의 OpenAPI 계약도 함께 확인한다.
+
+```bash
+EXPO_PUBLIC_API_URL=<배포 URL> npm run check:latest-backend-openapi
+```
+
+이 검사는 refresh·logout·비밀번호 재설정·metadata endpoint, 11개 생성 POST의 `Idempotency-Key`와 409, token refresh 필드 및 Task 알림 필드를 확인한다.
+
 ## 8. 현재 프론트 연결 또는 추가 확정이 필요한 계약
 
 - 반복 Task·일정의 생성 계약, 상태 문서 정합성, real smoke 결과와 모바일 저장 UI 노출 시점

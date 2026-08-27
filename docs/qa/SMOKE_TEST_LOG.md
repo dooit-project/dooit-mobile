@@ -81,6 +81,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:search:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:workspace-roles:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run check:latest-backend-openapi
 ```
 
 `smoke:guest:real`은 실행마다 별도 계정과 데이터를 만들며 다음 최신 계약을 함께 확인한다.

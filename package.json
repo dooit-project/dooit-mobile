@@ -61,6 +61,7 @@
     "check:backend-deployment": "node scripts/check-backend-deployment.js",
     "check:eas-setup": "node scripts/check-eas-setup.js",
     "check:workspace-openapi": "node scripts/check-workspace-openapi.js",
+    "check:latest-backend-openapi": "node scripts/check-latest-backend-openapi.js",
     "check:web-production-config": "node scripts/check-web-production-config.js",
     "check:web-route-fallback": "node scripts/check-web-route-fallback.js",
     "apk:filename": "node scripts/get-android-apk-filename.js",
