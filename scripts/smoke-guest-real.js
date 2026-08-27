@@ -14,6 +14,7 @@ const ddayTaskTitle = `GDT-${runId.slice(-11)}`;
 const promotionEmail = `mobile-guest-promote-${runId}@example.com`;
 const promotionPassword = `M-promote-${runId}`;
 const promotionTaskTitle = `GP-${runId.slice(-12)}`;
+const parallelTaskTitle = `GI-${runId.slice(-12)}`;
 const scheduleDate = getSeoulDate(2);
 const scheduleStartAt = `${scheduleDate}T09:00:00`;
 const scheduleNotifyAt = `${scheduleDate}T08:50:00`;
@@ -68,10 +69,25 @@ async function request(path, options = {}) {
   return body?.data ?? null;
 }
 
+async function expectHttpFailure(path, expectedStatus, options = {}) {
+  try {
+    await request(path, options);
+  } catch (error) {
+    if (error.status === expectedStatus) return error;
+    throw error;
+  }
+
+  throw new Error(`${path} unexpectedly succeeded`);
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
+}
+
+function hasSameResourceId(left, right) {
+  return left?.id != null && left.id === right?.id;
 }
 
 async function main() {
@@ -139,8 +155,43 @@ async function main() {
   const guestTask = await request('/api/v1/tasks', guestTaskRequest);
   assert(guestTask?.title === taskTitle, 'guest task creation mismatch');
   const replayedGuestTask = await request('/api/v1/tasks', guestTaskRequest);
-  assert(replayedGuestTask?.id === guestTask.id, 'idempotency replay created another task');
-  console.log('✓ guest task idempotency replay returned the same resource');
+  assert(
+    hasSameResourceId(guestTask, replayedGuestTask),
+    'idempotency replay created another task',
+  );
+  await expectHttpFailure('/api/v1/tasks', 409, {
+    ...guestTaskRequest,
+    body: JSON.stringify({
+      title: `${taskTitle}-changed`,
+      description: '다른 payload',
+      type: 'TODO',
+      category: 'Smoke',
+      allDay: false,
+    }),
+  });
+  console.log('✓ same idempotency key replays identical payload and rejects changed payload');
+
+  const parallelIdempotencyKey = randomUUID();
+  const parallelTaskRequest = {
+    method: 'POST',
+    headers: { ...guestHeaders, 'Idempotency-Key': parallelIdempotencyKey },
+    body: JSON.stringify({
+      title: parallelTaskTitle,
+      description: '게스트 동시 멱등성 smoke',
+      type: 'TODO',
+      category: 'Smoke',
+      allDay: false,
+    }),
+  };
+  const [parallelTask, replayedParallelTask] = await Promise.all([
+    request('/api/v1/tasks', parallelTaskRequest),
+    request('/api/v1/tasks', parallelTaskRequest),
+  ]);
+  assert(
+    hasSameResourceId(parallelTask, replayedParallelTask),
+    'parallel replay created another task',
+  );
+  console.log('✓ parallel idempotent requests returned the same resource');
 
   const guestSchedule = await request('/api/v1/tasks', {
     method: 'POST',
@@ -218,7 +269,7 @@ async function main() {
   });
   assert(mergedSession.user?.id === registeredUser.id, 'login did not select target account');
   assert(mergedSession.user.accountType === 'REGISTERED', 'merged account type mismatch');
-  assert(mergedSession.mergeResult?.tasks === 2, 'merged task count mismatch');
+  assert(mergedSession.mergeResult?.tasks === 3, 'merged task count mismatch');
   assert(mergedSession.mergeResult.schedules === 1, 'merged schedule count mismatch');
   assert(mergedSession.mergeResult.ddayGoals === 1, 'merged D-Day count mismatch');
   assert(mergedSession.mergeResult.recurrenceSeries === 1, 'merged recurrence count mismatch');
@@ -283,6 +334,10 @@ async function main() {
   console.log('✓ subsequent login did not duplicate merged data');
 
   await request(`/api/v1/tasks/${guestTask.id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
+  });
+  await request(`/api/v1/tasks/${parallelTask.id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${secondLogin.accessToken}` },
   });
@@ -379,4 +434,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { getSeoulDate };
+module.exports = { getSeoulDate, hasSameResourceId };

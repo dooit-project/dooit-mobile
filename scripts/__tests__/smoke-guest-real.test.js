@@ -1,4 +1,4 @@
-const { getSeoulDate } = require('../smoke-guest-real');
+const { getSeoulDate, hasSameResourceId } = require('../smoke-guest-real');
 
 describe('guest real smoke helpers', () => {
   afterEach(() => {
@@ -10,5 +10,11 @@ describe('guest real smoke helpers', () => {
 
     expect(getSeoulDate(0)).toBe('2026-08-28');
     expect(getSeoulDate(2)).toBe('2026-08-30');
+  });
+
+  it('동일 resource replay를 id로 판정한다', () => {
+    expect(hasSameResourceId({ id: 7 }, { id: 7 })).toBe(true);
+    expect(hasSameResourceId({ id: 7 }, { id: 8 })).toBe(false);
+    expect(hasSameResourceId({}, {})).toBe(false);
   });
 });

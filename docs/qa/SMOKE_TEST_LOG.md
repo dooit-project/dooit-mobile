@@ -87,7 +87,8 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 
 - guest 응답의 access·refresh credential과 만료 시각
 - refresh token body 전송, 같은 guest ID 유지와 token rotation
-- 같은 `Idempotency-Key`·payload replay가 동일 Task를 반환하는지
+- 같은 `Idempotency-Key`·payload의 순차·동시 replay가 동일 Task를 반환하는지
+- 같은 key에 다른 payload를 보내면 HTTP 409로 거절되는지
 - 일정의 `notificationEnabled`·`notifyAt` 저장과 후보 `scheduledAt` 일치
 
 `smoke:auth:real`은 등록 계정 로그인 응답의 access·refresh credential, refresh token rotation, 회전된 access로 `/me` 조회, logout 뒤 refresh session 폐기를 확인한다.
