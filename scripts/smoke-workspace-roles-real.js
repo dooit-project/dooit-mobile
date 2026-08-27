@@ -84,6 +84,10 @@ function authorization(token) {
   return { Authorization: `Bearer ${token}` };
 }
 
+function membershipStatusBody(status) {
+  return JSON.stringify({ status });
+}
+
 async function registerAndLogin(user) {
   await request('/api/v1/auth/register', {
     method: 'POST',
@@ -111,7 +115,7 @@ async function accept(token, workspaceId, memberId) {
   return request(`/api/v1/workspaces/${workspaceId}/members/${memberId}`, {
     method: 'PATCH',
     headers: authorization(token),
-    body: JSON.stringify({ status: 'ACTIVE' }),
+    body: membershipStatusBody('ACTIVE'),
   });
 }
 
@@ -143,7 +147,7 @@ async function main() {
 
   const editorMember = await invite(tokens.owner, workspace.id, users.editor, 'EDITOR');
   const viewerMember = await invite(tokens.owner, workspace.id, users.viewer, 'VIEWER');
-  await invite(tokens.owner, workspace.id, users.pending, 'VIEWER');
+  const pendingMember = await invite(tokens.owner, workspace.id, users.pending, 'VIEWER');
   const removedMember = await invite(tokens.owner, workspace.id, users.removed, 'VIEWER');
 
   await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.pending) });
@@ -154,6 +158,23 @@ async function main() {
     throw new Error('PENDING invitation missing');
   }
   console.log('✓ PENDING sees invitation but cannot access workspace');
+
+  const declinedMember = await request(`${workspacePath}/members/${pendingMember.id}`, {
+    method: 'PATCH',
+    headers: authorization(tokens.pending),
+    body: membershipStatusBody('REMOVED'),
+  });
+  if (declinedMember.status !== 'REMOVED') {
+    throw new Error('declined invitation status mismatch');
+  }
+  const invitationsAfterDecline = await request('/api/v1/workspace-invitations', {
+    headers: authorization(tokens.pending),
+  });
+  if (invitationsAfterDecline.some((invitation) => invitation.workspace.id === workspace.id)) {
+    throw new Error('declined invitation remained visible');
+  }
+  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.pending) });
+  console.log('✓ PENDING member declines invitation and it leaves the invitation list');
 
   await request(`${workspacePath}/members/${removedMember.id}`, {
     method: 'DELETE',
@@ -257,4 +278,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createCascadeTaskRequest };
+module.exports = { createCascadeTaskRequest, membershipStatusBody };

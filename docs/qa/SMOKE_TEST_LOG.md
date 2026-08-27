@@ -126,6 +126,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 - EDITOR는 Task를 수정하지만 Workspace 설정은 변경할 수 없다.
 - VIEWER는 Task를 조회하지만 생성할 수 없다.
 - PENDING은 초대만 조회하고 Workspace에는 접근할 수 없다.
+- 최신 스크립트는 PENDING 사용자의 초대 거절 뒤 status가 `REMOVED`이고 초대 목록에서 사라지는지 확인한다.
 - REMOVED와 비멤버는 Workspace 존재 여부를 확인할 수 없다.
 - 권한 부족은 HTTP 403 `FORBIDDEN`, 비활성·비멤버 접근은 HTTP 404 `WORKSPACE_NOT_FOUND`다.
 

@@ -237,5 +237,6 @@ EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-deployment
 - 생성 API의 `Idempotency-Key` 발급·timeout 재시도 정책
 - Task `notificationEnabled`·`notifyAt` 편집과 로컬 예약
 - Workspace 초대 거절 UI와 cache 복구
+- `smoke:workspace-roles:real`의 PENDING 초대 거절·목록 제거·접근 404 검증
 - `smoke:workspace-roles:real`의 내용 있는 Workspace cascade 삭제와 삭제 후 역할별 404 검증
 - Today 순서 일괄 저장 API는 drag and drop 고도화 시점까지 후순위로 둔다.
