@@ -5,6 +5,8 @@ import {
   getAccessToken,
   resetAuthTokenStoreForTesting,
   setAccessToken,
+  setAuthAccountType,
+  setSessionCredential,
 } from '../auth-token-store';
 
 jest.mock('@/config', () => ({
@@ -32,7 +34,7 @@ describe('api client authorization', () => {
           timestamp: '2026-07-14T10:00:00',
         }),
     });
-    globalThis.fetch = fetchMock;
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     await setAccessToken('access-token');
 
@@ -142,6 +144,70 @@ describe('api client authorization', () => {
     unsubscribe();
   });
 
+  it('401이면 refresh token을 회전한 뒤 원 요청을 한 번 재시도한다', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(apiFailure(401, 11002, '인증이 필요합니다.'))
+      .mockResolvedValueOnce(
+        apiSuccess({
+          tokenType: 'Bearer',
+          accessToken: 'rotated-access-token',
+          expiresAt: '2099-08-27T12:15:00',
+          refreshToken: 'rotated-refresh-token',
+          refreshExpiresAt: '2099-09-27T12:00:00',
+          user: { accountType: 'REGISTERED' },
+          mergeResult: null,
+        }),
+      )
+      .mockResolvedValueOnce(apiSuccess({ id: 1 }));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    await setAuthAccountType('REGISTERED');
+    await setSessionCredential({
+      accessToken: 'expired-access-token',
+      accessTokenExpiresAt: '2099-08-27T12:15:00',
+      refreshToken: 'refresh-token',
+      refreshTokenExpiresAt: '2099-09-27T12:00:00',
+    });
+
+    await expect(request<{ id: number }>('/api/v1/auth/me')).resolves.toEqual({ id: 1 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock.mock.calls[1][0]).toBe('https://api.example.com/api/v1/auth/refresh');
+    const retryHeaders = fetchMock.mock.calls[2][1].headers as Headers;
+    expect(retryHeaders.get('Authorization')).toBe('Bearer rotated-access-token');
+  });
+
+  it('동시에 만료 임박 요청이 발생해도 refresh 요청은 하나만 실행한다', async () => {
+    const fetchMock = jest.fn(async (url: RequestInfo | URL) => {
+      if (String(url).endsWith('/api/v1/auth/refresh')) {
+        return apiSuccess({
+          tokenType: 'Bearer',
+          accessToken: 'rotated-access-token',
+          expiresAt: '2099-08-27T12:15:00',
+          refreshToken: 'rotated-refresh-token',
+          refreshExpiresAt: '2099-09-27T12:00:00',
+          user: { accountType: 'REGISTERED' },
+          mergeResult: null,
+        });
+      }
+      return apiSuccess({ ok: true });
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    await setAuthAccountType('REGISTERED');
+    await setSessionCredential({
+      accessToken: 'expiring-access-token',
+      accessTokenExpiresAt: '2020-08-27T12:00:00',
+      refreshToken: 'refresh-token',
+      refreshTokenExpiresAt: '2099-09-27T12:00:00',
+    });
+
+    await Promise.all([request('/api/v1/tasks'), request('/api/v1/schedules')]);
+
+    expect(
+      fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/api/v1/auth/refresh')),
+    ).toHaveLength(1);
+  });
+
   it('403 응답은 access token을 유지하고 세션 만료로 처리하지 않는다', async () => {
     globalThis.fetch = jest.fn().mockResolvedValue({
       ok: false,
@@ -166,6 +232,29 @@ describe('api client authorization', () => {
     unsubscribe();
   });
 });
+
+function apiSuccess(data: unknown) {
+  return {
+    ok: true,
+    status: 200,
+    text: async () =>
+      JSON.stringify({ status: 'success', data, error: null, timestamp: '2026-08-27T10:00:00' }),
+  };
+}
+
+function apiFailure(status: number, code: number, message: string) {
+  return {
+    ok: false,
+    status,
+    text: async () =>
+      JSON.stringify({
+        status: 'fail',
+        data: null,
+        error: { code, message },
+        timestamp: '2026-08-27T10:00:00',
+      }),
+  };
+}
 
 function installLocalStorage() {
   let storage: Record<string, string> = {};

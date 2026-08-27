@@ -2,12 +2,15 @@ export { authApi, isTokenResponse } from './auth-api';
 export { subscribeSessionExpired } from './auth-session';
 export {
   clearAccessToken,
+  clearSessionCredential,
   getAuthAccountType,
   getAccessToken,
   initializeAuthAccountType,
   initializeAccessToken,
+  initializeRefreshCredential,
   setAuthAccountType,
   setAccessToken,
+  setSessionCredential,
   subscribeAccessToken,
 } from './auth-token-store';
 export { apiClient, request } from './api-client';

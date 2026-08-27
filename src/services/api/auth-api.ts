@@ -12,12 +12,22 @@ import type {
 } from '@/types';
 
 import { apiClient } from './api-client';
-import { clearAccessToken, setAccessToken, setAuthAccountType } from './auth-token-store';
+import {
+  clearSessionCredential,
+  getRefreshToken,
+  setAuthAccountType,
+  setSessionCredential,
+} from './auth-token-store';
 
 const AUTH_PATH = '/api/v1/auth';
 
 async function persistTokenResponse(response: TokenResponse) {
-  await setAccessToken(response.accessToken);
+  await setSessionCredential({
+    accessToken: response.accessToken,
+    accessTokenExpiresAt: response.expiresAt,
+    refreshToken: response.refreshToken,
+    refreshTokenExpiresAt: response.refreshExpiresAt,
+  });
   await setAuthAccountType(response.user.accountType);
 }
 
@@ -35,9 +45,12 @@ export const authApi = {
   },
 
   async refreshGuest(signal?: AbortSignal) {
-    const response = await apiClient.post<TokenResponse>(`${AUTH_PATH}/guest/refresh`, undefined, {
-      signal,
-    });
+    const refreshToken = getRefreshToken();
+    const response = await apiClient.post<TokenResponse>(
+      `${AUTH_PATH}/guest/refresh`,
+      refreshToken ? { refreshToken } : undefined,
+      { signal },
+    );
     await persistTokenResponse(response);
     return response;
   },
@@ -88,12 +101,21 @@ export const authApi = {
     return apiClient.post<null>(`${AUTH_PATH}/password-reset/confirm`, request, { signal });
   },
 
-  logout() {
-    return clearAccessToken();
+  async logout(signal?: AbortSignal) {
+    const refreshToken = getRefreshToken();
+    try {
+      await apiClient.post<null>(
+        `${AUTH_PATH}/logout`,
+        refreshToken ? { refreshToken } : undefined,
+        { signal },
+      );
+    } finally {
+      await clearSessionCredential();
+    }
   },
 
   async logoutToGuest(signal?: AbortSignal) {
-    await clearAccessToken();
+    await this.logout(signal);
     return this.guest(signal);
   },
 };

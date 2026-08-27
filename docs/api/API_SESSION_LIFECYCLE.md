@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-27
 
-ToDoLab의 앱·Web 세션 수명, refresh credential과 게스트 데이터 보존 기준이다. 백엔드는 등록·게스트 refresh, logout, token rotation·reuse detection과 idle 30일·absolute 90일 계약을 제공한다. 현재 남은 일은 모바일 저장·갱신 흐름과 Web credential 방식을 연결하는 것이다.
+ToDoLab의 앱·Web 세션 수명, refresh credential과 게스트 데이터 보존 기준이다. 백엔드는 등록·게스트 refresh, logout, token rotation·reuse detection과 idle 30일·absolute 90일 계약을 제공한다. 모바일 저장·갱신 흐름은 연결했으며, 현재 남은 일은 Web credential 방식 확정과 실서버 세션 smoke test다.
 
 ## 제품 기준
 
@@ -77,21 +77,18 @@ token 응답에는 최소 다음 필드를 둔다.
 
 ## 현재 프론트 구현과 차이
 
-- 프론트는 `expiresAt`을 응답으로 받지만 아직 저장·판정하지 않는다.
-- 백엔드 응답의 `refreshToken`, `refreshExpiresAt`을 프론트 타입과 SecureStore에 반영하지 않았다.
-- 게스트 refresh는 앱 시작의 `/auth/me` 성공 뒤와 foreground 24시간 간격으로만 시도한다.
-- 등록 계정 refresh, 동시 요청 단일화, 401 뒤 1회 재시도와 서버 logout 호출은 아직 없다.
-- Web은 access token을 `localStorage`에 저장하며 HttpOnly cookie 계약을 연결하지 않았다.
+- `TokenResponse`의 `refreshToken`, `refreshExpiresAt`을 반영하고 native SecureStore에 access·refresh 만료 시각과 함께 저장한다.
+- access token 만료 2분 전 보호 API 요청에서 등록·게스트 refresh를 선제 실행한다.
+- 동시에 시작된 요청은 하나의 refresh 결과를 공유하며, 401은 refresh 성공 뒤 원 요청을 한 번만 재시도한다.
+- logout은 서버 refresh session 폐기를 요청하고 성공 여부와 무관하게 로컬 credential을 제거한다.
+- Web은 refresh token을 JavaScript 저장소에 보관하지 않으며 HttpOnly cookie 계약 확정 전까지 기존 access-token 동작을 유지한다.
 
 백엔드 source 계약은 준비됐지만 production 반영과 프론트 연결 전에는 access token 수명을 단독으로 줄이지 않는다.
 
 ## 프론트 연결과 완료 판단
 
-- `TokenResponse`에 `refreshToken`, `refreshExpiresAt`을 반영한다.
-- native는 refresh credential을 별도 SecureStore key에 저장하고 계정 전환·logout에서 정리한다.
-- refresh 요청은 하나만 실행하고 대기 요청이 같은 결과를 공유한다.
-- access 만료 전 선제 갱신과 401 뒤 원 요청 1회 재시도를 구현한다.
-- logout은 서버 session 폐기를 호출한 뒤 로컬 credential을 안전하게 제거한다.
+- native 실기기에서 로그인·게스트 cold start, 만료 임박 선제 갱신과 offline 복귀를 smoke test한다.
+- refresh 만료·rotation reuse 오류에서 세션 종료 안내와 로컬 credential 제거를 실서버로 확인한다.
 - Web cookie 계약을 채택하면 credentials·CSRF·CORS를 production origin에서 검증한다.
 - 프론트 real smoke에서 만료 임박, offline 복귀, 동시 요청, token 재사용, guest 90일 경계를 검증한다.
 

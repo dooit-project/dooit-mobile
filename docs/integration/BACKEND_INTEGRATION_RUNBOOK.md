@@ -62,7 +62,7 @@ type ApiEnvelope<T> = {
 
 ## 3. 인증 계약
 
-모바일은 현재 로그인 성공 시 `accessToken`만 저장하고, 이후 요청에 `Authorization: Bearer <accessToken>`을 자동 첨부한다. 백엔드는 refresh credential도 반환하므로 아래 미연결 상태를 출시 전에 해소한다.
+모바일은 로그인 성공 시 access token과 native refresh credential·각 만료 시각을 저장하고, 보호 요청에 access token을 자동 첨부한다. 만료 2분 전 선제 갱신, 동시 요청 단일화와 401 뒤 1회 재시도까지 연결되어 있다.
 
 토큰 저장 보안 기준:
 
@@ -71,7 +71,7 @@ type ApiEnvelope<T> = {
 - 앱 시작 시 저장된 token을 먼저 메모리로 복원한 뒤 API 요청을 보낸다.
 - token은 로그, 오류 메시지, smoke test 출력에 남기지 않는다.
 - 백엔드는 등록·게스트 refresh token, rotation·reuse detection, logout과 idle 30일·absolute 90일 계약을 제공한다.
-- 모바일은 아직 refresh token 저장과 `expiresAt` 기반 선제 갱신을 연결하지 않았다. native SecureStore와 동시 요청 단일화 기준은 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
+- native SecureStore 저장과 `expiresAt` 기반 선제 갱신을 연결했다. Web HttpOnly cookie 계약과 실서버 smoke test는 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
 
 | Method | Path                            | 용도                                  |
 | ------ | ------------------------------- | ------------------------------------- |

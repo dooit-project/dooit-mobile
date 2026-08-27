@@ -129,7 +129,7 @@ Last updated: 2026-08-27
 - [ ] 우선 대상 생성 mutation에 key를 적용하고 timeout 뒤 동일 key 재시도를 구현한다.
 - [x] refresh token·장기 세션과 게스트 90일 보존 목표는 [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)를 따른다.
 - [x] 백엔드가 등록·게스트 refresh, logout, rotation·reuse detection과 idle 30일·absolute 90일 계약을 제공한다.
-- [ ] native SecureStore에 refresh credential과 만료 시각을 저장하고 선제 갱신·동시 요청 단일화·401 1회 재시도를 구현한다.
+- [x] native SecureStore에 refresh credential과 만료 시각을 저장하고 선제 갱신·동시 요청 단일화·401 1회 재시도를 구현한다.
 - [ ] Web refresh credential을 HttpOnly cookie로 운영할지 백엔드와 배포 형태를 확정한다.
 - [x] 오류 로깅 도구로 Sentry를 선정하고 [`ERROR_LOGGING_PRIVACY.md`](../qa/ERROR_LOGGING_PRIVACY.md)의 비수집 이벤트 경계를 적용한다.
 - [ ] Sentry project·DSN과 운영 책임자가 정해지면 SDK, route ErrorBoundary, source map 업로드를 연결하고 Android·iOS·Web에서 검증한다.

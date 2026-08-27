@@ -59,6 +59,8 @@ export type TokenResponse = {
   tokenType: 'Bearer';
   accessToken: string;
   expiresAt: LocalDateTimeString;
+  refreshToken: string | null;
+  refreshExpiresAt: LocalDateTimeString | null;
   user: UserResponse;
   mergeResult: GuestMergeResultResponse | null;
 };

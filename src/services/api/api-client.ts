@@ -1,11 +1,23 @@
 import { env, requireApiUrl } from '@/config';
+import type { TokenResponse } from '@/types';
+import { parseApiLocalDateTime } from '@/utils';
 
 import { ApiClientError } from './api-error';
 import { notifySessionExpired } from './auth-session';
-import { clearAccessToken, getAccessToken } from './auth-token-store';
+import {
+  clearSessionCredential,
+  getAccessToken,
+  getAccessTokenExpiresAt,
+  getAuthAccountType,
+  getRefreshToken,
+  setAuthAccountType,
+  setSessionCredential,
+} from './auth-token-store';
 import { mockApiClient } from './mock-api-client';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
+const PROACTIVE_REFRESH_WINDOW_MS = 2 * 60 * 1_000;
+const AUTH_PATH = '/api/v1/auth';
 
 type QueryValue = string | number | boolean | null | undefined;
 type QueryParams = Record<string, QueryValue>;
@@ -26,7 +38,67 @@ type ApiRequestOptions = Omit<RequestInit, 'body' | 'method'> & {
   query?: QueryParams;
   body?: unknown;
   timeoutMs?: number;
+  skipAuthRefresh?: boolean;
+  retriedAfterRefresh?: boolean;
 };
+
+let refreshPromise: Promise<TokenResponse> | null = null;
+
+function canRefreshRequest(path: string) {
+  return ![
+    `${AUTH_PATH}/guest`,
+    `${AUTH_PATH}/guest/refresh`,
+    `${AUTH_PATH}/refresh`,
+    `${AUTH_PATH}/register`,
+    `${AUTH_PATH}/login`,
+    `${AUTH_PATH}/logout`,
+  ].includes(path);
+}
+
+function shouldRefreshAccessToken(now = Date.now()) {
+  const refreshToken = getRefreshToken();
+  const expiresAt = getAccessTokenExpiresAt();
+  if (!refreshToken || !expiresAt) {
+    return false;
+  }
+
+  const expiration = parseApiLocalDateTime(expiresAt);
+  return expiration ? expiration.getTime() - now <= PROACTIVE_REFRESH_WINDOW_MS : false;
+}
+
+async function refreshSession() {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    throw new ApiClientError('세션을 갱신할 수 없습니다.', { kind: 'api' });
+  }
+
+  const path =
+    getAuthAccountType() === 'GUEST' ? `${AUTH_PATH}/guest/refresh` : `${AUTH_PATH}/refresh`;
+  refreshPromise = request<TokenResponse>(path, {
+    method: 'POST',
+    body: { refreshToken },
+    skipAuthRefresh: true,
+  })
+    .then(async (response) => {
+      await setSessionCredential({
+        accessToken: response.accessToken,
+        accessTokenExpiresAt: response.expiresAt,
+        refreshToken: response.refreshToken,
+        refreshTokenExpiresAt: response.refreshExpiresAt,
+      });
+      await setAuthAccountType(response.user.accountType);
+      return response;
+    })
+    .finally(() => {
+      refreshPromise = null;
+    });
+
+  return refreshPromise;
+}
 
 function buildUrl(path: string, query?: QueryParams) {
   let baseUrl: string;
@@ -77,7 +149,7 @@ async function readBody(response: Response) {
   }
 }
 
-export async function request<T>(path: string, options: ApiRequestOptions = {}) {
+export async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
   const {
     method = 'GET',
     query,
@@ -85,8 +157,19 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}) 
     timeoutMs = DEFAULT_TIMEOUT_MS,
     headers: customHeaders,
     signal: externalSignal,
+    skipAuthRefresh = false,
+    retriedAfterRefresh = false,
     ...requestOptions
   } = options;
+
+  if (!skipAuthRefresh && canRefreshRequest(path) && shouldRefreshAccessToken()) {
+    try {
+      await refreshSession();
+    } catch {
+      // 네트워크 오류일 수 있으므로 기존 access token으로 원 요청을 계속한다.
+    }
+  }
+
   const controller = new AbortController();
   const headers = new Headers(customHeaders);
   let timedOut = false;
@@ -126,7 +209,21 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}) 
     if (!response.ok) {
       const isCredentialFailure = response.status === 401 && envelope?.error?.code === 11001;
       if (response.status === 401 && accessToken && !isCredentialFailure) {
-        void clearAccessToken();
+        if (
+          !skipAuthRefresh &&
+          !retriedAfterRefresh &&
+          canRefreshRequest(path) &&
+          getRefreshToken()
+        ) {
+          try {
+            await refreshSession();
+            return request<T>(path, { ...options, retriedAfterRefresh: true });
+          } catch {
+            // refresh 실패가 확정되면 아래에서 세션을 종료한다.
+          }
+        }
+
+        await clearSessionCredential();
         notifySessionExpired();
       }
 

@@ -13,16 +13,16 @@
 
 ## 요청별 상태
 
-| 요청                     | 근거                 | 백엔드 상태                                           | 모바일 후속                      |
-| ------------------------ | -------------------- | ----------------------------------------------------- | -------------------------------- |
-| 내용 있는 Workspace 삭제 | `b292654`            | cascade 삭제·통합 테스트 완료                         | 최신 배포 real smoke             |
-| 실행 버전 metadata       | `74c7a37`            | `GET /api/v1/system/metadata` 완료                    | commit/image/version 기록        |
-| 비밀번호 재설정          | `7f6feee`            | request·verify·confirm, TTL·rate limit·deep link 완료 | form·deep link·메일 smoke        |
-| CORS·cache               | `897e87d`            | `Authorization`·`Idempotency-Key`, `no-store` 완료    | 운영 origin smoke                |
-| 생성 멱등성              | `bd427b1`            | 24시간 replay, 409와 replay header 완료               | mutation key·timeout 재시도      |
-| refresh·logout           | `5b572a9`, `4c5c63a` | rotation·reuse detection, 30/90일 완료                | SecureStore·선제 갱신·401 재시도 |
-| Workspace 초대 거절      | `144d18f`            | PENDING → REMOVED와 권한 테스트 완료                  | 확인 UI·cache mutation           |
-| Task 알림 시각           | `bc5bd73`            | `notificationEnabled`·`notifyAt` 완료                 | 타입·편집 UI·로컬 예약           |
+| 요청                     | 근거                 | 백엔드 상태                                           | 모바일 후속                                    |
+| ------------------------ | -------------------- | ----------------------------------------------------- | ---------------------------------------------- |
+| 내용 있는 Workspace 삭제 | `b292654`            | cascade 삭제·통합 테스트 완료                         | 최신 배포 real smoke                           |
+| 실행 버전 metadata       | `74c7a37`            | `GET /api/v1/system/metadata` 완료                    | commit/image/version 기록                      |
+| 비밀번호 재설정          | `7f6feee`            | request·verify·confirm, TTL·rate limit·deep link 완료 | form·deep link·메일 smoke                      |
+| CORS·cache               | `897e87d`            | `Authorization`·`Idempotency-Key`, `no-store` 완료    | 운영 origin smoke                              |
+| 생성 멱등성              | `bd427b1`            | 24시간 replay, 409와 replay header 완료               | mutation key·timeout 재시도                    |
+| refresh·logout           | `5b572a9`, `4c5c63a` | rotation·reuse detection, 30/90일 완료                | native 연결 완료, 실서버 smoke·Web cookie 확정 |
+| Workspace 초대 거절      | `144d18f`            | PENDING → REMOVED와 권한 테스트 완료                  | 확인 UI·cache mutation                         |
+| Task 알림 시각           | `bc5bd73`            | `notificationEnabled`·`notifyAt` 완료                 | 타입·편집 UI·로컬 예약                         |
 
 ## production 반영 전 확인
 
@@ -36,6 +36,6 @@
 
 1. 비밀번호 재설정 UI와 deep link
 2. Workspace 초대 거절
-3. refresh credential 저장·선제 갱신·동시 요청 단일화
+3. native refresh credential 실기기·실서버 smoke와 Web HttpOnly cookie 계약 확정
 4. 생성 mutation `Idempotency-Key`
 5. Task 알림 `notificationEnabled`·`notifyAt`

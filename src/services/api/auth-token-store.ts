@@ -1,10 +1,13 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-import type { AccountType } from '@/types';
+import type { AccountType, LocalDateTimeString } from '@/types';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'todolab.accessToken';
 const ACCOUNT_TYPE_STORAGE_KEY = 'todolab.authAccountType';
+const ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY = 'todolab.accessTokenExpiresAt';
+const REFRESH_TOKEN_STORAGE_KEY = 'todolab.refreshToken';
+const REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY = 'todolab.refreshTokenExpiresAt';
 const SECURE_STORE_OPTIONS = {
   keychainService: 'todolab.accessToken',
 } satisfies SecureStore.SecureStoreOptions;
@@ -13,8 +16,12 @@ type AccessTokenListener = (token: string | null) => void;
 
 let memoryAccessToken: string | null = null;
 let memoryAccountType: AccountType | null = null;
+let memoryAccessTokenExpiresAt: LocalDateTimeString | null = null;
+let memoryRefreshToken: string | null = null;
+let memoryRefreshTokenExpiresAt: LocalDateTimeString | null = null;
 let initialized = false;
 let accountTypeInitialized = false;
+let refreshCredentialInitialized = false;
 const accessTokenListeners = new Set<AccessTokenListener>();
 
 function normalizeToken(token: string | null | undefined) {
@@ -91,6 +98,18 @@ export function getAccessToken() {
   return null;
 }
 
+export function getAccessTokenExpiresAt() {
+  return memoryAccessTokenExpiresAt;
+}
+
+export function getRefreshToken() {
+  return Platform.OS === 'web' ? null : memoryRefreshToken;
+}
+
+export function getRefreshTokenExpiresAt() {
+  return Platform.OS === 'web' ? null : memoryRefreshTokenExpiresAt;
+}
+
 export async function initializeAccessToken() {
   if (initialized) {
     return memoryAccessToken;
@@ -127,6 +146,66 @@ export async function initializeAuthAccountType() {
   memoryAccountType = normalizeAccountType(persistedValue);
   accountTypeInitialized = true;
   return memoryAccountType;
+}
+
+export async function initializeRefreshCredential() {
+  if (Platform.OS === 'web' || refreshCredentialInitialized) {
+    return memoryRefreshToken;
+  }
+
+  const [accessExpiresAt, refreshToken, refreshExpiresAt] = await Promise.all([
+    SecureStore.getItemAsync(ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY),
+    SecureStore.getItemAsync(REFRESH_TOKEN_STORAGE_KEY),
+    SecureStore.getItemAsync(REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY),
+  ]);
+  memoryAccessTokenExpiresAt = accessExpiresAt as LocalDateTimeString | null;
+  memoryRefreshToken = normalizeToken(refreshToken);
+  memoryRefreshTokenExpiresAt = refreshExpiresAt as LocalDateTimeString | null;
+  refreshCredentialInitialized = true;
+  return memoryRefreshToken;
+}
+
+export async function setSessionCredential(credential: {
+  accessToken: string;
+  accessTokenExpiresAt: LocalDateTimeString;
+  refreshToken: string | null;
+  refreshTokenExpiresAt: LocalDateTimeString | null;
+}) {
+  await setAccessToken(credential.accessToken);
+  memoryAccessTokenExpiresAt = credential.accessTokenExpiresAt;
+
+  if (Platform.OS === 'web') {
+    return;
+  }
+
+  memoryRefreshToken = normalizeToken(credential.refreshToken);
+  memoryRefreshTokenExpiresAt = credential.refreshTokenExpiresAt;
+  refreshCredentialInitialized = true;
+  await Promise.all([
+    SecureStore.setItemAsync(ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY, credential.accessTokenExpiresAt),
+    memoryRefreshToken
+      ? SecureStore.setItemAsync(REFRESH_TOKEN_STORAGE_KEY, memoryRefreshToken)
+      : SecureStore.deleteItemAsync(REFRESH_TOKEN_STORAGE_KEY),
+    memoryRefreshTokenExpiresAt
+      ? SecureStore.setItemAsync(REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY, memoryRefreshTokenExpiresAt)
+      : SecureStore.deleteItemAsync(REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY),
+  ]);
+}
+
+export async function clearSessionCredential() {
+  memoryAccessTokenExpiresAt = null;
+  memoryRefreshToken = null;
+  memoryRefreshTokenExpiresAt = null;
+  refreshCredentialInitialized = true;
+  await clearAccessToken();
+
+  if (Platform.OS !== 'web') {
+    await Promise.all([
+      SecureStore.deleteItemAsync(ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY),
+      SecureStore.deleteItemAsync(REFRESH_TOKEN_STORAGE_KEY),
+      SecureStore.deleteItemAsync(REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY),
+    ]);
+  }
 }
 
 export async function setAuthAccountType(accountType: AccountType) {
@@ -172,7 +251,11 @@ export function subscribeAccessToken(listener: AccessTokenListener) {
 export function resetAuthTokenStoreForTesting() {
   memoryAccessToken = null;
   memoryAccountType = null;
+  memoryAccessTokenExpiresAt = null;
+  memoryRefreshToken = null;
+  memoryRefreshTokenExpiresAt = null;
   initialized = false;
   accountTypeInitialized = false;
+  refreshCredentialInitialized = false;
   accessTokenListeners.clear();
 }
