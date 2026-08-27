@@ -97,7 +97,13 @@ export async function reconcileTaskNotifications(
 export function getTaskNotificationFingerprint(candidate: TaskNotificationCandidateResponse) {
   const delivery = getTaskNotificationDelivery(candidate);
   return delivery
-    ? JSON.stringify([delivery.date.getTime(), delivery.title, delivery.body, candidate.taskId])
+    ? JSON.stringify([
+        delivery.date.getTime(),
+        delivery.title,
+        delivery.body,
+        candidate.taskId,
+        candidate.notifyAt ?? null,
+      ])
     : '';
 }
 

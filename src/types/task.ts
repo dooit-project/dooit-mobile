@@ -60,6 +60,8 @@ export type TaskUpsertRequest = {
   category?: string | null;
   allDay: boolean;
   recurrence?: TaskRecurrenceRequest | null;
+  notificationEnabled?: boolean | null;
+  notifyAt?: LocalDateTimeString | null;
 };
 
 export type TaskQuickCaptureRequest = {
@@ -172,6 +174,8 @@ export type TaskResponse = {
   originalOccurrenceDate?: LocalDateString | null;
   recurrenceException?: RecurrenceException | null;
   recurrence?: TaskRecurrenceResponse | null;
+  notificationEnabled?: boolean | null;
+  notifyAt?: LocalDateTimeString | null;
   createdAt: LocalDateTimeString;
   updatedAt: LocalDateTimeString | null;
 };
@@ -185,6 +189,7 @@ export type TaskNotificationCandidateResponse = {
   notificationKey: string;
   taskId: number;
   scheduledAt: LocalDateTimeString;
+  notifyAt?: LocalDateTimeString | null;
   recurrenceSeriesId: number | null;
   occurrenceDate: LocalDateString | null;
   suppressLocalNotification: boolean;

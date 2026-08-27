@@ -25,6 +25,7 @@ type TaskNotificationCandidateResponse = {
   notificationKey: string;
   taskId: number;
   scheduledAt: LocalDateTimeString;
+  notifyAt: LocalDateTimeString | null;
   recurrenceSeriesId: number | null;
   occurrenceDate: LocalDateString | null;
   suppressLocalNotification: boolean;

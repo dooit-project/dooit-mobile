@@ -123,7 +123,7 @@ Last updated: 2026-08-27
 
 ### P1. 준비된 백엔드 계약 연결
 
-- [ ] Task의 `notificationEnabled`·`notifyAt`을 생성·편집 UI와 로컬 예약에 연결한다.
+- [x] Task의 `notificationEnabled`·`notifyAt`을 생성·편집 UI와 로컬 예약에 연결한다.
 - [x] API 생성 요청은 [`API_IDEMPOTENCY.md`](../api/API_IDEMPOTENCY.md)의 `Idempotency-Key` 정책을 사용한다.
 - [x] 백엔드 OpenAPI·CORS와 24시간 replay 저장이 `Idempotency-Key`를 지원한다.
 - [x] 우선 대상 생성 mutation에 key를 적용하고 timeout 뒤 동일 key 1회 재시도를 구현한다.

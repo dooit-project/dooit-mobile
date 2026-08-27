@@ -148,6 +148,15 @@ describe('task notification reconciliation', () => {
     expect(schedule).not.toHaveBeenCalled();
   });
 
+  it('notifyAt이 바뀌면 예약 fingerprint도 바뀐다', () => {
+    const original = candidate({ notifyAt: null });
+    const changed = candidate({ notifyAt: '2026-08-12T08:50:00' });
+
+    expect(getTaskNotificationFingerprint(original)).not.toBe(
+      getTaskNotificationFingerprint(changed),
+    );
+  });
+
   it('전달 시각이 가까운 후보부터 최대 예약 수만 유지한다', async () => {
     const schedule = jest.fn().mockResolvedValue(undefined);
     const candidates = Array.from({ length: MAX_SCHEDULED_TASK_NOTIFICATIONS + 2 }, (_, index) => {

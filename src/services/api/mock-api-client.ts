@@ -559,6 +559,8 @@ function applyTaskRequest(task: TaskResponse, request: TaskUpsertRequest) {
   task.allDay = request.allDay;
   task.startAt = request.startAt ?? null;
   task.endAt = request.endAt ?? null;
+  task.notificationEnabled = request.notificationEnabled ?? true;
+  task.notifyAt = request.notifyAt ?? null;
   applyTaskRecurrence(task, request);
   task.updatedAt = now;
 
@@ -1054,6 +1056,7 @@ export const mockApiClient = {
           (task) =>
             task.status === 'TODAY' &&
             !task.completedAt &&
+            task.notificationEnabled !== false &&
             Boolean(task.startAt) &&
             task.recurrenceException !== 'SKIPPED' &&
             task.startAt!.slice(0, 10) >= from &&
@@ -1065,7 +1068,8 @@ export const mockApiClient = {
               ? `recurrence:${task.recurrenceSeriesId}:${task.occurrenceDate}`
               : `task:${task.id}`,
           taskId: task.id,
-          scheduledAt: task.startAt!,
+          scheduledAt: task.notifyAt ?? task.startAt!,
+          notifyAt: task.notifyAt ?? null,
           recurrenceSeriesId: task.recurrenceSeriesId ?? null,
           occurrenceDate: task.occurrenceDate ?? null,
           suppressLocalNotification: false,
@@ -1145,6 +1149,7 @@ export const mockApiClient = {
         .filter(
           (task) =>
             !task.completedAt &&
+            task.notificationEnabled !== false &&
             Boolean(task.startAt) &&
             task.recurrenceException !== 'SKIPPED' &&
             task.startAt!.slice(0, 10) >= from &&
@@ -1156,7 +1161,8 @@ export const mockApiClient = {
               ? `recurrence:${task.recurrenceSeriesId}:${task.occurrenceDate}`
               : `task:${task.id}`,
           taskId: task.id,
-          scheduledAt: task.startAt!,
+          scheduledAt: task.notifyAt ?? task.startAt!,
+          notifyAt: task.notifyAt ?? null,
           recurrenceSeriesId: task.recurrenceSeriesId ?? null,
           occurrenceDate: task.occurrenceDate ?? null,
           suppressLocalNotification: false,
@@ -1358,6 +1364,8 @@ export const mockApiClient = {
         category: request.category ?? null,
         status: 'TODAY',
         plannedDate: (request.startAt?.slice(0, 10) as LocalDateString | undefined) ?? today,
+        notificationEnabled: request.notificationEnabled ?? true,
+        notifyAt: request.notifyAt ?? null,
       });
       getWorkspaceTasks(workspacePath.workspaceId).unshift(task);
       return cloneTask(task) as T;
@@ -1389,6 +1397,8 @@ export const mockApiClient = {
         allDay: request.allDay,
         category: request.category ?? null,
         status: request.type === 'SCHEDULE' ? 'TODAY' : 'INBOX',
+        notificationEnabled: request.notificationEnabled ?? true,
+        notifyAt: request.notifyAt ?? null,
       });
       applyTaskRecurrence(task, request);
 

@@ -22,6 +22,12 @@ import {
   type RecurrenceMode,
 } from './task-form-recurrence';
 import { normalizeScheduleFormInput } from './task-form-schedule';
+import {
+  buildTaskNotificationFields,
+  getInitialTaskNotificationTiming,
+  taskNotificationTimingOptions,
+  type TaskNotificationTiming,
+} from './task-notification-timing';
 
 type TaskFormValues = {
   title: string;
@@ -35,6 +41,7 @@ type TaskFormValues = {
   recurrenceMode: RecurrenceMode;
   recurrenceFrequency: RecurrenceFrequency;
   recurrenceInterval: string;
+  notificationTiming: TaskNotificationTiming;
 };
 
 type TaskFormField =
@@ -94,6 +101,7 @@ export function TaskForm({
       recurrenceMode: recurrence.mode,
       recurrenceFrequency: recurrence.customFrequency,
       recurrenceInterval: recurrence.customInterval,
+      notificationTiming: getInitialTaskNotificationTiming(initialTask),
     };
   });
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
@@ -170,6 +178,9 @@ export function TaskForm({
             values.scheduleDate,
           )
         : null;
+    const notification = schedule
+      ? buildTaskNotificationFields(values.notificationTiming, schedule.startAt, schedule.allDay)
+      : { notificationEnabled: false, notifyAt: null };
 
     onSubmit({
       title,
@@ -180,6 +191,7 @@ export function TaskForm({
       startAt: schedule?.startAt ?? null,
       endAt: schedule?.endAt ?? null,
       recurrence,
+      ...notification,
     });
   };
 
@@ -310,7 +322,12 @@ export function TaskForm({
               <Switch
                 accessibilityLabel="종일 일정 여부"
                 disabled={isSubmitting}
-                onValueChange={(value) => updateField('allDay', value)}
+                onValueChange={(value) => {
+                  updateField('allDay', value);
+                  if (value && !['OFF', 'AT_START'].includes(values.notificationTiming)) {
+                    updateField('notificationTiming', 'AT_START');
+                  }
+                }}
                 thumbColor={values.allDay ? theme.colors.primary : theme.colors.surface}
                 trackColor={{ false: theme.colors.borderStrong, true: theme.colors.primarySoft }}
                 value={values.allDay}
@@ -389,6 +406,56 @@ export function TaskForm({
                 </View>
               </View>
             ) : null}
+
+            <View style={styles.field}>
+              <AppText variant="label" weight="bold">
+                알림
+              </AppText>
+              <AppText tone="secondary" variant="caption">
+                {values.allDay
+                  ? '종일 일정은 당일 오전 9시에 알려드려요.'
+                  : '이 일정의 시작 시각을 기준으로 알려드려요.'}
+              </AppText>
+              <View style={styles.notificationGrid}>
+                {taskNotificationTimingOptions
+                  .filter(
+                    (option) =>
+                      !values.allDay || option.value === 'OFF' || option.value === 'AT_START',
+                  )
+                  .map((option) => {
+                    const selected = values.notificationTiming === option.value;
+                    const label =
+                      values.allDay && option.value === 'AT_START' ? '당일 오전 9시' : option.label;
+
+                    return (
+                      <Pressable
+                        accessibilityLabel={`${label} 알림 선택`}
+                        accessibilityRole="radio"
+                        accessibilityState={{ checked: selected, disabled: isSubmitting }}
+                        disabled={isSubmitting}
+                        key={option.value}
+                        onPress={() => updateField('notificationTiming', option.value)}
+                        style={[
+                          styles.notificationOption,
+                          {
+                            backgroundColor: selected ? theme.colors.highlightBlue : 'transparent',
+                            borderColor: selected ? theme.colors.primary : theme.colors.border,
+                          },
+                        ]}
+                      >
+                        <AppText
+                          align="center"
+                          tone={selected ? 'primary' : 'default'}
+                          variant="caption"
+                          weight="bold"
+                        >
+                          {label}
+                        </AppText>
+                      </Pressable>
+                    );
+                  })}
+              </View>
+            </View>
 
             <View style={styles.field}>
               <View style={styles.labelRow}>
@@ -699,6 +766,19 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   recurrenceOption: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 38,
+    paddingHorizontal: spacing[3],
+  },
+  notificationGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+  },
+  notificationOption: {
     alignItems: 'center',
     borderRadius: radii.full,
     borderWidth: 1,

@@ -22,7 +22,7 @@
 | 생성 멱등성              | `bd427b1`            | 24시간 replay, 409와 replay header 완료               | 프론트 연결 완료, real smoke                   |
 | refresh·logout           | `5b572a9`, `4c5c63a` | rotation·reuse detection, 30/90일 완료                | native 연결 완료, 실서버 smoke·Web cookie 확정 |
 | Workspace 초대 거절      | `144d18f`            | PENDING → REMOVED와 권한 테스트 완료                  | 확인 UI·cache mutation                         |
-| Task 알림 시각           | `bc5bd73`            | `notificationEnabled`·`notifyAt` 완료                 | 타입·편집 UI·로컬 예약                         |
+| Task 알림 시각           | `bc5bd73`            | `notificationEnabled`·`notifyAt` 완료                 | 프론트 연결 완료, 실기기 smoke                 |
 
 ## production 반영 전 확인
 
@@ -38,4 +38,4 @@
 2. Workspace 초대 거절
 3. native refresh credential 실기기·실서버 smoke와 Web HttpOnly cookie 계약 확정
 4. 생성 mutation timeout·replay real smoke
-5. Task 알림 `notificationEnabled`·`notifyAt`
+5. Task 알림 시각 Android·iOS 실기기 smoke
