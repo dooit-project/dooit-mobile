@@ -17,7 +17,12 @@ import { useAuthState } from '@/features/auth';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString, WorkspaceInvitationResponse, WorkspaceRole } from '@/types';
 import { formatDateLabel } from '@/utils';
-import { useAcceptWorkspaceInvitation, useWorkspaceInvitations } from './use-workspace-invitations';
+import {
+  useAcceptWorkspaceInvitation,
+  useDeclineWorkspaceInvitation,
+  useWorkspaceInvitations,
+} from './use-workspace-invitations';
+import { getWorkspaceInvitationActionErrorMessage } from './workspace-error-presentation';
 import { useCreateWorkspace, useWorkspaces } from './use-workspaces';
 
 const invitationRoleLabels: Record<WorkspaceRole, string> = {
@@ -134,6 +139,7 @@ export function WorkspaceOverview() {
 function WorkspaceInvitations({ accountId }: { accountId: number }) {
   const query = useWorkspaceInvitations(accountId);
   const accept = useAcceptWorkspaceInvitation(accountId);
+  const decline = useDeclineWorkspaceInvitation(accountId);
 
   if (!query.isPending && !query.error && !query.data?.length) return null;
 
@@ -164,12 +170,18 @@ function WorkspaceInvitations({ accountId }: { accountId: number }) {
             accepting={
               accept.isPending && accept.variables?.membership.id === invitation.membership.id
             }
+            declining={
+              decline.isPending && decline.variables?.membership.id === invitation.membership.id
+            }
             error={
               accept.error && accept.variables?.membership.id === invitation.membership.id
-                ? accept.error.message
-                : undefined
+                ? getWorkspaceInvitationActionErrorMessage(accept.error)
+                : decline.error && decline.variables?.membership.id === invitation.membership.id
+                  ? getWorkspaceInvitationActionErrorMessage(decline.error)
+                  : undefined
             }
             onAccept={() => accept.mutate(invitation)}
+            onDecline={() => decline.mutate(invitation)}
           />
         ))
       )}
@@ -180,15 +192,22 @@ function WorkspaceInvitations({ accountId }: { accountId: number }) {
 function InvitationCard({
   invitation,
   accepting,
+  declining,
   error,
   onAccept,
+  onDecline,
 }: {
   invitation: WorkspaceInvitationResponse;
   accepting: boolean;
+  declining: boolean;
   error?: string;
   onAccept: () => void;
+  onDecline: () => void;
 }) {
+  const theme = useAppTheme();
+  const [confirmingDecline, setConfirmingDecline] = useState(false);
   const invitedDate = invitation.invitedAt.slice(0, 10) as LocalDateString;
+  const pending = accepting || declining;
 
   return (
     <Card style={styles.invitationCard}>
@@ -205,14 +224,53 @@ function InvitationCard({
         </AppText>
       </View>
       {error ? <InlineNotice message={error} tone="danger" /> : null}
-      <Button
-        accessibilityLabel={`${invitation.workspace.name} 초대 수락`}
-        fullWidth
-        loading={accepting}
-        onPress={onAccept}
-      >
-        초대 수락
-      </Button>
+      {confirmingDecline ? (
+        <View
+          accessibilityLiveRegion="polite"
+          style={[styles.declineConfirmation, { backgroundColor: theme.colors.dangerSoft }]}
+        >
+          <AppText tone="danger" variant="label" weight="bold">
+            “{invitation.workspace.name}” 초대를 거절할까요?
+          </AppText>
+          <AppText tone="secondary" variant="caption">
+            거절하면 받은 초대 목록에서 사라져요.
+          </AppText>
+          <View style={styles.actions}>
+            <Button
+              disabled={pending}
+              fullWidth
+              variant="secondary"
+              onPress={() => setConfirmingDecline(false)}
+            >
+              취소
+            </Button>
+            <Button fullWidth loading={declining} variant="danger" onPress={onDecline}>
+              초대 거절
+            </Button>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.invitationActions}>
+          <Button
+            accessibilityLabel={`${invitation.workspace.name} 초대 수락`}
+            disabled={pending}
+            fullWidth
+            loading={accepting}
+            onPress={onAccept}
+          >
+            초대 수락
+          </Button>
+          <Button
+            accessibilityLabel={`${invitation.workspace.name} 초대 거절`}
+            disabled={pending}
+            fullWidth
+            variant="ghost"
+            onPress={() => setConfirmingDecline(true)}
+          >
+            거절
+          </Button>
+        </View>
+      )}
     </Card>
   );
 }
@@ -306,7 +364,9 @@ const styles = StyleSheet.create({
   workspaceCard: { alignItems: 'center', flexDirection: 'row', gap: spacing[3] },
   workspaceCopy: { flex: 1, gap: spacing[1], minWidth: 0 },
   invitationCard: { gap: spacing[3] },
+  invitationActions: { gap: spacing[1] },
   invitationState: { alignItems: 'center', flexDirection: 'row', gap: spacing[2] },
+  declineConfirmation: { borderRadius: radii.md, gap: spacing[2], padding: spacing[3] },
   form: { gap: spacing[4] },
   field: { gap: spacing[2] },
   input: {

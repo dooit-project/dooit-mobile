@@ -3,6 +3,7 @@ import { ApiClientError } from '@/services/api';
 import {
   getWorkspaceAccessErrorPresentation,
   getWorkspaceActionErrorMessage,
+  getWorkspaceInvitationActionErrorMessage,
 } from '../workspace-error-presentation';
 
 describe('Workspace 오류 안내', () => {
@@ -49,5 +50,13 @@ describe('Workspace 오류 안내', () => {
         new ApiClientError('WORKSPACE_NOT_FOUND', { kind: 'http', status: 404 }),
       ),
     ).toContain('목록을 새로고침');
+  });
+
+  test('이미 처리된 초대는 최신 목록 확인을 안내한다', () => {
+    expect(
+      getWorkspaceInvitationActionErrorMessage(
+        new ApiClientError('INVITATION_STATE_CHANGED', { kind: 'http', status: 409 }),
+      ),
+    ).toContain('최신 초대 목록');
   });
 });

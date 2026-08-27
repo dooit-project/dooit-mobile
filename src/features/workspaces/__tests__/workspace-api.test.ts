@@ -38,11 +38,12 @@ describe('Workspace API', () => {
     expect(deleteMock).toHaveBeenCalledWith('/api/v1/workspaces/3', { signal: undefined });
   });
 
-  test('멤버 조회·초대·수락·제거 endpoint를 호출한다', async () => {
+  test('멤버 조회·초대·수락·거절·제거 endpoint를 호출한다', async () => {
     await workspaceApi.listInvitations();
     await workspaceApi.listMembers(3);
     await workspaceApi.inviteMember(3, { email: 'member@example.com', role: 'EDITOR' });
     await workspaceApi.acceptInvite(3, 9);
+    await workspaceApi.declineInvite(3, 10);
     await workspaceApi.removeMember(3, 9);
 
     expect(getMock).toHaveBeenCalledWith('/api/v1/workspace-invitations', {
@@ -59,6 +60,11 @@ describe('Workspace API', () => {
     expect(patchMock).toHaveBeenCalledWith(
       '/api/v1/workspaces/3/members/9',
       { status: 'ACTIVE' },
+      { signal: undefined },
+    );
+    expect(patchMock).toHaveBeenCalledWith(
+      '/api/v1/workspaces/3/members/10',
+      { status: 'REMOVED' },
       { signal: undefined },
     );
     expect(deleteMock).toHaveBeenCalledWith('/api/v1/workspaces/3/members/9', {

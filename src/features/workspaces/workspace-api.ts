@@ -73,6 +73,14 @@ export const workspaceApi = {
     );
   },
 
+  declineInvite(workspaceId: number, memberId: number, signal?: AbortSignal) {
+    return apiClient.patch<WorkspaceMemberResponse>(
+      `${WORKSPACES_PATH}/${workspaceId}/members/${memberId}`,
+      { status: 'REMOVED' },
+      { signal },
+    );
+  },
+
   removeMember(workspaceId: number, memberId: number, signal?: AbortSignal) {
     return apiClient.delete<null>(`${WORKSPACES_PATH}/${workspaceId}/members/${memberId}`, {
       signal,

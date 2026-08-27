@@ -47,3 +47,11 @@ export function getWorkspaceActionErrorMessage(error: unknown) {
 
   return getUserFacingApiErrorMessage(error);
 }
+
+export function getWorkspaceInvitationActionErrorMessage(error: unknown) {
+  if (error instanceof ApiClientError && (error.status === 404 || error.status === 409)) {
+    return '초대 상태가 이미 변경됐어요. 최신 초대 목록을 다시 확인해 주세요.';
+  }
+
+  return getUserFacingApiErrorMessage(error);
+}

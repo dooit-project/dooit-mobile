@@ -105,6 +105,44 @@ describe('Mock Workspace API', () => {
     );
   });
 
+  test('현재 사용자가 PENDING 초대를 거절하면 목록과 Workspace에서 제외한다', async () => {
+    await mockApiClient.post('/api/v1/auth/login', {
+      email: 'decline@todolab.app',
+      password: 'member1234',
+    });
+    await mockApiClient.post('/api/v1/auth/login', {
+      email: 'demo@todolab.app',
+      password: 'demo1234',
+    });
+    const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
+      name: '거절할 초대팀',
+    });
+    const invited = await mockApiClient.post<WorkspaceMemberResponse>(
+      `/api/v1/workspaces/${workspace.id}/members`,
+      { email: 'decline@todolab.app', role: 'VIEWER' },
+    );
+
+    await mockApiClient.post('/api/v1/auth/login', {
+      email: 'decline@todolab.app',
+      password: 'member1234',
+    });
+    const declined = await mockApiClient.patch<WorkspaceMemberResponse>(
+      `/api/v1/workspaces/${workspace.id}/members/${invited.id}`,
+      { status: 'REMOVED' },
+    );
+    expect(declined.status).toBe('REMOVED');
+    await expect(
+      mockApiClient.get<WorkspaceInvitationResponse[]>('/api/v1/workspace-invitations'),
+    ).resolves.not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ membership: expect.objectContaining({ id: invited.id }) }),
+      ]),
+    );
+    await expect(mockApiClient.get<WorkspaceResponse[]>('/api/v1/workspaces')).resolves.not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: workspace.id })]),
+    );
+  });
+
   test('Workspace Task CRUD와 날짜별 목록을 지원한다', async () => {
     const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
       name: '일정팀',

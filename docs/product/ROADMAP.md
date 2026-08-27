@@ -30,7 +30,7 @@ Last updated: 2026-08-27
 
 ### Workspace 공유
 
-- Workspace 생성·목록, PENDING 초대 조회·수락, OWNER 멤버·권한 관리
+- Workspace 생성·목록, PENDING 초대 조회·수락·거절, OWNER 멤버·권한 관리
 - OWNER·EDITOR·VIEWER별 일정·D-Day·멤버 UI와 권한 제한
 - Workspace Task CRUD, 반복 범위, D-Day 연결, 알림 후보와 로컬 예약
 - 개인/Workspace scope, 계정·Workspace query cache와 알림 식별자 격리
@@ -135,7 +135,8 @@ Last updated: 2026-08-27
 - [ ] Sentry project·DSN과 운영 책임자가 정해지면 SDK, route ErrorBoundary, source map 업로드를 연결하고 Android·iOS·Web에서 검증한다.
 - [x] Workspace 초대 거절, 하위 작업, 주간 리포트의 1차 우선순위는 [`WORKSPACE_FOLLOWUP_PRIORITIES.md`](./WORKSPACE_FOLLOWUP_PRIORITIES.md)를 따른다.
 - [x] 백엔드가 자기 PENDING membership을 `REMOVED`로 전환하는 초대 거절 계약과 권한 테스트를 제공한다.
-- [ ] 받은 초대에 거절 확인·mutation·cache 제거·404/409 복구 UI를 구현하고 캡처를 점검한다.
+- [x] 받은 초대에 거절 확인·mutation·cache 제거와 404/409 목록 복구를 구현한다.
+- [ ] 초대 수락·거절 위계를 320px·글자 확대·keyboard·스크린리더에서 캡처 점검하고 real smoke한다.
 - [ ] 하위 작업과 주간 리포트는 반복적인 사용자 요구나 사용 지표가 확인될 때 재검토한다.
 - [x] 서버 push의 token 등록, local/push 중복 방지와 발송 이력 UX는 [`API_PUSH_NOTIFICATIONS.md`](../api/API_PUSH_NOTIFICATIONS.md)를 따른다.
 - [ ] 백엔드 source의 push 자동 발송과 suppression 계약을 production에서 검증한 뒤 local/push 소유권 전환을 별도 승인한다.
