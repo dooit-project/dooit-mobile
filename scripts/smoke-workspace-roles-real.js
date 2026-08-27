@@ -11,6 +11,19 @@ function account(role) {
   };
 }
 
+function createCascadeTaskRequest(id) {
+  return {
+    title: `삭제 회귀 반복 일정 ${id}`,
+    description: 'Workspace cascade smoke',
+    type: 'SCHEDULE',
+    startAt: '2027-01-05T09:00:00',
+    endAt: '2027-01-05T10:00:00',
+    category: 'QA',
+    allDay: false,
+    recurrence: { frequency: 'WEEKLY', interval: 1, recurrenceCount: 3 },
+  };
+}
+
 async function readJsonBody(response) {
   const text = await response.text();
 
@@ -210,20 +223,38 @@ async function main() {
   });
   console.log('✓ VIEWER reads but cannot create tasks');
 
-  await request(`${workspacePath}/tasks/${task.id}`, {
-    method: 'DELETE',
+  const cascadeGoal = await request(`${workspacePath}/dday-goals`, {
+    method: 'POST',
+    headers: authorization(tokens.owner),
+    body: JSON.stringify({ title: `삭제 회귀 D-Day ${runId}`, targetDate: '2027-12-31' }),
+  });
+  const cascadeTask = await request(`${workspacePath}/tasks`, {
+    method: 'POST',
+    headers: authorization(tokens.owner),
+    body: JSON.stringify(createCascadeTaskRequest(runId)),
+  });
+  await request(`${workspacePath}/tasks/${cascadeTask.id}/dday-goal?ddayGoalId=${cascadeGoal.id}`, {
+    method: 'PATCH',
     headers: authorization(tokens.owner),
   });
+
   await request(workspacePath, { method: 'DELETE', headers: authorization(tokens.owner) });
-  console.log('✓ OWNER deletes task and workspace');
+  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.owner) });
+  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.editor) });
+  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.viewer) });
+  console.log('✓ OWNER cascade-deletes workspace with tasks, recurrence, D-Day, and memberships');
   console.log('Workspace role smoke passed. Tokens and passwords were not printed.');
 }
 
-main().catch((error) => {
-  if (error?.name === 'AbortError') {
-    console.error(`Workspace role smoke timed out while connecting to ${apiUrl}`);
-  } else {
-    console.error(error instanceof Error ? error.message : error);
-  }
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    if (error?.name === 'AbortError') {
+      console.error(`Workspace role smoke timed out while connecting to ${apiUrl}`);
+    } else {
+      console.error(error instanceof Error ? error.message : error);
+    }
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { createCascadeTaskRequest };

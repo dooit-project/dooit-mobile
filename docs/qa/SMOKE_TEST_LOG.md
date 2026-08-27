@@ -122,17 +122,17 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence-actions:real
 
 판정 기준:
 
-- OWNER는 Workspace·Task를 생성하고 Task 정리 후 Workspace를 삭제할 수 있다.
+- OWNER는 Workspace·Task·D-Day를 생성하고 내용이 남은 Workspace를 직접 삭제할 수 있어야 한다.
 - EDITOR는 Task를 수정하지만 Workspace 설정은 변경할 수 없다.
 - VIEWER는 Task를 조회하지만 생성할 수 없다.
 - PENDING은 초대만 조회하고 Workspace에는 접근할 수 없다.
 - REMOVED와 비멤버는 Workspace 존재 여부를 확인할 수 없다.
 - 권한 부족은 HTTP 403 `FORBIDDEN`, 비활성·비멤버 접근은 HTTP 404 `WORKSPACE_NOT_FOUND`다.
 
-발견한 백엔드 후속 작업:
+이전 실행에서 발견한 백엔드 후속 작업:
 
 - Task가 남아 있는 Workspace를 OWNER가 삭제하면 HTTP 500이 발생했다.
-- 권한 행렬 smoke의 데이터 정리는 Task를 먼저 삭제해 수행하며, Workspace 삭제 정책 보완 후 별도 재검증한다.
+- 최신 `smoke:workspace-roles:real`은 Task·반복 series·D-Day·membership을 남긴 상태로 Workspace를 삭제하고 OWNER·EDITOR·VIEWER의 후속 조회가 404인지 확인한다. 완료된 cascade 수정이 배포된 환경에서 재실행해 위 기준선을 갱신해야 한다.
 
 ## Android APK 기준선
 
