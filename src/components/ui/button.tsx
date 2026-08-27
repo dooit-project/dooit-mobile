@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { forwardRef, useState, type ComponentRef, type ReactNode } from 'react';
 import type { PressableProps, ViewStyle } from 'react-native';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
@@ -19,20 +19,23 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   style?: ViewStyle;
 };
 
-export function Button({
-  children,
-  variant = 'primary',
-  size = 'medium',
-  loading = false,
-  fullWidth = false,
-  leading,
-  disabled,
-  accessibilityState,
-  onBlur,
-  onFocus,
-  style,
-  ...props
-}: ButtonProps) {
+export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(function Button(
+  {
+    children,
+    variant = 'primary',
+    size = 'medium',
+    loading = false,
+    fullWidth = false,
+    leading,
+    disabled,
+    accessibilityState,
+    onBlur,
+    onFocus,
+    style,
+    ...props
+  },
+  ref,
+) {
   const theme = useAppTheme();
   const [isFocused, setIsFocused] = useState(false);
   const isDisabled = disabled || loading;
@@ -67,6 +70,7 @@ export function Button({
   return (
     <Pressable
       {...props}
+      ref={ref}
       accessibilityRole="button"
       accessibilityState={{ ...accessibilityState, disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
@@ -107,7 +111,7 @@ export function Button({
       )}
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   base: {

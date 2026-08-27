@@ -1,7 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  findNodeHandle,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import {
   AppText,
   Button,
@@ -435,8 +444,30 @@ function WorkspaceTaskCard({
   const [title, setTitle] = useState(task.title);
   const [recurrenceScope, setRecurrenceScope] = useState<RecurrenceEditScope>('THIS');
   const [validationError, setValidationError] = useState(false);
+  const menuTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const firstMenuActionRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const previousModeRef = useRef(mode);
   const isRecurring = Boolean(task.recurrenceSeriesId || task.recurrence);
   const manageable = canEdit;
+  useEffect(() => {
+    const previousMode = previousModeRef.current;
+    previousModeRef.current = mode;
+    const target =
+      mode === 'menu'
+        ? firstMenuActionRef.current
+        : previousMode === 'menu' && mode === 'idle'
+          ? menuTriggerRef.current
+          : null;
+
+    if (!target) return;
+    if (Platform.OS === 'web') {
+      (target as unknown as { focus?: () => void }).focus?.();
+      return;
+    }
+
+    const reactTag = findNodeHandle(target);
+    if (reactTag) AccessibilityInfo.setAccessibilityFocus(reactTag);
+  }, [mode]);
   const openMode = (nextMode: 'edit' | 'delete' | 'dday') => {
     setRecurrenceScope('THIS');
     setMode(nextMode);
@@ -486,6 +517,7 @@ function WorkspaceTaskCard({
             </Button>
           )}
           <IconButton
+            ref={menuTriggerRef}
             accessibilityHint="제목 수정과 삭제 행동을 표시합니다."
             accessibilityLabel={`${task.title} 일정 메뉴 열기`}
             onPress={() => setMode('menu')}
@@ -498,7 +530,12 @@ function WorkspaceTaskCard({
       ) : null}
       {mode === 'menu' ? (
         <View style={[styles.taskMenu, { borderColor: theme.colors.border }]}>
-          <Button size="compact" variant="ghost" onPress={() => openMode('edit')}>
+          <Button
+            ref={firstMenuActionRef}
+            size="compact"
+            variant="ghost"
+            onPress={() => openMode('edit')}
+          >
             제목 수정
           </Button>
           <Button size="compact" variant="ghost" onPress={() => openMode('delete')}>

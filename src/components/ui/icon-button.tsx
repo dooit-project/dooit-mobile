@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { forwardRef, useState, type ComponentRef, type ReactNode } from 'react';
 import type { PressableProps, ViewStyle } from 'react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
@@ -12,53 +12,61 @@ type IconButtonProps = Omit<PressableProps, 'accessibilityLabel' | 'children' | 
   style?: ViewStyle;
 };
 
-export function IconButton({
-  accessibilityLabel,
-  children,
-  selected = false,
-  expanded,
-  disabled,
-  onBlur,
-  onFocus,
-  style,
-  ...props
-}: IconButtonProps) {
-  const theme = useAppTheme();
-  const [isFocused, setIsFocused] = useState(false);
-  const isDisabled = Boolean(disabled);
+export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonProps>(
+  function IconButton(
+    {
+      accessibilityLabel,
+      children,
+      selected = false,
+      expanded,
+      disabled,
+      onBlur,
+      onFocus,
+      style,
+      ...props
+    },
+    ref,
+  ) {
+    const theme = useAppTheme();
+    const [isFocused, setIsFocused] = useState(false);
+    const isDisabled = Boolean(disabled);
 
-  return (
-    <Pressable
-      {...props}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="button"
-      accessibilityState={{ disabled: isDisabled, expanded, selected }}
-      disabled={isDisabled}
-      hitSlop={4}
-      onBlur={(event) => {
-        setIsFocused(false);
-        onBlur?.(event);
-      }}
-      onFocus={(event) => {
-        setIsFocused(true);
-        onFocus?.(event);
-      }}
-      style={({ pressed }) => [
-        styles.base,
-        {
-          backgroundColor:
-            pressed || selected || expanded ? theme.colors.primarySoft : theme.colors.surfaceMuted,
-          borderColor: isFocused ? theme.colors.text : 'transparent',
-          borderWidth: isFocused ? 2 : 1,
-          opacity: isDisabled ? 0.45 : 1,
-        },
-        style,
-      ]}
-    >
-      {children}
-    </Pressable>
-  );
-}
+    return (
+      <Pressable
+        {...props}
+        ref={ref}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: isDisabled, expanded, selected }}
+        disabled={isDisabled}
+        hitSlop={4}
+        onBlur={(event) => {
+          setIsFocused(false);
+          onBlur?.(event);
+        }}
+        onFocus={(event) => {
+          setIsFocused(true);
+          onFocus?.(event);
+        }}
+        style={({ pressed }) => [
+          styles.base,
+          {
+            backgroundColor:
+              pressed || selected || expanded
+                ? theme.colors.primarySoft
+                : theme.colors.surfaceMuted,
+            borderColor: isFocused ? theme.colors.text : 'transparent',
+            borderWidth: isFocused ? 2 : 1,
+            opacity: isDisabled ? 0.45 : 1,
+          },
+          style,
+        ]}
+      >
+        {children}
+      </Pressable>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   base: {
