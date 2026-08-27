@@ -29,7 +29,7 @@
 1. 필요한 backend commit과 migration을 하나의 배포 단위로 반영한다.
 2. `GET /actuator/health/readiness`와 `GET /api/v1/system/metadata`를 확인한다.
 3. metadata의 commit/image가 실행 OpenAPI와 migration 기록에 대응하는지 확인한다.
-4. `EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-deployment`를 실행한다.
+4. `EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-ready`로 readiness·metadata·최신 OpenAPI·Workspace 계약을 실행한다.
 5. Workspace 삭제, 비밀번호 메일 복구, CORS·cache와 역할별 smoke 결과를 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.
 
 ## 프론트 구현 순서

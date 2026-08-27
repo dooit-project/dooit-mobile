@@ -59,6 +59,7 @@
     "check:release-assets": "node scripts/check-release-assets-config.js",
     "check:android-apk": "node scripts/check-android-apk-config.js",
     "check:backend-deployment": "node scripts/check-backend-deployment.js",
+    "check:backend-ready": "npm run check:backend-deployment && npm run check:latest-backend-openapi && npm run check:workspace-openapi",
     "check:eas-setup": "node scripts/check-eas-setup.js",
     "check:workspace-openapi": "node scripts/check-workspace-openapi.js",
     "check:latest-backend-openapi": "node scripts/check-latest-backend-openapi.js",

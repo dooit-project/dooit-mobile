@@ -234,6 +234,18 @@ EXPO_PUBLIC_API_URL=<배포 URL> npm run check:latest-backend-openapi
 
 이 검사는 refresh·logout·비밀번호 재설정·metadata endpoint, 11개 생성 POST의 `Idempotency-Key`와 409, token refresh 필드 및 Task 알림 필드를 확인한다.
 
+배포 후보를 한 번에 점검할 때는 통합 명령을 사용한다.
+
+```bash
+EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-ready
+```
+
+통합 검사는 다음 순서로 실행하며 앞 단계가 실패하면 즉시 중단한다.
+
+1. readiness `UP`과 실행 metadata
+2. 최신 인증·멱등성·Task 알림 OpenAPI 계약
+3. Workspace 23개 operation 계약
+
 ## 8. 현재 프론트 연결 또는 추가 확정이 필요한 계약
 
 - 반복 Task·일정의 생성 계약, 상태 문서 정합성, real smoke 결과와 모바일 저장 UI 노출 시점
