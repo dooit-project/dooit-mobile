@@ -218,6 +218,14 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 
 자세한 화면별 확인 항목은 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md)를 따른다.
 
+배포 전에는 다음 명령으로 공개 readiness와 실행 metadata를 함께 확인한다.
+
+```bash
+EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-deployment
+```
+
+검사기는 `GET /actuator/health/readiness`의 `UP`과 `GET /api/v1/system/metadata`의 `commitSha`·`imageTag`·`version` 중 하나 이상을 요구하며, 제공된 값을 모두 출력해 smoke log에 기록할 수 있게 한다.
+
 ## 8. 현재 프론트 연결 또는 추가 확정이 필요한 계약
 
 - 반복 Task·일정의 생성 계약, 상태 문서 정합성, real smoke 결과와 모바일 저장 UI 노출 시점

@@ -191,3 +191,5 @@ API mode / URL:
 - 전체 health: mail `DOWN`으로 HTTP 503이지만 DB·readiness·schema는 `UP`
 - 배포 metadata: `GET /actuator/info`가 로그인으로 HTTP 302 redirect되어 commit/image tag 확인 불가
 - 판정: `BLOCKED` — readiness와 별개로 배포 식별 metadata 공개 계약 보완 필요
+
+위 기록은 당시 배포 기준이다. 현재 `check:backend-deployment`는 완료된 공개 계약인 `GET /api/v1/system/metadata`에서 `commitSha`·`imageTag`·`version`을 확인하므로 최신 production 배포 후 다시 실행해 이 판정을 갱신한다.

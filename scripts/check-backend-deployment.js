@@ -15,6 +15,7 @@ function findDeploymentVersion(info) {
     'commitSha',
     'commit',
     'imageTag',
+    'version',
   ];
 
   for (const path of paths) {
@@ -25,6 +26,23 @@ function findDeploymentVersion(info) {
   }
 
   return undefined;
+}
+
+function readMetadataData(body) {
+  return body?.status === 'success' && body.data ? body.data : body;
+}
+
+function normalizeMetadata(body) {
+  const data = readMetadataData(body);
+  const commitSha = typeof data?.commitSha === 'string' ? data.commitSha.trim() : '';
+  const imageTag = typeof data?.imageTag === 'string' ? data.imageTag.trim() : '';
+  const version = typeof data?.version === 'string' ? data.version.trim() : '';
+
+  return {
+    commitSha: commitSha || undefined,
+    imageTag: imageTag || undefined,
+    version: version || undefined,
+  };
 }
 
 async function readJsonResponse(response) {
@@ -48,21 +66,24 @@ async function checkBackendDeployment(apiUrl, request = fetch) {
     );
   }
 
-  const infoResponse = await request(`${baseUrl}/actuator/info`, { redirect: 'manual' });
-  if (!infoResponse.ok) {
-    const location = infoResponse.headers?.get?.('location');
+  const metadataResponse = await request(`${baseUrl}/api/v1/system/metadata`, {
+    redirect: 'manual',
+  });
+  if (!metadataResponse.ok) {
+    const location = metadataResponse.headers?.get?.('location');
     throw new Error(
-      `Backend deployment metadata is unavailable: HTTP ${infoResponse.status}${location ? `, location ${location}` : ''}`,
+      `Backend deployment metadata is unavailable: HTTP ${metadataResponse.status}${location ? `, location ${location}` : ''}`,
     );
   }
 
-  const info = await readJsonResponse(infoResponse);
-  const deploymentVersion = findDeploymentVersion(info);
+  const metadataBody = await readJsonResponse(metadataResponse);
+  const metadata = normalizeMetadata(metadataBody);
+  const deploymentVersion = findDeploymentVersion(metadata);
   if (!deploymentVersion) {
-    throw new Error('Backend deployment metadata must include a commit SHA or image tag.');
+    throw new Error('Backend deployment metadata must include commitSha, imageTag, or version.');
   }
 
-  return { deploymentVersion, readiness: readiness.status };
+  return { deploymentVersion, metadata, readiness: readiness.status };
 }
 
 async function main() {
@@ -74,6 +95,9 @@ async function main() {
   const result = await checkBackendDeployment(apiUrl);
   console.log(`Backend readiness: ${result.readiness}`);
   console.log(`Backend deployment version: ${result.deploymentVersion}`);
+  console.log(`Backend commit SHA: ${result.metadata.commitSha ?? 'not provided'}`);
+  console.log(`Backend image tag: ${result.metadata.imageTag ?? 'not provided'}`);
+  console.log(`Backend app version: ${result.metadata.version ?? 'not provided'}`);
 }
 
 if (require.main === module) {
@@ -83,4 +107,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { checkBackendDeployment, findDeploymentVersion };
+module.exports = { checkBackendDeployment, findDeploymentVersion, normalizeMetadata };

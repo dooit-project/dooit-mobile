@@ -1,4 +1,8 @@
-const { checkBackendDeployment, findDeploymentVersion } = require('../check-backend-deployment');
+const {
+  checkBackendDeployment,
+  findDeploymentVersion,
+  normalizeMetadata,
+} = require('../check-backend-deployment');
 
 function response(status, body, headers = {}) {
   return {
@@ -10,17 +14,30 @@ function response(status, body, headers = {}) {
 }
 
 describe('checkBackendDeployment', () => {
-  it('readiness와 Git commit을 확인한다', async () => {
+  it('readiness와 system metadata를 확인한다', async () => {
     const request = jest
       .fn()
       .mockResolvedValueOnce(response(200, { status: 'UP' }))
-      .mockResolvedValueOnce(response(200, { git: { commit: { id: 'abc1234' } } }));
+      .mockResolvedValueOnce(
+        response(200, {
+          status: 'success',
+          data: { commitSha: 'abc1234', imageTag: 'backend:2026-08-27', version: '1.2.3' },
+        }),
+      );
 
     await expect(checkBackendDeployment('https://api.example.com/', request)).resolves.toEqual({
       readiness: 'UP',
       deploymentVersion: 'abc1234',
+      metadata: {
+        commitSha: 'abc1234',
+        imageTag: 'backend:2026-08-27',
+        version: '1.2.3',
+      },
     });
     expect(request).toHaveBeenCalledWith('https://api.example.com/actuator/health/readiness', {
+      redirect: 'manual',
+    });
+    expect(request).toHaveBeenCalledWith('https://api.example.com/api/v1/system/metadata', {
       redirect: 'manual',
     });
   });
@@ -52,5 +69,16 @@ describe('findDeploymentVersion', () => {
     expect(findDeploymentVersion({ image: { tag: 'backend:2026-08-21' } })).toBe(
       'backend:2026-08-21',
     );
+  });
+});
+
+describe('normalizeMetadata', () => {
+  it('API envelope과 빈 값을 정규화한다', () => {
+    expect(
+      normalizeMetadata({
+        status: 'success',
+        data: { commitSha: ' abc1234 ', imageTag: '', version: '1.2.3' },
+      }),
+    ).toEqual({ commitSha: 'abc1234', imageTag: undefined, version: '1.2.3' });
   });
 });
