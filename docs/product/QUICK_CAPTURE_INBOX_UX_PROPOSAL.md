@@ -1,6 +1,6 @@
-# 빠른 등록과 기록함 노출 제안
+# 빠른 등록과 기록함 노출 결정
 
-Last updated: 2026-08-23
+Last updated: 2026-08-29
 
 Status: 구현 및 Chrome 390px 캡처 비교 완료
 
@@ -10,7 +10,7 @@ Status: 구현 및 Chrome 390px 캡처 비교 완료
 
 Today에는 기록함이 지난 미완료·추천과 합쳐진 `정리할 항목` 숫자로만 남는다. 데이터는 정상 저장됐어도 사용자는 방금 기록한 항목이 어디에 있는지 다시 확인하기 어렵다.
 
-## 제품 결정 제안
+## 제품 결정
 
 기록함 전체 목록을 Today에 펼치지 않는다. 대신 **최신 기록 1개가 보이는 compact 기록함 preview**를 제공하고, 지난 미완료·추천 정리와 분리한다.
 
@@ -96,11 +96,7 @@ placeholder에 `오늘`을 쓰면 날짜 없는 문장이 기록함으로 가는
 - 저장 성공과 Today 이동 성공은 polite live region으로 알린다.
 - Tab focus, Enter·Space 실행과 focus border를 Web에서 캡처 검증한다.
 
-## 구현 전 확인
+## 검증 근거
 
-이 제안은 현재 코드와 정적 Web 결과를 바탕으로 했으며 실제 화면 캡처 기반 감사는 아직 완료하지 못했다. 구현 전 다음 두 장면을 같은 viewport로 캡처해 정보 밀도를 비교한다.
-
-1. 빠른 등록 성공 결과가 열린 Today
-2. composer를 닫은 뒤 compact 기록함 preview가 남은 Today
-
-캡처에서 첫 viewport의 오늘 일정·할 일이 밀리거나 기록함 preview가 독립 card처럼 과도하게 무거우면 padding·border를 줄이고 navigation row 수준으로 조정한다.
+- 빠른 등록 성공, composer 종료 후 최신 기록 preview, 하루 정리 분리를 [`UF-02 audit`](../audits/uf-02-today-quick-capture-2026-08-23/README.md)에서 확인했다.
+- 320px·font scale 1.5와 native screen reader는 공통 실기기 검증 항목으로 남긴다.

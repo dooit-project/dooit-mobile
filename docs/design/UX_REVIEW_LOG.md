@@ -1,6 +1,6 @@
 # UX Review
 
-Last updated: 2026-08-21
+Last updated: 2026-08-29
 
 이 문서는 현재 화면에서 유지할 UX 결정과 아직 검증할 위험만 기록한다. 완료된 수정 과정과 과거 화면별 pass 기록은 보관하지 않는다. 시각 기준은 [`DESIGN.md`](./DESIGN.md), 현재 화면 구조는 [`SCREEN_GUIDE.md`](./SCREEN_GUIDE.md), 앞으로 할 일은 [`ROADMAP.md`](../product/ROADMAP.md)를 따른다.
 
@@ -13,7 +13,7 @@ Last updated: 2026-08-21
 - `로그인 또는 계정 만들기`와 선택형 `기능 둘러보기`를 같은 화면에서 제공한다.
 - 게스트 발급 실패나 저장 token 확인 실패는 데이터 화면에 영역별 오류를 만들지 않고 시작 단계에서 복구한다.
 - 로그인·회원가입 화면에는 게스트 계속 사용 또는 시작 화면 복귀 동선이 있어야 한다.
-- 최신 Web 근거는 [`first-use-2026-08-11`](../audits/first-use-2026-08-11/README.md)에 둔다.
+- 최신 Web 근거는 [`uf-01-first-use-2026-08-23`](../audits/uf-01-first-use-2026-08-23/README.md)에 둔다.
 
 ### Today와 기록함
 
@@ -47,7 +47,7 @@ Last updated: 2026-08-21
 - `수정`은 Task 종류 metadata와 나란히 두지 않고 페이지 헤더 우측의 icon+label secondary action으로 제공한다.
 - 일정 정보는 일정·반복·계획일·목표일·종일·카테고리만 같은 그룹으로 표시한다.
 - D-Day 상태는 관리 행동에서 한 번만 표시하고 미룸·이월 기록은 실제 값이 있을 때만 별도 그룹으로 표시한다.
-- 최신 Web 근거는 [`current-p1-2026-08-20`](../audits/current-p1-2026-08-20/README.md)에 둔다.
+- 최신 Web 근거는 [`uf-03-task-crud-2026-08-24`](../audits/uf-03-task-crud-2026-08-24/README.md)에 둔다.
 
 ### Navigation과 선택 상태
 

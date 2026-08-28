@@ -1,6 +1,6 @@
 # ToDoLab 사용자 흐름 카탈로그
 
-Last updated: 2026-08-24
+Last updated: 2026-08-29
 
 이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 최신 화면을 나란히 보는 시각적 원본은 [`USER_FLOW_BOARD.md`](./USER_FLOW_BOARD.md), 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 세부 시각 판단은 각 audit README를 따른다.
 
@@ -41,7 +41,6 @@ flowchart LR
 현재 근거:
 
 - [UF-01 최신 캡처와 판정 (2026-08-23)](../audits/uf-01-first-use-2026-08-23/README.md)
-- [최초 사용 흐름 390px](../audits/first-use-2026-08-11/README.md)
 - [로그인](../screenshots/login.png), [계정 만들기](../screenshots/register.png), [비밀번호 재설정](../screenshots/password-reset.png)
 
 남은 캡처:
@@ -49,7 +48,7 @@ flowchart LR
 - 로그인 loading·network/timeout·401 만료. 입력 오류는 최신 캡처에서 확인했다.
 - 게스트 생성 실패·재시도와 계정 연결 병합 성공/실패
 - 앱 재실행과 브라우저 새로고침 뒤 session 복원
-- 로그인 화면에서 비밀번호 재설정 form으로 진입하고 메일 deep link 복구 완료 상태를 캡처
+- 로그인 비밀번호 재설정 진입과 form은 구현됐다. production 메일 deep link 복구 완료 상태를 캡처한다.
 
 ## UF-02. Today 실행과 빠른 기록
 
@@ -103,7 +102,6 @@ flowchart LR
 
 - [UF-03 최신 캡처와 판정 (2026-08-24)](../audits/uf-03-task-crud-2026-08-24/README.md)
 - [Task 작성](../screenshots/task-new.png), [Task 상세](../screenshots/task-detail.png)
-- [Task 상세 수정 행동 재점검](../audits/task-detail-edit-2026-08-23/README.md)
 
 남은 캡처:
 
@@ -180,7 +178,7 @@ flowchart LR
 현재 근거:
 
 - [UF-06 최신 캡처와 판정 (2026-08-25)](../audits/uf-06-dday-2026-08-25/README.md)
-- [D-Day 목록](../screenshots/dday.png), [D-Day 생성 audit](../audits/product-design-2026-08-12/09b-dday-create.png)
+- [D-Day 화면 참고](../screenshots/dday.png)
 
 남은 캡처:
 
@@ -218,9 +216,9 @@ flowchart LR
 
 - 공간 생성과 OWNER의 일정·D-Day 생성, 멤버 조회, 초대 발송은 확인했다. 공간 수정·삭제 성공/실패가 남았다.
 - OWNER·EDITOR·VIEWER별 일정·D-Day·멤버 행동 차이와 반복 범위, 연결·해제가 남았다.
-- 초대 수락은 이전 audit에 있다. 거절 계약 구현 뒤 확인/성공/404·409와 대기 초대 조회·취소가 남았다.
+- 초대 수락·거절 UI는 구현됐다. real API 성공, 이미 상태가 바뀐 404·409 복구, 대기 초대 조회·취소가 남았다.
 - 최신 백엔드 배포에서 내용 있는 Workspace cascade 삭제와 metadata를 real 검증
-- 받은 초대 거절 확인·성공·404/409 복구 캡처
+- 받은 초대 거절의 real API 성공·404/409 복구 캡처
 
 ## UF-08. 설정·알림·세션 복구
 

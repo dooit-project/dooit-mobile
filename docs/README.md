@@ -22,11 +22,11 @@
 | [`qa`](./qa/RELEASE_CHECKLIST.md)                             | smoke test, release, 접근성, 성능, 플랫폼 품질     | `SMOKE_TEST_LOG.md`, `RELEASE_CHECKLIST.md`                                                                            |
 | [`marketing`](./marketing/APP_STORE_ASSETS.md)                | 앱 마켓, 소개 이미지, 문구 산출물                  | `APP_STORE_ASSETS.md`                                                                                                  |
 | [`screenshots`](./screenshots/.gitkeep)                       | 실제 앱 화면 캡쳐                                  | 화면별 PNG                                                                                                             |
-| [`audits`](./audits/product-design-2026-08-12/README.md)      | 최신 사용자 흐름의 화면 근거                       | 전체 UI/UX 감사, shadcn/ui 참고 점검, 최초 사용 Web 반응형 점검                                                        |
+| [`audits`](./audits/uf-01-first-use-2026-08-23/README.md)     | 최신 사용자 흐름의 화면 근거                       | `uf-01`~`uf-08`, Workspace 반응형·접근성 점검                                                                          |
 
 현재 `screenshots/`에는 mock Web 390×844 기준 실제 화면 PNG가 있다. 마켓용 편집 이미지는 `marketing/`에 초안으로 생성되어 있으며, 최종 제출 전에는 [`marketing/APP_STORE_ASSETS.md`](./marketing/APP_STORE_ASSETS.md)의 규격에 맞춰 다시 export한다.
 
-`audits/`에는 현재 판단에 필요한 최신 근거만 둔다. 수정 전후 과정이 다른 문서에 반영됐거나 현재 UI로 대체된 audit 묶음은 Git 이력으로만 보관한다.
+`audits/`에는 현재 판단에 필요한 최신 근거만 둔다. 흐름 전체는 `uf-01`~`uf-08`을 기준으로 하고, 별도 audit은 반응형·접근성처럼 UF 캡처에 없는 근거만 유지한다. 현재 UI로 대체된 과거 audit은 Git 이력에서 확인한다.
 
 ## 관리 기준
 

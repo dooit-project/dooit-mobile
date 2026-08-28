@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-27
 
-ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번호 재설정 API 계약이다. 백엔드 source 구현과 통합 테스트는 완료됐고 모바일 UI·deep link·production 메일 발송 검증이 남아 있다.
+ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번호 재설정 API 계약이다. 백엔드 source와 모바일 UI·deep link 연결은 완료됐고 production 메일 발송·실기기 복구 검증이 남아 있다.
 
 ## 목표
 
@@ -103,13 +103,12 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번
 - 기존 access token/session 정책은 백엔드 보안 기준에 맞춰 폐기 또는 유지 여부를 명시한다.
 - 비밀번호 정책은 회원가입과 동일하게 최소 8자 이상을 기본으로 한다.
 
-## 모바일 화면 연결 계획
+## 모바일 화면 연결
 
 1. 로그인 화면의 `비밀번호를 잊으셨나요?` 링크에서 `/password-reset`로 이동한다.
-2. API 준비 전에는 안내 화면을 보여준다.
-3. API 준비 후 `/password-reset`에 이메일 입력 form을 연결한다.
-4. deep link로 reset token을 받으면 token 검증 화면으로 이동한다.
-5. 새 비밀번호 저장 성공 후 `/login?reset=1`로 이동해 완료 안내를 보여준다.
+2. `/password-reset`에서 이메일 요청, token 검증, 새 비밀번호 저장 상태를 순차적으로 제공한다.
+3. `todolab://password-reset?token=...` deep link로 들어온 token은 route 상태로만 다루고 로그·telemetry에 남기지 않는다.
+4. 새 비밀번호 저장 성공 후 로그인 화면으로 이동해 완료 안내를 보여준다.
 
 ## 확인된 백엔드 정책
 
@@ -120,9 +119,7 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번
 - confirm 성공 시 token과 refresh session을 폐기한다. 이미 발급된 access token은 `exp`까지 유효할 수 있다.
 - 없거나 만료·사용·변조된 token은 400/`11005`다.
 
-## 모바일 남은 작업
+## 남은 검증
 
-- 이메일 요청, token 검증, 새 비밀번호 저장 상태를 `/password-reset`에 구현한다.
-- deep link의 token을 안전하게 route state로 전달하고 로그·telemetry에 남기지 않는다.
-- 성공 뒤 `/login?reset=1`로 이동해 완료 안내를 표시한다.
 - production 메일 발송, 앱 link와 Web fallback을 실제 기기에서 검증한다.
+- 만료·사용됨·변조 token, rate limit, 재설정 후 기존 refresh session 폐기를 production에서 확인한다.

@@ -4,7 +4,7 @@ Last updated: 2026-08-27
 
 프론트 구현 기준은 백엔드의 `API_V1_FRONTEND.md`, `SHARING_CONTRACT.md`, 실행 `/v3/api-docs` 순서로 대조한다. 백엔드 source 구현은 완료됐으며 이 문서에는 채택된 계약과 프론트 재검증 조건만 둔다.
 
-백엔드에 전체 요청사항을 한 번에 전달할 때는 복사·전달용 [`BACKEND_REQUESTS_HANDOFF.md`](./BACKEND_REQUESTS_HANDOFF.md)를 사용한다.
+배포 상태와 모바일 후속은 [`BACKEND_STATUS_2026-08-27.md`](../integration/BACKEND_STATUS_2026-08-27.md)와 [`ROADMAP.md`](../product/ROADMAP.md)를 기준으로 한다.
 
 ## 현재 확인된 계약
 
@@ -65,7 +65,7 @@ npm run smoke:workspace-roles:real
 
 ## 완료. Workspace 초대 거절 계약
 
-백엔드는 자기 PENDING membership을 `status=REMOVED`로 바꾸는 계약과 권한 통합 테스트를 제공한다. 모바일에는 아직 거절 행동이 없다.
+백엔드는 자기 PENDING membership을 `status=REMOVED`로 바꾸는 계약과 권한 통합 테스트를 제공한다. 모바일도 거절 확인, mutation, cache 제거와 404/409 목록 복구를 연결했다.
 
 제안 계약:
 
@@ -86,13 +86,13 @@ Content-Type: application/json
 - 거절한 초대는 PENDING 목록과 Workspace 접근 결과에서 즉시 제외한다.
 - 같은 사용자를 다시 초대할 수 있는지와 재초대 cooldown이 있다면 계약에 명시한다.
 
-모바일은 거절 확인, 성공 시 invitation cache 제거, 이미 상태가 바뀐 404/409의 목록 새로고침을 구현한다.
+모바일 남은 일은 real API에서 거절 성공·40폐·재초대와 404/409 복구를 검증하는 것이다.
 
 ## 남은 배포·프론트 확인
 
 - 최신 source와 Workspace migration을 production에 반영한다.
 - metadata가 가리키는 같은 배포에서 내용 있는 Workspace 삭제를 real smoke한다.
-- 초대 거절 UI와 cache mutation을 구현하고 OWNER·초대 사용자 역할로 real smoke한다.
+- OWNER·초대 사용자 역할로 초대 거절과 cache 복구를 real smoke한다.
 
 서버 push를 시작할 때 추가 전달:
 

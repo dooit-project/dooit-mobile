@@ -78,7 +78,7 @@ EXPO_PUBLIC_API_MODE_OVERRIDE=mock npx expo export --platform web
 - mock API는 로그인, 게스트 생성·복원, Today·Calendar와 Workspace 기본 흐름을 지원한다.
 - 날짜 없는 빠른 등록은 Inbox cache에 반영되고 Today의 정리 데이터가 함께 갱신된다.
 - Workspace 개인·공유 query key와 알림 identifier가 분리된다.
-- `npm run validate`의 현재 기준선은 71 suites, 371 tests다.
+- 이 문서의 Web export 검증 후 전체 자동 검증 기준선은 [`ROADMAP.md`](../product/ROADMAP.md)에서 관리한다.
 
 ## 아직 확인하지 못한 항목
 
