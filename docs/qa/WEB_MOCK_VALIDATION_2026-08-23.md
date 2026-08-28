@@ -1,6 +1,6 @@
 # Web mock 비시각 검증 기록
 
-Last updated: 2026-08-23
+Last updated: 2026-08-29
 
 ## 범위
 
@@ -9,7 +9,7 @@ Last updated: 2026-08-23
 - Expo SDK 56 static Web export
 - 직접 경로 산출물, fallback, asset 이름과 service worker 포함 여부
 
-정적 검증 뒤 연결된 Chrome에서 실제 클릭과 viewport 검증을 추가했다. 로그인·게스트·Today·Calendar·Workspace 목록, 빠른 등록, 직접 경로 새로고침과 기본 keyboard focus는 확인했다. Chrome zoom 150% 적용 여부와 Workspace 생성·상세 흐름은 아직 남아 있다.
+정적 검증 뒤 연결된 Chrome에서 실제 클릭과 viewport 검증을 추가했다. 로그인·게스트·Today·Calendar·Workspace 생성·상세, 빠른 등록, 직접 경로 새로고침과 기본 keyboard focus는 확인했다. Chrome zoom 150% 적용 여부는 아직 남아 있다.
 
 ## 연결된 Chrome 검증
 
@@ -23,13 +23,14 @@ Last updated: 2026-08-23
 - `/calendar`, `/tasks/1`, `/workspaces` 직접 접근과 새로고침 뒤 각 화면의 핵심 heading 또는 콘텐츠가 유지된다.
 - 320px·390px·430px에서 document-level 가로 overflow가 발생하지 않는다.
 - Workspace 목록에서 Tab·Shift+Tab 순서가 뒤로 가기와 `새 공간`으로 이동하고, 브라우저 기본 focus outline이 보인다.
+- mock 등록 계정으로 Workspace를 생성하고 일정·D-Day·멤버 탭이 있는 상세 화면까지 이동한다.
+- Workspace 상세는 390×844와 150% 확대 상당의 CSS 가용 영역 260×563에서 가로 overflow나 핵심 행동 잘림이 없다.
+- Workspace 상세에서 `Tab`으로 일정 → D-Day 탭에 이동하고 `Enter`로 선택한 패널을 연다.
 
 ### 발견 사항
 
 - 빠른 등록 composer는 input focus와 저장 성공 상태에서 `Escape`로 닫히며, 입력 중 닫은 draft는 다시 열었을 때 유지된다. 2026-08-24 재검증했다.
-- mock 추천 API가 날짜 없는 Inbox 항목을 그대로 추천에도 포함해 같은 Task가 `추천`과 `기록함` 양쪽에 나타나고 Today의 정리 개수에도 두 번 합산된다. 최신 기록 preview와 `하루 정리`를 분리하는 제품안 구현 시 중복 노출을 함께 제거해야 한다.
 - 연결된 Chrome에서 zoom 단축키를 보냈지만 CSS viewport와 device pixel ratio가 변하지 않아 150% 적용을 판정할 수 없었다.
-- mock 계정으로 보이는 Workspace가 없어 목록의 빈 상태까지만 확인했다. 생성·상세·역할별 흐름은 별도 검증이 필요하다.
 
 ## 통과한 항목
 
@@ -85,7 +86,7 @@ EXPO_PUBLIC_API_MODE_OVERRIDE=mock npx expo export --platform web
 | 항목                                      | 상태            | 필요한 환경                                 |
 | ----------------------------------------- | --------------- | ------------------------------------------- |
 | 로그인·게스트 실제 form 제출과 route 전환 | mock 통과       | 운영 인증은 real API에서 재검증             |
-| Today·Calendar·Workspace 클릭 흐름        | 부분 통과       | Workspace 생성·상세는 추가 검증             |
+| Today·Calendar·Workspace 클릭 흐름        | mock 통과       | 역할별 흐름은 추가 검증                     |
 | 직접 경로 주소 입력과 새로고침            | local mock 통과 | 운영 host fallback은 별도 검증              |
 | browser zoom 150% reflow                  | 미검증          | 320px부터 desktop viewport를 제어할 browser |
 | Tab·Shift+Tab·Enter·Escape와 focus 표시   | 통과            | Escape composer 동작을 2026-08-24 재검증    |
@@ -97,9 +98,8 @@ EXPO_PUBLIC_API_MODE_OVERRIDE=mock npx expo export --platform web
 1. `/start`에서 게스트 시작 후 빈 Today 확인
 2. 로그아웃·로그인과 새로고침 뒤 세션 상태 확인
 3. 빠른 등록으로 날짜 없는 항목 생성 후 결과와 기록함 진입 확인
-4. Calendar와 Workspace 조회·생성·상세 이동 확인
-5. `/login`, `/calendar`, `/tasks/{id}`, `/workspaces/{id}` 주소 직접 입력과 새로고침
-6. 320px·390px·430px·desktop 및 zoom 150%
-7. Tab·Shift+Tab·Enter·Space·Escape 순서와 focus 표시 캡처
+4. `/login`, `/calendar`, `/tasks/{id}`, `/workspaces/{id}` 주소 직접 입력과 새로고침
+5. 실제 browser zoom 150%
+6. Workspace 역할별 차이와 오류·복구
 
 화면 캡처가 확보되기 전에는 UX·접근성 통과나 Web 운영 준비 완료로 판정하지 않는다.
