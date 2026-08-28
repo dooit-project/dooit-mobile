@@ -154,7 +154,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run check:backend-ready
 
 - 제출 날짜: 2026-08-21
 - EAS build id: `38acdebc-b5ba-4027-9a43-aacc368bf33f`
-- 상태: `IN_QUEUE`
+- 상태: `FINISHED` (2026-08-21 01:23 KST, 2026-08-29 EAS 재조회)
 - profile: `preview`
 - frontend commit: `2898493a203965fb651be066a30c01806f4c5e9c`
 - API mode / URL: `real` / `https://macmini.tail68d2d1.ts.net`

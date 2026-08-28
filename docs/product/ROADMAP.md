@@ -1,13 +1,13 @@
 # ToDoLab Mobile Roadmap
 
-Last updated: 2026-08-27
+Last updated: 2026-08-29
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
-- `npm run validate`의 최신 기준선은 73 suites, 377 tests 통과다.
+- `npm run validate`의 최신 기준선은 81 suites, 424 tests 통과다.
 - mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
 - 백엔드 요청 8개는 source `fd2a7e3` 기준 구현됐고 `./gradlew test --rerun-tasks`가 통과했다. 다만 production 배포 버전과 DB migration 적용은 아직 별도 확인이 필요하다.
 - 따라서 현재 단계는 **백엔드 계약을 프론트에 연결하고 production 출시를 검증하는 단계**다.
@@ -52,7 +52,7 @@ Last updated: 2026-08-27
 
 - [ ] staging은 사용하지 않는 정책을 유지하고 production HTTPS API URL을 확정한 뒤 `npm run check:backend-deployment`로 readiness와 실행 backend metadata를 확인한다.
 - [ ] `npm run check:android-apk` 통과 후 현재 `main`과 `expo-notifications`가 포함된 Android preview APK를 빌드한다.
-  - 2026-08-21 `2898493` 기준 EAS build `38acdebc-b5ba-4027-9a43-aacc368bf33f` 제출, 현재 `IN_QUEUE`
+  - 2026-08-21 `2898493` 기준 EAS build `38acdebc-b5ba-4027-9a43-aacc368bf33f`는 완료됐지만 현재 `main`보다 14개 commit 이전이라 새 release 후보가 필요하다.
 - [ ] `npm run apk:release-note`로 APK 파일명, frontend commit, EAS build id, API URL을 생성해 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록한다.
 - [ ] [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md)의 preview APK 순서로 실제 Android 기기에서 Expo Go·Metro 없이 cold start와 최소 하루 사용을 확인한다.
 - [ ] production DB에서 인증·게스트·Today·Calendar·D-Day·Search·Workspace 핵심 흐름을 확인한다.
