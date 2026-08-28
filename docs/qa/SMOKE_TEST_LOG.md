@@ -206,3 +206,4 @@ API mode / URL:
 - 확인된 누락: auth guest·login·refresh·guest refresh·logout과 비밀번호 재설정 request·verify·confirm의 성공(2xx) response, token response schema
 - 참고: task-template·D-Day task endpoint의 path parameter가 `{id}`인 것은 정상이며 checker가 변수명을 무시하도록 보완했다.
 - 판정: `BLOCKED` — 백엔드 OpenAPI 성공 응답 문서 보완 후 `npm run check:backend-ready` 재실행
+- 독립 Workspace OpenAPI: 강화된 checker로 23개 operation·각 2xx 응답·path parameter 이름 정규화까지 통과했다.
