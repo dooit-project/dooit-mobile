@@ -207,3 +207,10 @@ API mode / URL:
 - 참고: task-template·D-Day task endpoint의 path parameter가 `{id}`인 것은 정상이며 checker가 변수명을 무시하도록 보완했다.
 - 판정: `BLOCKED` — 백엔드 OpenAPI 성공 응답 문서 보완 후 `npm run check:backend-ready` 재실행
 - 독립 Workspace OpenAPI: 강화된 checker로 23개 operation·각 2xx 응답·path parameter 이름 정규화까지 통과했다.
+
+### 2026-08-29 production backend readiness 재검사
+
+- frontend commit: `f8231f3`
+- readiness: `UP` 응답 후 metadata 단계까지 진행했지만 `GET /api/v1/system/metadata`가 HTTP 401을 반환해 통합 검사가 중단됐다.
+- 최신 OpenAPI: 8개 auth·password reset operation의 2xx response와 token response schema가 여전히 누락됐다.
+- 판정: `BLOCKED` — metadata endpoint의 익명 접근을 복구하고 OpenAPI 성공 응답·token schema를 보완한 백엔드 배포 후 `npm run check:backend-ready` 재실행
