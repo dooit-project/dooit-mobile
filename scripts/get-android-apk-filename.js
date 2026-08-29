@@ -28,6 +28,6 @@ if (!Number.isInteger(versionCode)) {
   throw new Error('app.json expo.android.versionCode must be an integer.');
 }
 
-const filename = `todolab-android-${profile}-v${version}-${versionCode}-${getShortCommit()}.apk`;
+const filename = `dooit-android-${profile}-v${version}-${versionCode}-${getShortCommit()}.apk`;
 
 console.log(filename);

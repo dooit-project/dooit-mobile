@@ -36,7 +36,7 @@ describe('auth token store', () => {
     await setAccessToken(' token-value ');
 
     expect(getAccessToken()).toBe('token-value');
-    expect(mockSecureStore.get('todolab.accessToken')).toBe('token-value');
+    expect(mockSecureStore.get('dooit.accessToken')).toBe('token-value');
   });
 
   it('access token을 삭제한다', async () => {
@@ -45,7 +45,7 @@ describe('auth token store', () => {
     await clearAccessToken();
 
     expect(getAccessToken()).toBeNull();
-    expect(mockSecureStore.get('todolab.accessToken')).toBeUndefined();
+    expect(mockSecureStore.get('dooit.accessToken')).toBeUndefined();
   });
 
   it('native session credential을 SecureStore에 저장하고 복원한다', async () => {
@@ -59,11 +59,11 @@ describe('auth token store', () => {
     expect(getAccessTokenExpiresAt()).toBe('2026-08-27T12:15:00');
     expect(getRefreshToken()).toBe('refresh-token');
     expect(getRefreshTokenExpiresAt()).toBe('2026-09-27T12:00:00');
-    expect(mockSecureStore.get('todolab.refreshToken')).toBe('refresh-token');
+    expect(mockSecureStore.get('dooit.refreshToken')).toBe('refresh-token');
   });
 
   it('SecureStore의 access token을 메모리로 복원한다', async () => {
-    mockSecureStore.set('todolab.accessToken', 'persisted-token');
+    mockSecureStore.set('dooit.accessToken', 'persisted-token');
 
     await initializeAccessToken();
 
@@ -88,7 +88,7 @@ describe('auth token store', () => {
     await setAuthAccountType('GUEST');
 
     expect(getAuthAccountType()).toBe('GUEST');
-    expect(mockSecureStore.get('todolab.authAccountType')).toBe('GUEST');
+    expect(mockSecureStore.get('dooit.authAccountType')).toBe('GUEST');
 
     resetAuthTokenStoreForTesting();
     await initializeAuthAccountType();

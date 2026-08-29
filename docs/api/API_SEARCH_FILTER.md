@@ -1,6 +1,6 @@
 # Task·일정·완료 기록 통합 검색 API 요구사항
 
-이 문서는 “과거에 어떤 일을 언제 했는가”를 포함한 ToDoLab 모바일의 통합 검색 화면을 구현하기 위해 백엔드에 필요한 계약을 정의한다. 백엔드 구현과 데이터베이스 변경은 `todolab-backend` 저장소에서 별도로 진행한다.
+이 문서는 “과거에 어떤 일을 언제 했는가”를 포함한 Dooit 모바일의 통합 검색 화면을 구현하기 위해 백엔드에 필요한 계약을 정의한다. 백엔드 구현과 데이터베이스 변경은 `dooit-backend` 저장소에서 별도로 진행한다.
 
 현재 백엔드 원본 계약은 [`API_V1_FRONTEND.md`](../../../backend/docs/api/API_V1_FRONTEND.md)와 [`MOBILE_API_BACKEND_STATUS.md`](../../../backend/docs/mobile/MOBILE_API_BACKEND_STATUS.md)를 기준으로 확인한다. 2026년 7월 기준 백엔드는 검색어, 상태, 종류, 카테고리, D-Day, 날짜 범위, cursor pagination 계약을 제공하는 상태이며, 모바일에서는 실제 화면 smoke test와 pagination 안정성 확인을 남은 작업으로 관리한다.
 

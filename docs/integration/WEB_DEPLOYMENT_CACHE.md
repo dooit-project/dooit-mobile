@@ -1,6 +1,6 @@
 # Web Deployment Cache Policy
 
-ToDoLab Web 배포에서 사용자가 브라우저 캐시를 직접 지우지 않아도 새 버전이 자연스럽게 반영되도록 하는 캐시 기준이다.
+Dooit Web 배포에서 사용자가 브라우저 캐시를 직접 지우지 않아도 새 버전이 자연스럽게 반영되도록 하는 캐시 기준이다.
 
 ## 목표
 
@@ -65,7 +65,7 @@ Expo static export는 `/login`, `/calendar` 같은 고정 route의 HTML을 만�
 
 ## Service worker 기준
 
-현재 ToDoLab Web은 별도 service worker/PWA cache를 운영하지 않는다.
+현재 Dooit Web은 별도 service worker/PWA cache를 운영하지 않는다.
 
 나중에 service worker를 도입한다면 아래 기준을 먼저 구현한다.
 
@@ -98,7 +98,7 @@ index.html: Cache-Control: no-cache, must-revalidate
 hashed asset: Cache-Control: public, max-age=31536000, immutable
 ```
 
-## ToDoLab 운영 판단
+## Dooit 운영 판단
 
 - 사용자가 새 버전 반영을 위해 브라우저 캐시를 직접 삭제하는 절차는 운영 기준으로 두지 않는다.
 - 문제가 생겼을 때 “캐시 삭제해 주세요”는 임시 안내일 뿐이며, 근본 조치는 배포 header 또는 service worker update 정책 수정이다.

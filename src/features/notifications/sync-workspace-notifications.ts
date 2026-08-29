@@ -9,7 +9,7 @@ import { shiftLocalDate, toApiLocalDate } from '@/utils';
 
 import { getTaskNotificationDelivery } from './task-notification-delivery';
 
-const NOTIFICATION_SOURCE = 'todolab-workspace-task';
+const NOTIFICATION_SOURCE = 'dooit-workspace-task';
 const NOTIFICATION_WINDOW_DAYS = 30;
 export const MAX_SCHEDULED_WORKSPACE_NOTIFICATIONS = 50;
 

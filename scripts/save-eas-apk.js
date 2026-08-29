@@ -52,7 +52,7 @@ function getApkFilename({ profile, commit }) {
     throw new Error('app.json expo.android.versionCode must be an integer.');
   }
 
-  return `todolab-android-${profile}-v${version}-${versionCode}-${getShortCommit(commit)}.apk`;
+  return `dooit-android-${profile}-v${version}-${versionCode}-${getShortCommit(commit)}.apk`;
 }
 
 function download(url, destination) {
@@ -102,7 +102,7 @@ async function main() {
 
   const profile = args.profile ?? 'preview';
   const outDir = path.resolve(
-    args.outDir ?? path.join(process.env.HOME ?? '.', 'Downloads', 'todolab-apk'),
+    args.outDir ?? path.join(process.env.HOME ?? '.', 'Downloads', 'dooit-apk'),
   );
   const filename = getApkFilename({ profile, commit: args.commit });
   const destination = path.join(outDir, filename);

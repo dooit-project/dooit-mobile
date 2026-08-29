@@ -2,7 +2,7 @@
 
 - 검증일: 2026-08-25
 - 환경: Expo Web mock, Chrome, 390×844
-- 계정: 등록 사용자 `demo@todolab.app`
+- 계정: 등록 사용자 `demo@dooit.app`
 - 범위: 공간 생성, OWNER 일정·D-Day 생성, 멤버 조회, 초대 발송
 
 ## 캡처와 판정

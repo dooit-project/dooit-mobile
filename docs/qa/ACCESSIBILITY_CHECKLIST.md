@@ -1,6 +1,6 @@
 # 접근성·읽기 순서·글꼴 확대 점검표
 
-이 문서는 ToDoLab 모바일을 Android, iOS, Web에서 실제로 점검할 때 사용하는 기준이다. 디자인 원칙은 [`DESIGN.md`](../design/DESIGN.md)를 따른다.
+이 문서는 Dooit 모바일을 Android, iOS, Web에서 실제로 점검할 때 사용하는 기준이다. 디자인 원칙은 [`DESIGN.md`](../design/DESIGN.md)를 따른다.
 
 ## 공통 기준
 

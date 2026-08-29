@@ -6,7 +6,7 @@ import { shiftLocalDate, toApiLocalDate } from '@/utils';
 
 import { getTaskNotificationDelivery } from './task-notification-delivery';
 
-const NOTIFICATION_SOURCE = 'todolab-task';
+const NOTIFICATION_SOURCE = 'dooit-task';
 const NOTIFICATION_WINDOW_DAYS = 30;
 export const MAX_SCHEDULED_TASK_NOTIFICATIONS = 50;
 

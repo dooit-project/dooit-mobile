@@ -83,11 +83,11 @@ export function RegisterOverview() {
             style={[styles.brandMark, { backgroundColor: theme.colors.primarySoft }]}
           >
             <AppText tone="primary" variant="bodyLarge" weight="heavy">
-              T
+              D
             </AppText>
           </View>
           <AppText variant="label" weight="bold">
-            ToDoLab
+            Dooit
           </AppText>
         </View>
         <View style={styles.heroCopy}>

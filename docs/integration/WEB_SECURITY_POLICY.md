@@ -1,6 +1,6 @@
 # Web Authentication and CSP Policy
 
-ToDoLab Web의 인증 정보 저장과 Content Security Policy 적용 기준이다. Web 배포가 정해지기 전에도 구현과 운영 판단이 달라지지 않도록 현재 허용 범위와 교체 조건을 함께 관리한다.
+Dooit Web의 인증 정보 저장과 Content Security Policy 적용 기준이다. 현재 공개 Web과 API 도메인을 기준으로 구현·운영 판단, 허용 범위와 교체 조건을 함께 관리한다.
 
 ## 현재 인증 저장 결정
 

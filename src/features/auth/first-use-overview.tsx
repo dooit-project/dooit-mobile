@@ -32,7 +32,7 @@ export function FirstUseOverview({
           style={[styles.brandMark, { backgroundColor: theme.colors.primarySoft }]}
         >
           <AppText tone="primary" variant="display" weight="heavy">
-            T
+            D
           </AppText>
         </View>
         <View style={styles.copy}>
@@ -100,7 +100,7 @@ export function FirstUseOverview({
           {showFeatureTour ? '기능 둘러보기 닫기' : '기능 둘러보기'}
         </Button>
         {showFeatureTour ? (
-          <View accessibilityLabel="ToDoLab 주요 기능" style={styles.featureList}>
+          <View accessibilityLabel="Dooit 주요 기능" style={styles.featureList}>
             <FeatureSummary
               description="오늘 일정과 할 일을 확인하고 빠르게 기록해요."
               title="Today"

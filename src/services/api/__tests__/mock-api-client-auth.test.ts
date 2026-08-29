@@ -40,7 +40,7 @@ describe('Mock auth API', () => {
 
   it('회원가입 응답을 반환한다', async () => {
     await mockApiClient.post<TokenResponse>('/api/v1/auth/login', {
-      email: 'demo@todolab.app',
+      email: 'demo@dooit.app',
       password: 'password123',
     });
     const response = await mockApiClient.post<UserResponse>('/api/v1/auth/register', {
@@ -83,13 +83,13 @@ describe('Mock auth API', () => {
       allDay: false,
     });
     const login = await mockApiClient.post<TokenResponse>('/api/v1/auth/login', {
-      email: 'demo@todolab.app',
+      email: 'demo@dooit.app',
       password: 'password123',
     });
     const afterLogin = await mockApiClient.get<TaskResponse[]>('/api/v1/tasks/inbox');
 
     expect(login.user.accountType).toBe('REGISTERED');
-    expect(login.user.email).toBe('demo@todolab.app');
+    expect(login.user.email).toBe('demo@dooit.app');
     expect(beforeLogin).toEqual([]);
     expect(afterLogin.map((task) => task.id)).toContain(created.id);
   });

@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-27
 
-ToDoLab의 앱·Web 세션 수명, refresh credential과 게스트 데이터 보존 기준이다. 백엔드는 등록·게스트 refresh, logout, token rotation·reuse detection과 idle 30일·absolute 90일 계약을 제공한다. 모바일 저장·갱신 흐름은 연결했으며, 현재 남은 일은 Web credential 방식 확정과 실서버 세션 smoke test다.
+Dooit의 앱·Web 세션 수명, refresh credential과 게스트 데이터 보존 기준이다. 백엔드는 등록·게스트 refresh, logout, token rotation·reuse detection과 idle 30일·absolute 90일 계약을 제공한다. 모바일 저장·갱신 흐름은 연결했으며, 현재 남은 일은 Web credential 방식 확정과 실서버 세션 smoke test다.
 
 ## 제품 기준
 

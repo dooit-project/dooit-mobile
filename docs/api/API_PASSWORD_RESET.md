@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-27
 
-ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번호 재설정 API 계약이다. 백엔드 source와 모바일 UI·deep link 연결은 완료됐고 production 메일 발송·실기기 복구 검증이 남아 있다.
+Dooit Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번호 재설정 API 계약이다. 백엔드 source와 모바일 UI·deep link 연결은 완료됐고 production 메일 발송·실기기 복구 검증이 남아 있다.
 
 ## 목표
 
@@ -107,12 +107,12 @@ ToDoLab Mobile의 이메일/비밀번호 기반 로그인에 채택된 비밀번
 
 1. 로그인 화면의 `비밀번호를 잊으셨나요?` 링크에서 `/password-reset`로 이동한다.
 2. `/password-reset`에서 이메일 요청, token 검증, 새 비밀번호 저장 상태를 순차적으로 제공한다.
-3. `todolab://password-reset?token=...` deep link로 들어온 token은 route 상태로만 다루고 로그·telemetry에 남기지 않는다.
+3. `dooit://password-reset?token=...` deep link로 들어온 token은 route 상태로만 다루고 로그·telemetry에 남기지 않는다.
 4. 새 비밀번호 저장 성공 후 로그인 화면으로 이동해 완료 안내를 보여준다.
 
 ## 확인된 백엔드 정책
 
-- 기본 link: `todolab://password-reset?token={token}`. production template은 환경변수로 변경할 수 있다.
+- 기본 link: `dooit://password-reset?token={token}`. production template은 환경변수로 변경할 수 있다.
 - token TTL: 30분, URL-safe opaque token, 원본 대신 SHA-256 hash 저장
 - rate limit: normalized email 기준 기본 5건/1시간, 초과 시 429/`11006`
 - 비밀번호 정책: 회원가입과 동일

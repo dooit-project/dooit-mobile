@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-const APP_PREFERENCES_STORAGE_KEY = 'todolab.appPreferences';
+const APP_PREFERENCES_STORAGE_KEY = 'dooit.appPreferences';
 const SECURE_STORE_OPTIONS = {
   keychainService: APP_PREFERENCES_STORAGE_KEY,
 } satisfies SecureStore.SecureStoreOptions;

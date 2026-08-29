@@ -4,7 +4,7 @@ Last updated: 2026-08-23
 
 ## 범위와 도입 조건
 
-현재 ToDoLab은 Android·iOS의 로컬 예약 알림만 사용한다. 서버 push는 앱이 오래 열리지 않아 로컬 30일 예약 범위가 갱신되지 않는 문제가 실제 사용에서 확인될 때 도입한다.
+현재 Dooit은 Android·iOS의 로컬 예약 알림만 사용한다. 서버 push는 앱이 오래 열리지 않아 로컬 30일 예약 범위가 갱신되지 않는 문제가 실제 사용에서 확인될 때 도입한다.
 
 - 1차 대상은 로그인한 Android·iOS 계정이다.
 - 게스트는 계정 전환·만료 시 token 소유권이 불명확하므로 로컬 알림만 사용한다.
@@ -83,10 +83,10 @@ accountId + installationId + scope + notificationKey + notifyAt
 
 ```json
 {
-  "title": "ToDoLab",
+  "title": "Dooit",
   "body": "일정 시간이 되었어요.",
   "data": {
-    "source": "todolab-push",
+    "source": "dooit-push",
     "scope": "PERSONAL",
     "taskId": 123,
     "notificationKey": "task:123"

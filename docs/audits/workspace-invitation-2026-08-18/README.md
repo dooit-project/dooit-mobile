@@ -1,7 +1,7 @@
 # Workspace 초대 흐름 UI/UX 점검
 
 - 점검일: 2026-08-18
-- 대상: ToDoLab Web mock 390×844
+- 대상: Dooit Web mock 390×844
 - 흐름: PENDING 초대 확인 → 초대 수락 → 참여 공간 확인
 
 ## 결론

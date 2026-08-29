@@ -59,21 +59,21 @@ const splashPlugin = app.plugins?.find(
 const splashOptions = Array.isArray(splashPlugin) ? splashPlugin[1] : undefined;
 
 expect(
-  app.name === 'ToDoLab',
-  'App display name is ToDoLab',
-  'App display name must be ToDoLab',
+  app.name === 'Dooit',
+  'App display name is Dooit',
+  'App display name must be Dooit',
   results,
 );
 expect(
-  app.slug === 'todolab-mobile',
-  'App slug is todolab-mobile',
-  'App slug must be todolab-mobile',
+  app.slug === 'dooit-mobile',
+  'App slug is dooit-mobile',
+  'App slug must be dooit-mobile',
   results,
 );
 expect(
-  app.scheme === 'todolab',
-  'Deep link scheme is todolab',
-  'Deep link scheme must stay todolab',
+  app.scheme === 'dooit',
+  'Deep link scheme is dooit',
+  'Deep link scheme must stay dooit',
   results,
 );
 expect(

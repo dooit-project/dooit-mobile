@@ -1,7 +1,7 @@
 # Workspace 반복 범위 UI/UX 점검
 
 - 점검일: 2026-08-18
-- 대상: ToDoLab Web mock 390×844
+- 대상: Dooit Web mock 390×844
 - 흐름: 반복 일정 제목 수정 → 수정 범위 확인 → 삭제 범위 변경
 
 ## 결론

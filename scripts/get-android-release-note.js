@@ -52,10 +52,9 @@ function createReleaseNote(args) {
   const apiUrl = profileConfig.env?.EXPO_PUBLIC_API_URL ?? '확인 필요';
   const commit = getCommit(args.commit);
   const shortCommit = commit.slice(0, 7);
-  const apk =
-    args.apk ?? `todolab-android-${profile}-v${version}-${versionCode}-${shortCommit}.apk`;
+  const apk = args.apk ?? `dooit-android-${profile}-v${version}-${versionCode}-${shortCommit}.apk`;
 
-  return `ToDoLab Android APK
+  return `Dooit Android APK
 Date: ${args.date ?? new Date().toISOString().slice(0, 10)}
 Version: ${version}
 VersionCode: ${versionCode}

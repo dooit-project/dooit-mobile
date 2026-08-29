@@ -1,7 +1,7 @@
 # Workspace 접근 오류 UI/UX 점검
 
 - 점검일: 2026-08-19
-- 대상: ToDoLab Web mock 390×844
+- 대상: Dooit Web mock 390×844
 - 흐름: 존재하지 않는 Workspace 직접 접근 → 상태 이해 → 공유 공간 목록 복귀
 
 ## 결론

@@ -1,7 +1,7 @@
 # Workspace 상세 정보 구조 UI/UX 점검
 
 - 점검일: 2026-08-18
-- 대상: ToDoLab Web mock 390×844
+- 대상: Dooit Web mock 390×844
 - 사용자 목표: 공유 일정, D-Day, 멤버 관리 중 현재 작업 하나에 집중하기
 
 ## 결론

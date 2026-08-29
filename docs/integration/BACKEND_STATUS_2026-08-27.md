@@ -4,7 +4,7 @@
 
 ## 기준
 
-- 저장소: 인접 `todolab-backend`
+- 저장소: 인접 `dooit-backend`
 - 확인 source: `fd2a7e3`
 - 원격 기준: `origin/main`은 `06108bd`; local HEAD의 후속 5개 commit과 운영 문서·script 미커밋 변경은 별도 반영 필요
 - 검증: `./gradlew test --rerun-tasks` — `BUILD SUCCESSFUL`, 5 tasks executed

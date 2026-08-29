@@ -37,7 +37,7 @@ describe('Mock Workspace API', () => {
     });
     const invited = await mockApiClient.post<WorkspaceMemberResponse>(
       `/api/v1/workspaces/${workspace.id}/members`,
-      { email: 'member@todolab.app', role: 'EDITOR' },
+      { email: 'member@dooit.app', role: 'EDITOR' },
     );
     expect(invited).toMatchObject({ role: 'EDITOR', status: 'PENDING' });
 
@@ -63,7 +63,7 @@ describe('Mock Workspace API', () => {
 
   test('현재 사용자의 PENDING 초대 목록과 수락 흐름을 지원한다', async () => {
     await mockApiClient.post('/api/v1/auth/login', {
-      email: 'demo@todolab.app',
+      email: 'demo@dooit.app',
       password: 'demo1234',
     });
     const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
@@ -71,11 +71,11 @@ describe('Mock Workspace API', () => {
     });
     const invited = await mockApiClient.post<WorkspaceMemberResponse>(
       `/api/v1/workspaces/${workspace.id}/members`,
-      { email: 'member@todolab.app', role: 'VIEWER' },
+      { email: 'member@dooit.app', role: 'VIEWER' },
     );
 
     await mockApiClient.post('/api/v1/auth/login', {
-      email: 'member@todolab.app',
+      email: 'member@dooit.app',
       password: 'member1234',
     });
     const invitations = await mockApiClient.get<WorkspaceInvitationResponse[]>(
@@ -107,11 +107,11 @@ describe('Mock Workspace API', () => {
 
   test('현재 사용자가 PENDING 초대를 거절하면 목록과 Workspace에서 제외한다', async () => {
     await mockApiClient.post('/api/v1/auth/login', {
-      email: 'decline@todolab.app',
+      email: 'decline@dooit.app',
       password: 'member1234',
     });
     await mockApiClient.post('/api/v1/auth/login', {
-      email: 'demo@todolab.app',
+      email: 'demo@dooit.app',
       password: 'demo1234',
     });
     const workspace = await mockApiClient.post<WorkspaceResponse>('/api/v1/workspaces', {
@@ -119,11 +119,11 @@ describe('Mock Workspace API', () => {
     });
     const invited = await mockApiClient.post<WorkspaceMemberResponse>(
       `/api/v1/workspaces/${workspace.id}/members`,
-      { email: 'decline@todolab.app', role: 'VIEWER' },
+      { email: 'decline@dooit.app', role: 'VIEWER' },
     );
 
     await mockApiClient.post('/api/v1/auth/login', {
-      email: 'decline@todolab.app',
+      email: 'decline@dooit.app',
       password: 'member1234',
     });
     const declined = await mockApiClient.patch<WorkspaceMemberResponse>(

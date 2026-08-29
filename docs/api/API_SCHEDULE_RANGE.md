@@ -1,6 +1,6 @@
 # 여러 날 일정 범위 조회 계약
 
-Today와 Calendar가 여러 날에 걸친 일정을 빠뜨리거나 날짜마다 중복 생성하지 않도록 필요한 API 계약이다. 백엔드 구현은 `todolab-backend` 저장소에서 진행한다.
+Today와 Calendar가 여러 날에 걸친 일정을 빠뜨리거나 날짜마다 중복 생성하지 않도록 필요한 API 계약이다. 백엔드 구현은 `dooit-backend` 저장소에서 진행한다.
 
 ## Today 조회
 

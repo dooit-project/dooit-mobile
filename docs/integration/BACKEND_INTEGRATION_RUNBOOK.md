@@ -1,6 +1,6 @@
 # 백엔드 연동 Runbook
 
-이 문서는 ToDoLab Mobile을 실제 백엔드와 붙이기 전에 프론트엔드 기준으로 확인해야 할 환경, API 계약, smoke test 순서를 정리한다. 백엔드 구현 변경은 `todolab-backend` 저장소에서 진행하고, 이 저장소에서는 클라이언트 요구 사항과 검증 결과만 관리한다.
+이 문서는 Dooit Mobile을 실제 백엔드와 붙이기 전에 프론트엔드 기준으로 확인해야 할 환경, API 계약, smoke test 순서를 정리한다. 백엔드 구현 변경은 `dooit-backend` 저장소에서 진행하고, 이 저장소에서는 클라이언트 요구 사항과 검증 결과만 관리한다.
 
 백엔드 원본 계약은 다음 문서를 기준으로 한다.
 
@@ -185,7 +185,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 9. 중복 요청 방지
    - 빠른 기록, 일정 생성, 반복 occurrence 생성처럼 사용자가 여러 번 누를 수 있는 요청에 idempotency 또는 client request id 정책이 필요한지 결정한다.
 10. 비밀번호 재설정
-    - request, verify, confirm endpoint와 `todolab://password-reset` link의 source 구현은 완료됐다.
+    - request, verify, confirm endpoint와 `dooit://password-reset` link의 source 구현은 완료됐다.
     - 대상 배포의 메일 설정과 앱 deep link를 확인하고 전체 복구가 성공해야 실제 사용 가능으로 판정한다.
 
 ## 7. real 모드 smoke test 순서

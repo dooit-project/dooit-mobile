@@ -1,6 +1,6 @@
 # Release Checklist
 
-ToDoLab Mobile을 실제 사용 또는 배포 후보로 올리기 전에 확인하는 최종 체크리스트다. 상세 기준은 각 전문 문서에 두고, 이 문서는 배포 직전 빠뜨리기 쉬운 결정과 검증 상태를 한곳에서 확인한다.
+Dooit Mobile을 실제 사용 또는 배포 후보로 올리기 전에 확인하는 최종 체크리스트다. 상세 기준은 각 전문 문서에 두고, 이 문서는 배포 직전 빠뜨리기 쉬운 결정과 검증 상태를 한곳에서 확인한다.
 
 ## 1. 릴리즈 범위
 
@@ -142,11 +142,11 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 
 출시 빌드 전 확정해야 한다.
 
-- [x] 앱 표시 이름: `ToDoLab`
-- [x] Android package: `com.todolab.mobile`
-- [x] iOS bundle identifier: `com.todolab.mobile`
+- [x] 앱 표시 이름: `Dooit`
+- [x] Android package: `pj.dooit`
+- [x] iOS bundle identifier: `pj.dooit`
 - [x] EAS profile 뼈대: `development`, `preview`, `production`
-- [x] scheme 유지 여부: `todolab`
+- [x] scheme 유지 여부: `dooit`
 - [x] API mode별 빌드 설정: mock development, real preview/production
 - [x] Android signing credential 운영 기준과 비밀 값 제외 원칙
 - [x] EAS project 연결 후 Android signing credential 생성과 접근 권한 확인

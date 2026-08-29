@@ -1,8 +1,8 @@
-# ToDoLab Mobile Design System
+# Dooit Mobile Design System
 
 ## 1. 문서 목적
 
-이 문서는 ToDoLab 모바일 클라이언트의 시각 언어와 상호작용 원칙을 AI와 개발자가 같은 기준으로 적용하기 위한 `DESIGN.md`다.
+이 문서는 Dooit 모바일 클라이언트의 시각 언어와 상호작용 원칙을 AI와 개발자가 같은 기준으로 적용하기 위한 `DESIGN.md`다.
 
 구현 일정과 기능 범위는 [ROADMAP.md](../product/ROADMAP.md)에서 관리하고, 이 문서는 Android, iOS, Web 화면이 어떤 모습과 경험을 가져야 하는지 정의한다.
 
@@ -10,7 +10,7 @@
 
 ## 2. Design Intent
 
-ToDoLab은 사용자를 재촉하는 생산성 도구가 아니라, 오늘 실제로 끝낼 일을 차분히 고르고 실행하도록 돕는 동반자다.
+Dooit은 사용자를 재촉하는 생산성 도구가 아니라, 오늘 실제로 끝낼 일을 차분히 고르고 실행하도록 돕는 동반자다.
 
 목표 인상:
 
@@ -26,7 +26,7 @@ ToDoLab은 사용자를 재촉하는 생산성 도구가 아니라, 오늘 실�
 
 ### Visual concept: Quiet Paper Planner
 
-ToDoLab의 시각 콘셉트는 `Quiet Paper Planner`다. 노트·다이어리의 정돈감과 기록하고 싶은 분위기를 가져오되, 종이 질감이나 손글씨를 과도하게 흉내 내는 skeuomorphism은 피한다.
+Dooit의 시각 콘셉트는 `Quiet Paper Planner`다. 노트·다이어리의 정돈감과 기록하고 싶은 분위기를 가져오되, 종이 질감이나 손글씨를 과도하게 흉내 내는 skeuomorphism은 피한다.
 
 - 배경은 누런 paper tone보다 새하얀 surface와 아주 옅은 cool gray를 사용한다.
 - 제목과 본문은 ink 계열의 짙은 neutral로 표시하고 굵기 종류를 줄인다.
@@ -48,7 +48,7 @@ UI/UX 개편 방향:
 
 ## 3. Product Experience
 
-참고 제품의 기능을 그대로 복제하지 않고 다음 경험 패턴만 ToDoLab 흐름에 맞게 사용한다.
+참고 제품의 기능을 그대로 복제하지 않고 다음 경험 패턴만 Dooit 흐름에 맞게 사용한다.
 
 - Things: Today 중심의 실행 순서와 일정·할 일 분리
 - Microsoft To Do: 하루 단위 선별과 추천
@@ -553,7 +553,7 @@ Don't:
 
 다음 항목은 아직 확정된 디자인 규칙이 아니며 구현과 검증을 거쳐 이 문서에 반영한다.
 
-- ToDoLab 고유의 브랜드 자산과 wordmark
+- Dooit 고유의 브랜드 자산과 wordmark
 - system font를 대체할 브랜드 typography 필요 여부
 - 아이콘 크기, stroke, filled/outlined 사용 규칙
 - modal, bottom sheet, toast의 세부 visual specification

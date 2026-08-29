@@ -1,5 +1,5 @@
 {
-  "name": "todolab-mobile",
+  "name": "dooit-mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {

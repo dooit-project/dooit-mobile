@@ -19,14 +19,12 @@ const iosBundleIdentifier = appConfig.ios?.bundleIdentifier;
 const androidVersionCode = appConfig.android?.versionCode;
 const androidUsesCleartextTraffic = appConfig.android?.usesCleartextTraffic;
 
-if (androidPackage !== 'com.todolab.mobile') {
-  fail(`android.package must be com.todolab.mobile, got ${androidPackage ?? 'undefined'}`);
+if (androidPackage !== 'pj.dooit') {
+  fail(`android.package must be pj.dooit, got ${androidPackage ?? 'undefined'}`);
 }
 
-if (iosBundleIdentifier !== 'com.todolab.mobile') {
-  fail(
-    `ios.bundleIdentifier must be com.todolab.mobile, got ${iosBundleIdentifier ?? 'undefined'}`,
-  );
+if (iosBundleIdentifier !== 'pj.dooit') {
+  fail(`ios.bundleIdentifier must be pj.dooit, got ${iosBundleIdentifier ?? 'undefined'}`);
 }
 
 if (!Number.isInteger(androidVersionCode) || androidVersionCode < 1) {

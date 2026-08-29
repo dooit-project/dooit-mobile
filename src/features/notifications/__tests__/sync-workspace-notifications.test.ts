@@ -77,14 +77,14 @@ describe('Workspace 알림 동기화', () => {
           getScheduled: jest.fn().mockResolvedValue([
             {
               identifier: item.identifier,
-              source: 'todolab-workspace-task',
+              source: 'dooit-workspace-task',
               fingerprint: getWorkspaceNotificationFingerprint(item),
             },
             {
               identifier: 'workspace:8:3:task:11',
-              source: 'todolab-workspace-task',
+              source: 'dooit-workspace-task',
             },
-            { identifier: 'task:11', source: 'todolab-task' },
+            { identifier: 'task:11', source: 'dooit-task' },
           ]),
           cancel,
           schedule,
@@ -104,8 +104,8 @@ describe('Workspace 알림 동기화', () => {
     await expect(
       cancelManagedWorkspaceNotifications({
         getScheduled: jest.fn().mockResolvedValue([
-          { identifier: 'workspace:7:3:task:11', source: 'todolab-workspace-task' },
-          { identifier: 'task:11', source: 'todolab-task' },
+          { identifier: 'workspace:7:3:task:11', source: 'dooit-workspace-task' },
+          { identifier: 'task:11', source: 'dooit-task' },
         ]),
         cancel,
       }),

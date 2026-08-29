@@ -58,7 +58,7 @@ describe('app preferences store', () => {
 
   it('손상되거나 알 수 없는 저장값은 안전하게 정규화한다', async () => {
     mockSecureStore.set(
-      'todolab.appPreferences',
+      'dooit.appPreferences',
       JSON.stringify({
         onboardingVersion: -1,
         completedFeatureTips: ['calendar.overview', 'unknown.tip'],

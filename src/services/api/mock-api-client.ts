@@ -76,7 +76,7 @@ const users: UserResponse[] = [
   {
     id: 1,
     accountType: 'REGISTERED',
-    email: 'demo@todolab.app',
+    email: 'demo@dooit.app',
     displayName: 'Demo User',
     role: 'USER',
     timeZone: 'Asia/Seoul',
@@ -86,7 +86,7 @@ const users: UserResponse[] = [
   {
     id: 2,
     accountType: 'REGISTERED',
-    email: 'member@todolab.app',
+    email: 'member@dooit.app',
     displayName: 'Mock Member',
     role: 'USER',
     timeZone: 'Asia/Seoul',

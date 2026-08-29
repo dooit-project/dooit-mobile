@@ -3,13 +3,13 @@ import { Platform } from 'react-native';
 
 import type { AccountType, LocalDateTimeString } from '@/types';
 
-const ACCESS_TOKEN_STORAGE_KEY = 'todolab.accessToken';
-const ACCOUNT_TYPE_STORAGE_KEY = 'todolab.authAccountType';
-const ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY = 'todolab.accessTokenExpiresAt';
-const REFRESH_TOKEN_STORAGE_KEY = 'todolab.refreshToken';
-const REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY = 'todolab.refreshTokenExpiresAt';
+const ACCESS_TOKEN_STORAGE_KEY = 'dooit.accessToken';
+const ACCOUNT_TYPE_STORAGE_KEY = 'dooit.authAccountType';
+const ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY = 'dooit.accessTokenExpiresAt';
+const REFRESH_TOKEN_STORAGE_KEY = 'dooit.refreshToken';
+const REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY = 'dooit.refreshTokenExpiresAt';
 const SECURE_STORE_OPTIONS = {
-  keychainService: 'todolab.accessToken',
+  keychainService: 'dooit.accessToken',
 } satisfies SecureStore.SecureStoreOptions;
 
 type AccessTokenListener = (token: string | null) => void;

@@ -1,4 +1,4 @@
-# ToDoLab 사용자 흐름 보드
+# Dooit 사용자 흐름 보드
 
 Last updated: 2026-08-26
 

@@ -6,9 +6,9 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 
 현재 설정:
 
-- 앱 이름: `ToDoLab`
-- app slug: `todolab-mobile`
-- scheme: `todolab`
+- 앱 이름: `Dooit`
+- app slug: `dooit-mobile`
+- scheme: `dooit`
 - orientation: portrait
 - user interface style: automatic
 - 공통 icon: `assets/images/icon.png` — 1024×1024 PNG
@@ -121,7 +121,7 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 - 시간 일정은 시작 시각, 종일 일정은 해당 날짜 오전 9시에 알린다.
 - Task 생성·수정·완료·재개·이동·삭제, 앱 활성화, 계정 전환 때 예약을 갱신한다.
 - 변경 없는 예약은 fingerprint가 같으면 유지하고, `suppressLocalNotification=true` 후보는 예약하지 않는다.
-- 알림 선택 시 Task 상세로 이동하며 로그아웃 시 ToDoLab 예약만 정리한다.
+- 알림 선택 시 Task 상세로 이동하며 로그아웃 시 Dooit 예약만 정리한다.
 
 남은 실기기 확인:
 
@@ -140,17 +140,17 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 - iOS bundle identifier
 - EAS profile
 - 앱 표시 이름
-- scheme 유지 여부: `todolab`
+- scheme 유지 여부: `dooit`
 
 식별자는 확정됐으며 store 제출 전 versionCode·buildNumber와 배포 범위를 결정한다.
 
 현재 상태:
 
-- `app.json`에 `scheme: "todolab"`은 설정되어 있다.
-- Android package는 `com.todolab.mobile`로 설정했다.
-- iOS bundle identifier는 `com.todolab.mobile`로 설정했다.
+- `app.json`에 `scheme: "dooit"`은 설정되어 있다.
+- Android package는 `pj.dooit`로 설정했다.
+- iOS bundle identifier는 `pj.dooit`로 설정했다.
 - Android versionCode는 `1`로 시작한다.
-- 앱 표시 이름은 `ToDoLab`, scheme은 `todolab`으로 유지한다.
+- 앱 표시 이름은 `Dooit`, scheme은 `dooit`으로 유지한다.
 - `npm run check:release-assets`로 앱 이름, slug, scheme, icon/splash/favicon 경로와 PNG 크기를 자동 점검한다.
 - `eas.json`에 `development`, `preview`, `production` profile을 추가했다.
 - Expo project `owner`는 `hyunseung2`, project id는 `f49103dc-1d93-47a9-8972-4b5a4cc9e395`로 연결했다.
@@ -183,12 +183,12 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 
 후보 형식:
 
-| 항목                  | 후보 또는 기준       | 확정 필요                                |
-| --------------------- | -------------------- | ---------------------------------------- |
-| Android package       | `com.todolab.mobile` | 개인 APK 기준 확정, store 전 재검토      |
-| iOS bundle identifier | `com.todolab.mobile` | 개인 APK 기준 확정, Apple Team 전 재검토 |
-| EAS project owner     | `hyunseung2`         | 개인 APK 기준 확정                       |
-| scheme                | `todolab` 유지       | 필요 시                                  |
+| 항목                  | 후보 또는 기준 | 확정 필요                                |
+| --------------------- | -------------- | ---------------------------------------- |
+| Android package       | `pj.dooit`     | 개인 APK 기준 확정, store 전 재검토      |
+| iOS bundle identifier | `pj.dooit`     | 개인 APK 기준 확정, Apple Team 전 재검토 |
+| EAS project owner     | `hyunseung2`   | 개인 APK 기준 확정                       |
+| scheme                | `dooit` 유지   | 필요 시                                  |
 
 식별자 또는 EAS project를 변경하면 같은 커밋에서 확인할 항목:
 

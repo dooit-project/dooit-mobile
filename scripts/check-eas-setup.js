@@ -53,13 +53,13 @@ addCheck(
 
 addCheck(
   'Android package configured',
-  appConfig.android?.package === 'com.todolab.mobile',
+  appConfig.android?.package === 'pj.dooit',
   appConfig.android?.package ?? 'missing',
 );
 
 addCheck(
   'iOS bundle identifier configured',
-  appConfig.ios?.bundleIdentifier === 'com.todolab.mobile',
+  appConfig.ios?.bundleIdentifier === 'pj.dooit',
   appConfig.ios?.bundleIdentifier ?? 'missing',
 );
 

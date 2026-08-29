@@ -5,7 +5,7 @@ describe('Web production config 검사', () => {
     expect(
       getWebProductionConfigErrors({
         EXPO_PUBLIC_API_MODE: 'real',
-        EXPO_PUBLIC_API_URL: 'https://api.todolab.example',
+        EXPO_PUBLIC_API_URL: 'https://api.dooit.example',
       }),
     ).toEqual([]);
   });
@@ -14,7 +14,7 @@ describe('Web production config 검사', () => {
     expect(
       getWebProductionConfigErrors({
         EXPO_PUBLIC_API_MODE: 'mock',
-        EXPO_PUBLIC_API_URL: 'http://api.todolab.example',
+        EXPO_PUBLIC_API_URL: 'http://api.dooit.example',
       }),
     ).toEqual([
       'EXPO_PUBLIC_API_MODE 또는 override가 real이어야 합니다.',
@@ -28,7 +28,7 @@ describe('Web production config 검사', () => {
         EXPO_PUBLIC_API_MODE: 'mock',
         EXPO_PUBLIC_API_MODE_OVERRIDE: 'real',
         EXPO_PUBLIC_API_URL: 'http://localhost:8080',
-        EXPO_PUBLIC_API_URL_OVERRIDE: 'https://api.todolab.example/v1',
+        EXPO_PUBLIC_API_URL_OVERRIDE: 'https://api.dooit.example/v1',
       }),
     ).toEqual([]);
   });
@@ -40,7 +40,7 @@ describe('Web production config 검사', () => {
     expect(
       getWebProductionConfigErrors({
         EXPO_PUBLIC_API_MODE: 'real',
-        EXPO_PUBLIC_API_URL: 'https://user:password@api.todolab.example',
+        EXPO_PUBLIC_API_URL: 'https://user:password@api.dooit.example',
       }),
     ).toEqual(['운영 Web API URL에 인증 정보를 포함할 수 없습니다.']);
   });

@@ -50,7 +50,7 @@ function candidate(
 }
 
 describe('task notification reconciliation', () => {
-  it('기존 ToDoLab 예약을 갱신하고 현재 후보를 예약한다', async () => {
+  it('기존 Dooit 예약을 갱신하고 현재 후보를 예약한다', async () => {
     const cancel = jest.fn().mockResolvedValue(undefined);
     const schedule = jest.fn().mockResolvedValue(undefined);
 
@@ -59,7 +59,7 @@ describe('task notification reconciliation', () => {
         [candidate()],
         {
           getScheduled: jest.fn().mockResolvedValue([
-            { identifier: 'task:1', source: 'todolab-task' },
+            { identifier: 'task:1', source: 'dooit-task' },
             { identifier: 'other-app', source: 'other' },
           ]),
           cancel,
@@ -133,7 +133,7 @@ describe('task notification reconciliation', () => {
           getScheduled: jest.fn().mockResolvedValue([
             {
               identifier: currentCandidate.notificationKey,
-              source: 'todolab-task',
+              source: 'dooit-task',
               fingerprint: getTaskNotificationFingerprint(currentCandidate),
             },
           ]),
@@ -196,13 +196,13 @@ describe('task notification reconciliation', () => {
     );
   });
 
-  it('후보에서 사라진 기존 ToDoLab 예약을 취소한다', async () => {
+  it('후보에서 사라진 기존 Dooit 예약을 취소한다', async () => {
     const cancel = jest.fn().mockResolvedValue(undefined);
 
     await reconcileTaskNotifications([], {
       getScheduled: jest
         .fn()
-        .mockResolvedValue([{ identifier: 'recurrence:3:2026-08-12', source: 'todolab-task' }]),
+        .mockResolvedValue([{ identifier: 'recurrence:3:2026-08-12', source: 'dooit-task' }]),
       cancel,
       schedule: jest.fn().mockResolvedValue(undefined),
     });
@@ -210,13 +210,13 @@ describe('task notification reconciliation', () => {
     expect(cancel).toHaveBeenCalledWith('recurrence:3:2026-08-12');
   });
 
-  it('로그아웃 시 다른 source 예약은 유지하고 ToDoLab 예약만 제거한다', async () => {
+  it('로그아웃 시 다른 source 예약은 유지하고 Dooit 예약만 제거한다', async () => {
     const cancel = jest.fn().mockResolvedValue(undefined);
 
     await expect(
       cancelManagedTaskNotifications({
         getScheduled: jest.fn().mockResolvedValue([
-          { identifier: 'task:1', source: 'todolab-task' },
+          { identifier: 'task:1', source: 'dooit-task' },
           { identifier: 'other', source: 'other-app' },
         ]),
         cancel,

@@ -1,7 +1,7 @@
 # Workspace 반응형·키보드 UI/UX 점검
 
 - 점검일: 2026-08-19
-- 대상: ToDoLab Web mock의 Workspace 상세
+- 대상: Dooit Web mock의 Workspace 상세
 - 사용자 목표: 작은 화면과 키보드에서도 공유 일정·D-Day·멤버 탭을 구분하고 이동하기
 
 ## 결론

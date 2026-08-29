@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-12
 
-ToDoLab의 현재 알림은 백엔드 후보를 기준으로 모바일 기기에 예약하는 best-effort 로컬 알림이다. 반복 계산과 Task 상태는 백엔드가 소유하고 OS 권한·예약·취소는 모바일이 담당한다.
+Dooit의 현재 알림은 백엔드 후보를 기준으로 모바일 기기에 예약하는 best-effort 로컬 알림이다. 반복 계산과 Task 상태는 백엔드가 소유하고 OS 권한·예약·취소는 모바일이 담당한다.
 
 ## 백엔드 계약
 
@@ -41,10 +41,10 @@ type TaskNotificationCandidateResponse = {
 - 오늘부터 30일 범위를 조회하고 실제 전달 시각이 가까운 50개만 예약한다.
 - 시간 일정은 `scheduledAt`, 종일 일정은 해당 날짜 오전 9시에 알린다.
 - 알림 제목은 Task 제목이며 시간 일정과 종일 일정은 서로 다른 본문을 사용한다.
-- 예약 데이터에 `source=todolab-task`, `taskId`, fingerprint를 저장한다.
+- 예약 데이터에 `source=dooit-task`, `taskId`, fingerprint를 저장한다.
 - fingerprint가 같은 예약은 유지하고 변경·삭제된 예약만 교체한다.
 - 앱 활성화와 Task 생성·수정·완료·재개·이동·삭제 뒤 동기화한다.
-- 로그아웃·계정 전환 시 ToDoLab source 예약만 제거한다.
+- 로그아웃·계정 전환 시 Dooit source 예약만 제거한다.
 - foreground에서는 배너·목록·소리를 허용한다.
 - 알림 선택은 `taskId`를 검증한 뒤 Task 상세로 이동한다.
 

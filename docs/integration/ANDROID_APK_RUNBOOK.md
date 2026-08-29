@@ -1,17 +1,17 @@
 # Android 개인 APK Runbook
 
-ToDoLab Mobile을 Expo Go나 Metro 없이 Android 기기에 직접 설치해 실제 production API와 연결하기 위한 절차다.
+Dooit Mobile을 Expo Go나 Metro 없이 Android 기기에 직접 설치해 실제 production API와 연결하기 위한 절차다.
 
 ## 1. 현재 확정한 앱 식별자
 
 | 항목                  | 값                                     | 메모                                                                             |
 | --------------------- | -------------------------------------- | -------------------------------------------------------------------------------- |
-| 앱 이름               | `ToDoLab`                              | `app.json`                                                                       |
-| Android package       | `com.todolab.mobile`                   | 개인 APK용 기준값. Play Store 또는 조직 도메인 정책이 생기면 출시 전 재검토한다. |
-| iOS bundle identifier | `com.todolab.mobile`                   | iOS 배포는 후순위지만 Android와 같은 기준값을 먼저 맞춘다.                       |
+| 앱 이름               | `Dooit`                                | `app.json`                                                                       |
+| Android package       | `pj.dooit`                             | 개인 APK용 기준값. Play Store 또는 조직 도메인 정책이 생기면 출시 전 재검토한다. |
+| iOS bundle identifier | `pj.dooit`                             | iOS 배포는 후순위지만 Android와 같은 기준값을 먼저 맞춘다.                       |
 | App version           | `1.0.0`                                | `package.json`, `app.json`                                                       |
 | Android versionCode   | `1`                                    | APK update install 전 증가 정책을 유지한다.                                      |
-| Scheme                | `todolab`                              | deep link 정책 확정 전까지 유지한다.                                             |
+| Scheme                | `dooit`                                | deep link 정책 확정 전까지 유지한다.                                             |
 | Expo owner            | `hyunseung2`                           | `app.json`                                                                       |
 | EAS project id        | `f49103dc-1d93-47a9-8972-4b5a4cc9e395` | `app.json`                                                                       |
 
@@ -113,7 +113,7 @@ npm run apk:release-note -- \
 기본 저장 위치와 파일명:
 
 ```text
-~/Downloads/todolab-apk/todolab-android-preview-v<version>-<versionCode>-<shortCommit>.apk
+~/Downloads/dooit-apk/dooit-android-preview-v<version>-<versionCode>-<shortCommit>.apk
 ```
 
 빌드 결과 APK를 Android 기기에 설치한 뒤 다음을 확인한다.
@@ -128,8 +128,8 @@ npm run apk:release-note -- \
 ### APK 보관과 전달
 
 - APK 파일은 Git 저장소에 커밋하지 않는다.
-- 개인 사용 단계의 APK는 EAS build artifact link 또는 로컬 `~/Downloads/todolab-apk/` 같은 개인 보관 위치에 둔다.
-- 파일명은 `todolab-android-preview-v<version>-<versionCode>-<shortCommit>.apk` 형식으로 남긴다.
+- 개인 사용 단계의 APK는 EAS build artifact link 또는 로컬 `~/Downloads/dooit-apk/` 같은 개인 보관 위치에 둔다.
+- 파일명은 `dooit-android-preview-v<version>-<versionCode>-<shortCommit>.apk` 형식으로 남긴다.
 - Android 기기로 전달할 때는 EAS QR/link, USB 파일 전송, 또는 본인만 접근 가능한 cloud storage를 사용한다.
 - 공유 link를 만들면 설치 완료 후 만료하거나 접근 권한을 회수한다.
 
@@ -150,7 +150,7 @@ npm run apk:release-note -- \
 Release note 최소 형식:
 
 ```text
-ToDoLab Android APK
+Dooit Android APK
 Version:
 VersionCode:
 Frontend commit:
@@ -199,7 +199,7 @@ eas credentials --platform android
 
 ```text
 Android credential: EAS managed JKS
-Application identifier: com.todolab.mobile
+Application identifier: pj.dooit
 SHA1 fingerprint: 97:3E:D0:6D:E7:2F:14:96:C8:32:25:92:07:05:2E:B3:BA:86:14:24
 SHA256 fingerprint: 9C:F2:93:D1:4A:41:B9:9E:E3:DD:7F:24:C0:CC:89:22:DD:11:65:08:A5:55:4B:B4:AD:3D:BE:FA:DA:48:46:13
 Checked at: 2026-08-03

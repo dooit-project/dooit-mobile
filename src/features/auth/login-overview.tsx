@@ -68,11 +68,11 @@ export function LoginOverview() {
             style={[styles.brandMark, { backgroundColor: theme.colors.primarySoft }]}
           >
             <AppText tone="primary" variant="bodyLarge" weight="heavy">
-              T
+              D
             </AppText>
           </View>
           <AppText variant="label" weight="bold">
-            ToDoLab
+            Dooit
           </AppText>
         </View>
         <View style={styles.heroCopy}>
@@ -168,7 +168,7 @@ export function LoginOverview() {
           <InlineNotice
             tone="success"
             title="계정 생성 완료"
-            message="이제 로그인하면 ToDoLab을 바로 사용할 수 있어요."
+            message="이제 로그인하면 Dooit을 바로 사용할 수 있어요."
           />
         ) : null}
         {params.expired === '1' ? (
