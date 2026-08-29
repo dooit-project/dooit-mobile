@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "ToDoLab",
-    "slug": "todolab-mobile",
+    "name": "Dooit",
+    "slug": "dooit-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "todolab",
+    "scheme": "dooit",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.todolab.mobile",
-      "icon": "./assets/expo.icon"
+      "bundleIdentifier": "pj.dooit",
+      "icon": "./assets/images/icon.png"
     },
     "android": {
-      "package": "com.todolab.mobile",
+      "package": "pj.dooit",
       "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

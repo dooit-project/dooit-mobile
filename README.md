@@ -1,8 +1,12 @@
-# ToDoLab
+<p align="center">
+  <img src="./assets/images/dooit-minimal-icon-v3.png" width="128" alt="Dooit 아이콘" />
+</p>
+
+# Dooit
 
 > 생각난 일은 가볍게 기록하고, 오늘 해야 할 일은 선명하게.
 
-ToDoLab은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하는 크로스플랫폼 플래너입니다.
+Dooit은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하는 크로스플랫폼 플래너입니다.
 빠르게 적고 나중에 정리하는 순간부터, 개인 계획을 Workspace에서 함께 실행하는 순간까지 자연스럽게 이어집니다.
 
 <p align="center">
@@ -23,19 +27,19 @@ ToDoLab은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하
 
 > 캡처 기준: **2026-08-29** · Expo Web mock · 390×844 · [`촬영 환경과 갱신 이력`](./docs/screenshots/README.md)
 
-| 오늘                                                                            | 빠른 기록                                                                                   | 캘린더                                                                                |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| <img src="./docs/screenshots/today.png" width="260" alt="ToDoLab Today 화면" /> | <img src="./docs/screenshots/quick-capture.png" width="260" alt="ToDoLab 빠른 기록 화면" /> | <img src="./docs/screenshots/calendar.png" width="260" alt="ToDoLab Calendar 화면" /> |
+| 오늘                                                                          | 빠른 기록                                                                                 | 캘린더                                                                              |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| <img src="./docs/screenshots/today.png" width="260" alt="Dooit Today 화면" /> | <img src="./docs/screenshots/quick-capture.png" width="260" alt="Dooit 빠른 기록 화면" /> | <img src="./docs/screenshots/calendar.png" width="260" alt="Dooit Calendar 화면" /> |
 
-| 검색                                                                            | D-Day                                                                          | Task 상세                                                                                 |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| <img src="./docs/screenshots/search.png" width="260" alt="ToDoLab 검색 화면" /> | <img src="./docs/screenshots/dday.png" width="260" alt="ToDoLab D-Day 화면" /> | <img src="./docs/screenshots/task-detail.png" width="260" alt="ToDoLab Task 상세 화면" /> |
+| 검색                                                                          | D-Day                                                                        | Task 상세                                                                               |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| <img src="./docs/screenshots/search.png" width="260" alt="Dooit 검색 화면" /> | <img src="./docs/screenshots/dday.png" width="260" alt="Dooit D-Day 화면" /> | <img src="./docs/screenshots/task-detail.png" width="260" alt="Dooit Task 상세 화면" /> |
 
 하단 탭은 현재 UI 기준 `오늘 · 달력 · 더보기`로 표시됩니다. 화면별 시나리오와 최신 검증 상태는 [사용자 흐름 카탈로그](./docs/product/USER_FLOW_CATALOG.md)와 [사용자 흐름 보드](./docs/product/USER_FLOW_BOARD.md)에서 확인할 수 있습니다.
 
 ## 현재 상태
 
-핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐습니다. 현재는 production 백엔드 계약, 최신 Android APK, 알림과 복구 흐름, 접근성을 실제 환경에서 검증하는 단계입니다.
+핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐습니다. Web은 `https://dooit.hsng.pe.kr`, API는 `https://dooitapi.hsng.pe.kr`에 연결되어 있습니다. 현재는 최신 Android APK, 알림과 복구 흐름, 접근성을 실제 환경에서 검증하는 단계입니다.
 
 - 게스트·회원가입·로그인·세션 복구
 - Today·Inbox·완료 기록·Calendar·검색
@@ -83,7 +87,7 @@ npm run validate
 
 ## API 모드
 
-ToDoLab Mobile은 화면 개발과 실제 백엔드 연동을 명확히 분리합니다.
+Dooit Mobile은 화면 개발과 실제 백엔드 연동을 명확히 분리합니다.
 
 | 모드   | 용도                                                                 |
 | ------ | -------------------------------------------------------------------- |
@@ -156,10 +160,10 @@ route는 화면 조합에 집중하고, 사용자 기능은 `features/`, 외부 
 
 ## 관련 저장소
 
-- [todolab-backend](https://github.com/todolab-project/todolab-backend) — API, 인증, 데이터와 서버 애플리케이션
+- [dooit-backend](https://github.com/dooit-project/dooit-backend) — API, 인증, 데이터와 서버 애플리케이션
 
 ---
 
 <p align="center">
-  작은 기록이 오늘의 실행으로 이어지도록.
+  생각난 일은 가볍게 기록하고, 오늘 해야 할 일은 선명하게.
 </p>

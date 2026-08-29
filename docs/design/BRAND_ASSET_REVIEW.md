@@ -1,6 +1,6 @@
 # 브랜드 자산 점검
 
-Last updated: 2026-08-23
+Last updated: 2026-08-30
 
 ## 점검 범위
 
@@ -8,21 +8,23 @@ Last updated: 2026-08-23
 
 ## 현재 판정
 
-| 자산               | 판정        | 확인 내용                                                                     |
-| ------------------ | ----------- | ----------------------------------------------------------------------------- |
-| 앱 icon            | 교체 필요   | 파란 설계 격자와 추상 `A` 형태로, ToDoLab의 일정·완료 의미가 드러나지 않는다. |
-| Android foreground | 임시 사용   | 중심 여백은 충분하지만 앱 icon과 같은 추상 `A`라 최종 브랜드 표식은 아니다.   |
-| Android background | 임시 사용   | 밝은 파란 배경과 가이드 형태가 앱의 warm paper 디자인 언어와 다르다.          |
-| Android monochrome | 임시 사용   | 단색 형태는 명확하지만 원본 심볼을 교체하면 함께 다시 만들어야 한다.          |
-| splash             | 조건부 통과 | 흰색 심볼과 기존 흰색 배경의 대비 문제를 primary `#526879` 배경으로 수정했다. |
-| favicon            | 교체 필요   | 48px에서도 보이지만 추상 `A`라 서비스 식별성이 약하다.                        |
+| 자산               | 판정      | 확인 내용                                                               |
+| ------------------ | --------- | ----------------------------------------------------------------------- |
+| 앱 icon            | 적용 완료 | 둥근 paper tile과 check를 결합한 Dooit 심볼을 1024px 자산으로 적용했다. |
+| Android foreground | 적용 완료 | adaptive icon safe zone 안에 같은 심볼을 배치했다.                      |
+| Android background | 적용 완료 | 브랜드 primary `#526879` 단색 배경으로 통일했다.                        |
+| Android monochrome | 적용 완료 | 작은 크기에서도 식별되는 check 실루엣을 단색 mask로 사용한다.           |
+| splash             | 적용 완료 | primary 배경 위에 같은 paper tile 심볼이 표시된다.                      |
+| favicon            | 적용 완료 | 같은 원본에서 48px 투명 PNG를 생성해 Web 설정에 연결했다.               |
 
-현재 자산은 Expo 초기 자산 계열의 일관된 한 세트이므로 개발·내부 preview에는 사용할 수 있다. Store와 공개 Web에서는 ToDoLab 고유 자산으로 교체해야 한다.
+모든 플랫폼 자산은 `assets/images/dooit-minimal-icon-v3.png`에서 파생한다. `scripts/generate-brand-assets.py`를 실행하면 규격별 PNG를 동일한 기준으로 다시 생성할 수 있다.
 
 ## 이번 수정
 
 - `expo-splash-screen` 배경을 흰색에서 앱 light theme primary `#526879`로 바꿨다.
 - 흰색 splash mark가 배경 위에서 사라지지 않도록 정적 설정 검사에 배경값을 추가했다.
+- 임시 Expo `A` 심볼을 Dooit paper-check icon으로 교체했다.
+- iOS icon, Android adaptive foreground·background·monochrome, splash와 favicon을 한 원본에서 생성한다.
 - 실제 기기에서 splash crop, 화면 전환과 dark mode 상태는 아직 확인하지 않았다.
 
 ## 최종 자산 요구사항
