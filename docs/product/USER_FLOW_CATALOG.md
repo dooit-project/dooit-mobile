@@ -1,6 +1,6 @@
-# ToDoLab 사용자 흐름 카탈로그
+# Dooit 사용자 흐름 카탈로그
 
-Last updated: 2026-08-29
+Last updated: 2026-08-30
 
 이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 최신 화면을 나란히 보는 시각적 원본은 [`USER_FLOW_BOARD.md`](./USER_FLOW_BOARD.md), 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 세부 시각 판단은 각 audit README를 따른다.
 
@@ -136,6 +136,8 @@ flowchart LR
 - mutation 실패 rollback
 
 ## UF-05. Calendar·검색·완료 기록 탐색
+
+현재 흐름은 `더보기`를 진입점으로 사용한다. 좌측 상단 전역 메뉴로의 변경안과 단계별 검증 기준은 [`NAVIGATION_INFORMATION_ARCHITECTURE.md`](./NAVIGATION_INFORMATION_ARCHITECTURE.md)를 따른다.
 
 ```mermaid
 flowchart LR

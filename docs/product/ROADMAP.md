@@ -1,6 +1,6 @@
-# ToDoLab Mobile Roadmap
+# Dooit Mobile Roadmap
 
-Last updated: 2026-08-29
+Last updated: 2026-08-30
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
@@ -61,8 +61,8 @@ Last updated: 2026-08-29
 
 - [x] Task·D-Day·반복 series·membership이 있는 Workspace cascade 삭제와 통합 테스트가 백엔드에 구현됐다.
 - [x] `GET /api/v1/system/metadata`에서 backend commit/image/version을 식별하는 계약이 구현됐다.
-- [x] 비밀번호 재설정 request·verify·confirm, 30분 token, rate limit과 `todolab://password-reset` link 계약이 구현됐다.
-- [x] 비밀번호 재설정 이메일 입력·token 검증·새 비밀번호 저장 UI와 `todolab://password-reset` route를 연결한다.
+- [x] 비밀번호 재설정 request·verify·confirm, 30분 token, rate limit과 `dooit://password-reset` link 계약이 구현됐다.
+- [x] 비밀번호 재설정 이메일 입력·token 검증·새 비밀번호 저장 UI와 `dooit://password-reset` route를 연결한다.
 - [ ] 최신 백엔드 배포에서 내용 있는 Workspace 삭제와 metadata endpoint를 real smoke로 재검증한다.
 - [ ] 메일 발송 환경을 포함한 최신 백엔드 배포에서 비밀번호 재설정 전체 흐름을 확인한다.
 
@@ -85,7 +85,7 @@ Last updated: 2026-08-29
 - [ ] Workspace 흐름을 browser zoom 150%에서 확인한다.
 - [ ] 실제 API 지연과 대량 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
 - [x] 흰색 splash mark가 보이도록 primary 배경과 정적 회귀 검사를 적용한다.
-- [ ] [`BRAND_ASSET_REVIEW.md`](../design/BRAND_ASSET_REVIEW.md)를 기준으로 임시 `A` 심볼을 ToDoLab 고유 icon·favicon·adaptive 자산으로 교체한다.
+- [x] [`BRAND_ASSET_REVIEW.md`](../design/BRAND_ASSET_REVIEW.md)를 기준으로 임시 `A` 심볼을 Dooit 고유 icon·favicon·adaptive 자산으로 교체한다.
 
 ### P1. Today·Navigation 행동 위계
 
@@ -99,6 +99,29 @@ Last updated: 2026-08-29
 - [x] Workspace Task 행동 위계를 Web 320px·390px·430px에서 [`workspace-task-responsive-2026-08-26`](../audits/workspace-task-responsive-2026-08-26/README.md)으로 검증한다.
 - [x] Workspace Task 행동 위계를 Web 390px light와 접근성 트리에서 [`workspace-task-theme-accessibility-2026-08-27`](../audits/workspace-task-theme-accessibility-2026-08-27/README.md)로 검증한다.
 - [ ] 위 변경을 font scale 1.5, dark와 VoiceOver·TalkBack에서 검증한다.
+- [ ] [`NAVIGATION_INFORMATION_ARCHITECTURE.md`](./NAVIGATION_INFORMATION_ARCHITECTURE.md)의 1단계에 따라 좌측 상단 탐색 메뉴 prototype을 만들고, 현재 `더보기`와 비교해 발견성·한 손 조작·복귀 흐름을 검증한다.
+- [ ] 카테고리를 메뉴에 노출하기 전에 목록·정렬·변경·삭제·집계와 개인/Workspace scope API 계약을 백엔드 저장소에 제안한다.
+
+### P1. 프론트 우선 오늘 실행 루프
+
+세부 범위와 프론트·백엔드 경계는 [`DAILY_EXECUTION_PRIORITIES.md`](./DAILY_EXECUTION_PRIORITIES.md)를 따른다.
+
+- [ ] 기존 기록함·오래 미룬 항목·추천·Today 이동·재정렬 API로 `오늘 계획` MVP를 구현한다.
+- [ ] 기존 날짜 이동·기록함 이동·미룸 사유 mutation으로 `하루 마감` MVP와 부분 실패 재시도를 구현한다.
+- [ ] 좌측 메뉴 prototype에 오늘·달력·기록함·오래 미룬 일·완료 기록·목표·공유 공간의 스마트 진입점을 배치한다.
+- [ ] Today Task 하나만 남기는 session-only `한 가지 실행하기`를 검증하고, timer·통계는 제외한다.
+- [ ] Expo SDK 56 호환성을 확인한 뒤 widget·공유 메뉴·Shortcut 순서로 앱 밖 빠른 기록의 기술 spike를 진행한다.
+- [ ] 위 prototype을 feature flag 또는 mock 기준으로 격리해 현재 출시 후보 검증을 방해하지 않는다.
+
+### P1. 오늘 실행 백엔드 요청
+
+예상 계약은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)에 정리한다. 실제 구현과 DB migration은 `dooit-backend` 저장소에서 별도로 진행한다.
+
+- [ ] B0: 날짜별 일일 계획과 핵심 Task 1~3개의 영속화·동기화 계약을 합의한다.
+- [ ] B0: Task `estimatedDurationMinutes`와 반복·template 적용 규칙을 합의한다.
+- [ ] B1: 프론트 MVP에서 부분 성공 문제가 확인되면 계획·마감 atomic batch mutation을 구현 요청한다.
+- [ ] B1: 한 단계 checklist item CRUD·정렬·완료와 반복 occurrence 계약을 구현 요청한다.
+- [ ] B2: 일일 결과 summary와 카테고리 entity·집계는 핵심 루프 검증 뒤 재검토한다.
 
 ### P1. 사용자 흐름 시각 문서화
 
