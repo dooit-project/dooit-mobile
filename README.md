@@ -21,6 +21,8 @@ ToDoLab은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하
 
 ## 화면 미리보기
 
+> 캡처 기준: **2026-08-29** · Expo Web mock · 390×844 · [`촬영 환경과 갱신 이력`](./docs/screenshots/README.md)
+
 | 오늘                                                                            | 빠른 기록                                                                                   | 캘린더                                                                                |
 | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | <img src="./docs/screenshots/today.png" width="260" alt="ToDoLab Today 화면" /> | <img src="./docs/screenshots/quick-capture.png" width="260" alt="ToDoLab 빠른 기록 화면" /> | <img src="./docs/screenshots/calendar.png" width="260" alt="ToDoLab Calendar 화면" /> |
@@ -29,7 +31,7 @@ ToDoLab은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하
 | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
 | <img src="./docs/screenshots/search.png" width="260" alt="ToDoLab 검색 화면" /> | <img src="./docs/screenshots/dday.png" width="260" alt="ToDoLab D-Day 화면" /> | <img src="./docs/screenshots/task-detail.png" width="260" alt="ToDoLab Task 상세 화면" /> |
 
-화면별 시나리오와 최신 검증 상태는 [사용자 흐름 카탈로그](./docs/product/USER_FLOW_CATALOG.md)와 [사용자 흐름 보드](./docs/product/USER_FLOW_BOARD.md)에서 확인할 수 있습니다.
+하단 탭은 현재 UI 기준 `오늘 · 달력 · 더보기`로 표시됩니다. 화면별 시나리오와 최신 검증 상태는 [사용자 흐름 카탈로그](./docs/product/USER_FLOW_CATALOG.md)와 [사용자 흐름 보드](./docs/product/USER_FLOW_BOARD.md)에서 확인할 수 있습니다.
 
 ## 현재 상태
 

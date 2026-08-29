@@ -8,9 +8,11 @@ ToDoLab Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서�
 
 - 화면 설명과 캡쳐 기준은 최신 UI 구조 기준으로 정리되어 있다.
 - mock Web 390×844 viewport 기준 실제 PNG 캡쳐를 생성했다.
+- 현재 대표 캡처 촬영일은 **2026-08-29**, 기준 커밋은 `3d868ef`이다. 상세 환경과 화면 상태는 [`screenshots/README.md`](../screenshots/README.md)에서 확인한다.
 - 사용자 흐름별 최신 mock Web 캡처와 판정은 [`USER_FLOW_CATALOG.md`](../product/USER_FLOW_CATALOG.md)의 UF-01~UF-08에서 관리한다.
 - `docs/screenshots`는 화면 구조 참고용이며 실제 release 판정은 최신 APK와 실기기 QA를 따른다.
 - 화면 구조가 바뀌면 아래 파일명을 유지한 채 다시 캡쳐한다.
+- 대표 캡처는 촬영 후 7일이 되기 전에 갱신하며 `npm run docs:check`에서 만료 여부를 검사한다.
 
 ## 화면 점검 범위
 
@@ -62,6 +64,7 @@ docs/screenshots/
 - Data mode: mock 우선
 - 상태: 주요 화면은 기본 상태, 필요 시 loading/error/empty 상태를 별도 캡쳐
 - 캡쳐 전 `npm run validate`를 통과한 커밋을 기준으로 한다.
+- 캡처 후 `manifest.json`의 촬영일, 기준 커밋, 환경과 상태를 함께 갱신한다.
 
 ## Today
 
@@ -211,7 +214,7 @@ docs/screenshots/
 
 - 완료 목록은 성취 확인이 목적이므로 과도한 통계보다 실제 완료 card를 우선한다.
 
-## Profile
+## 더보기
 
 ![Profile 화면](../screenshots/profile.png)
 
@@ -232,7 +235,7 @@ docs/screenshots/
 
 개발 참고:
 
-- Profile은 설정과 보조 기능의 hub다.
+- 더보기는 설정과 보조 기능의 hub다. route와 기존 파일명은 호환성을 위해 `/profile`, `profile.png`를 유지한다.
 - 카드 grid가 아니라 세로 navigation row 문법을 유지한다.
 
 ## Task 상세
@@ -326,8 +329,9 @@ docs/screenshots/
 
 ## 캡쳐 후 업데이트 체크리스트
 
-- [ ] 모든 이미지 파일명이 이 문서의 경로와 일치한다.
-- [ ] 스크린샷이 mock 데이터 기준인지 real 데이터 기준인지 명시한다.
-- [ ] 개인정보, 실제 일정, 실제 검색어가 이미지에 포함되지 않는다.
-- [ ] README의 문서 링크가 최신 상태다.
-- [ ] 마켓용 이미지는 [`APP_STORE_ASSETS.md`](../marketing/APP_STORE_ASSETS.md)에 별도로 정리한다.
+- [x] 모든 이미지 파일명이 이 문서의 경로와 일치한다.
+- [x] 스크린샷이 mock 데이터 기준인지 real 데이터 기준인지 명시한다.
+- [x] 촬영일, 기준 커밋, viewport가 `manifest.json`에 기록되어 있다.
+- [x] 개인정보, 실제 일정, 실제 검색어가 이미지에 포함되지 않는다.
+- [x] README의 문서 링크가 최신 상태다.
+- [x] 마켓용 이미지는 [`APP_STORE_ASSETS.md`](../marketing/APP_STORE_ASSETS.md)에 별도로 정리한다.

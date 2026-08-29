@@ -54,7 +54,7 @@
     "lint": "expo lint --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "docs:check": "node scripts/check-doc-links.js",
+    "docs:check": "node scripts/check-doc-links.js && node scripts/check-screenshot-freshness.js",
     "check:release-static": "npm run check:release-assets && npm run check:android-apk && npm run check:web-route-fallback",
     "check:release-assets": "node scripts/check-release-assets-config.js",
     "check:android-apk": "node scripts/check-android-apk-config.js",
