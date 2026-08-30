@@ -36,3 +36,13 @@ export function getDailyPlanFocusTasks(tasks: TaskResponse[], limit = 3) {
     )
     .slice(0, Math.max(0, limit));
 }
+
+export function getDailyShutdownTasks(tasks: TaskResponse[]) {
+  return tasks
+    .filter((task) => task.status === 'TODAY' && task.type !== 'SCHEDULE')
+    .sort(
+      (left, right) =>
+        (left.todayOrder ?? Number.MAX_SAFE_INTEGER) -
+        (right.todayOrder ?? Number.MAX_SAFE_INTEGER),
+    );
+}

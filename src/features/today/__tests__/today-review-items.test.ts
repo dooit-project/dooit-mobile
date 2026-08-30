@@ -2,6 +2,7 @@ import type { TaskRecommendationResponse, TaskResponse } from '@/types';
 
 import {
   getDailyPlanFocusTasks,
+  getDailyShutdownTasks,
   getLatestInboxTask,
   separateTodayReviewItems,
 } from '../today-review-items';
@@ -86,5 +87,18 @@ describe('getDailyPlanFocusTasks', () => {
     ];
 
     expect(getDailyPlanFocusTasks(tasks).map((task) => task.id)).toEqual([4, 3, 1]);
+  });
+});
+
+describe('getDailyShutdownTasks', () => {
+  it('일정과 완료 항목을 제외한 Today 실행 항목을 순서대로 반환한다', () => {
+    const tasks: TaskResponse[] = [
+      { ...createInboxTask(1), status: 'TODAY', todayOrder: 2 },
+      { ...createInboxTask(2), type: 'SCHEDULE', status: 'TODAY', todayOrder: 1 },
+      { ...createInboxTask(3), status: 'DONE', todayOrder: null },
+      { ...createInboxTask(4), type: 'IDEA', status: 'TODAY', todayOrder: 1 },
+    ];
+
+    expect(getDailyShutdownTasks(tasks).map((task) => task.id)).toEqual([4, 1]);
   });
 });

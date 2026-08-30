@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import type { Href } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -356,6 +357,12 @@ export function TodayOverview({
           </View>
         ) : null}
       </View>
+
+      {executionTasks.length > 0 ? (
+        <Button variant="secondary" onPress={() => router.push('/today/shutdown' as Href)}>
+          하루 마감
+        </Button>
+      ) : null}
     </View>
   );
 }
