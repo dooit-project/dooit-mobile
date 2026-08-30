@@ -1,6 +1,10 @@
 import type { TaskRecommendationResponse, TaskResponse } from '@/types';
 
-import { getLatestInboxTask, separateTodayReviewItems } from '../today-review-items';
+import {
+  getDailyPlanFocusTasks,
+  getLatestInboxTask,
+  separateTodayReviewItems,
+} from '../today-review-items';
 
 function createInboxTask(id: number): TaskResponse {
   return {
@@ -68,5 +72,19 @@ describe('getLatestInboxTask', () => {
     };
 
     expect(getLatestInboxTask([olderTask, newerTask])).toEqual(newerTask);
+  });
+});
+
+describe('getDailyPlanFocusTasks', () => {
+  it('일정을 제외하고 Today 순서의 앞 3개를 반환한다', () => {
+    const tasks: TaskResponse[] = [
+      { ...createInboxTask(1), status: 'TODAY', todayOrder: 3 },
+      { ...createInboxTask(2), type: 'SCHEDULE', status: 'TODAY', todayOrder: 1 },
+      { ...createInboxTask(3), type: 'IDEA', status: 'TODAY', todayOrder: 2 },
+      { ...createInboxTask(4), status: 'TODAY', todayOrder: 1 },
+      { ...createInboxTask(5), status: 'TODAY', todayOrder: 4 },
+    ];
+
+    expect(getDailyPlanFocusTasks(tasks).map((task) => task.id)).toEqual([4, 3, 1]);
   });
 });

@@ -20,6 +20,7 @@ import { radii, spacing, useAppTheme } from '@/theme';
 import { toApiLocalDate } from '@/utils';
 
 import { useTodayOverview } from './use-today-overview';
+import { getDailyPlanFocusTasks } from './today-review-items';
 
 export function TodayReviewScreen() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export function TodayReviewScreen() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const reviewCount =
     overview.staleTasks.length + overview.recommendations.length + overview.inboxTasks.length;
+  const focusTasks = getDailyPlanFocusTasks(overview.todayTasks);
 
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
@@ -42,8 +44,8 @@ export function TodayReviewScreen() {
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title="정리할 항목"
-        description="오늘 할 일로 옮길 항목을 골라보세요."
+        title="오늘 계획"
+        description="오늘 할 수 있는 만큼 고르고, 먼저 할 일을 확인해요."
         leading={
           <IconButton
             accessibilityLabel="Today 화면으로 돌아가기"
@@ -63,6 +65,24 @@ export function TodayReviewScreen() {
         <InlineNotice message={moveToToday.error.message} tone="danger" />
       ) : feedback ? (
         <InlineNotice message={feedback} tone="success" />
+      ) : null}
+
+      {!overview.isPending && !overview.error && focusTasks.length > 0 ? (
+        <ReviewSection
+          title="먼저 할 일"
+          description="현재 Today 순서의 앞 항목이에요. 순서는 Today에서 바꿀 수 있어요."
+          count={focusTasks.length}
+        >
+          {focusTasks.map((task) => (
+            <TaskCard
+              compact
+              key={task.id}
+              task={task}
+              showCompletionControl={false}
+              onOpen={() => openTask(task.id)}
+            />
+          ))}
+        </ReviewSection>
       ) : null}
 
       {overview.isPending ? (
@@ -89,9 +109,15 @@ export function TodayReviewScreen() {
               />
             </View>
           }
-          title="정리가 끝났어요"
-          description="지금 다시 판단할 항목이 없어요."
-          primaryAction={<Button onPress={() => router.replace('/')}>Today로 돌아가기</Button>}
+          title={focusTasks.length > 0 ? '오늘 계획을 마칠 수 있어요' : '정리가 끝났어요'}
+          description={
+            focusTasks.length > 0 ? '먼저 할 일을 확인했어요.' : '지금 다시 판단할 항목이 없어요.'
+          }
+          primaryAction={
+            <Button onPress={() => router.replace({ pathname: '/', params: { planned: '1' } })}>
+              오늘 계획 마치기
+            </Button>
+          }
         />
       ) : (
         <View style={styles.sections}>
@@ -175,6 +201,10 @@ export function TodayReviewScreen() {
               ))}
             </ReviewSection>
           ) : null}
+
+          <Button onPress={() => router.replace({ pathname: '/', params: { planned: '1' } })}>
+            오늘 계획 마치기
+          </Button>
         </View>
       )}
     </Screen>

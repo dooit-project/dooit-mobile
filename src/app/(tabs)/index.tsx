@@ -16,6 +16,7 @@ export default function TodayScreen() {
     linkedSchedules?: string;
     linkedDdayGoals?: string;
     linkedRecurrenceSeries?: string;
+    planned?: string;
   }>();
   const theme = useAppTheme();
   const now = new Date();
@@ -59,6 +60,13 @@ export default function TodayScreen() {
       >
         {linkedNoticeMessage ? (
           <InlineNotice tone="success" title="계정 연결 완료" message={linkedNoticeMessage} />
+        ) : null}
+        {params.planned === '1' ? (
+          <InlineNotice
+            tone="success"
+            title="오늘 계획 완료"
+            message="먼저 할 일을 확인했어요. 이제 한 가지씩 시작해 보세요."
+          />
         ) : null}
         <TodayWeekStrip today={today} />
         <TodayOverview
