@@ -59,7 +59,11 @@ API URL:
 
 ## 5. UI/UX 품질
 
-[`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)와 [`DESIGN.md`](../design/DESIGN.md)를 기준으로 확인한다.
+[`PRODUCT_DESIGN_REVIEW_POLICY.md`](./PRODUCT_DESIGN_REVIEW_POLICY.md), [`UX_REVIEW_LOG.md`](../design/UX_REVIEW_LOG.md)와 [`DESIGN.md`](../design/DESIGN.md)를 기준으로 확인한다.
+
+- [ ] 화면 수정·신규 기능은 구현 전 Product Design 검토 근거가 있다.
+- [ ] 변경된 실제 화면을 새로 캡처하고 UX·시각 완성도·접근성 위험을 확인했다.
+- [ ] 치명적·높음 문제를 수정했고 남은 문제는 관련 audit 또는 로드맵에 기록했다.
 
 - [ ] 첫 viewport에서 오늘의 일정 또는 오늘 할 일을 바로 볼 수 있다.
 - [ ] Today는 중복된 화면명·월 제목 없이 주간 strip부터 시작한다.

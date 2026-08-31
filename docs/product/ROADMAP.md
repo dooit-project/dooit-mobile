@@ -99,15 +99,17 @@ Last updated: 2026-08-30
 - [x] Workspace Task 행동 위계를 Web 320px·390px·430px에서 [`workspace-task-responsive-2026-08-26`](../audits/workspace-task-responsive-2026-08-26/README.md)으로 검증한다.
 - [x] Workspace Task 행동 위계를 Web 390px light와 접근성 트리에서 [`workspace-task-theme-accessibility-2026-08-27`](../audits/workspace-task-theme-accessibility-2026-08-27/README.md)로 검증한다.
 - [ ] 위 변경을 font scale 1.5, dark와 VoiceOver·TalkBack에서 검증한다.
-- [ ] [`NAVIGATION_INFORMATION_ARCHITECTURE.md`](./NAVIGATION_INFORMATION_ARCHITECTURE.md)의 1단계에 따라 좌측 상단 탐색 메뉴 prototype을 만들고, 현재 `더보기`와 비교해 발견성·한 손 조작·복귀 흐름을 검증한다.
+- [x] [`NAVIGATION_INFORMATION_ARCHITECTURE.md`](./NAVIGATION_INFORMATION_ARCHITECTURE.md)의 1단계에 따라 좌측 상단 탐색 메뉴 prototype을 만들고 [`navigation-drawer-2026-08-31`](../audits/navigation-drawer-2026-08-31/README.md)에서 390px 열림·닫힘·이동 흐름을 검증한다.
+- [ ] 좌측 메뉴의 `기록함`과 `오래 미룬 일`이 통합 오늘 계획 화면의 해당 section을 직접 보여 주도록 smart 진입을 분리한다.
+- [ ] 좌측 메뉴의 320px·font scale 1.5·dark·VoiceOver·TalkBack·Android back·Web Escape와 focus 복귀를 검증한다.
 - [ ] 카테고리를 메뉴에 노출하기 전에 목록·정렬·변경·삭제·집계와 개인/Workspace scope API 계약을 백엔드 저장소에 제안한다.
 
 ### P1. 프론트 우선 오늘 실행 루프
 
 세부 범위와 프론트·백엔드 경계는 [`DAILY_EXECUTION_PRIORITIES.md`](./DAILY_EXECUTION_PRIORITIES.md)를 따른다.
 
-- [ ] 기존 기록함·오래 미룬 항목·추천·Today 이동·재정렬 API로 `오늘 계획` MVP를 구현한다.
-- [ ] 기존 날짜 이동·기록함 이동·미룸 사유 mutation으로 `하루 마감` MVP와 부분 실패 재시도를 구현한다.
+- [x] 기존 기록함·오래 미룬 항목·추천·Today 이동 API로 `오늘 계획` MVP와 먼저 할 일 확인 흐름을 구현한다.
+- [x] 기존 날짜 이동·기록함 이동 mutation으로 `하루 마감` MVP와 항목별 부분 실패 재시도를 구현한다.
 - [ ] 좌측 메뉴 prototype에 오늘·달력·기록함·오래 미룬 일·완료 기록·목표·공유 공간의 스마트 진입점을 배치한다.
 - [ ] Today Task 하나만 남기는 session-only `한 가지 실행하기`를 검증하고, timer·통계는 제외한다.
 - [ ] Expo SDK 56 호환성을 확인한 뒤 widget·공유 메뉴·Shortcut 순서로 앱 밖 빠른 기록의 기술 spike를 진행한다.
