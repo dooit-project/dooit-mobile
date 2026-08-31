@@ -18,8 +18,18 @@ export const plannerDrawerGroups: DrawerItem[][] = [
   [
     { href: '/', icon: 'white-balance-sunny', label: '오늘', match: '/' },
     { href: '/calendar', icon: 'calendar-blank-outline', label: '달력' },
-    { href: '/today/review', icon: 'inbox-outline', label: '기록함', match: '/inbox' },
-    { href: '/today/review', icon: 'history', label: '오래 미룬 일', match: '/overdue' },
+    {
+      href: { pathname: '/today/review', params: { focus: 'inbox' } },
+      icon: 'inbox-outline',
+      label: '기록함',
+      match: '/inbox',
+    },
+    {
+      href: { pathname: '/today/review', params: { focus: 'stale' } },
+      icon: 'history',
+      label: '오래 미룬 일',
+      match: '/overdue',
+    },
     { href: '/completed', icon: 'checkbox-marked-circle-outline', label: '완료 기록' },
   ],
   [

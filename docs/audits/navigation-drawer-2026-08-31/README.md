@@ -26,7 +26,7 @@ Last updated: 2026-08-31
 
 ## 남은 문제
 
-- **P2 — smart 진입 미분리:** `기록함`과 `오래 미룬 일`은 현재 같은 `/today/review`로 이동한다. 해당 section을 위로 이동하거나 focus하는 query 계약이 필요하다.
+- **해결 — smart 진입 분리:** `기록함`과 `오래 미룬 일`은 focus query로 각 범위만 보여 준다. 결과는 [`navigation-smart-entry-2026-09-01`](../navigation-smart-entry-2026-09-01/README.md)에서 확인했다.
 - **P2 — 실제 기기 접근성 미검증:** 320px, font scale 1.5, dark, VoiceOver·TalkBack, Android back과 Web Escape는 후속 검증 대상이다.
 - **P3 — 전환 기간 중 목적지 중복:** 하단 `더보기`와 drawer 목적지가 함께 존재한다. 발견성 검증 후 하단 구조 단순화를 판단한다.
 
