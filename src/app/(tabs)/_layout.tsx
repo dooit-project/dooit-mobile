@@ -1,6 +1,14 @@
 import { Tabs } from 'expo-router';
-import { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import type { ComponentRef } from 'react';
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { PlannerDrawer, PlannerHeader, TabBarIcon, TabBarLabel } from '@/components/navigation';
 import { sizes, spacing, useAppTheme } from '@/theme';
@@ -8,10 +16,25 @@ import { sizes, spacing, useAppTheme } from '@/theme';
 export default function TabLayout() {
   const theme = useAppTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    requestAnimationFrame(() => {
+      const target = menuTriggerRef.current;
+      if (!target) return;
+      if (Platform.OS === 'web') {
+        (target as unknown as { focus?: () => void }).focus?.();
+        return;
+      }
+
+      const reactTag = findNodeHandle(target);
+      if (reactTag) AccessibilityInfo.setAccessibilityFocus(reactTag);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
-      <PlannerHeader onMenuPress={() => setMenuOpen(true)} />
+      <PlannerHeader ref={menuTriggerRef} onMenuPress={() => setMenuOpen(true)} />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -80,7 +103,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <PlannerDrawer visible={menuOpen} onClose={() => setMenuOpen(false)} />
+      <PlannerDrawer visible={menuOpen} onClose={closeMenu} />
     </View>
   );
 }

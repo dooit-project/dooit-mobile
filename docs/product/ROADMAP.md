@@ -101,7 +101,8 @@ Last updated: 2026-08-30
 - [ ] 위 변경을 font scale 1.5, dark와 VoiceOver·TalkBack에서 검증한다.
 - [x] [`NAVIGATION_INFORMATION_ARCHITECTURE.md`](./NAVIGATION_INFORMATION_ARCHITECTURE.md)의 1단계에 따라 좌측 상단 탐색 메뉴 prototype을 만들고 [`navigation-drawer-2026-08-31`](../audits/navigation-drawer-2026-08-31/README.md)에서 390px 열림·닫힘·이동 흐름을 검증한다.
 - [x] 좌측 메뉴의 `기록함`과 `오래 미룬 일`이 focus query로 각 범위만 보여 주도록 smart 진입을 분리하고 [`navigation-smart-entry-2026-09-01`](../audits/navigation-smart-entry-2026-09-01/README.md)에서 검증한다.
-- [ ] 좌측 메뉴의 320px·font scale 1.5·dark·VoiceOver·TalkBack·Android back·Web Escape와 focus 복귀를 검증한다.
+- [x] 좌측 메뉴의 320px 내부 scroll, Web Escape, 초기 focus와 닫힘 후 trigger focus 복귀를 [`navigation-accessibility-2026-09-01`](../audits/navigation-accessibility-2026-09-01/README.md)에서 검증한다.
+- [ ] 좌측 메뉴의 font scale 1.5·dark·VoiceOver·TalkBack·Android back·iOS gesture를 실제 기기에서 검증한다.
 - [ ] 카테고리를 메뉴에 노출하기 전에 목록·정렬·변경·삭제·집계와 개인/Workspace scope API 계약을 백엔드 저장소에 제안한다.
 
 ### P1. 프론트 우선 오늘 실행 루프

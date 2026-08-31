@@ -1,7 +1,18 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Href } from 'expo-router';
 import { usePathname, useRouter } from 'expo-router';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { forwardRef, useEffect, useRef } from 'react';
+import type { ComponentRef } from 'react';
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/ui';
@@ -47,38 +58,41 @@ type PlannerHeaderProps = {
   onMenuPress: () => void;
 };
 
-export function PlannerHeader({ onMenuPress }: PlannerHeaderProps) {
-  const theme = useAppTheme();
-  const insets = useSafeAreaInsets();
+export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerHeaderProps>(
+  function PlannerHeader({ onMenuPress }, ref) {
+    const theme = useAppTheme();
+    const insets = useSafeAreaInsets();
 
-  return (
-    <View
-      style={[
-        styles.header,
-        {
-          backgroundColor: theme.colors.background,
-          borderBottomColor: theme.colors.border,
-          paddingTop: insets.top,
-        },
-      ]}
-    >
-      <Pressable
-        accessibilityHint="전체 탐색 메뉴를 엽니다."
-        accessibilityLabel="나의 플래너 메뉴 열기"
-        accessibilityRole="button"
-        hitSlop={8}
-        onPress={onMenuPress}
-        style={({ pressed }) => [
-          styles.headerButton,
-          { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+    return (
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: theme.colors.background,
+            borderBottomColor: theme.colors.border,
+            paddingTop: insets.top,
+          },
         ]}
       >
-        <MaterialCommunityIcons color={theme.colors.text} name="menu" size={26} />
-      </Pressable>
-      <AppText weight="bold">dooit</AppText>
-    </View>
-  );
-}
+        <Pressable
+          ref={ref}
+          accessibilityHint="전체 탐색 메뉴를 엽니다."
+          accessibilityLabel="나의 플래너 메뉴 열기"
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={onMenuPress}
+          style={({ pressed }) => [
+            styles.headerButton,
+            { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+          ]}
+        >
+          <MaterialCommunityIcons color={theme.colors.text} name="menu" size={26} />
+        </Pressable>
+        <AppText weight="bold">dooit</AppText>
+      </View>
+    );
+  },
+);
 
 type PlannerDrawerProps = {
   onClose: () => void;
@@ -90,6 +104,35 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const router = useRouter();
+  const closeButtonRef = useRef<ComponentRef<typeof Pressable>>(null);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    requestAnimationFrame(() => {
+      const target = closeButtonRef.current;
+      if (Platform.OS === 'web') {
+        (target as unknown as { focus?: () => void })?.focus?.();
+        return;
+      }
+
+      const reactTag = target ? findNodeHandle(target) : null;
+      if (reactTag) AccessibilityInfo.setAccessibilityFocus(reactTag);
+    });
+  }, [visible]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !visible) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      onClose();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, visible]);
 
   const open = (href: Href) => {
     onClose();
@@ -135,6 +178,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
               </AppText>
             </View>
             <Pressable
+              ref={closeButtonRef}
               accessibilityLabel="나의 플래너 메뉴 닫기"
               accessibilityRole="button"
               hitSlop={8}
@@ -151,6 +195,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
           <ScrollView
             contentContainerStyle={styles.menuContent}
             showsVerticalScrollIndicator={false}
+            style={styles.menuScroll}
           >
             {plannerDrawerGroups.map((group, groupIndex) => (
               <View
@@ -228,6 +273,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     maxWidth: 380,
+    overflow: 'hidden',
     position: 'absolute',
     top: 0,
     width: '86%',
@@ -249,6 +295,7 @@ const styles = StyleSheet.create({
     width: sizes.touchTarget,
   },
   menuContent: { paddingBottom: spacing[8], paddingHorizontal: spacing[4], paddingTop: spacing[8] },
+  menuScroll: { flex: 1 },
   menuGroup: { paddingVertical: spacing[4] },
   menuRow: {
     alignItems: 'center',
