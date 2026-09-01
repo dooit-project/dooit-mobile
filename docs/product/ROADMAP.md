@@ -1,13 +1,13 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-08-30
+Last updated: 2026-09-02
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 완료 과정은 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력, 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐다.
-- `npm run validate`의 최신 기준선은 81 suites, 424 tests 통과다.
+- `npm run validate`의 최신 기준선은 83 suites, 430 tests 통과다.
 - mock Web과 local real API smoke는 통과했지만 최신 APK·실기기·운영 도메인 검증은 남아 있다.
 - 백엔드 요청 8개는 source `fd2a7e3` 기준 구현됐고 `./gradlew test --rerun-tasks`가 통과했다. 다만 production 배포 버전과 DB migration 적용은 아직 별도 확인이 필요하다.
 - 따라서 현재 단계는 **백엔드 계약을 프론트에 연결하고 production 출시를 검증하는 단계**다.
@@ -113,7 +113,9 @@ Last updated: 2026-08-30
 - [x] 기존 날짜 이동·기록함 이동 mutation으로 `하루 마감` MVP와 항목별 부분 실패 재시도를 구현한다.
 - [x] 좌측 메뉴 prototype에 오늘·달력·기록함·오래 미룬 일·완료 기록·목표·공유 공간의 smart 진입점을 배치한다.
 - [x] Today Task 하나만 남기는 session-only `한 가지 실행하기`를 구현하고 [`today-focus-2026-09-01`](../audits/today-focus-2026-09-01/README.md)에서 검증한다. timer·통계는 제외한다.
-- [ ] Expo SDK 56 호환성을 확인한 뒤 widget·공유 메뉴·Shortcut 순서로 앱 밖 빠른 기록의 기술 spike를 진행한다.
+- [x] [`OUTSIDE_APP_QUICK_CAPTURE_SPIKE.md`](./OUTSIDE_APP_QUICK_CAPTURE_SPIKE.md)에서 Expo SDK 56의 widget·공유 메뉴·quick action 지원 범위와 native build 격리 기준을 정리한다.
+- [ ] Product Design 3안 비교 뒤 `expo-sharing` 기반 text·URL 수신 확인 화면을 첫 cross-platform prototype으로 구현한다.
+- [ ] 공식 SDK가 지원하는 iOS widget의 빠른 기록 deep link를 별도 prototype build에서 검증한다.
 - [ ] 위 prototype을 feature flag 또는 mock 기준으로 격리해 현재 출시 후보 검증을 방해하지 않는다.
 
 ### P1. 오늘 실행 백엔드 요청

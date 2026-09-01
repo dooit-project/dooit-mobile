@@ -1,6 +1,6 @@
 # 오늘 실행 루프 우선순위
 
-Last updated: 2026-08-30
+Last updated: 2026-09-02
 
 ## 목표
 
@@ -84,12 +84,12 @@ Pomodoro, 연속 집중 시간과 통계는 포함하지 않는다. 사용자가
 
 기존 quick capture API를 재사용해 플랫폼별 비용이 낮은 순서로 검토한다.
 
-1. iOS·Android 홈 화면 widget의 기록 진입
-2. 공유 메뉴에서 텍스트·URL을 기록함에 저장
-3. iOS Shortcut·Android quick settings 진입
+1. 공유 메뉴에서 텍스트·URL을 확인한 뒤 기록함에 저장
+2. 공식 SDK가 지원하는 iOS 홈 화면 widget의 기록 진입
+3. 제3자 패키지 또는 자체 config plugin 기반 iOS·Android quick action
 4. 음성 입력
 
-Expo SDK 56과 React Native 0.85 호환성, development build 필요 여부, 앱이 종료된 상태의 인증 bootstrap을 먼저 확인한다. Web에는 native 기능을 억지로 맞추지 않는다.
+Expo SDK 56 기술 판단과 구현 격리 기준은 [`OUTSIDE_APP_QUICK_CAPTURE_SPIKE.md`](./OUTSIDE_APP_QUICK_CAPTURE_SPIKE.md)를 따른다. 공식 `expo-widgets`는 iOS만 지원하므로 Android widget을 같은 단계의 필수 범위로 묶지 않는다. development build 필요 여부와 앱이 종료된 상태의 인증 bootstrap을 먼저 확인하고 Web에는 native 기능을 억지로 맞추지 않는다.
 
 ### F3. 백엔드 계약 연결
 
