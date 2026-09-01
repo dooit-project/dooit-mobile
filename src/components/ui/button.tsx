@@ -16,6 +16,7 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   loading?: boolean;
   fullWidth?: boolean;
   leading?: ReactNode;
+  labelVariant?: 'bodyLarge' | 'body' | 'label';
   style?: ViewStyle;
 };
 
@@ -27,6 +28,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
     loading = false,
     fullWidth = false,
     leading,
+    labelVariant = 'label',
     disabled,
     accessibilityState,
     onBlur,
@@ -101,7 +103,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
         <View style={styles.content}>
           {leading}
           <AppText
-            variant="label"
+            variant={labelVariant}
             weight="bold"
             style={[styles.label, { color: selected.textColor }]}
           >

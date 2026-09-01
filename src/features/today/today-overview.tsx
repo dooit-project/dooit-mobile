@@ -83,6 +83,12 @@ export function TodayOverview({
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
   };
+  const focusTask = (taskId: number) => {
+    router.push({
+      pathname: '/today/focus',
+      params: { date, taskId: String(taskId) },
+    } as unknown as Href);
+  };
   const showFeedback = (message: string) => {
     setFeedback({ tone: 'success', message });
   };
@@ -206,6 +212,7 @@ export function TodayOverview({
                 onSuccess: () => showFeedback('오늘 할 일을 완료했어요.'),
               })
             }
+            onFocus={focusTask}
             onOpen={openTask}
           />
         )}

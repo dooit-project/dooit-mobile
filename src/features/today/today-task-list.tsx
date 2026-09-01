@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { Button } from '@/components/ui';
+import { Button, IconButton } from '@/components/ui';
 import { TaskCard } from '@/features/tasks';
-import { spacing } from '@/theme';
+import { spacing, useAppTheme } from '@/theme';
 import type { TaskResponse } from '@/types';
 
 type TodayTaskListProps = {
@@ -11,6 +12,7 @@ type TodayTaskListProps = {
   disabled: boolean;
   completingTaskId?: number;
   onComplete: (taskId: number) => void;
+  onFocus: (taskId: number) => void;
   onOpen: (taskId: number) => void;
 };
 
@@ -21,8 +23,10 @@ export function TodayTaskList({
   disabled,
   completingTaskId,
   onComplete,
+  onFocus,
   onOpen,
 }: TodayTaskListProps) {
+  const theme = useAppTheme();
   const [visibleCount, setVisibleCount] = useState(TASK_RENDER_BATCH_SIZE);
   const visibleTasks = tasks.slice(0, visibleCount);
   const remainingCount = Math.max(0, tasks.length - visibleTasks.length);
@@ -37,6 +41,17 @@ export function TodayTaskList({
           isCompleting={completingTaskId === task.id}
           onComplete={() => onComplete(task.id)}
           onOpen={() => onOpen(task.id)}
+          trailing={
+            <IconButton
+              accessibilityHint="이 할 일만 보이는 집중 모드를 시작합니다."
+              accessibilityLabel={`${task.title}, 한 가지 실행하기`}
+              disabled={disabled}
+              onPress={() => onFocus(task.id)}
+              style={styles.focusButton}
+            >
+              <MaterialCommunityIcons color={theme.colors.primary} name="target" size={20} />
+            </IconButton>
+          }
         />
       ))}
       {remainingCount > 0 ? (
@@ -56,4 +71,5 @@ const styles = StyleSheet.create({
   list: {
     gap: spacing[1],
   },
+  focusButton: { backgroundColor: 'transparent' },
 });

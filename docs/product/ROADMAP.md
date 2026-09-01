@@ -112,7 +112,7 @@ Last updated: 2026-08-30
 - [x] 기존 기록함·오래 미룬 항목·추천·Today 이동 API로 `오늘 계획` MVP와 먼저 할 일 확인 흐름을 구현한다.
 - [x] 기존 날짜 이동·기록함 이동 mutation으로 `하루 마감` MVP와 항목별 부분 실패 재시도를 구현한다.
 - [x] 좌측 메뉴 prototype에 오늘·달력·기록함·오래 미룬 일·완료 기록·목표·공유 공간의 smart 진입점을 배치한다.
-- [ ] Today Task 하나만 남기는 session-only `한 가지 실행하기`를 검증하고, timer·통계는 제외한다.
+- [x] Today Task 하나만 남기는 session-only `한 가지 실행하기`를 구현하고 [`today-focus-2026-09-01`](../audits/today-focus-2026-09-01/README.md)에서 검증한다. timer·통계는 제외한다.
 - [ ] Expo SDK 56 호환성을 확인한 뒤 widget·공유 메뉴·Shortcut 순서로 앱 밖 빠른 기록의 기술 spike를 진행한다.
 - [ ] 위 prototype을 feature flag 또는 mock 기준으로 격리해 현재 출시 후보 검증을 방해하지 않는다.
 
