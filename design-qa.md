@@ -1,62 +1,61 @@
-# 한 가지 실행하기 Design QA
+# Shared Capture Design QA
 
-**Source visual truth**
+final result: passed
 
-- [`docs/audits/today-focus-2026-09-01/reference-selected.png`](./docs/audits/today-focus-2026-09-01/reference-selected.png)
-- Product Design 시각안 3개 중 사용자가 선택한 2번
+## Comparison target
 
-**Implementation evidence**
-
-- [`docs/audits/today-focus-2026-09-01/focus-active-final.png`](./docs/audits/today-focus-2026-09-01/focus-active-final.png)
-- source pixels: 853×1856
-- implementation pixels/CSS viewport: 390×844
-- density normalization: source와 implementation을 같은 390×844 mobile composition 기준으로 비교
-- state: Today Task `회의 자료 정리` 집중 중, light theme
+- Source visual truth: [`docs/audits/shared-capture-2026-09-02/reference-selected-refined.png`](./docs/audits/shared-capture-2026-09-02/reference-selected-refined.png)
+- Implementation route: `/share-review?text=팀%20회의%20준비%20체크리스트&url=https%3A%2F%2Fexample.com%2Fmeeting-notes`
+- Viewport: 390 × 844 CSS px, light theme
+- Implementation screenshot: [`docs/audits/shared-capture-2026-09-02/01-review.png`](./docs/audits/shared-capture-2026-09-02/01-review.png)
+- Combined comparison: [`docs/audits/shared-capture-2026-09-02/comparison.png`](./docs/audits/shared-capture-2026-09-02/comparison.png)
+- Density normalization: 853 × 1856 source를 390 × 844 composition으로 정규화해 비교
 
 ## Full-view comparison
 
-- 선택 시안처럼 기존 Today navigation과 목록을 숨긴 full-screen 집중 상태를 구현했다.
-- 상단 dooit·close, 날짜·집중 제목, 중앙 Task, 하단 완료·상세·나가기 순서를 유지했다.
-- 넓은 여백과 단일 primary action으로 dashboard가 아닌 조용한 실행 화면을 만든다.
+- dooit header, source label, 질문 heading, link preview, title field, destination, pending state와 actions 순서를 선택 시안과 동일하게 유지했다.
+- 390 × 844에서 primary action과 `원문 열기`가 첫 viewport 안에 보이며 가로 overflow나 잘린 content가 없다.
+- 초기 구현의 과한 heading·preview 크기와 bottom 고정 action 간격을 줄여 선택 시안의 정보 밀도와 vertical rhythm에 맞췄다.
 
 ## Focused region comparison
 
-- Header: dooit identity와 44px close target을 확인했다.
-- Center: 72px muted icon, 34px Task title과 보조 문구의 중앙 정렬을 확인했다.
-- Actions: 60px primary button, 16px label, 두 개의 secondary action과 divider를 확인했다.
+- Header: web에서 비어 보이던 close symbol을 platform icon mapping으로 수정했다.
+- Content: source label과 preview가 title edit보다 먼저 공유 맥락을 설명한다.
+- Form: focused title field, empty-title error와 disabled primary action이 명확히 구분된다.
+- Actions: save를 유일한 primary action으로 유지하고 original link는 secondary action으로 둔다.
 
 ## Required fidelity surfaces
 
-- Typography: 기존 AppText weight를 유지하되 집중 제목 24px, Task 34px로 선택 시안의 위계를 재현했다.
-- Spacing/layout: intro, flexible center와 bottom actions의 세 영역으로 나눠 390×844에서 겹침이 없다.
+- Typography: 30/38 display heading과 기존 AppText weights로 source hierarchy를 재현했다.
+- Spacing/layout: intro top spacing, 56px link icon, 16px preview padding과 24px action separation으로 source rhythm에 맞췄다.
 - Colors/tokens: background, primary, primarySoft, border와 semantic text token만 사용한다.
-- Image quality/assets: 별도 raster asset은 없으며 Expo 호환 Material Community icon과 native Symbol을 사용한다.
-- Copy/content: 시안의 추상적 `한 가지 실행하기` 대신 실제 Task 제목을 hero로 사용했다. 집중 목적을 더 직접 전달하는 의도적 차이다.
-
-## Comparison history
-
-- 초기 P2: primary 완료 button이 48px와 13px label로 시안보다 약해 보였다.
-- 수정: 선택적으로 label variant를 지정할 수 있게 하고 이 화면만 60px·16px로 강화했다.
-- 초기 P2: 집중 제목과 Task 제목의 차이가 작았다.
-- 수정: 집중 제목 24px, 실제 Task hero 34px로 위계를 분리했다.
-- 사후 근거: 최종 390×844 implementation capture와 browser console error 0.
+- Image/icon fidelity: raster content는 없고 platform symbol icon을 사용한다. web close fallback도 확인했다.
+- Copy/content: 선택 시안의 Korean labels와 realistic shared URL/title을 그대로 사용했다.
 
 ## Findings
 
-- P3: close button은 기존 IconButton의 muted surface를 사용해 시안의 plain icon보다 배경이 조금 더 분명하다. keyboard focus와 touch affordance를 위해 유지한다.
-- P3: source는 generic feature title을 중앙에 두지만 구현은 실제 Task 제목을 보여 준다. 제품 목적에 맞는 의도적 차이로 판정한다.
+- P0 resolved: `useIncomingShare`가 web에서 throw해 QA route가 blank screen이 되던 문제를 platform adapter로 분리했다.
+- P1 resolved: web close icon이 빈 muted square로 보이던 문제를 explicit platform mapping으로 수정했다.
+- P2 resolved: heading·link preview·action spacing이 source보다 커 보이던 차이를 조정했다.
+- P3 accepted: web focused input은 source의 neutral border 대신 primary focus border를 보인다. keyboard focus 가시성을 위해 유지한다.
+- P3 accepted: iOS native clear control은 platform behavior에 맡기며 web capture에는 별도 clear glyph를 추가하지 않는다.
 
-## Primary interactions tested
+## Interaction evidence
 
-- Today Task에서 집중 진입
-- 집중 모드 나가기
-- Task 완료와 성공 state
-- Task 상세 진입점 존재
-- browser console errors checked
+- Title editing: passed (`03-edited.png`).
+- Empty-title keyboard submission and inline error: passed (`02-validation.png`).
+- Original link opening: passed, `https://example.com/meeting-notes` 확인.
+- Saving: passed, mock Task detail `/tasks/100` 이동 (`04-saved-task.png`).
+- Cancellation: passed, root route 이동 확인.
+- Browser console errors: 0.
 
-## Follow-up polish
+## Evidence limits
 
-- Native font scale 1.5에서 긴 Task 제목 3줄과 하단 actions를 확인한다.
-- dark mode에서 hero icon과 primary button 대비를 실제 캡처한다.
+- Android·iOS development build에서 OS share sheet가 실제 payload를 전달하는 과정은 이번 browser audit 범위 밖이다.
+- 스크린샷은 screen-reader announcement와 native dynamic type 동작을 증명하지 않는다.
 
-final result: passed
+## Comparison history
+
+- Initial P0: web implementation blank screen due to unsupported incoming-share hook.
+- First visible pass: close icon missing, heading/preview oversized and action too low.
+- Final pass: P0/P1/P2 resolved at 390 × 844 with core interactions and console verified.

@@ -13,6 +13,17 @@
         "EXPO_PUBLIC_API_MODE": "mock"
       }
     },
+    "outside-capture": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_MODE": "mock",
+        "EXPO_PUBLIC_ENABLE_OUTSIDE_CAPTURE": "true"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "android": {
