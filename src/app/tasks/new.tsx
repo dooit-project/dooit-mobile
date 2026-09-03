@@ -12,6 +12,7 @@ import {
   syncUpcomingTaskNotifications,
 } from '@/features/notifications';
 import { TaskForm, useCreateTask } from '@/features/tasks';
+import { isQuickCaptureEntry } from '@/features/tasks/quick-capture-entry';
 import {
   initializeAppPreferences,
   markNotificationPermissionPrompted,
@@ -22,12 +23,13 @@ import { isLocalDateString } from '@/utils';
 
 export default function NewTaskScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ date?: string; type?: string }>();
+  const params = useLocalSearchParams<{ date?: string; quickCapture?: string; type?: string }>();
   const theme = useAppTheme();
   const createTask = useCreateTask();
   const [notificationPromptTask, setNotificationPromptTask] = useState<TaskResponse | null>(null);
   const initialDate = params.date && isLocalDateString(params.date) ? params.date : undefined;
   const initialType = params.type === 'SCHEDULE' ? 'SCHEDULE' : undefined;
+  const autoFocusTitle = isQuickCaptureEntry(params.quickCapture);
 
   const openTask = (task: TaskResponse) => {
     router.replace({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } });
@@ -78,6 +80,7 @@ export default function NewTaskScreen() {
       />
 
       <TaskForm
+        autoFocusTitle={autoFocusTitle}
         errorMessage={createTask.error?.message}
         initialDate={initialDate}
         initialType={initialType}

@@ -24,6 +24,14 @@
         "EXPO_PUBLIC_ENABLE_OUTSIDE_CAPTURE": "true"
       }
     },
+    "quick-capture-widget": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_MODE": "mock",
+        "EXPO_PUBLIC_ENABLE_QUICK_CAPTURE_WIDGET": "true"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "android": {

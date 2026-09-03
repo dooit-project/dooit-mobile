@@ -57,10 +57,12 @@ Dooit의 “생각난 일은 가볍게 기록하고”를 앱을 직접 연 뒤 
 
 ### S2. iOS widget prototype
 
-1. 작은 widget 하나에 `빠른 기록` 진입만 제공한다.
-2. app이 종료된 상태에서 deep link → 인증 bootstrap → composer focus를 확인한다.
-3. 기록 목록, 완료, 통계는 넣지 않는다.
-4. iOS 16.4 최소 지원과 light·dark·tinted rendering을 확인한다.
+1. [x] 작은 widget 하나에 `빠른 기록` 진입만 제공한다.
+2. [ ] app이 종료된 상태에서 deep link → 인증 bootstrap → composer focus를 확인한다.
+3. [x] 기록 목록, 완료, 통계는 넣지 않는다.
+4. [ ] iOS 16.4 최소 지원과 light·dark·tinted rendering을 실제 build에서 확인한다.
+
+2026-09-03에 `quick-capture-widget` EAS profile과 `systemSmall` prototype 코드를 추가했다. 기본 build와 widget extension 격리, iOS bundle export, deep-link focus 분기는 확인했다. 현재 Mac에 full Xcode·iOS simulator runtime이 없어 실제 WidgetKit 캡처와 cold-start smoke는 남아 있다. 세부 근거는 [`docs/audits/quick-capture-widget-2026-09-03`](../audits/quick-capture-widget-2026-09-03/README.md)에 기록한다.
 
 ### S3. Quick action 재평가
 

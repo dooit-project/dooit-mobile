@@ -54,6 +54,7 @@ type TaskFormField =
   | 'recurrenceInterval';
 
 type TaskFormProps = {
+  autoFocusTitle?: boolean;
   initialTask?: TaskResponse;
   initialDate?: LocalDateString;
   initialType?: TaskType;
@@ -71,6 +72,7 @@ const taskTypes: { value: TaskType; label: string }[] = [
 ];
 
 export function TaskForm({
+  autoFocusTitle = false,
   initialTask,
   initialDate,
   initialType,
@@ -212,6 +214,7 @@ export function TaskForm({
           </View>
           <TextInput
             accessibilityLabel="Task 제목"
+            autoFocus={autoFocusTitle}
             editable={!isSubmitting}
             maxLength={taskLimits.title}
             onBlur={() => setFocusedField(null)}
