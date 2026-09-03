@@ -1,141 +1,116 @@
-# 일일 계획·실행 백엔드 요청
+# 일일 계획·실행 API 계약
 
-Last updated: 2026-08-30
+Last verified: 2026-09-03
 
-이 문서는 Dooit 모바일의 `오늘 계획 → 실행 → 하루 마감` 흐름에 필요한 신규 백엔드 계약의 우선순위를 정의한다. 백엔드 구현과 DB migration은 `dooit-backend` 저장소에서 별도로 진행한다.
+이 문서는 `오늘 계획 → 실행 → 하루 마감`에 사용하는 현재 백엔드 계약과 아직 남은 요청만 기록한다. 배포 여부와 모바일 연결 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md)를 따른다.
 
-## B0. 일일 계획 영속화
+## 현재 사용할 수 있는 계약
 
-현재 `status=TODAY`, `plannedDate`, `todayOrder`는 오늘 목록과 순서를 표현하지만 사용자가 오늘의 핵심으로 확정한 1~3개와 계획 완료 상태는 표현하지 못한다.
-
-권장 resource:
+### 일일 계획
 
 ```http
 GET /api/v1/daily-plans/{date}
 PUT /api/v1/daily-plans/{date}
 ```
 
-예시 요청:
+- 사용자·서비스 날짜별로 하나의 계획을 사용한다.
+- `focusTaskIds`는 최대 3개이며 배열 순서가 집중 순서다.
+- `status`, `confirmedAt`, `closedAt`, `updatedAt`으로 계획 상태를 구분한다.
+- 날짜와 시간대는 [`API_DATE_TIME.md`](./API_DATE_TIME.md)를 따른다.
 
-```json
-{
-  "focusTaskIds": [41, 17, 93],
-  "status": "CONFIRMED"
-}
-```
+### 예상 소요 시간
 
-예시 응답:
+Task 생성·수정·응답의 `estimatedDurationMinutes`를 사용한다.
 
-```json
-{
-  "date": "2026-08-30",
-  "status": "CONFIRMED",
-  "focusTaskIds": [41, 17, 93],
-  "confirmedAt": "2026-08-30T08:10:00+09:00",
-  "closedAt": null,
-  "updatedAt": "2026-08-30T08:10:00+09:00"
-}
-```
+- `null`은 미설정이다.
+- 일정의 `startAt`·`endAt`과 별개이며 Task 예상 시간 합계는 클라이언트에서 계산할 수 있다.
+- 반복 occurrence와 template 적용은 실행 OpenAPI와 백엔드 테스트를 기준으로 확인한다.
 
-계약 조건:
-
-- `focusTaskIds`는 해당 사용자 소유이며 같은 날짜의 미완료 Today Task만 허용한다.
-- 최대 3개이며 배열 순서가 집중 순서다.
-- Task 완료·삭제·다른 날짜 이동 시 focus 목록에서 자동 제거한다.
-- 같은 사용자·날짜에 하나의 plan만 존재한다.
-- PUT은 `Idempotency-Key` replay 또는 명시적인 version 기반 충돌 처리를 지원한다.
-- user local date와 time zone 기준은 [`API_DATE_TIME.md`](./API_DATE_TIME.md)를 따른다.
-
-## B0. 예상 소요 시간
-
-Task 생성·수정·응답에 다음 nullable 필드를 추가한다.
-
-```json
-{
-  "estimatedDurationMinutes": 30
-}
-```
-
-계약 조건:
-
-- `null`은 사용자가 시간을 정하지 않은 상태다.
-- 허용 범위는 5~1440분이며 5분 단위를 권장하되 백엔드가 표시 preset을 강제하지 않는다.
-- `SCHEDULE`의 `startAt`·`endAt`과 별개다. 일정 길이를 Task 예상 시간에 중복 저장하지 않는다.
-- 반복 series 수정 범위와 template의 `defaultDurationMinutes` 적용 규칙을 명시한다.
-- Today 응답에는 합계를 별도 필드로 중복 저장하지 않고 Task 값을 기준으로 계산할 수 있어야 한다.
-
-## B1. 계획·마감 batch mutation
-
-프론트 MVP는 기존 단건 mutation으로 먼저 검증한다. 부분 성공 문제가 실제 흐름에서 확인되면 다음 atomic endpoint를 추가한다.
-
-```http
-POST /api/v1/daily-plans/{date}/apply
-```
-
-```json
-{
-  "operations": [
-    { "taskId": 41, "action": "MOVE_TO_DATE", "date": "2026-08-31" },
-    { "taskId": 17, "action": "MOVE_TO_INBOX" },
-    { "taskId": 93, "action": "SET_DEFER_REASON", "reason": "TOO_BIG" }
-  ],
-  "planStatus": "CLOSED"
-}
-```
-
-계약 조건:
-
-- 모든 operation이 성공하거나 전체가 rollback되는 atomic 처리를 우선한다.
-- 중복 Task ID, 권한 없음, 이미 완료·삭제된 Task는 명확한 400·403·404·409로 구분한다.
-- `Idempotency-Key`를 지원한다.
-- 응답에는 갱신된 Task와 plan을 포함해 추가 refetch 없이 cache를 맞출 수 있게 한다.
-
-## B1. 체크리스트
-
-깊은 계층형 subtask 대신 Task 아래 한 단계 checklist를 우선한다.
-
-필요 계약:
-
-- item 목록 조회 또는 Task 상세 response 포함
-- 생성·제목 수정·완료·재개·삭제
-- 한 Task 안의 정렬
-- 부모 Task 완료 시 미완료 item 처리 규칙
-- 반복 Task occurrence에서 checklist 복제·수정 범위
-
-권장 제한:
-
-- 제목 최대 길이와 item 최대 개수 명시
-- checklist item에는 별도 날짜·알림·담당자·재귀 checklist를 두지 않는다.
-- Workspace Task에 적용할 경우 OWNER·EDITOR·VIEWER 권한을 기존 Task 계약과 일치시킨다.
-
-## B2. 일일 결과 summary
-
-당일 조회를 여러 번 조합하는 비용이나 기기 간 결과 불일치가 실제로 확인될 때만 추가한다.
+### 일일 결과 요약
 
 ```http
 GET /api/v1/daily-plans/{date}/summary
 ```
 
-최소 후보:
+응답 핵심 필드:
 
-- 계획 시점의 focus 수
-- 완료 수
-- 다른 날짜로 이동한 수
-- 기록함으로 이동한 수
-- 아직 결정하지 않은 수
+```ts
+type DailyPlanSummaryResponse = {
+  date: string;
+  status: string;
+  plannedFocusCount: number;
+  completedCount: number;
+  movedToOtherDateCount: number;
+  movedToInboxCount: number;
+  undecidedCount: number;
+};
+```
 
-생산성 점수, 연속 달성과 비교 ranking은 범위에 포함하지 않는다.
+집계 기준은 현재 focus 목록이 아니라 계획을 확정한 시점의 focus snapshot이다. production 적용 전 다음 migration이 필요하다.
 
-## B2. 카테고리
+```text
+docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
+```
 
-카테고리 entity·정렬·변경·삭제·Task 수 집계는 [`NAVIGATION_INFORMATION_ARCHITECTURE.md`](../product/NAVIGATION_INFORMATION_ARCHITECTURE.md)의 계약을 따른다. 오늘 계획과 예상 시간보다 후순위다.
+### 체크리스트
 
-## 구현 요청 순서
+```http
+/api/v1/tasks/{taskId}/checklist-items/**
+```
 
-1. 일일 계획 resource와 예상 소요 시간 OpenAPI 초안 합의
-2. integration test와 migration을 포함한 backend source 구현
-3. mock·real 응답 fixture와 frontend type 연결
-4. production 배포 metadata 확인
-5. Android·iOS·Web의 같은 계정에서 계획·예상 시간 동기화 smoke
-6. 부분 실패 근거가 확인되면 batch mutation 추가
-7. 체크리스트, summary, 카테고리 순으로 확장
+- Task 아래 한 단계 item의 조회·생성·제목 수정·완료·재개·삭제·정렬을 지원한다.
+- 개인 Task와 Workspace Task에 같은 URL을 사용한다.
+- Workspace ACTIVE 멤버는 조회할 수 있다.
+- OWNER·EDITOR만 변경할 수 있고 VIEWER 변경은 HTTP 403이다.
+- 비활성 멤버와 비멤버의 리소스 노출 여부는 HTTP 404 계약을 따른다.
+- item에는 별도 날짜·알림·담당자·재귀 checklist를 추가하지 않는다.
+
+### 개인 카테고리 요약
+
+```http
+GET /api/v1/tasks/categories
+```
+
+```ts
+type TaskCategorySummary = {
+  category: string | null;
+  displayName: string;
+  taskCount: number;
+  inboxCount: number;
+  todayCount: number;
+  doneCount: number;
+};
+```
+
+- 개인 Task만 집계하고 Workspace Task는 제외한다.
+- `category=null`은 미분류이며 `displayName`은 `미분류`다.
+- 이 API는 기존 자유 입력 category의 조회 요약이다. 카테고리 entity CRUD나 사용자 지정 순서를 제공하지 않는다.
+
+### 빠른 등록 파싱
+
+```http
+POST /api/v1/tasks/quick-capture
+```
+
+기존 표현 외에 `낼`, `내일모레`·`낼모레`, 상대 주와 요일 조합, `N시 반`, `HH:mm`을 지원한다. `담주`·`다다음주`·`다담주` 같은 상대 주 표현은 요일과 함께 입력하는 규칙을 mock parser에도 동일하게 적용한다.
+
+## 프론트 연결 순서
+
+1. 빠른 등록 mock parser와 fixture를 서버 파싱 규칙에 맞춘다.
+2. 일일 계획·예상 시간 타입과 query/mutation을 local prototype 대신 서버 resource에 연결한다.
+3. summary를 하루 마감 결과에 연결한다.
+4. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한한다.
+5. 카테고리 요약을 탐색 메뉴에 연결한다.
+6. mock, local real API, production Android 순서로 검증한다.
+
+## 아직 백엔드에 요청할 수 있는 계약
+
+### 조건부: 계획·마감 batch mutation
+
+현재 단건 mutation과 부분 실패 재시도 UX를 먼저 사용한다. 실제 사용에서 일부만 저장되는 문제가 반복 확인될 때 모든 operation을 하나의 transaction으로 처리하는 atomic endpoint와 `Idempotency-Key`를 요청한다.
+
+### 조건부: 카테고리 관리
+
+사용자가 메뉴에서 카테고리를 직접 관리해야 할 때 생성·이름 변경·삭제·사용자 지정 정렬과 삭제 시 기존 Task 처리 정책을 요청한다. Workspace category는 개인 범위와 자동으로 섞지 않는다.
+
+이미 구현된 계약을 다시 요청 목록으로 관리하지 않는다. production 요청은 신규 개발이 아니라 최신 image, migration, 식별 가능한 metadata와 smoke 환경 제공에 한정한다.

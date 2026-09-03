@@ -1,6 +1,6 @@
 # 앱 밖 빠른 기록 기술 스파이크
 
-Last updated: 2026-09-02
+Last updated: 2026-09-03
 
 ## 목적
 
@@ -8,13 +8,13 @@ Dooit의 “생각난 일은 가볍게 기록하고”를 앱을 직접 연 뒤 
 
 ## 현재 결론
 
-| 후보                      | SDK 56 지원                              | 새 native build  | 판단                        |
-| ------------------------- | ---------------------------------------- | ---------------- | --------------------------- |
-| iOS 홈 화면 widget        | 공식 `expo-widgets` 사용 가능            | 필요             | iOS 후속 prototype          |
-| Android 홈 화면 widget    | 공식 `expo-widgets` 미지원               | 필요             | 공식 SDK만으로는 보류       |
-| 공유 메뉴 텍스트·URL 수신 | 공식 `expo-sharing`으로 Android·iOS 지원 | 필요             | 첫 cross-platform prototype |
-| 홈 화면 quick action      | 공식 Expo SDK 패키지 없음                | 필요             | 제3자 패키지 검증 뒤 후속   |
-| 음성 입력                 | 별도 문제 정의 필요                      | 구현에 따라 다름 | 보류                        |
+| 후보                      | SDK 56 지원                              | 새 native build  | 판단                      |
+| ------------------------- | ---------------------------------------- | ---------------- | ------------------------- |
+| iOS 홈 화면 widget        | 공식 `expo-widgets` 사용 가능            | 필요             | prototype 완료, 실기기 QA |
+| Android 홈 화면 widget    | 공식 `expo-widgets` 미지원               | 필요             | 공식 SDK만으로는 보류     |
+| 공유 메뉴 텍스트·URL 수신 | 공식 `expo-sharing`으로 Android·iOS 지원 | 필요             | prototype 완료, 실기기 QA |
+| 홈 화면 quick action      | 공식 Expo SDK 패키지 없음                | 필요             | 제3자 패키지 검증 뒤 후속 |
+| 음성 입력                 | 별도 문제 정의 필요                      | 구현에 따라 다름 | 보류                      |
 
 기존 로드맵의 “widget → 공유 메뉴 → Shortcut”은 플랫폼 공통 구현 순서로 쓰기 어렵다. **공유 메뉴 → iOS widget → quick action** 순서로 검증한다.
 
@@ -47,13 +47,15 @@ Dooit의 “생각난 일은 가볍게 기록하고”를 앱을 직접 연 뒤 
 
 ### S1. 공유 메뉴 prototype
 
-1. Product Design에서 수신 확인 화면 3안을 비교한다.
-2. `expo-sharing`을 설치하고 text·URL activation rule과 Android `text/plain` intent filter만 설정한다.
-3. `+native-intent.ts`에서 일반 deep link와 공유 payload 경로를 구분한다.
-4. 공유 제목 미리보기, 수정, `기록함에 저장`, 취소를 제공한다.
-5. 기존 Task 생성 API와 idempotency 정책을 재사용한다.
-6. development/preview profile에서만 native 설정을 켤 수 있는지 검증한다. 어렵다면 별도 `prototype/outside-capture` 브랜치와 전용 build profile로 격리한다.
-7. Android·iOS의 foreground·background·cold start, 게스트·로그인·만료 세션을 실제 build에서 확인한다.
+1. [x] Product Design에서 수신 확인 화면 3안을 비교한다.
+2. [x] `expo-sharing`을 설치하고 text·URL activation rule과 Android `text/plain` intent filter를 설정한다.
+3. [x] `+native-intent.ts`에서 일반 deep link와 공유 payload 경로를 구분한다.
+4. [x] 공유 제목 미리보기, 수정, `기록함에 저장`, 취소를 제공한다.
+5. [x] 기존 quick capture API와 idempotency 정책을 재사용한다.
+6. [x] native 설정과 Web fallback을 분리하고 정적 검사를 추가한다.
+7. [ ] Android·iOS의 foreground·background·cold start, 게스트·로그인·만료 세션을 실제 build에서 확인한다.
+
+구현과 390×844 Web 상태 검증 근거는 [`shared-capture-2026-09-02`](../audits/shared-capture-2026-09-02/README.md)에 둔다. OS 공유 메뉴에서 들어오는 실제 payload는 development/preview build에서 별도로 확인한다.
 
 ### S2. iOS widget prototype
 

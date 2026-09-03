@@ -44,18 +44,29 @@
 11. 빠른 기록 버튼 또는 composer로 기록을 추가할 수 있다.
 12. 기록함으로 저장된 직후에도 제목과 저장 위치가 보이고 `오늘 할 일로 이동`, `내용 확인`이 동작한다.
 13. 정리할 항목 진입점이 지난 미완료·추천·기록함 개수를 보여준다.
+14. 오늘 계획을 확정하고 재실행·다른 클라이언트에서도 같은 focus와 예상 시간이 복원된다.
+15. 하루 마감 결과가 계획 확정 시점 focus 기준 완료·다른 날짜 이동·기록함 이동·미결정 수를 보여준다.
+16. 빠른 등록의 `낼`, `낼모레`, 상대 주+요일, `N시 반`, `HH:mm` 해석이 서버와 mock에서 같다.
 
 ### Task 상세
 
 1. 수정 action이 본문 metadata와 섞이지 않고 상단 PageHeader에서 보인다.
 2. 수정 action은 icon과 label을 함께 사용하고 뒤로 가기, 삭제보다 목적을 먼저 알아볼 수 있다.
 3. 생성·수정·완료 시각과 비어 있는 부가 정보가 주요 내용보다 강하게 보이지 않는다.
+4. 개인 Task 체크리스트의 생성·수정·완료·재개·삭제·정렬이 동작한다.
+5. Workspace ACTIVE 멤버는 체크리스트를 보고 OWNER·EDITOR만 변경할 수 있으며 VIEWER는 변경 행동이 없다.
 
 ### 하단 탐색
 
 1. 현재 탭은 icon뿐 아니라 label의 색과 굵기, indicator로 구분된다.
 2. 선택 상태를 색상 하나에만 의존하지 않는다.
 3. 긴 label과 큰 글꼴에서도 탭 이름이 잘리거나 겹치지 않는다.
+
+### 좌측 메뉴와 카테고리
+
+1. 개인 카테고리 요약에 `전체`, `미분류`와 상태별 count가 일관되게 표시된다.
+2. 카테고리 진입 결과는 선택 category와 일치한다.
+3. Workspace Task는 개인 카테고리 count에 포함되지 않는다.
 
 ### Calendar
 
@@ -153,6 +164,8 @@ readiness가 휴대폰 브라우저에서 열리지 않으면 앱 결함으로 �
 - Search는 `/api/v1/tasks/search` real API로 검색어, 상태 filter, 상세 filter, 빈 상태, cursor pagination을 확인한다.
 - network, timeout, 5xx 오류에서 공통 오류 문구와 retry 버튼이 표시된다.
 - 반복 생성·수정은 실제 저장 기능으로 제공하고 로컬 알림은 백엔드 후보 계약을 따른다. 서버 push 발송은 별도 활성화 전까지 사용자 기능으로 안내하지 않는다.
+- Daily Plan summary migration과 실행 backend commit이 식별된 배포에서 신규 API를 검증한다.
+- Workspace checklist의 ACTIVE·OWNER·EDITOR·VIEWER 권한 결과가 OpenAPI와 일치한다.
 
 ## 완료 기록 방식
 

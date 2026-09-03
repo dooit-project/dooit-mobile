@@ -107,7 +107,8 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 | `GET`    | `/api/v1/tasks`                         | `type`, `taskType?`, `date`         | Calendar 범위 조회        |
 | `GET`    | `/api/v1/tasks/search`                  | 검색어, 상태, 유형, 기간, cursor 등 | Search                    |
 | `GET`    | `/api/v1/tasks/{taskId}`                | -                                   | 상세                      |
-| `POST`   | `/api/v1/tasks`                         | `TaskUpsertRequest`                 | 빠른 기록, Task 작성      |
+| `POST`   | `/api/v1/tasks`                         | `TaskUpsertRequest`                 | Task 작성                 |
+| `POST`   | `/api/v1/tasks/quick-capture`           | 원문 text                           | 빠른 기록                 |
 | `PUT`    | `/api/v1/tasks/{taskId}`                | `TaskUpsertRequest`                 | Task 수정                 |
 | `DELETE` | `/api/v1/tasks/{taskId}`                | -                                   | Task 삭제                 |
 | `GET`    | `/api/v1/tasks/today`                   | `date=YYYY-MM-DD`                   | Today                     |
@@ -135,6 +136,18 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 - `ddayGoalId`, `ddayGoalTitle`, `ddayGoalTargetDate`, `ddayDaysLeft`
 - 반복 일정 필드: `recurrenceSeriesId`, nested `recurrence`, `occurrenceDate`, `recurrenceException`
 - 알림 후보 응답 필드: `notificationKey`, `scheduledAt`, `recurrenceSeriesId`, `occurrenceDate`, `suppressLocalNotification`, `task`
+
+2026-09-03 백엔드 source에는 다음 계약도 준비됐지만 모바일은 아직 호출하지 않는다.
+
+| Method | Path                                        | 연결 예정 화면           |
+| ------ | ------------------------------------------- | ------------------------ |
+| `GET`  | `/api/v1/daily-plans/{date}`                | 오늘 계획                |
+| `PUT`  | `/api/v1/daily-plans/{date}`                | 계획 확정·마감           |
+| `GET`  | `/api/v1/daily-plans/{date}/summary`        | 하루 마감 결과           |
+| `GET`  | `/api/v1/tasks/categories`                  | 좌측 메뉴 개인 카테고리  |
+| 다수   | `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace Task 상세 |
+
+정확한 필드와 권한은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
 ## 5. 현재 모바일이 호출하는 D-Day API
 
@@ -187,6 +200,11 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 10. 비밀번호 재설정
     - request, verify, confirm endpoint와 `dooit://password-reset` link의 source 구현은 완료됐다.
     - 대상 배포의 메일 설정과 앱 deep link를 확인하고 전체 복구가 성공해야 실제 사용 가능으로 판정한다.
+11. 일일 실행 신규 계약
+    - Daily Plan summary migration이 적용됐는지 확인한다.
+    - 개인 category 요약에 Workspace Task가 포함되지 않는지 확인한다.
+    - Workspace 체크리스트는 ACTIVE 멤버 조회, OWNER·EDITOR 변경, VIEWER 403이 일치하는지 확인한다.
+    - quick capture의 `낼`, `낼모레`, 상대 주+요일, `N시 반`, `HH:mm` 결과를 mock과 대조한다.
 
 ## 7. real 모드 smoke test 순서
 
@@ -205,6 +223,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
    - 오늘 일정, 오늘 할 일, 오늘 완료한 일 표시
    - 빠른 기록 추가, 완료, 다시 열기
    - 정리할 항목 이동
+   - 오늘 계획 확정, 예상 시간과 하루 결과 summary
 6. Calendar
    - 3주 grid, 당일 일정 bar, 여러 날 일정 bar
    - 선택 날짜 목록과 Today 목록의 날짜 기준 일치
@@ -215,6 +234,10 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
    - 목표 생성, 목표 상세, 목표 Task 생성, Task 연결/해제
 9. 오류 상태
    - network, timeout, 401, 5xx에서 공통 오류 문구와 retry 확인
+10. 카테고리·체크리스트
+    - 개인 카테고리의 전체·미분류·상태별 count
+    - 개인 Task 체크리스트 CRUD·정렬
+    - Workspace OWNER·EDITOR·VIEWER 권한 차이
 
 자세한 화면별 확인 항목은 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md)를 따른다.
 
@@ -246,17 +269,20 @@ EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-ready
 2. 최신 인증·멱등성·Task 알림 OpenAPI 계약
 3. Workspace 23개 operation 계약
 
-## 8. 현재 프론트 연결 또는 추가 확정이 필요한 계약
+## 8. 현재 남은 연동과 계약
 
-- 반복 Task·일정의 생성 계약, 상태 문서 정합성, real smoke 결과와 모바일 저장 UI 노출 시점
-- 검색 결과의 relevance 기준, 기간 filter, timezone 경계
-- D-Day 목표 삭제 시 연결된 Task 처리 방식
-- [`API_SESSION_LIFECYCLE.md`](../api/API_SESSION_LIFECYCLE.md)의 refresh credential 저장·선제 갱신·동시 요청 단일화
-- `smoke:guest:real`의 refresh rotation·순차/동시 생성 replay·payload 충돌 409·Task `notifyAt` 후보 검증
-- `smoke:auth:real`의 등록 계정 refresh rotation·logout session 폐기 검증
-- 생성 API의 `Idempotency-Key` 발급·timeout 재시도 정책
-- Task `notificationEnabled`·`notifyAt` 편집과 로컬 예약
-- Workspace 초대 거절 UI와 cache 복구
-- `smoke:workspace-roles:real`의 PENDING 초대 거절·목록 제거·접근 404 검증
-- `smoke:workspace-roles:real`의 내용 있는 Workspace cascade 삭제와 삭제 후 역할별 404 검증
-- Today 순서 일괄 저장 API는 drag and drop 고도화 시점까지 후순위로 둔다.
+프론트에서 바로 연결할 항목:
+
+- Daily Plan·예상 소요 시간·summary
+- 개인 Task category 요약
+- 개인·Workspace 체크리스트와 역할별 UI
+- quick capture mock parser의 신규 구어 표현
+
+배포·real smoke로 확인할 항목:
+
+- production image의 source commit, migration과 실행 OpenAPI 일치
+- 비밀번호 재설정 메일, refresh rotation·logout과 생성 요청 replay
+- 내용 있는 Workspace cascade 삭제와 초대 거절 404·409 복구
+- Android 알림, 공유 메뉴와 iOS widget의 실제 기기 동작
+
+추가 백엔드 개발은 카테고리 관리, 계획·마감 atomic batch, Web HttpOnly refresh cookie와 서버 push처럼 제품 결정 또는 실패 근거가 생긴 계약에 한정한다. 현재 상태와 요청 문구는 [`FRONTEND_BACKEND_STATUS.md`](./FRONTEND_BACKEND_STATUS.md)를 기준으로 한다.

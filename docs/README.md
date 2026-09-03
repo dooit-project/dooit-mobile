@@ -5,11 +5,11 @@
 ## 현재 상태를 확인하는 순서
 
 1. [`product/ROADMAP.md`](./product/ROADMAP.md): 구현된 범위와 남은 우선순위
-2. [`integration/BACKEND_STATUS_2026-08-27.md`](./integration/BACKEND_STATUS_2026-08-27.md): 완료된 백엔드 요청과 프론트 후속
+2. [`integration/FRONTEND_BACKEND_STATUS.md`](./integration/FRONTEND_BACKEND_STATUS.md): 현재 API 계약, 프론트 실행 항목과 백엔드 요청
 3. [`qa/SMOKE_TEST_LOG.md`](./qa/SMOKE_TEST_LOG.md): 현재 검증 기준선과 알려진 한계
 4. [`qa/RELEASE_CHECKLIST.md`](./qa/RELEASE_CHECKLIST.md): 출시 후보 판정 기준
 
-프론트엔드의 화면별 사용자 시나리오와 캡처 커버리지는 [`product/USER_FLOW_CATALOG.md`](./product/USER_FLOW_CATALOG.md), 최신 화면을 나란히 보는 보드는 [`product/USER_FLOW_BOARD.md`](./product/USER_FLOW_BOARD.md)에서 확인한다. 다음 제품 기능의 프론트·백엔드 우선순위는 [`product/DAILY_EXECUTION_PRIORITIES.md`](./product/DAILY_EXECUTION_PRIORITIES.md), 좌측 메뉴와 카테고리 탐색 구조는 [`product/NAVIGATION_INFORMATION_ARCHITECTURE.md`](./product/NAVIGATION_INFORMATION_ARCHITECTURE.md)에 정리한다.
+프론트엔드의 화면별 사용자 시나리오와 캡처 근거는 [`product/USER_FLOW_CATALOG.md`](./product/USER_FLOW_CATALOG.md)와 각 `audits/` README에서 확인한다. 다음 제품 기능의 프론트·백엔드 우선순위는 [`product/DAILY_EXECUTION_PRIORITIES.md`](./product/DAILY_EXECUTION_PRIORITIES.md), 좌측 메뉴와 카테고리 탐색 구조는 [`product/NAVIGATION_INFORMATION_ARCHITECTURE.md`](./product/NAVIGATION_INFORMATION_ARCHITECTURE.md)에 정리한다.
 
 ## 문서 패키지
 
@@ -18,7 +18,7 @@
 | [`product`](./product/ROADMAP.md)                             | 제품 방향, 로드맵, 우선순위                        | `ROADMAP.md`                                                                                                         |
 | [`design`](./design/DESIGN.md)                                | 디자인 시스템, UX 리뷰, 화면 가이드, 컴포넌트 기준 | `DESIGN.md`, `SCREEN_GUIDE.md`, `UX_REVIEW_LOG.md`                                                                   |
 | [`api`](./api/API_DATE_TIME.md)                               | 모바일이 요구하거나 참조하는 API 계약              | `API_DAILY_EXECUTION.md`, `API_SEARCH_FILTER.md`, `API_RECURRENCE.md`, `API_PASSWORD_RESET.md`, `API_IDEMPOTENCY.md` |
-| [`integration`](./integration/BACKEND_INTEGRATION_RUNBOOK.md) | 실제 백엔드 연동 절차와 환경 기준                  | `BACKEND_STATUS_2026-08-27.md`, `BACKEND_INTEGRATION_RUNBOOK.md`, `ANDROID_APK_RUNBOOK.md`, `WEB_SECURITY_POLICY.md` |
+| [`integration`](./integration/BACKEND_INTEGRATION_RUNBOOK.md) | 실제 백엔드 연동 절차와 환경 기준                  | `FRONTEND_BACKEND_STATUS.md`, `BACKEND_INTEGRATION_RUNBOOK.md`, `ANDROID_APK_RUNBOOK.md`, `WEB_SECURITY_POLICY.md`   |
 | [`qa`](./qa/RELEASE_CHECKLIST.md)                             | smoke test, release, 접근성, 성능, 플랫폼 품질     | `PRODUCT_DESIGN_REVIEW_POLICY.md`, `SMOKE_TEST_LOG.md`, `RELEASE_CHECKLIST.md`                                       |
 | [`marketing`](./marketing/APP_STORE_ASSETS.md)                | 앱 마켓, 소개 이미지, 문구 산출물                  | `APP_STORE_ASSETS.md`                                                                                                |
 | [`screenshots`](./screenshots/README.md)                      | 실제 앱 화면 캡처와 촬영 기준                      | `README.md`, `manifest.json`, 화면별 PNG                                                                             |

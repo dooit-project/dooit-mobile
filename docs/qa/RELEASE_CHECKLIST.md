@@ -36,6 +36,8 @@ API URL:
 - [ ] `EXPO_PUBLIC_API_URL`이 대상 환경을 가리킨다.
 - [ ] `EXPO_PUBLIC_*`에 secret, token, password, API key가 없다.
 - [ ] real 모드에서는 [`BACKEND_INTEGRATION_RUNBOOK.md`](../integration/BACKEND_INTEGRATION_RUNBOOK.md)에 따라 Auth, Today, Calendar, D-Day, Search 흐름을 확인했다.
+- [ ] backend metadata가 실제 배포 commit/image를 식별하고 실행 OpenAPI와 migration 기록이 같은 배포를 가리킨다.
+- [ ] Daily Plan summary를 포함한 필수 migration이 적용됐다.
 - [ ] 비밀번호 재설정은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md) 기준 request·verify·confirm과 메일 deep link가 대상 백엔드에 실제 배포됐는지 확인했다. source 완료만 확인된 환경은 release 제한으로 기록했다.
 - [ ] 401 세션 만료 시 access token 삭제와 로그인 동선이 자연스럽다.
 - [ ] network, timeout, 5xx 오류에서 기존 데이터 유지, 오류 문구, retry가 동작한다.
@@ -54,6 +56,10 @@ API URL:
 - [ ] D-Day 목표 생성, 목표 상세, 목표 연결 Task 생성
 - [ ] Completed 주 이동, 완료 목록, 다시 열기
 - [ ] Profile 목적지 이동
+- [ ] Daily Plan 확정·복원, 예상 시간과 하루 결과 summary
+- [ ] 개인 카테고리 전체·미분류·상태별 count
+- [ ] 개인 체크리스트 CRUD·정렬과 Workspace OWNER·EDITOR·VIEWER 권한 차이
+- [ ] `낼`, `낼모레`, 상대 주+요일, `N시 반`, `HH:mm` 빠른 등록 결과
 
 검증 결과는 [`SMOKE_TEST_LOG.md`](./SMOKE_TEST_LOG.md)에 남긴다.
 
@@ -153,7 +159,8 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 - [x] scheme 유지 여부: `dooit`
 - [x] API mode별 빌드 설정: mock development, real preview/production
 - [x] Android signing credential 운영 기준과 비밀 값 제외 원칙
-- [x] EAS project 연결 후 Android signing credential 생성과 접근 권한 확인
+- [ ] `@hyunseung2/dooit-mobile` EAS project 생성·연결
+- [ ] 새 project에서 Android signing credential 접근과 기존 APK update 호환성 확인
 - [x] EAS preview/production `EXPO_PUBLIC_API_URL` 등록: `https://macmini.tail68d2d1.ts.net`
 - [x] 현재 공개 범위와 version·runtimeVersion·OTA 기준 문서화
 - [ ] 공개 대상 플랫폼이 [`RELEASE_SCOPE_POLICY.md`](../product/RELEASE_SCOPE_POLICY.md)의 승격 조건을 통과했다.
@@ -161,7 +168,7 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 
 `npm run check:release-static`으로 앱 이름, slug, scheme, icon/splash/favicon 파일 존재, PNG 크기, Android APK profile과 public 환경값을 함께 확인한다. `npm run check:eas-setup`은 Expo 로그인과 EAS project 연결 후 별도로 실행한다.
 
-Expo project owner, project id, signing credential이 연결되기 전에는 실제 배포용 build를 만들지 않는다.
+Expo project owner, `dooit-mobile` slug, 새 project id와 signing credential이 확인되기 전에는 실제 배포용 build를 만들지 않는다. 현재 `app.json`의 project id는 기존 `todolab-mobile`을 가리킨다.
 
 ## 11. 릴리즈 판정
 

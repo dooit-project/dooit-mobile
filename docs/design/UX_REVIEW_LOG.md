@@ -1,6 +1,6 @@
 # UX Review
 
-Last updated: 2026-08-29
+Last updated: 2026-09-03
 
 이 문서는 현재 화면에서 유지할 UX 결정과 아직 검증할 위험만 기록한다. 완료된 수정 과정과 과거 화면별 pass 기록은 보관하지 않는다. 시각 기준은 [`DESIGN.md`](./DESIGN.md), 현재 화면 구조는 [`SCREEN_GUIDE.md`](./SCREEN_GUIDE.md), 앞으로 할 일은 [`ROADMAP.md`](../product/ROADMAP.md)를 따른다.
 
@@ -47,6 +47,8 @@ Last updated: 2026-08-29
 - `수정`은 Task 종류 metadata와 나란히 두지 않고 페이지 헤더 우측의 icon+label secondary action으로 제공한다.
 - 일정 정보는 일정·반복·계획일·목표일·종일·카테고리만 같은 그룹으로 표시한다.
 - D-Day 상태는 관리 행동에서 한 번만 표시하고 미룸·이월 기록은 실제 값이 있을 때만 별도 그룹으로 표시한다.
+- 체크리스트는 Task의 다음 행동을 보여 주는 한 단계 목록으로 두고 별도 날짜·담당자·알림을 중첩하지 않는다.
+- Workspace VIEWER에게 체크리스트 변경 행동을 보여 준 뒤 403으로 막는 흐름을 기본 UX로 삼지 않는다.
 - 최신 Web 근거는 [`uf-03-task-crud-2026-08-24`](../audits/uf-03-task-crud-2026-08-24/README.md)에 둔다.
 
 ### Navigation과 선택 상태
@@ -54,6 +56,7 @@ Last updated: 2026-08-29
 - 하단 tab은 icon 배경만이 아니라 활성 label의 색·굵기와 선택 indicator를 함께 사용해 현재 위치를 표시한다.
 - 색이나 icon 채움 하나만으로 선택 상태를 전달하지 않으며 `selected` 접근성 상태를 유지한다.
 - Workspace 내부 tab과 Search filter처럼 text·surface·border가 함께 바뀌는 control은 현재 기준을 유지한다.
+- 개인 카테고리 요약은 `전체`·`미분류`·이름과 필요한 count만 보여 주며 Workspace 범위와 섞지 않는다.
 
 ## 2026-08-21 화면 피드백 결정
 

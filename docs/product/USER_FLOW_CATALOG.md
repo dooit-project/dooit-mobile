@@ -1,8 +1,8 @@
 # Dooit 사용자 흐름 카탈로그
 
-Last updated: 2026-08-30
+Last updated: 2026-09-03
 
-이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 최신 화면을 나란히 보는 시각적 원본은 [`USER_FLOW_BOARD.md`](./USER_FLOW_BOARD.md), 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 세부 시각 판단은 각 audit README를 따른다.
+이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 시각 근거와 판정은 각 audit README를 따른다.
 
 사용자 흐름, 최신 캡처, 판정은 모두 이 저장소의 Markdown과 이미지로 관리한다. 외부 보드는 필요할 때 이 문서를 바탕으로 만드는 공유용 사본이며 원본으로 취급하지 않는다.
 
@@ -65,6 +65,8 @@ flowchart LR
   H --> I[기록함 정리]
   A --> J[하루 정리]
   J --> K[지난 미완료·추천을 Today로 이동]
+  L[외부 공유·iOS widget] --> M[빠른 기록 확인]
+  M --> D
 ```
 
 현재 근거:
@@ -72,6 +74,7 @@ flowchart LR
 - [UF-02 최신 캡처와 판정 (2026-08-23)](../audits/uf-02-today-quick-capture-2026-08-23/README.md)
 - [Today](../screenshots/today.png), [빠른 기록 성공](../screenshots/quick-capture.png), [정리할 항목](../screenshots/organize.png)
 - 최신 기록 preview와 하루 정리 분리는 [`QUICK_CAPTURE_INBOX_UX_PROPOSAL.md`](./QUICK_CAPTURE_INBOX_UX_PROPOSAL.md)에 따라 구현했다.
+- 외부 공유 확인 화면과 iOS widget prototype 근거는 [`shared-capture-2026-09-02`](../audits/shared-capture-2026-09-02/README.md), [`quick-capture-widget-2026-09-03`](../audits/quick-capture-widget-2026-09-03/README.md)에 있다.
 
 남은 캡처:
 
@@ -79,6 +82,8 @@ flowchart LR
 - composer를 닫은 뒤 최신 기록 preview는 확인했다.
 - 기록함 0개·1개와 하루 정리 0개. 여러 개 상태에서는 추천·기록함 중복 노출을 확인했다.
 - 완료 0개·1~3개. 4개 이상 펼침/접힘은 확인했다.
+- Android·iOS 실제 공유 메뉴 payload와 iOS widget cold start·인증 bootstrap이 남았다.
+- 신규 구어 표현과 일일 계획 summary 연결 화면이 남았다.
 
 ## UF-03. Task 생성·조회·수정·삭제
 
@@ -96,6 +101,7 @@ flowchart LR
   F -->|확인| G[이전 목록]
   F -->|취소| B
   B --> H[D-Day 연결·해제]
+  B --> I[체크리스트 조회·변경]
 ```
 
 현재 근거:
@@ -108,6 +114,7 @@ flowchart LR
 - 작성 기본·추가 정보 펼침은 확인했다. 별도 validation 상태는 없으며 저장 중·오류가 남았다.
 - 상세 수정 진입·취소와 삭제 확인·취소·완료는 확인했다. 수정 저장과 mutation 오류가 남았다.
 - 긴 제목·설명, 일정·종일·날짜 없음, D-Day 연결 전후
+- 개인 체크리스트의 loading·empty·CRUD·정렬·오류 상태
 
 ## UF-04. 반복 Task occurrence
 
@@ -205,6 +212,8 @@ flowchart LR
   I --> L{OWNER·EDITOR·VIEWER 권한}
   J --> L
   K --> L
+  I --> M[체크리스트 조회·변경]
+  M --> L
 ```
 
 현재 근거:
@@ -221,6 +230,7 @@ flowchart LR
 - 초대 수락·거절 UI는 구현됐다. real API 성공, 이미 상태가 바뀐 404·409 복구, 대기 초대 조회·취소가 남았다.
 - 최신 백엔드 배포에서 내용 있는 Workspace cascade 삭제와 metadata를 real 검증
 - 받은 초대 거절의 real API 성공·404/409 복구 캡처
+- Workspace checklist의 OWNER·EDITOR 변경, VIEWER 조회·403 복구 캡처
 
 ## UF-08. 설정·알림·세션 복구
 
@@ -252,29 +262,29 @@ flowchart LR
 
 ## 화면·상태 커버리지
 
-| 영역               | 기본 화면 | 성공 | 빈 상태   | 입력 오류 | 시스템 오류    | 권한/역할      | 복구 | 판정      |
-| ------------------ | --------- | ---- | --------- | --------- | -------------- | -------------- | ---- | --------- |
-| 최초 시작·인증     | 있음      | 일부 | 해당 없음 | 부족      | 부족           | 게스트 일부    | 부족 | 보강 필요 |
-| Today·빠른 기록    | 있음      | 있음 | 일부      | 부족      | 부족           | 해당 없음      | 부족 | 보강 필요 |
-| Task CRUD          | 있음      | 일부 | 해당 없음 | 부족      | 부족           | 해당 없음      | 부족 | 보강 필요 |
-| 반복 occurrence    | 일부      | 일부 | 해당 없음 | 해당 없음 | 없음           | 범위 선택 일부 | 없음 | 누락 큼   |
-| Calendar·검색·완료 | 있음      | 일부 | 일부      | 일부      | 부족           | 해당 없음      | 부족 | 보강 필요 |
-| D-Day              | 있음      | 일부 | 있음      | 부족      | 부족           | 해당 없음      | 부족 | 보강 필요 |
-| Workspace          | 분산됨    | 일부 | 일부      | 부족      | 접근 오류 일부 | 역할 문서만    | 부족 | 누락 큼   |
-| 설정·알림·세션     | 있음      | 일부 | 해당 없음 | 해당 없음 | 부족           | Web 범위 확인  | 일부 | 보강 필요 |
+| 영역               | 기본 화면 | 성공 | 빈 상태   | 입력 오류 | 시스템 오류    | 권한/역할        | 복구 | 판정      |
+| ------------------ | --------- | ---- | --------- | --------- | -------------- | ---------------- | ---- | --------- |
+| 최초 시작·인증     | 있음      | 일부 | 해당 없음 | 부족      | 부족           | 게스트 일부      | 부족 | 보강 필요 |
+| Today·빠른 기록    | 있음      | 있음 | 일부      | 부족      | 부족           | 해당 없음        | 부족 | 보강 필요 |
+| Task·체크리스트    | 있음      | 일부 | 부족      | 부족      | 부족           | Workspace 미검증 | 부족 | 보강 필요 |
+| 반복 occurrence    | 일부      | 일부 | 해당 없음 | 해당 없음 | 없음           | 범위 선택 일부   | 없음 | 누락 큼   |
+| Calendar·검색·완료 | 있음      | 일부 | 일부      | 일부      | 부족           | 해당 없음        | 부족 | 보강 필요 |
+| D-Day              | 있음      | 일부 | 있음      | 부족      | 부족           | 해당 없음        | 부족 | 보강 필요 |
+| Workspace          | 분산됨    | 일부 | 일부      | 부족      | 접근 오류 일부 | 역할 문서만      | 부족 | 누락 큼   |
+| 설정·알림·세션     | 있음      | 일부 | 해당 없음 | 해당 없음 | 부족           | Web 범위 확인    | 일부 | 보강 필요 |
 
-## 캡처와 Markdown 보드 갱신 순서
+## 캡처와 audit 갱신 순서
 
 1. mock Web 390×844에서 각 흐름의 기본·완료·빈 상태를 다시 캡처한다.
 2. 320px와 430px는 줄바꿈이나 행동 위계가 달라지는 단계만 추가한다.
 3. network·timeout·4xx·5xx와 mutation rollback은 재현 조건을 캡처명과 함께 기록한다.
 4. Android·iOS 전용 권한, 키보드, safe area, VoiceOver·TalkBack은 실제 기기 캡처로 분리한다.
-5. 승인된 최신 캡처를 [`USER_FLOW_BOARD.md`](./USER_FLOW_BOARD.md)의 흐름별 표에 좌→우로 배치한다.
-6. 보드에는 flow ID, 단계, 상태, 검증 날짜와 상세 audit 문서 링크를 둔다.
+5. 승인된 최신 캡처와 판정을 해당 audit README에서 함께 관리한다.
+6. audit README에는 flow ID, 단계, 상태, 검증 날짜와 캡처 링크를 둔다.
 
 ## 완료 기준
 
 - 각 flow가 정상 경로와 최소 한 개의 실패·복구 경로를 가진다.
 - diagram의 모든 화면 단계가 최신 캡처 또는 명시적인 `캡처 불가/미구현` 상태와 연결된다.
 - 화면 구조 변경 시 같은 flow ID와 캡처명을 갱신한다.
-- 캡처 보드와 이 문서가 충돌하면 Git 이력과 실제 코드에 가까운 audit 판정을 먼저 갱신한다.
+- 이 문서와 audit이 충돌하면 실제 코드에 가까운 audit 판정을 먼저 갱신한다.

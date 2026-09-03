@@ -153,7 +153,7 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 - 앱 표시 이름은 `Dooit`, scheme은 `dooit`으로 유지한다.
 - `npm run check:release-assets`로 앱 이름, slug, scheme, icon/splash/favicon 경로와 PNG 크기를 자동 점검한다.
 - `eas.json`에 `development`, `preview`, `production` profile을 추가했다.
-- Expo project `owner`는 `hyunseung2`, project id는 `f49103dc-1d93-47a9-8972-4b5a4cc9e395`로 연결했다.
+- Expo project `owner`는 `hyunseung2`다. 현재 project id는 기존 `todolab-mobile`을 가리키므로 `@hyunseung2/dooit-mobile` 생성·재연결이 필요하다.
 - 현재 공개 범위와 version·runtimeVersion·OTA 기준은 [`RELEASE_SCOPE_POLICY.md`](../product/RELEASE_SCOPE_POLICY.md)에 확정했다.
 - 현재는 `expo-updates`, `updates` URL과 `runtimeVersion`을 설정하지 않아 OTA를 사용하지 않는다.
 
@@ -209,6 +209,6 @@ Android, iOS, Web 출시 전 확인할 플랫폼 품질 기준이다. 새 의존
 EAS 연결 후 확인:
 
 - `eas credentials --platform android`에서 managed credential이 생성 또는 연결되어 있는지 확인한다. 2026-08-03 preview profile 기준 EAS managed JKS credential을 확인했다.
-- credential 접근 권한이 Expo 개인 계정 또는 조직에 남아 있는지 확인한다. 2026-08-03 현재 `hyunseung2` owner project에서 접근 가능하다.
+- 새 `dooit-mobile` project 연결 뒤 credential 접근 권한과 기존 APK update install에 사용할 signing key의 연속성을 다시 확인한다.
 - keystore export가 필요하면 안전한 vault에 별도 보관하고, 저장소에는 `EAS managed` 또는 `secure vault backup`처럼 비밀 없는 상태만 기록한다.
 - credential을 변경하면 기존 APK update install과 Play Store 업로드 호환성에 영향을 줄 수 있으므로 release note에 남긴다.
