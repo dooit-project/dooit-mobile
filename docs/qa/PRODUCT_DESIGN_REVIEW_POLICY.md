@@ -1,6 +1,6 @@
 # Product Design 검토 정책
 
-Last updated: 2026-08-31
+Last updated: 2026-09-02
 
 화면 수정과 신규 사용자 기능이 구현 편의만으로 결정되지 않도록 Product Design 검토, 실제 화면 캡처와 검증 결과를 같은 작업 범위에서 관리한다.
 
@@ -36,6 +36,24 @@ Last updated: 2026-08-31
    - 치명적·높음 문제는 같은 변경에서 수정한다.
    - 중간·낮음 문제는 로드맵 또는 관련 audit에 근거와 함께 남긴다.
    - `npm run validate`와 영향 플랫폼 검증을 완료한다.
+
+## 로컬 브라우저 선택 기준
+
+OpenAI의 [Browser 공식 문서](https://learn.chatgpt.com/docs/browser)는 ChatGPT 데스크톱 앱의 내장 브라우저가 사용자와 ChatGPT가 웹사이트와 로컬 웹 앱을 같은 화면에서 보며 preview, 시각 feedback과 interaction 검증을 수행하는 surface라고 설명한다. 일반 browser profile이나 기존 tab을 그대로 사용해야 할 때는 browser extension을 사용하도록 구분한다.
+
+Dooit의 로컬 Web 검증은 다음 순서를 기본으로 한다.
+
+1. **ChatGPT 앱 내장 브라우저**
+   - localhost의 Expo Web 화면, mock flow, responsive viewport, keyboard focus와 실제 캡처 검증의 기본 surface다.
+   - 별도 Chrome profile이나 기존 로그인 상태가 필요하지 않은 개발·디자인 QA에 우선 사용한다.
+2. **Chrome 확장 연결**
+   - 기존 Chrome tab, 로그인 session, extension, 일반 browser profile 또는 Chrome 고유 동작이 검증 조건일 때 사용한다.
+   - 사용자가 Chrome을 요청하거나 같은 Chrome 상태를 이어서 확인해야 할 때도 이 경로를 유지한다.
+3. **로컬 Playwright**
+   - 선택한 browser surface가 로컬 주소를 열지 못하고 연결·주소·server 상태 복구로도 해결되지 않을 때 사용하는 자동화 fallback이다.
+   - 전환 사유, viewport, browser channel, 캡처와 console 결과를 해당 audit README와 `design-qa.md`에 기록한다.
+
+어떤 surface를 사용해도 source visual과 implementation capture를 같은 viewport와 상태로 비교하고, 실제로 확인하지 않은 interaction이나 접근성 동작은 통과로 기록하지 않는다.
 
 ## 검토 기준
 
