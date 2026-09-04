@@ -13,6 +13,7 @@ describe('api client idempotency', () => {
   it.each([
     '/api/v1/auth/guest',
     '/api/v1/tasks',
+    '/api/v1/tasks/42/checklist-items',
     '/api/v1/tasks/quick-capture',
     '/api/v1/task-templates',
     '/api/v1/task-templates/7/tasks',

@@ -19,13 +19,13 @@ Last updated: 2026-09-04
 - 공유 메뉴 text·URL 확인 화면과 iOS widget 빠른 기록 deep link prototype
 - real quick-capture API와 멱등성 처리
 - backend 규칙과 같은 quick-capture mock parser와 회귀 테스트
+- Daily Plan·summary·category summary·checklist 타입, API client, mock과 query hook
 
 ## 다음 프론트 작업
 
 ### F0. 서버 계약을 연결하는 비시각 작업
 
-1. Daily Plan·summary·category summary·checklist 타입과 API client를 추가한다.
-2. mock fixture, query key, cache 무효화, 403·404·migration 미적용 오류 테스트를 추가한다.
+타입, API client, mock fixture, query key와 기본 cache 무효화를 완료했다. local real API와 production에서는 403·404·migration 미적용 응답을 추가 검증한다.
 
 ### F1. 카테고리 탐색
 

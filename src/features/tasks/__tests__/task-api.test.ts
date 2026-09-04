@@ -84,6 +84,53 @@ describe('Task API', () => {
     expect(getMock).toHaveBeenCalledWith('/api/v1/tasks/42', { signal: undefined });
   });
 
+  test('개인 Task 카테고리 요약을 조회한다', async () => {
+    await taskApi.getCategories();
+
+    expect(getMock).toHaveBeenCalledWith('/api/v1/tasks/categories', { signal: undefined });
+  });
+
+  test('Task checklist CRUD와 재정렬 endpoint를 호출한다', async () => {
+    await taskApi.getChecklistItems(42);
+    await taskApi.createChecklistItem(42, { title: '자료 확인' });
+    await taskApi.updateChecklistItem(42, 7, { title: '자료 재확인' });
+    await taskApi.completeChecklistItem(42, 7, '2026-09-04T09:00:00');
+    await taskApi.reopenChecklistItem(42, 7);
+    await taskApi.reorderChecklistItems(42, { orderedItemIds: [8, 7] });
+    await taskApi.deleteChecklistItem(42, 7);
+
+    expect(getMock).toHaveBeenCalledWith('/api/v1/tasks/42/checklist-items', {
+      signal: undefined,
+    });
+    expect(postMock).toHaveBeenCalledWith(
+      '/api/v1/tasks/42/checklist-items',
+      { title: '자료 확인' },
+      { signal: undefined },
+    );
+    expect(putMock).toHaveBeenCalledWith(
+      '/api/v1/tasks/42/checklist-items/7',
+      { title: '자료 재확인' },
+      { signal: undefined },
+    );
+    expect(patchMock).toHaveBeenCalledWith('/api/v1/tasks/42/checklist-items/7/done', undefined, {
+      query: { completedAt: '2026-09-04T09:00:00' },
+      signal: undefined,
+    });
+    expect(patchMock).toHaveBeenCalledWith(
+      '/api/v1/tasks/42/checklist-items/7/done/cancel',
+      undefined,
+      { signal: undefined },
+    );
+    expect(putMock).toHaveBeenCalledWith(
+      '/api/v1/tasks/42/checklist-items/order',
+      { orderedItemIds: [8, 7] },
+      { signal: undefined },
+    );
+    expect(deleteMock).toHaveBeenCalledWith('/api/v1/tasks/42/checklist-items/7', {
+      signal: undefined,
+    });
+  });
+
   test('월간 조회 날짜를 YYYY-MM 형식으로 직렬화한다', async () => {
     await taskApi.list({ type: 'MONTH', date: '2026-07-14' });
 

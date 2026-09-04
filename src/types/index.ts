@@ -20,6 +20,12 @@ export type {
   DdayGoalTaskRequest,
 } from './dday';
 export { ddayGoalLimits } from './dday';
+export type {
+  DailyPlanRequest,
+  DailyPlanResponse,
+  DailyPlanStatus,
+  DailyPlanSummaryResponse,
+} from './daily-plan';
 export type { LocalDateString, LocalDateTimeString } from './date-time';
 export type {
   CompleteTaskQuery,
@@ -31,6 +37,10 @@ export type {
   ReorderTodayQuery,
   SetDeferReasonQuery,
   TaskCategoryGroupResponse,
+  TaskCategorySummaryResponse,
+  TaskChecklistItemOrderRequest,
+  TaskChecklistItemRequest,
+  TaskChecklistItemResponse,
   TaskDateQuery,
   TaskListQuery,
   TaskNotificationCandidateResponse,

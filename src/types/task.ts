@@ -58,6 +58,7 @@ export type TaskUpsertRequest = {
   startAt?: LocalDateTimeString | null;
   endAt?: LocalDateTimeString | null;
   category?: string | null;
+  estimatedDurationMinutes?: number | null;
   allDay: boolean;
   recurrence?: TaskRecurrenceRequest | null;
   notificationEnabled?: boolean | null;
@@ -151,6 +152,7 @@ export type TaskResponse = {
   allDay: boolean;
   unscheduled: boolean;
   category: string | null;
+  estimatedDurationMinutes?: number | null;
   status: TaskStatus;
   plannedDate: LocalDateString | null;
   targetDate: LocalDateString | null;
@@ -199,6 +201,34 @@ export type TaskNotificationCandidateResponse = {
 export type TaskCategoryGroupResponse = {
   category: string;
   tasks: TaskResponse[];
+};
+
+export type TaskCategorySummaryResponse = {
+  category: string | null;
+  displayName: string;
+  taskCount: number;
+  inboxCount: number;
+  todayCount: number;
+  doneCount: number;
+};
+
+export type TaskChecklistItemRequest = {
+  title: string;
+};
+
+export type TaskChecklistItemOrderRequest = {
+  orderedItemIds: number[];
+};
+
+export type TaskChecklistItemResponse = {
+  id: number;
+  taskId: number;
+  title: string;
+  done: boolean;
+  sortOrder: number;
+  completedAt: LocalDateTimeString | null;
+  createdAt: LocalDateTimeString;
+  updatedAt: LocalDateTimeString | null;
 };
 
 export type TaskListQuery = {

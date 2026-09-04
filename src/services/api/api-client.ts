@@ -23,6 +23,7 @@ const AUTH_PATH = '/api/v1/auth';
 const IDEMPOTENT_CREATE_PATHS = [
   /^\/api\/v1\/auth\/guest$/,
   /^\/api\/v1\/tasks$/,
+  /^\/api\/v1\/tasks\/\d+\/checklist-items$/,
   /^\/api\/v1\/tasks\/quick-capture$/,
   /^\/api\/v1\/task-templates$/,
   /^\/api\/v1\/task-templates\/\d+\/tasks$/,

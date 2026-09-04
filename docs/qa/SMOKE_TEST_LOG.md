@@ -7,11 +7,11 @@ Last updated: 2026-09-04
 ## 자동 검증 기준선
 
 - 날짜: 2026-09-04
-- frontend 기준: 현재 작업 트리, base `e69123a`
+- frontend 기준: 현재 작업 트리, base `235d03b`
 - 명령: `npm run validate`
 - 결과: 통과
 - 범위: TypeScript, ESLint, Prettier, 문서 링크, release asset·Android APK 정적 설정, Jest
-- 테스트: 85 suites, 444 tests
+- 테스트: 91 suites, 455 tests
 
 ## 백엔드 source 확인
 
@@ -35,6 +35,7 @@ Last updated: 2026-09-04
 - Workspace API·mock·권한·반복·D-Day·알림 후보와 기능 노출 정책
 - 공유 메뉴 빠른 기록과 iOS widget deep-link·build 격리
 - quick-capture의 상대일·상대 주·한국어 날짜·요일·시간 parser 정합성
+- Daily Plan·summary·category summary·checklist client, mock, query cache와 Workspace VIEWER 403
 - 운영 Web export의 real mode·HTTPS API URL 검사
 
 자동 검증만으로 확정할 수 없는 항목:

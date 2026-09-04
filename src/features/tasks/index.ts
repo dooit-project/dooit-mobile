@@ -27,6 +27,16 @@ export { useQuickCaptureTask } from './use-quick-capture-task';
 export { useReopenTask } from './use-reopen-task';
 export { useSetDeferReason } from './use-set-defer-reason';
 export { useTaskDetail } from './use-task-detail';
+export { useTaskCategories } from './use-task-categories';
+export {
+  useCompleteTaskChecklistItem,
+  useCreateTaskChecklistItem,
+  useDeleteTaskChecklistItem,
+  useReopenTaskChecklistItem,
+  useReorderTaskChecklistItems,
+  useTaskChecklist,
+  useUpdateTaskChecklistItem,
+} from './use-task-checklist';
 export { useTaskDdayGoal } from './use-task-dday-goal';
 export {
   useCreateTaskFromTemplate,

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
+import { dailyPlanQueryKeys } from '@/features/daily-plan';
 import type { LocalDateString, TaskResponse } from '@/types';
 
 import { taskApi } from './task-api';
@@ -22,6 +23,9 @@ export function useCompleteTask(date: LocalDateString) {
         completedTask,
         ...tasks.filter((task) => task.id !== completedTask.id),
       ]);
+      void queryClient.invalidateQueries({ queryKey: taskQueryKeys.categories() });
+      void queryClient.invalidateQueries({ queryKey: taskQueryKeys.checklist(completedTask.id) });
+      void queryClient.invalidateQueries({ queryKey: dailyPlanQueryKeys.summary(date) });
       requestTaskNotificationSync();
     },
   });

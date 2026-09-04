@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
+import { dailyPlanQueryKeys } from '@/features/daily-plan';
 import type { TaskResponse } from '@/types';
 
 import { taskApi } from './task-api';
@@ -19,6 +20,8 @@ export function useMoveTaskToInbox() {
         movedTask,
         ...tasks.filter((task) => task.id !== movedTask.id),
       ]);
+      void queryClient.invalidateQueries({ queryKey: taskQueryKeys.categories() });
+      void queryClient.invalidateQueries({ queryKey: dailyPlanQueryKeys.all });
       requestTaskNotificationSync();
     },
   });

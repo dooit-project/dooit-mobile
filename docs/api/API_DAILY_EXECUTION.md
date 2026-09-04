@@ -96,13 +96,13 @@ POST /api/v1/tasks/quick-capture
 
 ## 프론트 연결 순서
 
-빠른 등록 mock parser와 fixture는 서버 파싱 규칙에 맞췄다. 다음 순서로 나머지 계약을 연결한다.
+빠른 등록 parser와 신규 계약의 타입·API client·mock·query hook을 연결했다. 다음 순서로 화면과 실제 환경을 연결한다.
 
-1. 일일 계획·예상 시간 타입과 query/mutation을 local prototype 대신 서버 resource에 연결한다.
+1. 일일 계획·예상 시간 query/mutation을 local prototype 대신 서버 resource에 연결한다.
 2. summary를 하루 마감 결과에 연결한다.
 3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한한다.
 4. 카테고리 요약을 탐색 메뉴에 연결한다.
-5. mock, local real API, production Android 순서로 검증한다.
+5. local real API, production Android 순서로 검증한다.
 
 ## 아직 백엔드에 요청할 수 있는 계약
 

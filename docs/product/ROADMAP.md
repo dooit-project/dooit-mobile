@@ -7,7 +7,7 @@ Last updated: 2026-09-04
 ## 현재 상태
 
 - 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 85 suites, 444 tests 통과다.
+- 최신 검증 기준선은 91 suites, 455 tests 통과다.
 - 백엔드 source `6a78afe`에 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
 - production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=docker-20260829`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
 - EAS project id는 기존 `@hyunseung2/todolab-mobile`을 가리키지만 앱 slug는 `dooit-mobile`이다. 새 `@hyunseung2/dooit-mobile` project 연결 전에는 release 후보를 만들지 않는다.
@@ -26,12 +26,12 @@ Last updated: 2026-09-04
 세부 순서는 [`DAILY_EXECUTION_PRIORITIES.md`](./DAILY_EXECUTION_PRIORITIES.md)와 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
 - [x] quick-capture mock parser와 테스트를 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 규칙에 맞춘다.
-- [ ] Daily Plan·summary·category summary·checklist 타입, API client, mock fixture와 query cache를 추가한다.
+- [x] Daily Plan·summary·category summary·checklist 타입, API client, mock fixture와 query cache를 추가한다.
 - [ ] local preference 기반 오늘 계획을 서버 Daily Plan과 `estimatedDurationMinutes`에 연결한다.
 - [ ] 하루 마감 결과를 계획 확정 시점 focus snapshot 기반 summary에 연결한다.
 - [ ] 카테고리 요약을 좌측 메뉴에 개인 범위로 연결한다.
 - [ ] 개인·Workspace Task 상세에 체크리스트를 추가하고 VIEWER 변경 행동을 제한한다.
-- [ ] 신규 API를 local real backend와 production Android에서 검증한다.
+- [ ] 신규 API client를 local real backend와 production Android에서 검증한다.
 
 ## P1. UI·제품 검증
 

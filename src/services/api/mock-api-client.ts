@@ -6,11 +6,18 @@ import type {
   DdayGoalRequest,
   DdayGoalResponse,
   DdayGoalTaskRequest,
+  DailyPlanRequest,
+  DailyPlanResponse,
+  DailyPlanSummaryResponse,
   DeferReason,
   LoginRequest,
   LocalDateString,
   RegisterRequest,
   TaskRecommendationResponse,
+  TaskCategorySummaryResponse,
+  TaskChecklistItemOrderRequest,
+  TaskChecklistItemRequest,
+  TaskChecklistItemResponse,
   TaskNotificationCandidateResponse,
   TaskQueryType,
   TaskQuickCaptureRequest,
@@ -63,6 +70,7 @@ let nextTemplateId = 1;
 let nextGoalId = 10;
 let nextWorkspaceId = 1;
 let nextWorkspaceMemberId = 1;
+let nextChecklistItemId = 1;
 let currentUser: UserResponse | null = null;
 const taskIdsByUser = new Map<number, Set<number>>();
 const goalIdsByUser = new Map<number, Set<number>>();
@@ -71,6 +79,9 @@ const workspaces: WorkspaceResponse[] = [];
 const workspaceMembers: WorkspaceMemberResponse[] = [];
 const workspaceTasks = new Map<number, TaskResponse[]>();
 const workspaceDdayGoals = new Map<number, DdayGoalResponse[]>();
+const checklistItems = new Map<number, TaskChecklistItemResponse[]>();
+const dailyPlans = new Map<LocalDateString, DailyPlanResponse>();
+const dailyPlanInitialFocusIds = new Map<LocalDateString, number[]>();
 
 const users: UserResponse[] = [
   {
@@ -216,6 +227,7 @@ function createTask(
     allDay: overrides.allDay ?? false,
     unscheduled: overrides.plannedDate === null,
     category: overrides.category ?? null,
+    estimatedDurationMinutes: overrides.estimatedDurationMinutes ?? null,
     status: overrides.status ?? 'INBOX',
     plannedDate: overrides.plannedDate ?? null,
     targetDate: overrides.targetDate ?? null,
@@ -661,6 +673,7 @@ function applyTaskRequest(task: TaskResponse, request: TaskUpsertRequest) {
   task.title = request.title;
   task.description = request.description ?? null;
   task.category = request.category ?? null;
+  task.estimatedDurationMinutes = request.estimatedDurationMinutes ?? null;
   task.type = request.type ?? 'TODO';
   task.allDay = request.allDay;
   task.startAt = request.startAt ?? null;
@@ -1039,6 +1052,132 @@ function getWorkspaceNotificationCandidatesId(path: string) {
   return match ? Number(match[1]) : null;
 }
 
+function getDailyPlanPath(path: string) {
+  const match = path.match(/^\/api\/v1\/daily-plans\/(\d{4}-\d{2}-\d{2})(?:\/(summary))?$/);
+  return match ? { date: match[1] as LocalDateString, summary: match[2] === 'summary' } : null;
+}
+
+function getChecklistPath(path: string) {
+  const match = path.match(
+    /^\/api\/v1\/tasks\/(\d+)\/checklist-items(?:\/(order|(\d+)(?:\/(done)(?:\/(cancel))?)?))?$/,
+  );
+  return match
+    ? {
+        taskId: Number(match[1]),
+        order: match[2] === 'order',
+        itemId: match[3] ? Number(match[3]) : null,
+        done: match[4] === 'done',
+        cancel: match[5] === 'cancel',
+      }
+    : null;
+}
+
+function requireChecklistAccess(taskId: number, mutation: boolean) {
+  const personalTask = getVisibleTasks().find((task) => task.id === taskId);
+  if (personalTask) return;
+
+  const workspaceEntry = [...workspaceTasks.entries()].find(([, stored]) =>
+    stored.some((task) => task.id === taskId),
+  );
+  if (!workspaceEntry) {
+    throw new ApiClientError('Task를 찾을 수 없습니다.', { kind: 'http', status: 404 });
+  }
+
+  const membership = workspaceMembers.find(
+    (member) =>
+      member.workspaceId === workspaceEntry[0] &&
+      member.userId === getMockActor().id &&
+      member.status === 'ACTIVE',
+  );
+  if (!membership) {
+    throw new ApiClientError('Task를 찾을 수 없습니다.', { kind: 'http', status: 404 });
+  }
+  if (mutation && membership.role === 'VIEWER') {
+    throw new ApiClientError('Workspace를 변경할 권한이 없습니다.', {
+      kind: 'http',
+      status: 403,
+    });
+  }
+}
+
+function getChecklist(taskId: number, mutation = false) {
+  requireChecklistAccess(taskId, mutation);
+  const stored = checklistItems.get(taskId) ?? [];
+  checklistItems.set(taskId, stored);
+  return stored;
+}
+
+function getChecklistItem(taskId: number, itemId: number, mutation = false) {
+  const item = getChecklist(taskId, mutation).find((candidate) => candidate.id === itemId);
+  if (!item) {
+    throw new ApiClientError('Checklist item을 찾을 수 없습니다.', {
+      kind: 'http',
+      status: 404,
+    });
+  }
+  return item;
+}
+
+function getTaskCategorySummaries(): TaskCategorySummaryResponse[] {
+  const summaries = new Map<string | null, TaskCategorySummaryResponse>();
+  for (const task of getVisibleTasks()) {
+    const category = task.category?.trim() || null;
+    const summary = summaries.get(category) ?? {
+      category,
+      displayName: category ?? '미분류',
+      taskCount: 0,
+      inboxCount: 0,
+      todayCount: 0,
+      doneCount: 0,
+    };
+    summary.taskCount += 1;
+    if (task.status === 'INBOX') summary.inboxCount += 1;
+    if (task.status === 'TODAY') summary.todayCount += 1;
+    if (task.status === 'DONE') summary.doneCount += 1;
+    summaries.set(category, summary);
+  }
+  return [...summaries.values()].sort((left, right) => {
+    if (left.category === null) return 1;
+    if (right.category === null) return -1;
+    return left.displayName.localeCompare(right.displayName, 'ko');
+  });
+}
+
+function getDailyPlan(date: LocalDateString): DailyPlanResponse {
+  return (
+    dailyPlans.get(date) ?? {
+      date,
+      status: 'DRAFT',
+      focusTaskIds: [],
+      confirmedAt: null,
+      closedAt: null,
+      updatedAt: null,
+    }
+  );
+}
+
+function getDailyPlanSummary(date: LocalDateString): DailyPlanSummaryResponse {
+  const plan = getDailyPlan(date);
+  const focusTaskIds = dailyPlanInitialFocusIds.get(date) ?? plan.focusTaskIds;
+  const focusTasks = new Map(getVisibleTasks().map((task) => [task.id, task]));
+  const result = {
+    completedCount: 0,
+    movedToOtherDateCount: 0,
+    movedToInboxCount: 0,
+    undecidedCount: 0,
+  };
+  for (const taskId of focusTaskIds) {
+    const task = focusTasks.get(taskId);
+    if (!task) result.undecidedCount += 1;
+    else if (task.status === 'DONE') result.completedCount += 1;
+    else if (task.status === 'INBOX') result.movedToInboxCount += 1;
+    else if (task.status === 'TODAY' && task.plannedDate !== date)
+      result.movedToOtherDateCount += 1;
+    else result.undecidedCount += 1;
+  }
+  return { date, status: plan.status, plannedFocusCount: focusTaskIds.length, ...result };
+}
+
 function getMockActor() {
   return currentUser ?? users[0];
 }
@@ -1125,6 +1264,27 @@ export const mockApiClient = {
 
     if (path === `${TASKS_PATH}/search`) {
       return searchTasks(options.query) as T;
+    }
+
+    if (path === `${TASKS_PATH}/categories`) {
+      return getTaskCategorySummaries() as T;
+    }
+
+    const dailyPlanPath = getDailyPlanPath(path);
+    if (dailyPlanPath) {
+      return (
+        dailyPlanPath.summary
+          ? getDailyPlanSummary(dailyPlanPath.date)
+          : {
+              ...getDailyPlan(dailyPlanPath.date),
+              focusTaskIds: [...getDailyPlan(dailyPlanPath.date).focusTaskIds],
+            }
+      ) as T;
+    }
+
+    const checklistPath = getChecklistPath(path);
+    if (checklistPath && checklistPath.itemId === null && !checklistPath.order) {
+      return getChecklist(checklistPath.taskId).map((item) => ({ ...item })) as T;
     }
 
     if (path === `${TASKS_PATH}/today`) {
@@ -1410,6 +1570,24 @@ export const mockApiClient = {
       return null as T;
     }
 
+    const checklistPath = getChecklistPath(path);
+    if (checklistPath && checklistPath.itemId === null && !checklistPath.order) {
+      const request = body as TaskChecklistItemRequest;
+      const stored = getChecklist(checklistPath.taskId, true);
+      const item: TaskChecklistItemResponse = {
+        id: nextChecklistItemId++,
+        taskId: checklistPath.taskId,
+        title: request.title.trim(),
+        done: false,
+        sortOrder: stored.length,
+        completedAt: null,
+        createdAt: now,
+        updatedAt: null,
+      };
+      stored.push(item);
+      return { ...item } as T;
+    }
+
     if (path === WORKSPACES_PATH) {
       const request = body as WorkspaceRequest;
       const actor = getMockActor();
@@ -1468,6 +1646,7 @@ export const mockApiClient = {
         endAt: request.endAt ?? null,
         allDay: request.allDay,
         category: request.category ?? null,
+        estimatedDurationMinutes: request.estimatedDurationMinutes ?? null,
         status: 'TODAY',
         plannedDate: (request.startAt?.slice(0, 10) as LocalDateString | undefined) ?? today,
         notificationEnabled: request.notificationEnabled ?? true,
@@ -1502,7 +1681,9 @@ export const mockApiClient = {
         endAt: request.endAt ?? null,
         allDay: request.allDay,
         category: request.category ?? null,
+        estimatedDurationMinutes: request.estimatedDurationMinutes ?? null,
         status: request.type === 'SCHEDULE' ? 'TODAY' : 'INBOX',
+        plannedDate: (request.startAt?.slice(0, 10) as LocalDateString | undefined) ?? null,
         notificationEnabled: request.notificationEnabled ?? true,
         notifyAt: request.notifyAt ?? null,
       });
@@ -1534,6 +1715,7 @@ export const mockApiClient = {
         allDay: parsed.parsed && !parsed.parsedTime,
         category: request.defaultCategory ?? null,
         status: parsed.parsed ? 'TODAY' : 'INBOX',
+        plannedDate: parsed.parsedDate,
       });
 
       nextTaskId += 1;
@@ -1595,6 +1777,7 @@ export const mockApiClient = {
         description: request.description ?? template.description,
         type: template.type,
         category: request.category ?? template.category,
+        estimatedDurationMinutes: template.defaultDurationMinutes,
         allDay: template.allDay,
         startAt,
         endAt: null,
@@ -1661,6 +1844,81 @@ export const mockApiClient = {
   async put<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    const dailyPlanPath = getDailyPlanPath(path);
+    if (dailyPlanPath && !dailyPlanPath.summary) {
+      const request = body as DailyPlanRequest;
+      if (
+        request.focusTaskIds.length > 3 ||
+        new Set(request.focusTaskIds).size !== request.focusTaskIds.length
+      ) {
+        throw new ApiClientError('focusTaskIds가 올바르지 않습니다.', {
+          kind: 'http',
+          status: 400,
+        });
+      }
+      request.focusTaskIds.forEach((taskId) => {
+        const task = getTask(taskId);
+        if (task.status !== 'TODAY' || task.plannedDate !== dailyPlanPath.date) {
+          throw new ApiClientError('같은 날짜의 미완료 Today Task만 선택할 수 있습니다.', {
+            kind: 'http',
+            status: 400,
+          });
+        }
+      });
+      const previous = dailyPlans.get(dailyPlanPath.date);
+      const plan: DailyPlanResponse = {
+        date: dailyPlanPath.date,
+        status: request.status,
+        focusTaskIds: [...request.focusTaskIds],
+        confirmedAt:
+          request.status === 'CONFIRMED' || request.status === 'CLOSED'
+            ? (previous?.confirmedAt ?? now)
+            : null,
+        closedAt: request.status === 'CLOSED' ? now : null,
+        updatedAt: previous ? now : null,
+      };
+      dailyPlans.set(dailyPlanPath.date, plan);
+      if (
+        (request.status === 'CONFIRMED' || request.status === 'CLOSED') &&
+        !dailyPlanInitialFocusIds.has(dailyPlanPath.date)
+      ) {
+        dailyPlanInitialFocusIds.set(dailyPlanPath.date, [...request.focusTaskIds]);
+      }
+      return { ...plan, focusTaskIds: [...plan.focusTaskIds] } as T;
+    }
+
+    const checklistPath = getChecklistPath(path);
+    if (checklistPath?.order) {
+      const request = body as TaskChecklistItemOrderRequest;
+      const stored = getChecklist(checklistPath.taskId, true);
+      if (
+        request.orderedItemIds.length !== stored.length ||
+        new Set(request.orderedItemIds).size !== stored.length ||
+        request.orderedItemIds.some((itemId) => !stored.some((item) => item.id === itemId))
+      ) {
+        throw new ApiClientError('Checklist item 전체 순서를 전달해야 합니다.', {
+          kind: 'http',
+          status: 400,
+        });
+      }
+      const byId = new Map(stored.map((item) => [item.id, item]));
+      const reordered = request.orderedItemIds.map((itemId, sortOrder) => {
+        const item = byId.get(itemId)!;
+        item.sortOrder = sortOrder;
+        item.updatedAt = now;
+        return item;
+      });
+      checklistItems.set(checklistPath.taskId, reordered);
+      return reordered.map((item) => ({ ...item })) as T;
+    }
+    if (checklistPath?.itemId && !checklistPath.done) {
+      const request = body as TaskChecklistItemRequest;
+      const item = getChecklistItem(checklistPath.taskId, checklistPath.itemId, true);
+      item.title = request.title.trim();
+      item.updatedAt = now;
+      return { ...item } as T;
+    }
+
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
       return applyTaskRequest(getTask(taskId), body as TaskUpsertRequest) as T;
@@ -1694,6 +1952,15 @@ export const mockApiClient = {
 
   async patch<T>(path: string, _body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    const checklistPath = getChecklistPath(path);
+    if (checklistPath?.itemId && checklistPath.done) {
+      const item = getChecklistItem(checklistPath.taskId, checklistPath.itemId, true);
+      item.done = !checklistPath.cancel;
+      item.completedAt = checklistPath.cancel ? null : String(options.query?.completedAt ?? now);
+      item.updatedAt = now;
+      return { ...item } as T;
+    }
 
     const workspaceTaskDdayPath = getWorkspaceTaskDdayPathIds(path);
     if (workspaceTaskDdayPath) {
@@ -1742,7 +2009,15 @@ export const mockApiClient = {
     const date = getDate(options.query);
 
     if (path === `${TASKS_PATH}/${taskId}/done`) {
-      return setTaskStatus(task, 'DONE', date) as T;
+      const completedTask = setTaskStatus(task, 'DONE', date);
+      getChecklist(taskId).forEach((item) => {
+        if (!item.done) {
+          item.done = true;
+          item.completedAt = completedTask.completedAt;
+          item.updatedAt = now;
+        }
+      });
+      return completedTask as T;
     }
 
     if (path === `${TASKS_PATH}/${taskId}/today`) {
@@ -1785,6 +2060,17 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    const checklistPath = getChecklistPath(path);
+    if (checklistPath?.itemId) {
+      const stored = getChecklist(checklistPath.taskId, true);
+      const item = getChecklistItem(checklistPath.taskId, checklistPath.itemId, true);
+      stored.splice(stored.indexOf(item), 1);
+      stored.forEach((candidate, sortOrder) => {
+        candidate.sortOrder = sortOrder;
+      });
+      return null as T;
+    }
 
     const workspaceTaskDdayPath = getWorkspaceTaskDdayPathIds(path);
     if (workspaceTaskDdayPath) {
@@ -1830,6 +2116,7 @@ export const mockApiClient = {
       const index = stored.findIndex((task) => task.id === workspacePath.taskId);
       if (index < 0) getWorkspaceTask(workspacePath.workspaceId, workspacePath.taskId);
       stored.splice(index, 1);
+      checklistItems.delete(workspacePath.taskId);
       return null as T;
     }
 
@@ -1860,6 +2147,7 @@ export const mockApiClient = {
       if (index >= 0) {
         tasks.splice(index, 1);
       }
+      checklistItems.delete(taskId);
 
       return null as T;
     }

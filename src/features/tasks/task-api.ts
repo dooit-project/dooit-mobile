@@ -2,8 +2,13 @@ import { apiClient } from '@/services/api';
 import type {
   DeferReason,
   LocalDateString,
+  LocalDateTimeString,
   RecurrenceEditScope,
   TaskNotificationCandidateResponse,
+  TaskCategorySummaryResponse,
+  TaskChecklistItemOrderRequest,
+  TaskChecklistItemRequest,
+  TaskChecklistItemResponse,
   TaskQuickCaptureRequest,
   TaskQuickCaptureResponse,
   TaskRecommendationResponse,
@@ -44,6 +49,74 @@ export const taskApi = {
 
   get(taskId: number, signal?: AbortSignal) {
     return apiClient.get<TaskResponse>(`${TASKS_PATH}/${taskId}`, { signal });
+  },
+
+  getCategories(signal?: AbortSignal) {
+    return apiClient.get<TaskCategorySummaryResponse[]>(`${TASKS_PATH}/categories`, { signal });
+  },
+
+  getChecklistItems(taskId: number, signal?: AbortSignal) {
+    return apiClient.get<TaskChecklistItemResponse[]>(`${TASKS_PATH}/${taskId}/checklist-items`, {
+      signal,
+    });
+  },
+
+  createChecklistItem(taskId: number, request: TaskChecklistItemRequest, signal?: AbortSignal) {
+    return apiClient.post<TaskChecklistItemResponse>(
+      `${TASKS_PATH}/${taskId}/checklist-items`,
+      request,
+      { signal },
+    );
+  },
+
+  updateChecklistItem(
+    taskId: number,
+    itemId: number,
+    request: TaskChecklistItemRequest,
+    signal?: AbortSignal,
+  ) {
+    return apiClient.put<TaskChecklistItemResponse>(
+      `${TASKS_PATH}/${taskId}/checklist-items/${itemId}`,
+      request,
+      { signal },
+    );
+  },
+
+  completeChecklistItem(
+    taskId: number,
+    itemId: number,
+    completedAt?: LocalDateTimeString,
+    signal?: AbortSignal,
+  ) {
+    return apiClient.patch<TaskChecklistItemResponse>(
+      `${TASKS_PATH}/${taskId}/checklist-items/${itemId}/done`,
+      undefined,
+      { query: { completedAt }, signal },
+    );
+  },
+
+  reopenChecklistItem(taskId: number, itemId: number, signal?: AbortSignal) {
+    return apiClient.patch<TaskChecklistItemResponse>(
+      `${TASKS_PATH}/${taskId}/checklist-items/${itemId}/done/cancel`,
+      undefined,
+      { signal },
+    );
+  },
+
+  deleteChecklistItem(taskId: number, itemId: number, signal?: AbortSignal) {
+    return apiClient.delete<null>(`${TASKS_PATH}/${taskId}/checklist-items/${itemId}`, { signal });
+  },
+
+  reorderChecklistItems(
+    taskId: number,
+    request: TaskChecklistItemOrderRequest,
+    signal?: AbortSignal,
+  ) {
+    return apiClient.put<TaskChecklistItemResponse[]>(
+      `${TASKS_PATH}/${taskId}/checklist-items/order`,
+      request,
+      { signal },
+    );
   },
 
   create(request: TaskUpsertRequest, signal?: AbortSignal) {
