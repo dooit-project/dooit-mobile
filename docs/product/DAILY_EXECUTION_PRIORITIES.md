@@ -1,6 +1,6 @@
 # 오늘 실행 루프 우선순위
 
-Last updated: 2026-09-03
+Last updated: 2026-09-04
 
 ## 목표
 
@@ -18,14 +18,14 @@ Last updated: 2026-09-03
 - 오늘·달력·기록함·오래 미룬 일·완료 기록·목표·공유 공간의 탐색 메뉴
 - 공유 메뉴 text·URL 확인 화면과 iOS widget 빠른 기록 deep link prototype
 - real quick-capture API와 멱등성 처리
+- backend 규칙과 같은 quick-capture mock parser와 회귀 테스트
 
 ## 다음 프론트 작업
 
 ### F0. 서버 계약을 연결하는 비시각 작업
 
-1. quick-capture mock parser에 `낼`, `낼모레`, 상대 주+요일, `N시 반`, `HH:mm`을 추가한다.
-2. Daily Plan·summary·category summary·checklist 타입과 API client를 추가한다.
-3. mock fixture, query key, cache 무효화, 403·404·migration 미적용 오류 테스트를 추가한다.
+1. Daily Plan·summary·category summary·checklist 타입과 API client를 추가한다.
+2. mock fixture, query key, cache 무효화, 403·404·migration 미적용 오류 테스트를 추가한다.
 
 ### F1. 카테고리 탐색
 

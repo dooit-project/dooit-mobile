@@ -263,42 +263,98 @@ const quickCaptureWeekdays = [
 ] as const;
 
 function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
-  const originalText = request.text.trim();
+  const originalText = request.text.trim().replace(/\s+/g, ' ');
   const referenceDate = request.referenceDate ?? today;
   let parsedDate: LocalDateString | null = null;
   let parsedTime: string | null = null;
   let recurrenceFrequency: TaskQuickCaptureResponse['parsedRecurrenceFrequency'] = null;
   let parsedByDays: string[] = [];
-  let title = originalText;
+  const consumedTokens: string[] = [];
 
-  const relativeDateMatch = originalText.match(/오늘|내일|모레/);
+  const relativeDateMatch = originalText.match(/오늘|내일모레|낼모레|모레|내일|낼/);
   if (relativeDateMatch) {
-    const offset = relativeDateMatch[0] === '오늘' ? 0 : relativeDateMatch[0] === '내일' ? 1 : 2;
+    const offset =
+      relativeDateMatch[0] === '오늘'
+        ? 0
+        : relativeDateMatch[0] === '내일' || relativeDateMatch[0] === '낼'
+          ? 1
+          : 2;
     parsedDate = shiftLocalDate(referenceDate, offset);
-    title = title.replace(relativeDateMatch[0], ' ');
+    consumedTokens.push(relativeDateMatch[0]);
+  } else {
+    const explicitDateMatch = originalText.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+    const koreanDateMatch = originalText.match(
+      /(?<!\d)(?:(\d{4})년\s*)?(\d{1,2})월\s*(\d{1,2})일(?!\d)/,
+    );
+    const slashDateMatch = originalText.match(/\b(\d{1,2})\/(\d{1,2})\b/);
+    const relativeWeekMatch = originalText.match(
+      /(이번\s*주|이번주|다음\s*주|다음주|담주|다다음\s*주|다다음주|다담주)\s*(월요일|화요일|수요일|목요일|금요일|토요일|일요일|월|화|수|목|금|토|일)/,
+    );
+
+    if (explicitDateMatch) {
+      parsedDate = toMockQuickCaptureDate(
+        Number(explicitDateMatch[1]),
+        Number(explicitDateMatch[2]),
+        Number(explicitDateMatch[3]),
+      );
+      consumedTokens.push(explicitDateMatch[0]);
+    } else if (koreanDateMatch) {
+      parsedDate = toMockQuickCaptureDate(
+        Number(koreanDateMatch[1] ?? referenceDate.slice(0, 4)),
+        Number(koreanDateMatch[2]),
+        Number(koreanDateMatch[3]),
+      );
+      consumedTokens.push(koreanDateMatch[0]);
+    } else if (slashDateMatch) {
+      parsedDate = toMockQuickCaptureDate(
+        Number(referenceDate.slice(0, 4)),
+        Number(slashDateMatch[1]),
+        Number(slashDateMatch[2]),
+      );
+      consumedTokens.push(slashDateMatch[0]);
+    } else if (relativeWeekMatch) {
+      const weekday = getMockQuickCaptureWeekday(relativeWeekMatch[2]);
+      const relativeWeek = relativeWeekMatch[1].replace(/\s/g, '');
+      const weeksToAdd = ['다다음주', '다담주'].includes(relativeWeek)
+        ? 2
+        : ['다음주', '담주'].includes(relativeWeek)
+          ? 1
+          : 0;
+      parsedDate = getMockRelativeWeekday(referenceDate, weekday.day, weeksToAdd);
+      consumedTokens.push(relativeWeekMatch[0]);
+    } else {
+      const weekdayMatch = originalText.match(
+        /(월요일|화요일|수요일|목요일|금요일|토요일|일요일|(?<![가-힣])(월|화|수|목|금|토|일)(?![가-힣]))/,
+      );
+      if (
+        weekdayMatch &&
+        !originalText
+          .slice(Math.max(0, weekdayMatch.index! - 3), weekdayMatch.index)
+          .includes('매주')
+      ) {
+        const weekday = getMockQuickCaptureWeekday(weekdayMatch[0]);
+        parsedDate = getNextMockWeekday(referenceDate, weekday.day);
+        consumedTokens.push(weekdayMatch[0]);
+      }
+    }
   }
 
-  const explicitDateMatch = originalText.match(/\b(\d{4}-\d{2}-\d{2})\b/);
-  if (explicitDateMatch) {
-    parsedDate = explicitDateMatch[1] as LocalDateString;
-    title = title.replace(explicitDateMatch[0], ' ');
-  }
-
-  const timeMatch = originalText.match(/(오전|오후)?\s*(\d{1,2})시(?:\s*(\d{1,2})분)?/);
+  const timeMatch = originalText.match(/(오전|오후)?\s*(\d{1,2})시(?:\s*(?:(\d{1,2})분|(반)))?/);
+  const colonTimeMatch = originalText.match(/(오전|오후)?\s*\b(\d{1,2}):(\d{2})\b/);
   if (timeMatch) {
     const meridiem = timeMatch[1];
-    let hour = Number(timeMatch[2]);
-    const minute = Number(timeMatch[3] ?? 0);
-
-    if (meridiem === '오전' && hour === 12) hour = 0;
-    if (meridiem === '오후' && hour < 12) hour += 12;
-    if (!meridiem && hour >= 1 && hour <= 7) hour += 12;
-
-    if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
-      parsedTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
-      parsedDate ??= referenceDate;
-      title = title.replace(timeMatch[0], ' ');
-    }
+    const minute = timeMatch[4] === '반' ? 30 : Number(timeMatch[3] ?? 0);
+    parsedTime = toMockQuickCaptureTime(Number(timeMatch[2]), minute, meridiem);
+    parsedDate ??= referenceDate;
+    consumedTokens.push(timeMatch[0]);
+  } else if (colonTimeMatch) {
+    parsedTime = toMockQuickCaptureTime(
+      Number(colonTimeMatch[2]),
+      Number(colonTimeMatch[3]),
+      colonTimeMatch[1],
+    );
+    parsedDate ??= referenceDate;
+    consumedTokens.push(colonTimeMatch[0]);
   }
 
   for (const weekday of quickCaptureWeekdays) {
@@ -308,12 +364,16 @@ function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
     recurrenceFrequency = 'WEEKLY';
     parsedByDays = [weekday.code];
     parsedDate = getNextMockWeekday(referenceDate, weekday.day);
-    title = title.replace(weeklyMatch[0], ' ');
+    consumedTokens.push(weeklyMatch[0]);
     break;
   }
 
   const parsed = parsedDate !== null || parsedTime !== null || recurrenceFrequency !== null;
-  const normalizedTitle = title.replace(/\s+/g, ' ').trim() || originalText;
+  const normalizedTitle =
+    consumedTokens
+      .reduce((title, token) => title.replace(token, ' '), originalText)
+      .replace(/\s+/g, ' ')
+      .trim() || originalText;
 
   return {
     originalText,
@@ -325,6 +385,52 @@ function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
     recurrenceFrequency,
     parsedByDays,
   };
+}
+
+function getMockQuickCaptureWeekday(value: string) {
+  const weekday = quickCaptureWeekdays.find(({ pattern }) =>
+    new RegExp(`^${pattern}$`).test(value),
+  );
+  if (!weekday) {
+    throw new ApiClientError('올바르지 않은 요일입니다.', { kind: 'http', status: 400 });
+  }
+  return weekday;
+}
+
+function getMockRelativeWeekday(
+  referenceDate: LocalDateString,
+  targetDay: number,
+  weeksToAdd: number,
+) {
+  const [year, month, day] = referenceDate.split('-').map(Number);
+  const referenceDay = new Date(Date.UTC(year, month - 1, day, 12)).getUTCDay();
+  const daysFromMonday = referenceDay === 0 ? 6 : referenceDay - 1;
+  const monday = shiftLocalDate(referenceDate, -daysFromMonday) ?? referenceDate;
+  const targetOffset = targetDay === 0 ? 6 : targetDay - 1;
+  return shiftLocalDate(monday, weeksToAdd * 7 + targetOffset) ?? referenceDate;
+}
+
+function toMockQuickCaptureDate(year: number, month: number, day: number) {
+  const date = new Date(Date.UTC(year, month - 1, day, 12));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    throw new ApiClientError('올바르지 않은 날짜입니다.', { kind: 'http', status: 400 });
+  }
+  return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}` as LocalDateString;
+}
+
+function toMockQuickCaptureTime(hourValue: number, minute: number, meridiem?: string) {
+  let hour = hourValue;
+  if (minute > 59 || hour > 23 || (meridiem && hour > 12)) {
+    throw new ApiClientError('올바르지 않은 시간입니다.', { kind: 'http', status: 400 });
+  }
+  if (meridiem === '오전' && hour === 12) hour = 0;
+  if (meridiem === '오후' && hour < 12) hour += 12;
+  if (!meridiem && hour >= 1 && hour <= 7) hour += 12;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
 }
 
 function getNextMockWeekday(referenceDate: LocalDateString, targetDay: number) {

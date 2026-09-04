@@ -72,6 +72,76 @@ describe('Mock task quick capture API', () => {
     });
   });
 
+  test.each([
+    ['낼 오전 9시 치과', '2026-08-14', '09:00:00', '치과'],
+    ['내일모레 10시 발표', '2026-08-15', '10:00:00', '발표'],
+    ['낼모레 오후 3시 반 치과', '2026-08-15', '15:30:00', '치과'],
+    ['담주 월요일 회고', '2026-08-17', null, '회고'],
+    ['다담주 화요일 14:30 발표 준비', '2026-08-25', '14:30:00', '발표 준비'],
+  ])('%s 표현을 백엔드와 같은 날짜·시간으로 해석한다', async (text, date, time, title) => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text,
+        referenceDate: '2026-08-13',
+      },
+    );
+
+    expect(response).toMatchObject({
+      parsed: true,
+      parsedDate: date,
+      parsedTime: time,
+      task: {
+        title,
+        type: 'SCHEDULE',
+        allDay: time === null,
+      },
+    });
+  });
+
+  test('HH:mm 시간만 있으면 기준 날짜의 일정으로 해석한다', async () => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text: '18:45 저녁 약속',
+        referenceDate: '2026-08-13',
+      },
+    );
+
+    expect(response).toMatchObject({
+      parsed: true,
+      parsedDate: '2026-08-13',
+      parsedTime: '18:45:00',
+      task: {
+        title: '저녁 약속',
+        startAt: '2026-08-13T18:45:00',
+        endAt: '2026-08-13T19:45:00',
+      },
+    });
+  });
+
+  test.each([
+    ['8월 15일 여행 준비', '2026-08-15', '여행 준비'],
+    ['2027년 1월 3일 귀국', '2027-01-03', '귀국'],
+    ['8/16 회의', '2026-08-16', '회의'],
+    ['금요일 병원', '2026-08-14', '병원'],
+  ])('%s 날짜 표현을 일정으로 해석한다', async (text, date, title) => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text,
+        referenceDate: '2026-08-13',
+      },
+    );
+
+    expect(response).toMatchObject({
+      parsed: true,
+      parsedDate: date,
+      parsedTime: null,
+      task: { title, type: 'SCHEDULE', allDay: true },
+    });
+  });
+
   test('매주 요일을 가장 가까운 날짜의 반복 일정으로 해석한다', async () => {
     const response = await mockApiClient.post<TaskQuickCaptureResponse>(
       '/api/v1/tasks/quick-capture',

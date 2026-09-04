@@ -1,13 +1,13 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-09-03
+Last updated: 2026-09-04
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 백엔드 계약 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md), 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md), 과거 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 85 suites, 434 tests 통과다. 문서 변경 후 `npm run validate`로 다시 확정한다.
+- 최신 검증 기준선은 85 suites, 444 tests 통과다.
 - 백엔드 source `6a78afe`에 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
 - production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=docker-20260829`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
 - EAS project id는 기존 `@hyunseung2/todolab-mobile`을 가리키지만 앱 slug는 `dooit-mobile`이다. 새 `@hyunseung2/dooit-mobile` project 연결 전에는 release 후보를 만들지 않는다.
@@ -25,7 +25,7 @@ Last updated: 2026-09-03
 
 세부 순서는 [`DAILY_EXECUTION_PRIORITIES.md`](./DAILY_EXECUTION_PRIORITIES.md)와 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
-- [ ] quick-capture mock parser와 테스트를 `낼`, `낼모레`, 상대 주+요일, `N시 반`, `HH:mm` 규칙에 맞춘다.
+- [x] quick-capture mock parser와 테스트를 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 규칙에 맞춘다.
 - [ ] Daily Plan·summary·category summary·checklist 타입, API client, mock fixture와 query cache를 추가한다.
 - [ ] local preference 기반 오늘 계획을 서버 Daily Plan과 `estimatedDurationMinutes`에 연결한다.
 - [ ] 하루 마감 결과를 계획 확정 시점 focus snapshot 기반 summary에 연결한다.

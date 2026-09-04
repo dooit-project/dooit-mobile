@@ -276,7 +276,6 @@ EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-ready
 - Daily Plan·예상 소요 시간·summary
 - 개인 Task category 요약
 - 개인·Workspace 체크리스트와 역할별 UI
-- quick capture mock parser의 신규 구어 표현
 
 배포·real smoke로 확인할 항목:
 
