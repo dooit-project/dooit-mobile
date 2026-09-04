@@ -26,9 +26,20 @@ export function getLatestInboxTask(inboxTasks: TaskResponse[]) {
   })[0];
 }
 
-export function getDailyPlanFocusTasks(tasks: TaskResponse[], limit = 3) {
-  return tasks
-    .filter((task) => task.status === 'TODAY' && task.type !== 'SCHEDULE')
+export function getDailyPlanFocusTasks(tasks: TaskResponse[], focusTaskIds?: number[], limit = 3) {
+  const executionTasks = tasks.filter(
+    (task) => task.status === 'TODAY' && task.type !== 'SCHEDULE',
+  );
+
+  if (focusTaskIds) {
+    const tasksById = new Map(executionTasks.map((task) => [task.id, task]));
+    return focusTaskIds
+      .map((taskId) => tasksById.get(taskId))
+      .filter((task): task is TaskResponse => task !== undefined)
+      .slice(0, Math.max(0, limit));
+  }
+
+  return executionTasks
     .sort(
       (left, right) =>
         (left.todayOrder ?? Number.MAX_SAFE_INTEGER) -

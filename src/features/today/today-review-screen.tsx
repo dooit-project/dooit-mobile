@@ -15,7 +15,9 @@ import {
   Screen,
   SectionHeader,
 } from '@/components/ui';
+import { useDailyPlan, useReplaceDailyPlan } from '@/features/daily-plan';
 import { TaskCard, useMoveTaskToToday } from '@/features/tasks';
+import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 import { toApiLocalDate } from '@/utils';
 
@@ -29,6 +31,8 @@ export function TodayReviewScreen() {
   const theme = useAppTheme();
   const today = toApiLocalDate();
   const overview = useTodayOverview(today);
+  const dailyPlan = useDailyPlan(today);
+  const replaceDailyPlan = useReplaceDailyPlan(today);
   const moveToToday = useMoveTaskToToday(today);
   const [feedback, setFeedback] = useState<string | null>(null);
   const focus = parseTodayReviewFocus(params.focus);
@@ -39,7 +43,11 @@ export function TodayReviewScreen() {
       : focus === 'stale'
         ? overview.staleTasks.length
         : overview.staleTasks.length + overview.recommendations.length + overview.inboxTasks.length;
-  const focusTasks = getDailyPlanFocusTasks(overview.todayTasks);
+  const plannedFocusTaskIds =
+    dailyPlan.data && (dailyPlan.data.status !== 'DRAFT' || dailyPlan.data.focusTaskIds.length > 0)
+      ? dailyPlan.data.focusTaskIds
+      : undefined;
+  const focusTasks = getDailyPlanFocusTasks(overview.todayTasks, plannedFocusTaskIds);
 
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
@@ -47,6 +55,13 @@ export function TodayReviewScreen() {
   const moveTask = (taskId: number, message: string) => {
     setFeedback(null);
     moveToToday.mutate(taskId, { onSuccess: () => setFeedback(message) });
+  };
+  const finishDailyPlan = () => {
+    setFeedback(null);
+    replaceDailyPlan.mutate(
+      { focusTaskIds: focusTasks.map((task) => task.id), status: 'CONFIRMED' },
+      { onSuccess: () => router.replace({ pathname: '/', params: { planned: '1' } }) },
+    );
   };
 
   return (
@@ -71,8 +86,27 @@ export function TodayReviewScreen() {
 
       {moveToToday.error ? (
         <InlineNotice message={moveToToday.error.message} tone="danger" />
+      ) : replaceDailyPlan.error ? (
+        <InlineNotice
+          message={getUserFacingApiErrorMessage(replaceDailyPlan.error)}
+          title="오늘 계획을 저장하지 못했어요"
+          tone="danger"
+        />
       ) : feedback ? (
         <InlineNotice message={feedback} tone="success" />
+      ) : null}
+
+      {!focus && dailyPlan.error ? (
+        <InlineNotice
+          action={
+            <Button size="compact" variant="ghost" onPress={() => void dailyPlan.refetch()}>
+              다시 시도
+            </Button>
+          }
+          message={getUserFacingApiErrorMessage(dailyPlan.error)}
+          title="저장된 오늘 계획을 불러오지 못했어요"
+          tone="danger"
+        />
       ) : null}
 
       {!focus && !overview.isPending && !overview.error && focusTasks.length > 0 ? (
@@ -133,11 +167,9 @@ export function TodayReviewScreen() {
           }
           primaryAction={
             <Button
-              onPress={() =>
-                focus
-                  ? router.replace('/')
-                  : router.replace({ pathname: '/', params: { planned: '1' } })
-              }
+              disabled={!focus && (dailyPlan.isPending || Boolean(dailyPlan.error))}
+              loading={!focus && replaceDailyPlan.isPending}
+              onPress={() => (focus ? router.replace('/') : finishDailyPlan())}
             >
               {focus ? 'Today로 돌아가기' : '오늘 계획 마치기'}
             </Button>
@@ -227,7 +259,11 @@ export function TodayReviewScreen() {
           ) : null}
 
           {!focus ? (
-            <Button onPress={() => router.replace({ pathname: '/', params: { planned: '1' } })}>
+            <Button
+              disabled={dailyPlan.isPending || Boolean(dailyPlan.error)}
+              loading={replaceDailyPlan.isPending}
+              onPress={finishDailyPlan}
+            >
               오늘 계획 마치기
             </Button>
           ) : null}

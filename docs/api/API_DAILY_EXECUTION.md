@@ -98,7 +98,7 @@ POST /api/v1/tasks/quick-capture
 
 빠른 등록 parser와 신규 계약의 타입·API client·mock·query hook을 연결했다. 다음 순서로 화면과 실제 환경을 연결한다.
 
-1. 일일 계획·예상 시간 query/mutation을 local prototype 대신 서버 resource에 연결한다.
+1. 일일 계획 focus 복원과 확정 mutation은 서버 resource에 연결했다. 예상 시간 입력과 합계는 다음 작업이다.
 2. summary를 하루 마감 결과에 연결한다.
 3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한한다.
 4. 카테고리 요약을 탐색 메뉴에 연결한다.

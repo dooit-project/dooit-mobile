@@ -7,11 +7,11 @@ Last updated: 2026-09-04
 ## 자동 검증 기준선
 
 - 날짜: 2026-09-04
-- frontend 기준: 현재 작업 트리, base `235d03b`
+- frontend 기준: 현재 작업 트리, base `eb257d7`
 - 명령: `npm run validate`
 - 결과: 통과
 - 범위: TypeScript, ESLint, Prettier, 문서 링크, release asset·Android APK 정적 설정, Jest
-- 테스트: 91 suites, 455 tests
+- 테스트: 91 suites, 457 tests
 
 ## 백엔드 source 확인
 

@@ -88,6 +88,23 @@ describe('getDailyPlanFocusTasks', () => {
 
     expect(getDailyPlanFocusTasks(tasks).map((task) => task.id)).toEqual([4, 3, 1]);
   });
+
+  it('서버 계획이 있으면 focus ID 순서를 사용하고 유효하지 않은 항목은 제외한다', () => {
+    const tasks: TaskResponse[] = [
+      { ...createInboxTask(1), status: 'TODAY', todayOrder: 1 },
+      { ...createInboxTask(2), type: 'SCHEDULE', status: 'TODAY', todayOrder: 2 },
+      { ...createInboxTask(3), status: 'TODAY', todayOrder: 3 },
+      { ...createInboxTask(4), status: 'DONE', todayOrder: null },
+    ];
+
+    expect(getDailyPlanFocusTasks(tasks, [3, 2, 4, 999, 1]).map((task) => task.id)).toEqual([3, 1]);
+  });
+
+  it('서버 계획이 빈 배열이면 자동 추천으로 대체하지 않는다', () => {
+    const tasks: TaskResponse[] = [{ ...createInboxTask(1), status: 'TODAY', todayOrder: 1 }];
+
+    expect(getDailyPlanFocusTasks(tasks, [])).toEqual([]);
+  });
 });
 
 describe('getDailyShutdownTasks', () => {
