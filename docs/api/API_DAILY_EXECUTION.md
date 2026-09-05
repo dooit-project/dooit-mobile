@@ -1,6 +1,6 @@
 # 일일 계획·실행 API 계약
 
-Last verified: 2026-09-03
+Last verified: 2026-09-05
 
 이 문서는 `오늘 계획 → 실행 → 하루 마감`에 사용하는 현재 백엔드 계약과 아직 남은 요청만 기록한다. 배포 여부와 모바일 연결 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md)를 따른다.
 
@@ -97,10 +97,10 @@ POST /api/v1/tasks/quick-capture
 
 ## 프론트 연결 순서
 
-빠른 등록 parser와 신규 계약의 타입·API client·mock·query hook을 연결했다. 다음 순서로 화면과 실제 환경을 연결한다.
+빠른 등록 parser와 신규 계약의 타입·API client·mock·query hook을 연결했다. 다음 순서로 남은 화면과 실제 환경을 연결한다.
 
 1. 일일 계획 focus 복원·확정 mutation과 예상 시간 입력·Today 합계를 서버 resource에 연결했다.
-2. summary를 하루 마감 결과에 연결한다.
+2. summary를 하루 마감 결과에 연결하고 390×844 다중·이동·빈 상태를 검증했다.
 3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한한다.
 4. 카테고리 요약을 탐색 메뉴에 연결한다.
 5. local real API, production Android 순서로 검증한다.

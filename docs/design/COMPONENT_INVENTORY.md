@@ -50,12 +50,13 @@ Task row 기준:
 
 ## Today
 
-| 컴포넌트            | 위치                                         | 역할                                 | 주의점                                 |
-| ------------------- | -------------------------------------------- | ------------------------------------ | -------------------------------------- |
-| `TodayWeekStrip`    | `src/features/today/today-week-strip.tsx`    | 주간 mini calendar                   | 경계 제거, 월 경계·일정 dot 확인       |
-| `TodayOverview`     | `src/features/today/today-overview.tsx`      | 일정, 오늘 할 일, 정리, 완료 section | 첫 viewport에서 핵심 목록이 보여야 함  |
-| `QuickCapture`      | `src/features/today/quick-capture.tsx`       | 하단 빠른 기록 composer/FAB          | keyboard, safe area, tab bar 겹침 확인 |
-| `TodayReviewScreen` | `src/features/today/today-review-screen.tsx` | 지난 미완료, 추천, 기록함 정리       | action copy가 실제 동작과 맞아야 함    |
+| 컴포넌트              | 위치                                           | 역할                                 | 주의점                                 |
+| --------------------- | ---------------------------------------------- | ------------------------------------ | -------------------------------------- |
+| `TodayWeekStrip`      | `src/features/today/today-week-strip.tsx`      | 주간 mini calendar                   | 경계 제거, 월 경계·일정 dot 확인       |
+| `TodayOverview`       | `src/features/today/today-overview.tsx`        | 일정, 오늘 할 일, 정리, 완료 section | 첫 viewport에서 핵심 목록이 보여야 함  |
+| `QuickCapture`        | `src/features/today/quick-capture.tsx`         | 하단 빠른 기록 composer/FAB          | keyboard, safe area, tab bar 겹침 확인 |
+| `TodayReviewScreen`   | `src/features/today/today-review-screen.tsx`   | 지난 미완료, 추천, 기록함 정리       | action copy가 실제 동작과 맞아야 함    |
+| `TodayShutdownScreen` | `src/features/today/today-shutdown-screen.tsx` | 확정 계획 결과와 미완료 이동         | 2×2 결과와 compact row 밀도 유지       |
 
 Today 기본 순서:
 

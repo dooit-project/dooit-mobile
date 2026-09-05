@@ -7,10 +7,10 @@ Last updated: 2026-09-05
 ## 자동 검증 기준선
 
 - 날짜: 2026-09-05
-- frontend 기준: 현재 작업 트리, base `11a5727`
+- frontend 기준: 현재 작업 트리, base `cc8aa50`
 - 명령: `npm run validate`
 - 결과: 통과
-- 테스트: 92 suites, 470 tests
+- 테스트: 93 suites, 472 tests
 - 대표 화면: Expo Web mock · Chrome · 390×844, 14개 PNG를 2026-09-05 기준으로 갱신
 - 브라우저: ChatGPT 앱 내장 브라우저가 `Invalid browser service environment`로 연결되지 않아 Chrome 자동화로 대체했으며 console error는 없었음
 
@@ -38,6 +38,7 @@ Last updated: 2026-09-05
 - quick-capture의 상대일·상대 주·한국어 날짜·요일·시간 parser 정합성
 - Daily Plan·summary·category summary·checklist client, mock, query cache와 Workspace VIEWER 403
 - Task 예상 시간 5~1440분 검증·mock 저장·합계·표시 형식
+- Daily Plan 확정 snapshot summary의 표시·접근성 label과 하루 마감 이동 즉시 반영
 - 운영 Web export의 real mode·HTTPS API URL 검사
 
 자동 검증만으로 확정할 수 없는 항목:

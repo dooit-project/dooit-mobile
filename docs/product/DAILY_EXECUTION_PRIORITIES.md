@@ -1,6 +1,6 @@
 # 오늘 실행 루프 우선순위
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 ## 목표
 
@@ -20,6 +20,7 @@ Last updated: 2026-09-04
 - real quick-capture API와 멱등성 처리
 - backend 규칙과 같은 quick-capture mock parser와 회귀 테스트
 - Daily Plan·summary·category summary·checklist 타입, API client, mock과 query hook
+- 계획 확정 시점 focus snapshot 기반 하루 마감 결과와 항목별 즉시 이동 반영
 
 ## 다음 프론트 작업
 
@@ -49,7 +50,7 @@ Last updated: 2026-09-04
 
 - 계획 화면의 focus 순서와 확정 상태는 서버 Daily Plan에 연결했다.
 - `estimatedDurationMinutes` 입력·상세 표시와 오늘 총 예상 시간을 연결했다.
-- 계획 확정 시점 snapshot 기반 summary를 하루 마감 결과에 사용한다.
+- 계획 확정 시점 snapshot 기반 summary를 하루 마감 결과에 연결했다.
 - summary의 완료·다른 날짜 이동·기록함 이동·미결정을 생산성 점수로 바꾸지 않는다.
 
 ### F2. 네이티브와 production 검증

@@ -7,7 +7,7 @@ Last updated: 2026-09-05
 ## 현재 상태
 
 - 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 92 suites, 470 tests 통과이며 대표 화면 캡처는 2026-09-05 기준으로 갱신됐다.
+- 최신 검증 기준선은 93 suites, 472 tests 통과이며 대표 화면과 하루 마감 summary 캡처는 2026-09-05 기준으로 갱신됐다.
 - 백엔드 source `6a78afe`에 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
 - production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=docker-20260829`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
 - EAS project id는 기존 `@hyunseung2/todolab-mobile`을 가리키지만 앱 slug는 `dooit-mobile`이다. 새 `@hyunseung2/dooit-mobile` project 연결 전에는 release 후보를 만들지 않는다.
@@ -30,14 +30,15 @@ Last updated: 2026-09-05
 - [x] local preference 기반 오늘 계획을 서버 Daily Plan과 `estimatedDurationMinutes`에 연결한다.
   - [x] 계획 화면에서 서버 focus 순서를 복원하고 `CONFIRMED` 저장 성공 후 Today로 이동한다.
   - [x] Task 예상 시간 입력·상세 표시와 오늘 총 예상 시간을 연결한다.
-- [ ] 하루 마감 결과를 계획 확정 시점 focus snapshot 기반 summary에 연결한다.
+- [x] 하루 마감 결과를 계획 확정 시점 focus snapshot 기반 summary에 연결한다.
 - [ ] 카테고리 요약을 좌측 메뉴에 개인 범위로 연결한다.
 - [ ] 개인·Workspace Task 상세에 체크리스트를 추가하고 VIEWER 변경 행동을 제한한다.
 - [ ] 신규 API client를 local real backend와 production Android에서 검증한다.
 
 ## P1. UI·제품 검증
 
-- [ ] 카테고리 메뉴, 체크리스트와 summary 화면은 각각 Product Design 3안을 비교한 뒤 구현한다.
+- [x] summary 화면은 Product Design 3안을 비교하고 선택안을 390×844로 검증한다.
+- [ ] 카테고리 메뉴와 체크리스트 화면은 각각 Product Design 3안을 비교한 뒤 구현한다.
 - [ ] 320dp·390dp·430dp, font scale 1.0·1.5, light·dark에서 핵심 행동과 줄바꿈을 확인한다.
 - [ ] VoiceOver·TalkBack, Android back, iOS gesture, safe area와 키보드를 실제 기기에서 확인한다.
 - [ ] Workspace 초대·체크리스트를 OWNER·EDITOR·VIEWER별로 real smoke한다.

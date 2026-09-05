@@ -83,7 +83,7 @@ flowchart LR
 - 기록함 0개·1개와 하루 정리 0개. 여러 개 상태에서는 추천·기록함 중복 노출을 확인했다.
 - 완료 0개·1~3개. 4개 이상 펼침/접힘은 확인했다.
 - Android·iOS 실제 공유 메뉴 payload와 iOS widget cold start·인증 bootstrap이 남았다.
-- 일일 계획 summary 연결 화면이 남았다.
+- 일일 계획 summary의 다중·이동·빈 상태는 [`daily-plan-summary-2026-09-05`](../audits/daily-plan-summary-2026-09-05/README.md)에서 확인했다.
 - quick-capture 신규 구어 표현은 mock parser 회귀 검사를 완료했으며 local real·production 입력 smoke가 남았다.
 
 ## UF-03. Task 생성·조회·수정·삭제

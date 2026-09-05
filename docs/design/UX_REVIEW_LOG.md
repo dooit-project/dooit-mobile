@@ -1,6 +1,6 @@
 # UX Review
 
-Last updated: 2026-09-03
+Last updated: 2026-09-05
 
 이 문서는 현재 화면에서 유지할 UX 결정과 아직 검증할 위험만 기록한다. 완료된 수정 과정과 과거 화면별 pass 기록은 보관하지 않는다. 시각 기준은 [`DESIGN.md`](./DESIGN.md), 현재 화면 구조는 [`SCREEN_GUIDE.md`](./SCREEN_GUIDE.md), 앞으로 할 일은 [`ROADMAP.md`](../product/ROADMAP.md)를 따른다.
 
@@ -50,6 +50,13 @@ Last updated: 2026-09-03
 - 체크리스트는 Task의 다음 행동을 보여 주는 한 단계 목록으로 두고 별도 날짜·담당자·알림을 중첩하지 않는다.
 - Workspace VIEWER에게 체크리스트 변경 행동을 보여 준 뒤 403으로 막는 흐름을 기본 UX로 삼지 않는다.
 - 최신 Web 근거는 [`uf-03-task-crud-2026-08-24`](../audits/uf-03-task-crud-2026-08-24/README.md)에 둔다.
+
+### 하루 마감
+
+- 계획 결과는 확정 시점 focus를 기준으로 `완료`·`다른 날짜`·`기록함`·`미결정`을 2×2로 보여 주며 점수나 평가 문구를 만들지 않는다.
+- 미완료 목록은 하나의 그룹 surface 안에서 행 구분선으로 나누고, 제목 아래 카테고리와 `기록함`·`내일` 박스 행동을 같은 줄에 둔다.
+- 각 이동 행동은 44px 최소 높이를 유지하고 처리한 항목은 즉시 목록에서 제거하며 summary를 갱신한다.
+- 390×844 다중·이동·빈 상태 근거는 [`daily-plan-summary-2026-09-05`](../audits/daily-plan-summary-2026-09-05/README.md)에 둔다.
 
 ### Navigation과 선택 상태
 

@@ -24,6 +24,7 @@ Dooit Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서다.
 | `/calendar`       | Calendar        | 완료   | 재점검               | 하단 활성 tab, 일정 label overflow           |
 | `/profile`        | Profile         | 완료   | 재점검               | 하단 활성 tab, native overlap, screen reader |
 | `/today/review`   | 정리할 항목     | 완료   | 완료                 | 상태별 empty/success/error                   |
+| `/today/shutdown` | 하루 마감       | 완료   | 완료                 | native 큰 글꼴·dark·API error                |
 | `/search`         | Search          | 완료   | 완료                 | real pagination, native keyboard             |
 | `/completed`      | Completed       | 완료   | 완료                 | 긴 제목, 다시 열기 affordance native 확인    |
 | `/dday`           | D-Day           | 완료   | 완료                 | real API, 긴 목표 제목, screen reader        |
