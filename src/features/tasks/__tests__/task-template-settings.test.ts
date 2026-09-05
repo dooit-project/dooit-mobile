@@ -64,6 +64,7 @@ describe('Task 템플릿 일정·반복 설정', () => {
   test.each([
     [{ ...baseValues, defaultStartTime: '25:00' }, '시작 시간을'],
     [{ ...baseValues, defaultDurationMinutes: '0' }, '소요 시간은'],
+    [{ ...baseValues, defaultDurationMinutes: '4' }, '소요 시간은'],
     [
       { ...baseValues, recurrenceFrequency: 'WEEKLY' as const, recurrenceByDays: [] },
       '요일을 하나 이상',

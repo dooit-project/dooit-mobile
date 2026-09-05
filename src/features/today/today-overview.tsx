@@ -13,7 +13,14 @@ import {
   ListSkeleton,
   SectionHeader,
 } from '@/components/ui';
-import { ScheduleCard, TaskCard, useCompleteTask, useReopenTask } from '@/features/tasks';
+import {
+  ScheduleCard,
+  TaskCard,
+  formatEstimatedDuration,
+  getTotalEstimatedDurationMinutes,
+  useCompleteTask,
+  useReopenTask,
+} from '@/features/tasks';
 import { ContextualFeatureTip } from '@/features/onboarding';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { motion, radii, spacing, useAppTheme } from '@/theme';
@@ -70,6 +77,7 @@ export function TodayOverview({
   const [isInboxFocused, setIsInboxFocused] = useState(false);
   const [isReviewFocused, setIsReviewFocused] = useState(false);
   const { scheduleTasks, executionTasks } = splitTodayTasks(todayTasks);
+  const totalEstimatedDurationMinutes = getTotalEstimatedDurationMinutes(executionTasks);
   const reviewItemCount = staleTasks.length + recommendations.length;
   const latestInboxTask = getLatestInboxTask(inboxTasks);
   const sortedScheduleTasks = [...scheduleTasks].sort(compareScheduleTasks);
@@ -170,6 +178,11 @@ export function TodayOverview({
       <View style={styles.taskSection}>
         <SectionHeader
           title="오늘 할 일"
+          description={
+            totalEstimatedDurationMinutes > 0
+              ? `총 예상 ${formatEstimatedDuration(totalEstimatedDurationMinutes)}`
+              : undefined
+          }
           action={
             <AppText tone="primary" variant="label" weight="bold">
               {executionTasks.length}개

@@ -17,6 +17,7 @@ import { useDdayGoals } from '@/features/dday';
 import {
   TaskDateQuickActions,
   TaskForm,
+  formatEstimatedDuration,
   getRecurrenceLabel,
   useDeleteTask,
   useTaskDdayGoal,
@@ -285,6 +286,14 @@ function TaskDetail({
           value={task.targetDate ? formatDateLabel(task.targetDate) : '없음'}
         />
         <InfoRow label="종일" value={task.allDay ? '예' : '아니오'} />
+        <InfoRow
+          label="예상 시간"
+          value={
+            task.estimatedDurationMinutes
+              ? formatEstimatedDuration(task.estimatedDurationMinutes)
+              : '없음'
+          }
+        />
         <InfoRow label="카테고리" value={task.category ?? '없음'} />
       </Card>
 

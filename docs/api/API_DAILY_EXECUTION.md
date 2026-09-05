@@ -23,6 +23,7 @@ PUT /api/v1/daily-plans/{date}
 Task 생성·수정·응답의 `estimatedDurationMinutes`를 사용한다.
 
 - `null`은 미설정이다.
+- 값이 있으면 5분 이상 1440분 이하여야 한다.
 - 일정의 `startAt`·`endAt`과 별개이며 Task 예상 시간 합계는 클라이언트에서 계산할 수 있다.
 - 반복 occurrence와 template 적용은 실행 OpenAPI와 백엔드 테스트를 기준으로 확인한다.
 
@@ -98,7 +99,7 @@ POST /api/v1/tasks/quick-capture
 
 빠른 등록 parser와 신규 계약의 타입·API client·mock·query hook을 연결했다. 다음 순서로 화면과 실제 환경을 연결한다.
 
-1. 일일 계획 focus 복원과 확정 mutation은 서버 resource에 연결했다. 예상 시간 입력과 합계는 다음 작업이다.
+1. 일일 계획 focus 복원·확정 mutation과 예상 시간 입력·Today 합계를 서버 resource에 연결했다.
 2. summary를 하루 마감 결과에 연결한다.
 3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한한다.
 4. 카테고리 요약을 탐색 메뉴에 연결한다.

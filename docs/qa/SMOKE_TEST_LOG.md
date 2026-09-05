@@ -1,17 +1,18 @@
 # Smoke Test Log
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
 ## 자동 검증 기준선
 
-- 날짜: 2026-09-04
-- frontend 기준: 현재 작업 트리, base `eb257d7`
+- 날짜: 2026-09-05
+- frontend 기준: 현재 작업 트리, base `6f89153`
 - 명령: `npm run validate`
-- 결과: 통과
-- 범위: TypeScript, ESLint, Prettier, 문서 링크, release asset·Android APK 정적 설정, Jest
-- 테스트: 91 suites, 457 tests
+- 결과: TypeScript·ESLint·Prettier 통과 후 대표 화면 캡처 7일 경과 검사에서 중단
+- 별도 재검증: release 정적 검사와 Jest 통과
+- 테스트: 92 suites, 470 tests
+- 후속: `docs/screenshots/` 대표 화면을 2026-09-05 기준으로 재촬영한 뒤 전체 `npm run validate` 재실행
 
 ## 백엔드 source 확인
 
@@ -36,6 +37,7 @@ Last updated: 2026-09-04
 - 공유 메뉴 빠른 기록과 iOS widget deep-link·build 격리
 - quick-capture의 상대일·상대 주·한국어 날짜·요일·시간 parser 정합성
 - Daily Plan·summary·category summary·checklist client, mock, query cache와 Workspace VIEWER 403
+- Task 예상 시간 5~1440분 검증·mock 저장·합계·표시 형식
 - 운영 Web export의 real mode·HTTPS API URL 검사
 
 자동 검증만으로 확정할 수 없는 항목:

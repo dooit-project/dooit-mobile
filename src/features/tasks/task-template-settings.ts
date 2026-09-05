@@ -80,9 +80,9 @@ export function buildTaskTemplateSettingsRequest(
     return { ok: false, message: '일정 또는 반복 템플릿에는 시작 시간이나 종일 설정이 필요해요.' };
   }
 
-  const durationResult = parseOptionalInteger(values.defaultDurationMinutes, 1, 1440);
+  const durationResult = parseOptionalInteger(values.defaultDurationMinutes, 5, 1440);
   if (!durationResult.ok) {
-    return { ok: false, message: '소요 시간은 1분 이상 1440분 이하로 입력해 주세요.' };
+    return { ok: false, message: '소요 시간은 5분 이상 1440분 이하로 입력해 주세요.' };
   }
 
   const intervalResult = parseOptionalInteger(values.recurrenceInterval, 1, 99);

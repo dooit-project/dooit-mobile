@@ -28,11 +28,13 @@ import {
   taskNotificationTimingOptions,
   type TaskNotificationTiming,
 } from './task-notification-timing';
+import { parseEstimatedDurationMinutes } from './task-duration';
 
 type TaskFormValues = {
   title: string;
   description: string;
   category: string;
+  estimatedDurationMinutes: string;
   type: TaskType;
   allDay: boolean;
   scheduleDate: string;
@@ -48,6 +50,7 @@ type TaskFormField =
   | 'title'
   | 'description'
   | 'category'
+  | 'estimatedDurationMinutes'
   | 'scheduleDate'
   | 'startTime'
   | 'endTime'
@@ -90,6 +93,9 @@ export function TaskForm({
       title: initialTask?.title ?? '',
       description: initialTask?.description ?? '',
       category: initialTask?.category ?? '',
+      estimatedDurationMinutes: initialTask?.estimatedDurationMinutes
+        ? String(initialTask.estimatedDurationMinutes)
+        : '',
       type: initialTask?.type ?? initialType ?? 'TODO',
       allDay: initialTask?.allDay ?? false,
       scheduleDate:
@@ -116,12 +122,15 @@ export function TaskForm({
       ? Boolean(
           initialTask.description ||
           initialTask.category ||
+          initialTask.estimatedDurationMinutes ||
           initialTask.type !== 'TODO' ||
           initialTask.allDay,
         )
       : initialType !== undefined && initialType !== 'TODO',
   );
   const titleLength = values.title.trim().length;
+  const hasTitleValidationError = validationMessage === '제목을 입력해 주세요.';
+  const hasEstimatedDurationValidationError = validationMessage?.startsWith('예상 시간은');
   const canSubmit = titleLength > 0 && !isSubmitting;
   const isSchedule = values.type === 'SCHEDULE';
 
@@ -137,6 +146,12 @@ export function TaskForm({
 
     if (!title) {
       setValidationMessage('제목을 입력해 주세요.');
+      return;
+    }
+
+    const estimatedDuration = parseEstimatedDurationMinutes(values.estimatedDurationMinutes);
+    if (!estimatedDuration.ok) {
+      setValidationMessage('예상 시간은 5분 이상 1440분 이하로 입력해 주세요.');
       return;
     }
 
@@ -188,6 +203,7 @@ export function TaskForm({
       title,
       description: description || null,
       category: category || null,
+      estimatedDurationMinutes: estimatedDuration.value,
       type: values.type,
       allDay: schedule?.allDay ?? false,
       startAt: schedule?.startAt ?? null,
@@ -227,7 +243,7 @@ export function TaskForm({
               styles.input,
               {
                 backgroundColor: theme.colors.surface,
-                borderColor: validationMessage
+                borderColor: hasTitleValidationError
                   ? theme.colors.danger
                   : focusedField === 'title'
                     ? theme.colors.primary
@@ -600,7 +616,7 @@ export function TaskForm({
           ]}
         >
           <AppText tone="secondary" variant="label" weight="semibold">
-            {isDetailsExpanded ? '추가 정보 접기' : '설명·카테고리 추가'} ›
+            {isDetailsExpanded ? '추가 정보 접기' : '설명·카테고리·예상 시간 추가'} ›
           </AppText>
         </Pressable>
 
@@ -638,6 +654,52 @@ export function TaskForm({
               textAlignVertical="top"
               value={values.description}
             />
+          </View>
+        ) : null}
+
+        {isDetailsExpanded ? (
+          <View style={styles.field}>
+            <View style={styles.labelRow}>
+              <AppText variant="label" weight="bold">
+                예상 시간
+              </AppText>
+              <AppText tone="muted" variant="caption">
+                선택
+              </AppText>
+            </View>
+            <View style={styles.durationRow}>
+              <TextInput
+                accessibilityHint="5분부터 1440분 사이로 입력해 주세요."
+                accessibilityLabel="예상 소요 시간(분)"
+                editable={!isSubmitting}
+                keyboardType="number-pad"
+                maxLength={4}
+                onBlur={() => setFocusedField(null)}
+                onChangeText={(value) => updateField('estimatedDurationMinutes', value)}
+                onFocus={() => setFocusedField('estimatedDurationMinutes')}
+                placeholder="30"
+                placeholderTextColor={theme.colors.textMuted}
+                returnKeyType="done"
+                style={[
+                  styles.input,
+                  styles.durationInput,
+                  {
+                    backgroundColor: theme.colors.surface,
+                    borderColor: hasEstimatedDurationValidationError
+                      ? theme.colors.danger
+                      : focusedField === 'estimatedDurationMinutes'
+                        ? theme.colors.primary
+                        : theme.colors.border,
+                    borderWidth: focusedField === 'estimatedDurationMinutes' ? 2 : 1,
+                    color: theme.colors.text,
+                  },
+                ]}
+                value={values.estimatedDurationMinutes}
+              />
+              <AppText tone="secondary" variant="label">
+                분
+              </AppText>
+            </View>
           </View>
         ) : null}
 
@@ -812,6 +874,16 @@ const styles = StyleSheet.create({
   intervalInput: {
     minWidth: 72,
     textAlign: 'center',
+  },
+  durationRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing[2],
+  },
+  durationInput: {
+    maxWidth: 120,
+    minWidth: 88,
+    textAlign: 'right',
   },
   switchRow: {
     alignItems: 'center',

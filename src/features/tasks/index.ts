@@ -11,6 +11,11 @@ export {
 export { ScheduleCard } from './schedule-card';
 export { TaskCard } from './task-card';
 export { TaskDateQuickActions } from './task-date-quick-actions';
+export {
+  formatEstimatedDuration,
+  getTotalEstimatedDurationMinutes,
+  parseEstimatedDurationMinutes,
+} from './task-duration';
 export { TaskForm } from './task-form';
 export { moveTaskToDate } from './move-task-to-date';
 export { getOccurrenceLabel, getRecurrenceLabel } from './recurrence-presentation';

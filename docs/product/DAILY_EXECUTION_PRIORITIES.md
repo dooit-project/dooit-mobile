@@ -48,7 +48,7 @@ Last updated: 2026-09-04
 ### F1. 서버 Daily Plan과 하루 결과
 
 - 계획 화면의 focus 순서와 확정 상태는 서버 Daily Plan에 연결했다.
-- `estimatedDurationMinutes` 입력과 오늘 총 예상 시간을 연결한다.
+- `estimatedDurationMinutes` 입력·상세 표시와 오늘 총 예상 시간을 연결했다.
 - 계획 확정 시점 snapshot 기반 summary를 하루 마감 결과에 사용한다.
 - summary의 완료·다른 날짜 이동·기록함 이동·미결정을 생산성 점수로 바꾸지 않는다.
 

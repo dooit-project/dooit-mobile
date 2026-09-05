@@ -25,13 +25,14 @@ docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
 
 | API                                         | 백엔드 계약                                                                      | 현재 모바일               | 다음 프론트 작업                      |
 | ------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------- | ------------------------------------- |
-| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정 연결 완료 | 예상 시간 입력·합계 연결              |
+| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정 연결 완료 | 하루 마감 summary 연결                |
 | `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | client·mock·query 완료    | 하루 마감 결과 UI에 연결              |
 | `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | client·mock·query 완료    | 메뉴 loading·empty·error 상태 구현    |
 | `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | client·mock·query 완료    | Task 상세 체크리스트와 권한별 UI 구현 |
 | `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결 완료                 | local real·production 입력 smoke      |
 
 기존 개인 Task URL과 DTO에는 깨지는 변경이 없다. 카테고리 요약은 Workspace Task를 포함하지 않으며 카테고리 생성·이름 변경·삭제·사용자 지정 정렬 API를 대신하지 않는다.
+Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실행 Task 합계까지 연결했다.
 
 ## 프론트에서 바로 할 수 있는 일
 

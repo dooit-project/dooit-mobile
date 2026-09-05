@@ -1,13 +1,13 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 백엔드 계약 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md), 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md), 과거 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 91 suites, 457 tests 통과다.
+- 최신 테스트 기준선은 92 suites, 470 tests 통과다. 대표 화면 캡처는 7일 갱신 시점에 도달해 재촬영이 필요하다.
 - 백엔드 source `6a78afe`에 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
 - production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=docker-20260829`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
 - EAS project id는 기존 `@hyunseung2/todolab-mobile`을 가리키지만 앱 slug는 `dooit-mobile`이다. 새 `@hyunseung2/dooit-mobile` project 연결 전에는 release 후보를 만들지 않는다.
@@ -27,9 +27,9 @@ Last updated: 2026-09-04
 
 - [x] quick-capture mock parser와 테스트를 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 규칙에 맞춘다.
 - [x] Daily Plan·summary·category summary·checklist 타입, API client, mock fixture와 query cache를 추가한다.
-- [ ] local preference 기반 오늘 계획을 서버 Daily Plan과 `estimatedDurationMinutes`에 연결한다.
+- [x] local preference 기반 오늘 계획을 서버 Daily Plan과 `estimatedDurationMinutes`에 연결한다.
   - [x] 계획 화면에서 서버 focus 순서를 복원하고 `CONFIRMED` 저장 성공 후 Today로 이동한다.
-  - [ ] Task 예상 시간 입력과 오늘 총 예상 시간을 연결한다.
+  - [x] Task 예상 시간 입력·상세 표시와 오늘 총 예상 시간을 연결한다.
 - [ ] 하루 마감 결과를 계획 확정 시점 focus snapshot 기반 summary에 연결한다.
 - [ ] 카테고리 요약을 좌측 메뉴에 개인 범위로 연결한다.
 - [ ] 개인·Workspace Task 상세에 체크리스트를 추가하고 VIEWER 변경 행동을 제한한다.
