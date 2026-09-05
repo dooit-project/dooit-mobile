@@ -6,7 +6,7 @@ Dooit Mobile을 앱 마켓, 소개 페이지, 발표 자료에 보여주기 위�
 
 - 마켓 이미지 구성과 문구 초안은 최신 Today, Calendar, Search, Completed 흐름을 기준으로 정리되어 있다.
 - `docs/screenshots/`에 mock Web 390×844 기준 원본 화면 캡쳐를 생성했다.
-- 원본 화면의 최신 촬영일은 **2026-08-29**이며 상세 기준은 [`screenshots/README.md`](../screenshots/README.md)에 기록한다.
+- 원본 화면의 최신 촬영일은 **2026-09-05**이며 상세 기준은 [`screenshots/README.md`](../screenshots/README.md)에 기록한다.
 - 실제 `01_today.png` 같은 마켓용 편집 이미지 파일을 1080×1920 PNG로 생성했다.
 - 편집본은 `docs/marketing/marketing-frame.html` 템플릿에서 다시 렌더링할 수 있다.
 - 현재 편집본 export 기준일은 **2026-08-01**이다. 원본보다 오래된 파생 이미지이므로 다음 마켓 제출 작업에서 최신 원본으로 다시 export해야 한다.

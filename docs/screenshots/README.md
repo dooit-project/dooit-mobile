@@ -4,10 +4,11 @@
 
 ## 최신 캡처
 
-- 촬영일: **2026-08-29**
-- 기준 커밋: `3d868ef`
+- 촬영일: **2026-09-05**
+- 기준 커밋: `11a5727`
 - 환경: Expo Web · mock API · Chrome · 390×844 · light theme
 - 시간대: `Asia/Seoul`
+- 캡처 도구: ChatGPT 앱 내장 브라우저가 `Invalid browser service environment`로 연결되지 않아 Chrome 자동화로 대체
 - 상세 상태: [`manifest.json`](./manifest.json)
 
 ## 갱신 규칙

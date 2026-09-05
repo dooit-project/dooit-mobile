@@ -7,12 +7,12 @@ Last updated: 2026-09-05
 ## 자동 검증 기준선
 
 - 날짜: 2026-09-05
-- frontend 기준: 현재 작업 트리, base `6f89153`
+- frontend 기준: 현재 작업 트리, base `11a5727`
 - 명령: `npm run validate`
-- 결과: TypeScript·ESLint·Prettier 통과 후 대표 화면 캡처 7일 경과 검사에서 중단
-- 별도 재검증: release 정적 검사와 Jest 통과
+- 결과: 통과
 - 테스트: 92 suites, 470 tests
-- 후속: `docs/screenshots/` 대표 화면을 2026-09-05 기준으로 재촬영한 뒤 전체 `npm run validate` 재실행
+- 대표 화면: Expo Web mock · Chrome · 390×844, 14개 PNG를 2026-09-05 기준으로 갱신
+- 브라우저: ChatGPT 앱 내장 브라우저가 `Invalid browser service environment`로 연결되지 않아 Chrome 자동화로 대체했으며 console error는 없었음
 
 ## 백엔드 source 확인
 
