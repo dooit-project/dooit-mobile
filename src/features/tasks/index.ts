@@ -10,6 +10,7 @@ export {
 } from './task-template-settings';
 export { ScheduleCard } from './schedule-card';
 export { TaskCard } from './task-card';
+export { TaskChecklistSection } from './task-checklist-section';
 export { TaskDateQuickActions } from './task-date-quick-actions';
 export {
   formatEstimatedDuration,

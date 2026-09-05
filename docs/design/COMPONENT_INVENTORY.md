@@ -36,6 +36,7 @@ Dooit Mobile의 공통 UI 컴포넌트와 주요 도메인 컴포넌트 사용 �
 | 컴포넌트               | 위치                                             | 역할                    | 주요 사용처                                    | 사용 기준                                 |
 | ---------------------- | ------------------------------------------------ | ----------------------- | ---------------------------------------------- | ----------------------------------------- |
 | `TaskCard`             | `src/features/tasks/task-card.tsx`               | TODO/완료 row           | Today, Completed, Calendar, D-Day, 정리할 항목 | 기본 실행 항목은 이 컴포넌트 우선         |
+| `TaskChecklistSection` | `src/features/tasks/task-checklist-section.tsx`  | 한 단계 checklist       | 개인 Task 상세, Workspace Task                 | 원형 진행률, 44pt 행동, VIEWER 읽기 전용  |
 | `ScheduleCard`         | `src/features/tasks/schedule-card.tsx`           | 일정 row                | Today, Calendar 선택 날짜 목록                 | 일정은 Task와 다르게 시간 metadata를 강조 |
 | `TodayTaskList`        | `src/features/today/today-task-list.tsx`         | Today 실행 목록 wrapper | Today                                          | 정렬/완료 상태를 목록 단위로 다룰 때 사용 |
 | `TaskDateQuickActions` | `src/features/tasks/task-date-quick-actions.tsx` | 날짜 빠른 변경 action   | Task 상세                                      | 44pt touch target 유지                    |

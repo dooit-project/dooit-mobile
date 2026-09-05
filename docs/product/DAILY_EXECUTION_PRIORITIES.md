@@ -21,6 +21,7 @@ Last updated: 2026-09-05
 - backend 규칙과 같은 quick-capture mock parser와 회귀 테스트
 - Daily Plan·summary·category summary·checklist 타입, API client, mock과 query hook
 - 계획 확정 시점 focus snapshot 기반 하루 마감 결과와 항목별 즉시 이동 반영
+- 개인·Workspace Task 체크리스트 CRUD·정렬과 VIEWER 읽기 전용 UI
 
 ## 다음 프론트 작업
 
@@ -39,7 +40,7 @@ Last updated: 2026-09-05
 
 ### F1. 체크리스트
 
-개인·Workspace Task 상세에 한 단계 체크리스트를 연결한다.
+개인·Workspace Task 상세에 한 단계 체크리스트를 연결했다.
 
 - ACTIVE 멤버는 조회한다.
 - OWNER·EDITOR는 생성·수정·완료·재개·삭제·정렬할 수 있다.

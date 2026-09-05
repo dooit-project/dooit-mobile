@@ -60,6 +60,7 @@ docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
 ```
 
 - Task 아래 한 단계 item의 조회·생성·제목 수정·완료·재개·삭제·정렬을 지원한다.
+- item 제목은 30자 이하이며 Task당 최대 100개다.
 - 개인 Task와 Workspace Task에 같은 URL을 사용한다.
 - Workspace ACTIVE 멤버는 조회할 수 있다.
 - OWNER·EDITOR만 변경할 수 있고 VIEWER 변경은 HTTP 403이다.
@@ -101,7 +102,7 @@ POST /api/v1/tasks/quick-capture
 
 1. 일일 계획 focus 복원·확정 mutation과 예상 시간 입력·Today 합계를 서버 resource에 연결했다.
 2. summary를 하루 마감 결과에 연결하고 390×844 다중·이동·빈 상태를 검증했다.
-3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한한다.
+3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한했다.
 4. 카테고리 요약을 탐색 메뉴에 연결한다.
 5. local real API, production Android 순서로 검증한다.
 

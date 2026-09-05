@@ -16,6 +16,7 @@ import {
 import { useDdayGoals } from '@/features/dday';
 import {
   TaskDateQuickActions,
+  TaskChecklistSection,
   TaskForm,
   formatEstimatedDuration,
   getRecurrenceLabel,
@@ -270,6 +271,8 @@ function TaskDetail({
           )}
         </View>
       </Card>
+
+      <TaskChecklistSection taskId={task.id} />
 
       <TaskDateQuickActions task={task} />
 

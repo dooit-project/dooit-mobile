@@ -24,7 +24,7 @@ import {
   SectionHeader,
 } from '@/components/ui';
 import { useAuthState } from '@/features/auth';
-import { ScheduleCard, TaskCard } from '@/features/tasks';
+import { ScheduleCard, TaskCard, TaskChecklistSection } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type {
@@ -444,6 +444,7 @@ function WorkspaceTaskCard({
   const [title, setTitle] = useState(task.title);
   const [recurrenceScope, setRecurrenceScope] = useState<RecurrenceEditScope>('THIS');
   const [validationError, setValidationError] = useState(false);
+  const [showChecklist, setShowChecklist] = useState(false);
   const menuTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
   const firstMenuActionRef = useRef<ComponentRef<typeof Pressable>>(null);
   const previousModeRef = useRef(mode);
@@ -527,6 +528,20 @@ function WorkspaceTaskCard({
             </AppText>
           </IconButton>
         </View>
+      ) : null}
+      {mode === 'idle' ? (
+        <>
+          <Button
+            accessibilityState={{ expanded: showChecklist }}
+            fullWidth
+            size="compact"
+            variant="ghost"
+            onPress={() => setShowChecklist((current) => !current)}
+          >
+            {showChecklist ? '체크리스트 접기' : '체크리스트 보기'}
+          </Button>
+          {showChecklist ? <TaskChecklistSection canEdit={canEdit} taskId={task.id} /> : null}
+        </>
       ) : null}
       {mode === 'menu' ? (
         <View style={[styles.taskMenu, { borderColor: theme.colors.border }]}>

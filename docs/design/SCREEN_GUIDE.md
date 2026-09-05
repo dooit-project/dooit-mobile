@@ -28,7 +28,7 @@ Dooit Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서다.
 | `/search`         | Search          | 완료   | 완료                 | real pagination, native keyboard             |
 | `/completed`      | Completed       | 완료   | 완료                 | 긴 제목, 다시 열기 affordance native 확인    |
 | `/dday`           | D-Day           | 완료   | 완료                 | real API, 긴 목표 제목, screen reader        |
-| `/tasks/[taskId]` | Task 상세       | 완료   | 재점검               | header 수정 action, 반복 scope, 긴 상세 내용 |
+| `/tasks/[taskId]` | Task 상세       | 완료   | 완료                 | 체크리스트 native 큰 글꼴·dark·API error     |
 | `/tasks/new`      | Task 작성       | 완료   | 완료                 | native keyboard, 알림 권한 안내              |
 | `/login`          | 로그인          | 완료   | 완료                 | native keyboard, screen reader, brand asset  |
 | `/register`       | 계정 만들기     | 완료   | 완료                 | native keyboard, password reset 진입         |
