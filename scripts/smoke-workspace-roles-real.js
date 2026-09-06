@@ -13,7 +13,7 @@ function account(role) {
 
 function createCascadeTaskRequest(id) {
   return {
-    title: `삭제 회귀 반복 일정 ${id}`,
+    title: `삭제 회귀 반복 일정 ${id.slice(-8)}`,
     description: 'Workspace cascade smoke',
     type: 'SCHEDULE',
     startAt: '2027-01-05T09:00:00',
@@ -88,6 +88,10 @@ function membershipStatusBody(status) {
   return JSON.stringify({ status });
 }
 
+function checklistPath(taskId) {
+  return `/api/v1/tasks/${taskId}/checklist-items`;
+}
+
 async function registerAndLogin(user) {
   await request('/api/v1/auth/register', {
     method: 'POST',
@@ -129,6 +133,8 @@ async function main() {
     outsider: account('outsider'),
   };
   const tokens = {};
+  let workspace;
+  let workspaceDeleted = false;
 
   console.log(`Workspace role smoke target: ${apiUrl}`);
 
@@ -137,134 +143,234 @@ async function main() {
   }
   console.log('✓ isolated registered accounts');
 
-  const workspace = await request('/api/v1/workspaces', {
-    method: 'POST',
-    headers: authorization(tokens.owner),
-    body: JSON.stringify({ name: `권한 점검 ${runId}`, description: 'mobile real API smoke' }),
-  });
-  const workspacePath = `/api/v1/workspaces/${workspace.id}`;
-  console.log('✓ OWNER creates workspace');
+  try {
+    workspace = await request('/api/v1/workspaces', {
+      method: 'POST',
+      headers: authorization(tokens.owner),
+      body: JSON.stringify({ name: `권한 점검 ${runId}`, description: 'mobile real API smoke' }),
+    });
+    const workspacePath = `/api/v1/workspaces/${workspace.id}`;
+    console.log('✓ OWNER creates workspace');
 
-  const editorMember = await invite(tokens.owner, workspace.id, users.editor, 'EDITOR');
-  const viewerMember = await invite(tokens.owner, workspace.id, users.viewer, 'VIEWER');
-  const pendingMember = await invite(tokens.owner, workspace.id, users.pending, 'VIEWER');
-  const removedMember = await invite(tokens.owner, workspace.id, users.removed, 'VIEWER');
+    const editorMember = await invite(tokens.owner, workspace.id, users.editor, 'EDITOR');
+    const viewerMember = await invite(tokens.owner, workspace.id, users.viewer, 'VIEWER');
+    const pendingMember = await invite(tokens.owner, workspace.id, users.pending, 'VIEWER');
+    const removedMember = await invite(tokens.owner, workspace.id, users.removed, 'VIEWER');
 
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.pending) });
-  const pendingInvitations = await request('/api/v1/workspace-invitations', {
-    headers: authorization(tokens.pending),
-  });
-  if (!pendingInvitations.some((invitation) => invitation.workspace.id === workspace.id)) {
-    throw new Error('PENDING invitation missing');
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.pending) });
+    const pendingInvitations = await request('/api/v1/workspace-invitations', {
+      headers: authorization(tokens.pending),
+    });
+    if (!pendingInvitations.some((invitation) => invitation.workspace.id === workspace.id)) {
+      throw new Error('PENDING invitation missing');
+    }
+    console.log('✓ PENDING sees invitation but cannot access workspace');
+
+    const declinedMember = await request(`${workspacePath}/members/${pendingMember.id}`, {
+      method: 'PATCH',
+      headers: authorization(tokens.pending),
+      body: membershipStatusBody('REMOVED'),
+    });
+    if (declinedMember.status !== 'REMOVED') {
+      throw new Error('declined invitation status mismatch');
+    }
+    const invitationsAfterDecline = await request('/api/v1/workspace-invitations', {
+      headers: authorization(tokens.pending),
+    });
+    if (invitationsAfterDecline.some((invitation) => invitation.workspace.id === workspace.id)) {
+      throw new Error('declined invitation remained visible');
+    }
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.pending) });
+    console.log('✓ PENDING member declines invitation and it leaves the invitation list');
+
+    await request(`${workspacePath}/members/${removedMember.id}`, {
+      method: 'DELETE',
+      headers: authorization(tokens.owner),
+    });
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.removed) });
+    const removedInvitations = await request('/api/v1/workspace-invitations', {
+      headers: authorization(tokens.removed),
+    });
+    if (removedInvitations.some((invitation) => invitation.workspace.id === workspace.id)) {
+      throw new Error('REMOVED invitation remained visible');
+    }
+    console.log('✓ REMOVED cannot access workspace or invitation');
+
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.outsider) });
+    console.log('✓ non-member cannot discover workspace');
+
+    await accept(tokens.editor, workspace.id, editorMember.id);
+    await accept(tokens.viewer, workspace.id, viewerMember.id);
+
+    const task = await request(`${workspacePath}/tasks`, {
+      method: 'POST',
+      headers: authorization(tokens.owner),
+      body: JSON.stringify({
+        title: '공유 권한 점검',
+        description: 'OWNER가 생성한 일정',
+        type: 'SCHEDULE',
+        startAt: '2026-08-20T09:00:00',
+        endAt: '2026-08-20T10:00:00',
+        category: 'QA',
+        allDay: false,
+      }),
+    });
+
+    await request(`${workspacePath}/tasks/${task.id}`, {
+      method: 'PUT',
+      headers: authorization(tokens.editor),
+      body: JSON.stringify({
+        title: '공유 권한 점검 수정',
+        description: 'EDITOR가 수정한 일정',
+        type: 'SCHEDULE',
+        startAt: '2026-08-20T10:00:00',
+        endAt: '2026-08-20T11:00:00',
+        category: 'QA',
+        allDay: false,
+      }),
+    });
+    await expectFailure(workspacePath, 403, 11003, {
+      method: 'PUT',
+      headers: authorization(tokens.editor),
+      body: JSON.stringify({ name: 'EDITOR 변경 시도', description: null }),
+    });
+    console.log('✓ EDITOR mutates tasks but not workspace settings');
+
+    const visibleTask = await request(`${workspacePath}/tasks/${task.id}`, {
+      headers: authorization(tokens.viewer),
+    });
+    if (visibleTask.title !== '공유 권한 점검 수정') throw new Error('VIEWER task read mismatch');
+    await expectFailure(`${workspacePath}/tasks`, 403, 11003, {
+      method: 'POST',
+      headers: authorization(tokens.viewer),
+      body: JSON.stringify({
+        title: 'VIEWER 생성 시도',
+        type: 'TODO',
+        allDay: false,
+      }),
+    });
+    console.log('✓ VIEWER reads but cannot create tasks');
+
+    const taskChecklistPath = checklistPath(task.id);
+    const ownerItem = await request(taskChecklistPath, {
+      method: 'POST',
+      headers: authorization(tokens.owner),
+      body: JSON.stringify({ title: 'OWNER 생성 item' }),
+    });
+    const editorItem = await request(taskChecklistPath, {
+      method: 'POST',
+      headers: authorization(tokens.editor),
+      body: JSON.stringify({ title: 'EDITOR 생성 item' }),
+    });
+    const updatedItem = await request(`${taskChecklistPath}/${ownerItem.id}`, {
+      method: 'PUT',
+      headers: authorization(tokens.editor),
+      body: JSON.stringify({ title: 'EDITOR 수정 item' }),
+    });
+    if (updatedItem.title !== 'EDITOR 수정 item') {
+      throw new Error('EDITOR checklist update mismatch');
+    }
+    const completedItem = await request(`${taskChecklistPath}/${ownerItem.id}/done`, {
+      method: 'PATCH',
+      headers: authorization(tokens.editor),
+    });
+    if (!completedItem.done) throw new Error('EDITOR checklist complete mismatch');
+    const reopenedItem = await request(`${taskChecklistPath}/${ownerItem.id}/done/cancel`, {
+      method: 'PATCH',
+      headers: authorization(tokens.editor),
+    });
+    if (reopenedItem.done) throw new Error('EDITOR checklist reopen mismatch');
+    const reorderedItems = await request(`${taskChecklistPath}/order`, {
+      method: 'PUT',
+      headers: authorization(tokens.editor),
+      body: JSON.stringify({ orderedItemIds: [editorItem.id, ownerItem.id] }),
+    });
+    if (reorderedItems[0]?.id !== editorItem.id) {
+      throw new Error('EDITOR checklist reorder mismatch');
+    }
+    await request(`${taskChecklistPath}/${editorItem.id}`, {
+      method: 'DELETE',
+      headers: authorization(tokens.editor),
+    });
+    console.log('✓ OWNER and EDITOR mutate Workspace checklist');
+
+    const viewerItems = await request(taskChecklistPath, {
+      headers: authorization(tokens.viewer),
+    });
+    if (viewerItems.length !== 1 || viewerItems[0].id !== ownerItem.id) {
+      throw new Error('VIEWER checklist read mismatch');
+    }
+    await expectFailure(taskChecklistPath, 403, 11003, {
+      method: 'POST',
+      headers: authorization(tokens.viewer),
+      body: JSON.stringify({ title: 'VIEWER 생성 시도' }),
+    });
+    await expectFailure(`${taskChecklistPath}/${ownerItem.id}`, 403, 11003, {
+      method: 'PUT',
+      headers: authorization(tokens.viewer),
+      body: JSON.stringify({ title: 'VIEWER 수정 시도' }),
+    });
+    await expectFailure(`${taskChecklistPath}/${ownerItem.id}/done`, 403, 11003, {
+      method: 'PATCH',
+      headers: authorization(tokens.viewer),
+    });
+    await expectFailure(`${taskChecklistPath}/${ownerItem.id}/done/cancel`, 403, 11003, {
+      method: 'PATCH',
+      headers: authorization(tokens.viewer),
+    });
+    await expectFailure(`${taskChecklistPath}/order`, 403, 11003, {
+      method: 'PUT',
+      headers: authorization(tokens.viewer),
+      body: JSON.stringify({ orderedItemIds: [ownerItem.id] }),
+    });
+    await expectFailure(`${taskChecklistPath}/${ownerItem.id}`, 403, 11003, {
+      method: 'DELETE',
+      headers: authorization(tokens.viewer),
+    });
+    await expectFailure(taskChecklistPath, 404, 20001, {
+      headers: authorization(tokens.outsider),
+    });
+    console.log('✓ VIEWER reads Workspace checklist but all mutations return 403');
+    console.log('✓ non-member cannot discover Workspace checklist');
+
+    const cascadeGoal = await request(`${workspacePath}/dday-goals`, {
+      method: 'POST',
+      headers: authorization(tokens.owner),
+      body: JSON.stringify({ title: `삭제 회귀 D-Day ${runId}`, targetDate: '2027-12-31' }),
+    });
+    const cascadeTask = await request(`${workspacePath}/tasks`, {
+      method: 'POST',
+      headers: authorization(tokens.owner),
+      body: JSON.stringify(createCascadeTaskRequest(runId)),
+    });
+    await request(
+      `${workspacePath}/tasks/${cascadeTask.id}/dday-goal?ddayGoalId=${cascadeGoal.id}`,
+      {
+        method: 'PATCH',
+        headers: authorization(tokens.owner),
+      },
+    );
+
+    await request(workspacePath, { method: 'DELETE', headers: authorization(tokens.owner) });
+    workspaceDeleted = true;
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.owner) });
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.editor) });
+    await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.viewer) });
+    console.log('✓ OWNER cascade-deletes workspace with tasks, recurrence, D-Day, and memberships');
+    console.log('Workspace role smoke passed. Tokens and passwords were not printed.');
+  } finally {
+    if (workspace && !workspaceDeleted) {
+      try {
+        await request(`/api/v1/workspaces/${workspace.id}`, {
+          method: 'DELETE',
+          headers: authorization(tokens.owner),
+        });
+        console.log('✓ failed smoke workspace cleaned up');
+      } catch (error) {
+        console.warn(`cleanup warning: workspace ${workspace.id}: ${error.message}`);
+      }
+    }
   }
-  console.log('✓ PENDING sees invitation but cannot access workspace');
-
-  const declinedMember = await request(`${workspacePath}/members/${pendingMember.id}`, {
-    method: 'PATCH',
-    headers: authorization(tokens.pending),
-    body: membershipStatusBody('REMOVED'),
-  });
-  if (declinedMember.status !== 'REMOVED') {
-    throw new Error('declined invitation status mismatch');
-  }
-  const invitationsAfterDecline = await request('/api/v1/workspace-invitations', {
-    headers: authorization(tokens.pending),
-  });
-  if (invitationsAfterDecline.some((invitation) => invitation.workspace.id === workspace.id)) {
-    throw new Error('declined invitation remained visible');
-  }
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.pending) });
-  console.log('✓ PENDING member declines invitation and it leaves the invitation list');
-
-  await request(`${workspacePath}/members/${removedMember.id}`, {
-    method: 'DELETE',
-    headers: authorization(tokens.owner),
-  });
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.removed) });
-  const removedInvitations = await request('/api/v1/workspace-invitations', {
-    headers: authorization(tokens.removed),
-  });
-  if (removedInvitations.some((invitation) => invitation.workspace.id === workspace.id)) {
-    throw new Error('REMOVED invitation remained visible');
-  }
-  console.log('✓ REMOVED cannot access workspace or invitation');
-
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.outsider) });
-  console.log('✓ non-member cannot discover workspace');
-
-  await accept(tokens.editor, workspace.id, editorMember.id);
-  await accept(tokens.viewer, workspace.id, viewerMember.id);
-
-  const task = await request(`${workspacePath}/tasks`, {
-    method: 'POST',
-    headers: authorization(tokens.owner),
-    body: JSON.stringify({
-      title: '공유 권한 점검',
-      description: 'OWNER가 생성한 일정',
-      type: 'SCHEDULE',
-      startAt: '2026-08-20T09:00:00',
-      endAt: '2026-08-20T10:00:00',
-      category: 'QA',
-      allDay: false,
-    }),
-  });
-
-  await request(`${workspacePath}/tasks/${task.id}`, {
-    method: 'PUT',
-    headers: authorization(tokens.editor),
-    body: JSON.stringify({
-      title: '공유 권한 점검 수정',
-      description: 'EDITOR가 수정한 일정',
-      type: 'SCHEDULE',
-      startAt: '2026-08-20T10:00:00',
-      endAt: '2026-08-20T11:00:00',
-      category: 'QA',
-      allDay: false,
-    }),
-  });
-  await expectFailure(workspacePath, 403, 11003, {
-    method: 'PUT',
-    headers: authorization(tokens.editor),
-    body: JSON.stringify({ name: 'EDITOR 변경 시도', description: null }),
-  });
-  console.log('✓ EDITOR mutates tasks but not workspace settings');
-
-  const visibleTask = await request(`${workspacePath}/tasks/${task.id}`, {
-    headers: authorization(tokens.viewer),
-  });
-  if (visibleTask.title !== '공유 권한 점검 수정') throw new Error('VIEWER task read mismatch');
-  await expectFailure(`${workspacePath}/tasks`, 403, 11003, {
-    method: 'POST',
-    headers: authorization(tokens.viewer),
-    body: JSON.stringify({
-      title: 'VIEWER 생성 시도',
-      type: 'TODO',
-      allDay: false,
-    }),
-  });
-  console.log('✓ VIEWER reads but cannot create tasks');
-
-  const cascadeGoal = await request(`${workspacePath}/dday-goals`, {
-    method: 'POST',
-    headers: authorization(tokens.owner),
-    body: JSON.stringify({ title: `삭제 회귀 D-Day ${runId}`, targetDate: '2027-12-31' }),
-  });
-  const cascadeTask = await request(`${workspacePath}/tasks`, {
-    method: 'POST',
-    headers: authorization(tokens.owner),
-    body: JSON.stringify(createCascadeTaskRequest(runId)),
-  });
-  await request(`${workspacePath}/tasks/${cascadeTask.id}/dday-goal?ddayGoalId=${cascadeGoal.id}`, {
-    method: 'PATCH',
-    headers: authorization(tokens.owner),
-  });
-
-  await request(workspacePath, { method: 'DELETE', headers: authorization(tokens.owner) });
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.owner) });
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.editor) });
-  await expectFailure(workspacePath, 404, 50001, { headers: authorization(tokens.viewer) });
-  console.log('✓ OWNER cascade-deletes workspace with tasks, recurrence, D-Day, and memberships');
-  console.log('Workspace role smoke passed. Tokens and passwords were not printed.');
 }
 
 if (require.main === module) {
@@ -278,4 +384,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createCascadeTaskRequest, membershipStatusBody };
+module.exports = { checklistPath, createCascadeTaskRequest, membershipStatusBody };

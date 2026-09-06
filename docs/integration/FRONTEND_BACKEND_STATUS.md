@@ -28,7 +28,7 @@ docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
 | `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정·real smoke 추가   | guest 500 복구 후 local·production |
 | `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | 하루 마감 결과·real smoke 추가    | migration 후 local·production      |
 | `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | drawer·named 이동·real smoke 추가 | null-category 검색·guest 500 복구  |
-| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·개인 smoke 추가    | Workspace 역할별·production smoke  |
+| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·역할별 local 확인  | production Android smoke           |
 | `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결·real 입력 smoke 추가         | guest 500 복구 후 local·production |
 
 기존 개인 Task URL과 DTO에는 깨지는 변경이 없다. 카테고리 요약은 Workspace Task를 포함하지 않으며 카테고리 생성·이름 변경·삭제·사용자 지정 정렬 API를 대신하지 않는다.
@@ -37,7 +37,7 @@ Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실�
 ## 프론트에서 바로 할 수 있는 일
 
 1. 카테고리 drawer의 `전체`·이름 있는 개인 카테고리 이동을 real API로 확인하고 null-category 검색 계약 뒤 `미분류`를 활성화한다.
-2. 체크리스트를 Workspace OWNER·EDITOR·VIEWER 실제 계정으로 검증한다.
+2. 체크리스트의 Workspace OWNER·EDITOR·VIEWER local 검증은 완료했다. production Android에서 같은 권한 경계를 확인한다.
 3. Daily Plan과 summary를 local real API로 확인하고 migration 미적용·404 상태를 구분한다.
 4. production 배포 확인 뒤 Android 실기기 smoke를 수행한다.
 
@@ -52,6 +52,7 @@ UI가 바뀌는 1~3번은 Product Design 검토와 390×844 캡처 판정을 포
 - 같은 배포의 readiness, metadata, OpenAPI와 migration 적용 기록을 제공한다.
 - 인증된 OpenAPI 확인 방법을 제공하거나 검사 환경에서 계약 문서를 읽을 수 있게 한다.
 - local `POST /api/v1/auth/guest` HTTP 500을 복구하고 8080의 Docker·IntelliJ 중 검증 기준 인스턴스를 하나로 고정한다.
+- Workspace 반복 Task의 D-Day 연결 HTTP 500을 복구한다. 체크리스트 역할 검증은 통과했으며 실패 시 Workspace 자동 정리도 확인했다.
 - Android 실제 기기에서 신규 API와 기존 핵심 흐름을 함께 smoke할 수 있는 production 후보를 고정한다.
 
 ### 제품 결정 후 요청할 계약

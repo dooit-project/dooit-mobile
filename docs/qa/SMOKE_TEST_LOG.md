@@ -247,3 +247,13 @@ API mode / URL:
 - 데이터 정리: Task 생성 전 실패하여 잔여 테스트 Task 없음
 - 모바일 전체 검증: 96 suites, 479 tests 통과
 - 판정: `BLOCKED` — 실행 인스턴스 하나로 정리하고 guest 생성 500을 복구한 뒤 재실행
+
+### 2026-09-07 Workspace checklist 역할별 local real 검사
+
+- 명령: `npm run smoke:workspace-roles:real`
+- 체크리스트 결과: OWNER·EDITOR 생성·수정·완료·재개·삭제·정렬 통과
+- 권한 결과: VIEWER 조회 통과, 생성·수정·완료·재개·삭제·정렬 HTTP 403, 비멤버 조회 HTTP 404 통과
+- 전체 스모크 결과: 기존 반복 Workspace Task의 D-Day 연결에서 HTTP 500
+- 데이터 정리: 실패 후 `finally`에서 생성 Workspace 삭제 성공
+- 모바일 전체 검증: 96 suites, 480 tests 통과
+- 판정: 체크리스트 역할 계약 `PASS`, Workspace 전체 스모크는 D-Day 연결 500으로 `BLOCKED`

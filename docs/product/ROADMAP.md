@@ -38,7 +38,8 @@ Last updated: 2026-09-05
 - [ ] 신규 API client를 local real backend와 production Android에서 검증한다.
   - [x] quick-capture·category·개인 checklist·Daily Plan summary 통합 스모크 명령을 추가한다.
   - [ ] local guest 생성 500을 복구한 실행 인스턴스에서 통합 스모크를 통과시킨다.
-  - [ ] Workspace OWNER·EDITOR·VIEWER checklist와 production Android를 검증한다.
+  - [x] local에서 Workspace OWNER·EDITOR·VIEWER checklist 권한 경계를 검증한다.
+  - [ ] production Android에서 신규 API를 검증한다.
 
 ## P1. UI·제품 검증
 
