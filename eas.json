@@ -39,7 +39,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_MODE": "real",
-        "EXPO_PUBLIC_API_URL": "https://macmini.tail68d2d1.ts.net"
+        "EXPO_PUBLIC_API_URL": "https://dooitapi.hsng.pe.kr"
       }
     },
     "cloudflare-test": {
@@ -56,7 +56,7 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_MODE": "real",
-        "EXPO_PUBLIC_API_URL": "https://macmini.tail68d2d1.ts.net"
+        "EXPO_PUBLIC_API_URL": "https://dooitapi.hsng.pe.kr"
       }
     }
   }

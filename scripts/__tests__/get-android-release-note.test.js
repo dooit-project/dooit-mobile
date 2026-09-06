@@ -22,7 +22,7 @@ describe('get-android-release-note', () => {
     expect(output).toContain('Frontend commit: 1234567890abcdef');
     expect(output).toContain('Backend commit/image: backend-image:42');
     expect(output).toContain('EAS build id: eas-build-id');
-    expect(output).toContain('API mode / URL: real / https://macmini.tail68d2d1.ts.net');
+    expect(output).toContain('API mode / URL: real / https://dooitapi.hsng.pe.kr');
     expect(output).toContain('APK file: dooit-android-preview-v1.0.0-1-1234567.apk');
   });
 

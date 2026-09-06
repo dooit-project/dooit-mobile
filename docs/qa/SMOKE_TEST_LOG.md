@@ -257,3 +257,13 @@ API mode / URL:
 - 데이터 정리: 실패 후 `finally`에서 생성 Workspace 삭제 성공
 - 모바일 전체 검증: 96 suites, 480 tests 통과
 - 판정: 체크리스트 역할 계약 `PASS`, Workspace 전체 스모크는 D-Day 연결 500으로 `BLOCKED`
+
+### 2026-09-07 EAS Android 준비 재검사
+
+- Expo 계정: `hyunseung2` 로그인 확인
+- 현재 project ID: `f49103dc-1d93-47a9-8972-4b5a4cc9e395`
+- project 판정: 연결 project `todolab-mobile`과 앱 slug `dooit-mobile` 불일치
+- 빌드 API URL: preview·production 모두 `https://dooitapi.hsng.pe.kr`로 최신화
+- 자동 검사: `check:eas-setup`이 project ID 존재와 실제 slug 일치를 별도로 확인하도록 보강
+- 모바일 전체 검증: 97 suites, 483 tests 통과
+- 판정: `BLOCKED` — `@hyunseung2/dooit-mobile` 생성·연결과 signing credential 확인 전 build 금지

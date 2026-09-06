@@ -27,14 +27,14 @@ Dooit Mobile을 Expo Go나 Metro 없이 Android 기기에 직접 설치해 실�
 | `preview`     | 개인 설치용 real API APK       | APK                      | `real`   |
 | `production`  | 추후 store 또는 정식 후보      | 기본 production artifact | `real`   |
 
-`preview`와 `production`은 `EXPO_PUBLIC_API_MODE=real`을 사용하고, 개인 production의 고정 Tailscale HTTPS origin을 `EXPO_PUBLIC_API_URL`로 주입한다. 이 URL은 공개 정보이며 서버 secret이 아니다.
+`preview`와 `production`은 `EXPO_PUBLIC_API_MODE=real`을 사용하고, production API의 고정 Cloudflare HTTPS origin을 `EXPO_PUBLIC_API_URL`로 주입한다. 이 URL은 공개 정보이며 서버 secret이 아니다.
 
 ## 3. Production API URL 주입
 
-개인 APK의 production API origin은 Tailscale HTTPS URL을 사용한다.
+개인 APK의 production API origin은 공개 production HTTPS URL을 사용한다.
 
 ```text
-EXPO_PUBLIC_API_URL=https://macmini.tail68d2d1.ts.net
+EXPO_PUBLIC_API_URL=https://dooitapi.hsng.pe.kr
 ```
 
 주의:
@@ -62,11 +62,11 @@ npm run check:eas-setup
 - `expo-notifications` production dependency와 native config plugin이 모두 포함됐는지
 - EAS CLI가 설치되어 있고 `eas whoami` 로그인과 Expo project id 연결이 확인되는지
 - `.expo` 로컬 상태가 실제로 Git에서 제외되는지
-- `preview`, `production` profile의 `EXPO_PUBLIC_API_URL`이 Tailscale HTTPS URL인지
+- `preview`, `production` profile의 `EXPO_PUBLIC_API_URL`이 production HTTPS URL인지
 - `.env.local`이 커밋되지 않았는지
-- 백엔드 production API가 Tailscale HTTPS로 접근 가능한지
+- 백엔드 production API가 Cloudflare HTTPS로 접근 가능한지
 
-`npm run check:eas-setup`은 Expo 로그인과 `eas init` 전에는 실패하는 것이 정상이다. 계정 확인에는 `api.expo.dev` 네트워크 접근이 필요하며, 실패 메시지에서 로그인·네트워크·project 연결·Git 제외 중 남은 준비 항목을 확인한다.
+`npm run check:eas-setup`은 Expo 로그인과 올바른 `eas init` 전에는 실패하는 것이 정상이다. 계정 확인에는 `api.expo.dev` 네트워크 접근이 필요하며, project ID 존재뿐 아니라 실제 연결 project의 slug가 `dooit-mobile`인지도 확인한다.
 
 ## 5. EAS project 연결
 

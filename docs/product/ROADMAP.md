@@ -1,21 +1,23 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-09-05
+Last updated: 2026-09-07
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 백엔드 계약 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md), 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md), 과거 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력에서 확인한다.
 
 ## 현재 상태
 
 - 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 95 suites, 476 tests 통과이며 카테고리 drawer 캡처는 2026-09-06 기준으로 갱신됐다.
-- 백엔드 source `6a78afe`에 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
-- production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=docker-20260829`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
+- 최신 검증 기준선은 97 suites, 483 tests 통과이며 카테고리 drawer 캡처는 2026-09-06 기준으로 갱신됐다.
+- 백엔드 local `main`은 `d4c4243`이며 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
+- production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=63a54d5`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
 - EAS project id는 기존 `@hyunseung2/todolab-mobile`을 가리키지만 앱 slug는 `dooit-mobile`이다. 새 `@hyunseung2/dooit-mobile` project 연결 전에는 release 후보를 만들지 않는다.
 
 ## P0. 출시 기반 복구
 
 - [ ] `@hyunseung2/dooit-mobile` EAS project를 만들고 `app.json`의 project id를 새 값으로 교체한다.
 - [ ] `npm run check:eas-setup`과 Android managed signing credential 접근을 다시 확인한다.
+  - [x] `hyunseung2` 로그인과 현재 project ID의 `todolab-mobile` slug 불일치를 자동 검사한다.
+  - [ ] 새 `dooit-mobile` project 연결 후 signing credential을 확인한다.
 - [ ] 백엔드 `6a78afe` 포함 image와 필수 migration을 production에 반영한다.
 - [ ] metadata가 실제 commit/image를 식별하도록 고치고 readiness·metadata·OpenAPI·migration을 한 배포 단위로 확인한다.
 - [ ] 현재 `main` 기준 Android preview APK를 만들고 build id, frontend/backend commit, API URL을 smoke log에 남긴다.

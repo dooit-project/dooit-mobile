@@ -161,7 +161,7 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 - [x] Android signing credential 운영 기준과 비밀 값 제외 원칙
 - [ ] `@hyunseung2/dooit-mobile` EAS project 생성·연결
 - [ ] 새 project에서 Android signing credential 접근과 기존 APK update 호환성 확인
-- [x] EAS preview/production `EXPO_PUBLIC_API_URL` 등록: `https://macmini.tail68d2d1.ts.net`
+- [x] EAS preview/production `EXPO_PUBLIC_API_URL` 등록: `https://dooitapi.hsng.pe.kr`
 - [x] 현재 공개 범위와 version·runtimeVersion·OTA 기준 문서화
 - [ ] 공개 대상 플랫폼이 [`RELEASE_SCOPE_POLICY.md`](../product/RELEASE_SCOPE_POLICY.md)의 승격 조건을 통과했다.
 - [ ] 앱 아이콘, splash, favicon 최종 asset

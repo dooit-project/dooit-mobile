@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const { spawnSync } = require('node:child_process');
+const { evaluateEasProjectLink } = require('./lib/eas-project-link');
 
 function readJson(path) {
   return JSON.parse(fs.readFileSync(path, 'utf8'));
@@ -23,6 +24,12 @@ const easVersion = spawnSync('eas', ['--version'], {
 });
 
 const easIdentity = spawnSync('eas', ['whoami'], {
+  encoding: 'utf8',
+  shell: false,
+  timeout: 15_000,
+});
+
+const easProjectInfo = spawnSync('eas', ['project:info', '--json'], {
   encoding: 'utf8',
   shell: false,
   timeout: 15_000,
@@ -75,6 +82,9 @@ addCheck(
   appConfig.extra?.eas?.projectId ?? 'missing; run `eas init` after logging in.',
 );
 
+const easProjectLink = evaluateEasProjectLink(easProjectInfo, appConfig.slug);
+addCheck('EAS project slug matches', easProjectLink.passed, easProjectLink.details);
+
 addCheck(
   'Local Expo state ignored',
   expoStateIgnored.status === 0,
@@ -97,6 +107,7 @@ const blockingFailures = checks.filter(
       'EAS CLI installed',
       'Expo account authenticated',
       'Expo project id linked',
+      'EAS project slug matches',
       'Local Expo state ignored',
     ].includes(check.name),
 );
