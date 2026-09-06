@@ -66,6 +66,7 @@ Last updated: 2026-09-05
 - 색이나 icon 채움 하나만으로 선택 상태를 전달하지 않으며 `selected` 접근성 상태를 유지한다.
 - Workspace 내부 tab과 Search filter처럼 text·surface·border가 함께 바뀌는 control은 현재 기준을 유지한다.
 - 개인 카테고리 요약은 `전체`·`미분류`·이름과 필요한 count만 보여 주며 Workspace 범위와 섞지 않는다.
+- 카테고리는 달력 바로 아래·기록함 바로 위에 접힌 한 줄로 두고, 펼쳤을 때만 개인 category와 count를 보여 세로 밀도를 제어한다.
 
 ## 2026-08-21 화면 피드백 결정
 

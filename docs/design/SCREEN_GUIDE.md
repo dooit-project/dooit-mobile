@@ -10,6 +10,7 @@ Dooit Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서다.
 - mock Web 390×844 viewport 기준 실제 PNG 캡쳐를 생성했다.
 - 현재 대표 캡처 촬영일은 **2026-09-05**, 기준 커밋은 `11a5727`이다. 상세 환경과 화면 상태는 [`screenshots/README.md`](../screenshots/README.md)에서 확인한다.
 - 사용자 흐름별 최신 mock Web 캡처와 판정은 [`USER_FLOW_CATALOG.md`](../product/USER_FLOW_CATALOG.md)의 UF-01~UF-08에서 관리한다.
+- 좌측 drawer의 category 접힘·펼침과 검색 이동은 [`task-categories-2026-09-06`](../audits/task-categories-2026-09-06/README.md)에서 관리한다.
 - `docs/screenshots`는 화면 구조 참고용이며 실제 release 판정은 최신 APK와 실기기 QA를 따른다.
 - 화면 구조가 바뀌면 아래 파일명을 유지한 채 다시 캡쳐한다.
 - 대표 캡처는 촬영 후 7일이 되기 전에 갱신하며 `npm run docs:check`에서 만료 여부를 검사한다.

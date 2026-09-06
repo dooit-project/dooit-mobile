@@ -1,45 +1,50 @@
-# Task Checklist Design QA
+# Task Category Navigation Design QA
 
 final result: passed
 
 ## Comparison target
 
-- Source visual truth: [`docs/audits/task-checklist-2026-09-05/option-a-circle-refined.png`](./docs/audits/task-checklist-2026-09-05/option-a-circle-refined.png)
-- Normalized source: [`docs/audits/task-checklist-2026-09-05/reference-selected-390x844.png`](./docs/audits/task-checklist-2026-09-05/reference-selected-390x844.png)
-- Implementation: `src/features/tasks/task-checklist-section.tsx`
-- Implementation screenshot: [`docs/audits/task-checklist-2026-09-05/01-personal-2-of-4-390x844.png`](./docs/audits/task-checklist-2026-09-05/01-personal-2-of-4-390x844.png)
-- State: personal Task, four items, two completed, light theme
+- Source visual truth: [`docs/audits/task-categories-2026-09-06/reference-selected-390x844.png`](./docs/audits/task-categories-2026-09-06/reference-selected-390x844.png)
+- Implementation: `src/components/navigation/planner-drawer.tsx`
+- Implementation screenshot: [`docs/audits/task-categories-2026-09-06/02-expanded-populated-390x844.png`](./docs/audits/task-categories-2026-09-06/02-expanded-populated-390x844.png)
+- State: light theme, category drawer expanded, four personal Tasks across three named categories
 
 ## Normalization
 
-- Source pixels: 853×1844.
-- Normalized source pixels: 390×844 using a mechanical resize for the nearly identical aspect ratio.
+- Generated source pixels: 853×1844, mechanically normalized to 390×844 for comparison.
 - Implementation pixels and CSS viewport: 390×844, device scale factor 1.
-- Browser: local Chrome/Playwright fallback because the in-app browser connection was unavailable.
+- Browser: Chrome with the selected 390×844 viewport.
 
 ## Findings
 
-- No actionable P0, P1, or P2 mismatch remains.
-- Typography uses the existing Dooit `AppText` scale and is intentionally denser than the generated source while preserving its hierarchy.
-- Layout keeps the selected hero → expanded checklist → date quick actions order, 16px page margins, grouped rows, and outlined add action.
-- Colors map to existing theme tokens rather than sampling generated pixels; light-theme contrast remains covered by the theme tests.
-- The circular indicator is rendered with `react-native-svg`; standard checkbox and chevron icons use the established Expo Symbols library. There are no raster placeholder assets.
-- App-specific copy preserves `체크리스트`, `N개 남음`, item titles, and the existing date-action wording. The capture task has no description, so the existing empty-description copy differs from the visual target without changing the checklist design.
+- No actionable P0, P1, or P2 visual mismatch remains.
+- Typography intentionally uses the established Dooit `AppText` scale instead of the generated source's oversized type. The parent row, secondary total and nested labels preserve the same hierarchy at the existing drawer density.
+- Layout keeps the selected order `오늘 → 달력 → 카테고리 → 기록함 → 오래 미룬 일 → 완료 기록`. The nested list uses a thin guide, 48px rows and right-aligned counts without badges.
+- Colors use existing surface, border, primary-soft and text tokens. The category section adds no arbitrary category colors or shadows.
+- The folder and disclosure icons use the existing Material Community Icons family. There are no raster placeholders or custom SVG substitutes.
+- Copy is limited to the API-provided display name and `taskCount`; Workspace Tasks and unsupported management actions are not shown.
 
 ## Focused interaction evidence
 
-- Empty and add-input states: `00-personal-empty-390x844.png`, `03-personal-add-editor-390x844.png`.
-- Item action disclosure: `02-personal-actions-390x844.png`.
-- A separate crop was unnecessary because the checklist occupies most of the 390px full-view width and all labels, borders, icons, and control spacing are readable at original resolution.
+- Collapsed state: `00-collapsed-390x844.png`.
+- Empty category state: `01-expanded-390x844.png`.
+- Populated expanded state: `02-expanded-populated-390x844.png`.
+- Named category result: `03-category-results-390x844.png`.
+- A separate crop was unnecessary because all category labels, counts, guide, icon and disclosure states are legible in the original 390px capture.
 
 ## Comparison history
 
-1. The first interaction run exposed the Web console error `Invalid DOM property transform-origin` from the SVG rotation origin.
-2. The progress arc was changed to a single SVG `transform` rotation, then the complete create·complete·reopen·edit·reorder·delete flow was rerun.
-3. The final 390×844 captures have zero console errors and no visible error overlay.
+1. The first populated capture was taken before the Chrome viewport override was restored and was discarded.
+2. The viewport was reset to 390×844, the same expanded state was recaptured, and the source and implementation were opened together for comparison.
+3. The named `업무` category closed the drawer and opened `/search?browse=categories&category=업무` with two exact-match results. The result-description Korean particle was then replaced with the neutral `기준으로` wording.
+4. Final browser console errors: zero.
 
-## Residual test gaps
+## Residual contract gap
 
-- Workspace VIEWER visual state on a real multi-account session
-- Android/iOS font scale 1.5, dark theme, safe area, and screen reader order
-- production API latency, 403 role changes, and offline recovery
+- `GET /api/v1/tasks/search` cannot currently express `category IS NULL`. `미분류` count is shown from the summary API but its navigation row remains disabled until the backend adds an explicit uncategorized filter.
+
+## Residual device gaps
+
+- 320dp and 430dp, font scale 1.5, dark theme
+- Android TalkBack, iOS VoiceOver and native drawer gesture/back behavior
+- production API latency, category changes while the drawer is open and offline recovery

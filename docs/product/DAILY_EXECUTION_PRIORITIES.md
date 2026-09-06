@@ -31,12 +31,13 @@ Last updated: 2026-09-05
 
 ### F1. 카테고리 탐색
 
-`GET /api/v1/tasks/categories`로 개인 Task 요약을 좌측 메뉴에 연결한다.
+`GET /api/v1/tasks/categories`의 개인 Task 요약을 달력 아래 접이식 메뉴에 연결했다.
 
 - `전체`, `미분류`, 개인 카테고리를 구분한다.
 - `taskCount`, `inboxCount`, `todayCount`, `doneCount` 중 현재 진입에 필요한 값만 노출한다.
 - Workspace Task는 섞지 않는다.
 - 생성·이름 변경·삭제·사용자 지정 정렬 UI는 별도 API가 생기기 전 제공하지 않는다.
+- `전체`와 이름 있는 카테고리는 기존 검색 화면으로 이동한다. `미분류`는 검색 API에 null-category 필터가 추가되기 전 count만 표시한다.
 
 ### F1. 체크리스트
 

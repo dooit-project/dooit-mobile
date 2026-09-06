@@ -87,6 +87,7 @@ type TaskCategorySummary = {
 - 개인 Task만 집계하고 Workspace Task는 제외한다.
 - `category=null`은 미분류이며 `displayName`은 `미분류`다.
 - 이 API는 기존 자유 입력 category의 조회 요약이다. 카테고리 entity CRUD나 사용자 지정 순서를 제공하지 않는다.
+- 기존 검색의 문자열 exact match로는 null category를 표현할 수 없다. `미분류` 목록 이동에는 별도의 boolean 또는 mode filter가 필요하다.
 
 ### 빠른 등록 파싱
 
@@ -103,7 +104,7 @@ POST /api/v1/tasks/quick-capture
 1. 일일 계획 focus 복원·확정 mutation과 예상 시간 입력·Today 합계를 서버 resource에 연결했다.
 2. summary를 하루 마감 결과에 연결하고 390×844 다중·이동·빈 상태를 검증했다.
 3. 개인·Workspace Task 상세에 체크리스트를 연결하고 역할별 행동을 제한했다.
-4. 카테고리 요약을 탐색 메뉴에 연결한다.
+4. 카테고리 요약의 전체·이름 있는 category를 탐색 메뉴에 연결했다. null-category 검색 계약 뒤 `미분류` 이동을 활성화한다.
 5. local real API, production Android 순서로 검증한다.
 
 ## 아직 백엔드에 요청할 수 있는 계약

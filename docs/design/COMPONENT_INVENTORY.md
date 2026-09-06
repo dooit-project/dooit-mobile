@@ -31,6 +31,13 @@ Dooit Mobile의 공통 UI 컴포넌트와 주요 도메인 컴포넌트 사용 �
 | `ListSkeleton` | `src/components/ui/list-skeleton.tsx` | 목록 loading              | Today, Search, Completed, 정리 화면 | 실제 row 높이와 크게 다르지 않게 사용    |
 | `FadeInView`   | `src/components/ui/fade-in-view.tsx`  | 짧은 등장 animation       | feedback notice 등                  | reduced motion 정책과 충돌하지 않게 제한 |
 
+## 탐색
+
+| 컴포넌트        | 위치                                           | 역할                                  | 사용 기준                                                                         |
+| --------------- | ---------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------- |
+| `PlannerDrawer` | `src/components/navigation/planner-drawer.tsx` | 개인 플래너 전체 탐색과 category 진입 | 달력 아래 접이식 category, 이름 있는 항목의 exact-match 이동, Workspace 범위 제외 |
+| `PlannerHeader` | `src/components/navigation/planner-drawer.tsx` | tab root의 drawer 진입                | opener는 한 번만 노출하고 닫힌 뒤 focus를 복원                                    |
+
 ## Task와 일정
 
 | 컴포넌트               | 위치                                             | 역할                    | 주요 사용처                                    | 사용 기준                                 |

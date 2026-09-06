@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -15,6 +15,7 @@ import {
   Screen,
 } from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
+import { useTaskCategories } from '@/features/tasks';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type {
   LocalDateString,
@@ -30,7 +31,7 @@ import { useTaskSearch } from './use-task-search';
 type SearchFilter = 'ALL' | 'PLANNED' | 'DONE' | 'SCHEDULE';
 type DateRangeFilter = 'ALL' | '7D' | '30D' | 'MONTH';
 type DdayFilter = 'ALL' | 'LINKED' | 'UNLINKED';
-type CategoryFilter = 'ALL' | 'UI/UX' | 'API' | '일정' | 'D-Day';
+type CategoryFilter = 'ALL' | string;
 type SortFilter = 'RELEVANT_DATE_DESC' | 'RELEVANT_DATE_ASC';
 
 const searchFilters: { value: SearchFilter; label: string }[] = [
@@ -53,14 +54,6 @@ const ddayFilters: { value: DdayFilter; label: string }[] = [
   { value: 'UNLINKED', label: 'D-Day 없음' },
 ];
 
-const categoryFilters: { value: CategoryFilter; label: string }[] = [
-  { value: 'ALL', label: '카테고리 전체' },
-  { value: 'UI/UX', label: 'UI/UX' },
-  { value: 'API', label: 'API' },
-  { value: '일정', label: '일정' },
-  { value: 'D-Day', label: 'D-Day' },
-];
-
 const sortFilters: { value: SortFilter; label: string; query: TaskSearchSort }[] = [
   { value: 'RELEVANT_DATE_DESC', label: '최신순', query: 'RELEVANT_DATE_DESC' },
   { value: 'RELEVANT_DATE_ASC', label: '오래된순', query: 'RELEVANT_DATE_ASC' },
@@ -79,15 +72,34 @@ const dateSourceLabels: Record<TaskSearchItem['dateSource'], string> = {
 
 export function SearchOverview() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    browse?: string | string[];
+    category?: string | string[];
+  }>();
   const theme = useAppTheme();
+  const categories = useTaskCategories();
+  const routeCategory = firstParam(params.category);
+  const categoryBrowse = firstParam(params.browse) === 'categories';
   const [keyword, setKeyword] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<SearchFilter>('ALL');
   const [selectedDateRange, setSelectedDateRange] = useState<DateRangeFilter>('ALL');
   const [selectedDdayFilter, setSelectedDdayFilter] = useState<DdayFilter>('ALL');
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('ALL');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>(() =>
+    categoryBrowse ? (routeCategory ?? 'ALL') : 'ALL',
+  );
   const [selectedSort, setSelectedSort] = useState<SortFilter>('RELEVANT_DATE_DESC');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [focusedElement, setFocusedElement] = useState<string | null>(null);
+  const categoryFilters = useMemo(
+    () => [
+      { value: 'ALL', label: '카테고리 전체' },
+      ...(categories.data ?? [])
+        .filter((summary) => summary.category !== null)
+        .map((summary) => ({ value: summary.category as string, label: summary.displayName })),
+    ],
+    [categories.data],
+  );
+
   const deferredKeyword = useDeferredValue(keyword.trim());
   const hasKeyword = keyword.trim().length > 0;
   const hasActiveSearchConditions =
@@ -96,7 +108,8 @@ export function SearchOverview() {
     selectedDateRange !== 'ALL' ||
     selectedDdayFilter !== 'ALL' ||
     selectedCategory !== 'ALL' ||
-    selectedSort !== 'RELEVANT_DATE_DESC';
+    selectedSort !== 'RELEVANT_DATE_DESC' ||
+    categoryBrowse;
   const today = toApiLocalDate();
   const dateRangeQuery = useMemo(
     () => getDateRangeQuery(selectedDateRange, today),
@@ -146,7 +159,9 @@ export function SearchOverview() {
   const selectedDdayFilterLabel =
     ddayFilters.find((filter) => filter.value === selectedDdayFilter)?.label ?? 'D-Day 전체';
   const selectedCategoryLabel =
-    categoryFilters.find((filter) => filter.value === selectedCategory)?.label ?? '카테고리 전체';
+    categoryFilters.find((filter) => filter.value === selectedCategory)?.label ??
+    routeCategory ??
+    '카테고리 전체';
   const selectedSortLabel =
     sortFilters.find((filter) => filter.value === selectedSort)?.label ?? '최신순';
   const baseSummary = hasKeyword
@@ -169,7 +184,7 @@ export function SearchOverview() {
       ? '검색 결과를 업데이트하고 있어요.'
       : hasKeyword
         ? `${searchSummary}에서 찾은 항목이에요.`
-        : `${searchSummary}을 최근 관련 날짜 순으로 보여줘요.`;
+        : `${searchSummary} 기준으로 최근 관련 날짜 순으로 보여줘요.`;
   const resetSearchConditions = () => {
     setKeyword('');
     setSelectedFilter('ALL');
@@ -178,12 +193,19 @@ export function SearchOverview() {
     setSelectedCategory('ALL');
     setSelectedSort('RELEVANT_DATE_DESC');
     setFocusedElement(null);
+    if (categoryBrowse) router.replace('/search');
   };
 
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title="검색"
+        title={
+          categoryBrowse
+            ? selectedCategory === 'ALL'
+              ? '전체 할 일'
+              : selectedCategoryLabel
+            : '검색'
+        }
         leading={
           <IconButton accessibilityLabel="더보기 화면으로 돌아가기" onPress={router.back}>
             <SymbolView
@@ -695,6 +717,10 @@ function getCategoryQuery(filter: CategoryFilter): Pick<TaskSearchQuery, 'catego
   }
 
   return { category: filter };
+}
+
+function firstParam(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
 }
 
 const styles = StyleSheet.create({

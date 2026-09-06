@@ -23,20 +23,20 @@ docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
 
 ## 신규·변경 API와 모바일 상태
 
-| API                                         | 백엔드 계약                                                                      | 현재 모바일                 | 다음 프론트 작업                   |
-| ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------- | ---------------------------------- |
-| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정 연결 완료   | local real·production smoke        |
-| `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | 하루 마감 결과 연결 완료    | migration 후 real·production smoke |
-| `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | client·mock·query 완료      | 메뉴 loading·empty·error 상태 구현 |
-| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·권한 UI 완료 | 역할별 real·production smoke       |
-| `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결 완료                   | local real·production 입력 smoke   |
+| API                                         | 백엔드 계약                                                                      | 현재 모바일                   | 다음 프론트 작업                   |
+| ------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------- |
+| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정 연결 완료     | local real·production smoke        |
+| `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | 하루 마감 결과 연결 완료      | migration 후 real·production smoke |
+| `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | 접이식 drawer·named 이동 완료 | null-category 검색 계약·real smoke |
+| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·권한 UI 완료   | 역할별 real·production smoke       |
+| `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결 완료                     | local real·production 입력 smoke   |
 
 기존 개인 Task URL과 DTO에는 깨지는 변경이 없다. 카테고리 요약은 Workspace Task를 포함하지 않으며 카테고리 생성·이름 변경·삭제·사용자 지정 정렬 API를 대신하지 않는다.
 Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실행 Task 합계까지 연결했다.
 
 ## 프론트에서 바로 할 수 있는 일
 
-1. 카테고리 요약을 좌측 메뉴에 연결하되 `전체`·`미분류`·개인 카테고리를 Workspace와 분리한다.
+1. 카테고리 drawer의 `전체`·이름 있는 개인 카테고리 이동을 real API로 확인하고 null-category 검색 계약 뒤 `미분류`를 활성화한다.
 2. 체크리스트를 Workspace OWNER·EDITOR·VIEWER 실제 계정으로 검증한다.
 3. Daily Plan과 summary를 local real API로 확인하고 migration 미적용·404 상태를 구분한다.
 4. production 배포 확인 뒤 Android 실기기 smoke를 수행한다.
@@ -55,7 +55,8 @@ UI가 바뀌는 1~3번은 Product Design 검토와 390×844 캡처 판정을 포
 
 ### 제품 결정 후 요청할 계약
 
-- 카테고리 관리가 필요해지면 생성·이름 변경·삭제·사용자 지정 순서와 삭제 시 Task 처리 정책을 추가한다. 현재 요약 API만으로 조회 메뉴는 구현 가능하다.
+- 검색 API에 `uncategorized=true`처럼 `category IS NULL`을 명시할 필터를 추가한다. summary API만으로는 `미분류` count는 알 수 있지만 cursor pagination을 보존한 목록 탐색은 불가능하다.
+- 카테고리 관리가 필요해지면 생성·이름 변경·삭제·사용자 지정 순서와 삭제 시 Task 처리 정책을 추가한다.
 - 단건 계획·마감 처리의 부분 실패가 반복 확인될 때만 atomic batch mutation을 요청한다.
 - Web 운영 형태를 정한 뒤 refresh credential의 HttpOnly cookie 계약을 확정한다.
 - 서버 push를 활성화할 때 token 등록·해제, 발송 멱등성과 local 알림 억제 소유권을 production에서 검증한다.

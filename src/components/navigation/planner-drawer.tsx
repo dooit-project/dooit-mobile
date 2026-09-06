@@ -1,10 +1,11 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Href } from 'expo-router';
-import { usePathname, useRouter } from 'expo-router';
-import { forwardRef, useEffect, useRef } from 'react';
+import { useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import {
   AccessibilityInfo,
+  ActivityIndicator,
   findNodeHandle,
   Modal,
   Platform,
@@ -16,7 +17,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/ui';
+import { useTaskCategories } from '@/features/tasks';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
+
+import {
+  getPlannerCategoryNavigationItems,
+  type PlannerCategoryValue,
+} from './planner-category-navigation';
 
 type DrawerItem = {
   href: Href;
@@ -104,7 +111,15 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const router = useRouter();
+  const params = useGlobalSearchParams<{ browse?: string; category?: string }>();
   const closeButtonRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const categories = useTaskCategories();
+  const categorySummaries = categories.data ?? [];
+  const categoryItems = getPlannerCategoryNavigationItems(categorySummaries);
+  const totalTaskCount = categoryItems[0]?.count ?? 0;
+  const categoryBrowseActive = pathname.startsWith('/search') && params.browse === 'categories';
+  const selectedCategory = categoryBrowseActive ? (params.category ?? 'ALL') : null;
 
   useEffect(() => {
     if (!visible) return;
@@ -137,6 +152,61 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
   const open = (href: Href) => {
     onClose();
     router.navigate(href);
+  };
+
+  const openCategory = (category: PlannerCategoryValue) => {
+    if (category === null) return;
+
+    open({
+      pathname: '/search',
+      params: {
+        browse: 'categories',
+        ...(category === 'ALL' ? {} : { category }),
+      },
+    });
+  };
+
+  const renderItem = (item: DrawerItem, groupIndex: number) => {
+    const matchesPath = item.match
+      ? item.match === '/'
+        ? pathname === '/'
+        : pathname.startsWith(item.match)
+      : pathname.startsWith(String(item.href));
+    const active = item.href === '/search' && categoryBrowseActive ? false : matchesPath;
+
+    return (
+      <Pressable
+        key={`${groupIndex}-${item.label}`}
+        accessibilityHint={`${item.label} 화면으로 이동합니다.`}
+        accessibilityLabel={item.label}
+        accessibilityRole="button"
+        accessibilityState={{ selected: active }}
+        onPress={() => open(item.href)}
+        style={({ pressed }) => [
+          styles.menuRow,
+          active && { backgroundColor: theme.colors.primarySoft },
+          pressed && { backgroundColor: theme.colors.surfaceMuted },
+        ]}
+      >
+        <View
+          style={[
+            styles.iconBox,
+            {
+              backgroundColor: active ? theme.colors.highlightBlue : theme.colors.surfaceMuted,
+            },
+          ]}
+        >
+          <MaterialCommunityIcons
+            color={active ? theme.colors.primary : theme.colors.textSecondary}
+            name={item.icon}
+            size={24}
+          />
+        </View>
+        <AppText style={styles.menuLabel} variant="bodyLarge" weight={active ? 'bold' : 'medium'}>
+          {item.label}
+        </AppText>
+      </Pressable>
+    );
   };
 
   return (
@@ -208,24 +278,18 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                   },
                 ]}
               >
-                {group.map((item) => {
-                  const active = item.match
-                    ? item.match === '/'
-                      ? pathname === '/'
-                      : pathname.startsWith(item.match)
-                    : pathname.startsWith(String(item.href));
-
-                  return (
+                {groupIndex === 0 ? (
+                  <>
+                    {group.slice(0, 2).map((item) => renderItem(item, groupIndex))}
                     <Pressable
-                      key={`${groupIndex}-${item.label}`}
-                      accessibilityHint={`${item.label} 화면으로 이동합니다.`}
-                      accessibilityLabel={item.label}
+                      accessibilityHint="개인 Task 카테고리 목록을 펼치거나 접습니다."
+                      accessibilityLabel="카테고리"
                       accessibilityRole="button"
-                      accessibilityState={{ selected: active }}
-                      onPress={() => open(item.href)}
+                      accessibilityState={{ expanded: categoriesExpanded }}
+                      onPress={() => setCategoriesExpanded((current) => !current)}
                       style={({ pressed }) => [
                         styles.menuRow,
-                        active && { backgroundColor: theme.colors.primarySoft },
+                        categoryBrowseActive && { backgroundColor: theme.colors.primarySoft },
                         pressed && { backgroundColor: theme.colors.surfaceMuted },
                       ]}
                     >
@@ -233,34 +297,137 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                         style={[
                           styles.iconBox,
                           {
-                            backgroundColor: active
+                            backgroundColor: categoryBrowseActive
                               ? theme.colors.highlightBlue
                               : theme.colors.surfaceMuted,
                           },
                         ]}
                       >
                         <MaterialCommunityIcons
-                          color={active ? theme.colors.primary : theme.colors.textSecondary}
-                          name={item.icon}
+                          color={
+                            categoryBrowseActive ? theme.colors.primary : theme.colors.textSecondary
+                          }
+                          name="folder-outline"
                           size={24}
                         />
                       </View>
-                      <AppText
-                        style={styles.menuLabel}
-                        variant="bodyLarge"
-                        weight={active ? 'bold' : 'medium'}
-                      >
-                        {item.label}
-                      </AppText>
+                      <View style={styles.categoryHeadingCopy}>
+                        <AppText
+                          variant="bodyLarge"
+                          weight={categoryBrowseActive ? 'bold' : 'medium'}
+                        >
+                          카테고리
+                        </AppText>
+                        <AppText tone="secondary" variant="caption">
+                          {categories.isPending
+                            ? '불러오는 중'
+                            : categories.error
+                              ? '불러오지 못함'
+                              : `전체 ${totalTaskCount}`}
+                        </AppText>
+                      </View>
+                      <MaterialCommunityIcons
+                        color={theme.colors.textMuted}
+                        name={categoriesExpanded ? 'chevron-up' : 'chevron-down'}
+                        size={22}
+                      />
                     </Pressable>
-                  );
-                })}
+
+                    {categoriesExpanded ? (
+                      <View
+                        accessibilityLabel="개인 Task 카테고리"
+                        style={[styles.categoryList, { borderLeftColor: theme.colors.border }]}
+                      >
+                        {categories.isPending ? (
+                          <View style={styles.categoryState}>
+                            <ActivityIndicator color={theme.colors.primary} size="small" />
+                            <AppText tone="secondary" variant="caption">
+                              카테고리를 불러오고 있어요.
+                            </AppText>
+                          </View>
+                        ) : categories.error ? (
+                          <Pressable
+                            accessibilityLabel="카테고리 다시 불러오기"
+                            accessibilityRole="button"
+                            onPress={() => void categories.refetch()}
+                            style={({ pressed }) => [
+                              styles.categoryState,
+                              pressed && { backgroundColor: theme.colors.surfaceMuted },
+                            ]}
+                          >
+                            <AppText tone="danger" variant="caption" weight="semibold">
+                              다시 시도
+                            </AppText>
+                          </Pressable>
+                        ) : (
+                          <>
+                            {categoryItems.map((item) => (
+                              <CategoryRow
+                                key={item.key}
+                                active={selectedCategory === item.category}
+                                count={item.count}
+                                disabled={item.disabled}
+                                label={item.label}
+                                onPress={() => openCategory(item.category)}
+                              />
+                            ))}
+                          </>
+                        )}
+                      </View>
+                    ) : null}
+                    {group.slice(2).map((item) => renderItem(item, groupIndex))}
+                  </>
+                ) : (
+                  group.map((item) => renderItem(item, groupIndex))
+                )}
               </View>
             ))}
           </ScrollView>
         </View>
       </View>
     </Modal>
+  );
+}
+
+function CategoryRow({
+  active,
+  count,
+  disabled = false,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  count: number;
+  disabled?: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  const theme = useAppTheme();
+
+  return (
+    <Pressable
+      accessibilityHint={
+        disabled
+          ? '미분류 Task 탐색은 서버 필터가 준비된 뒤 사용할 수 있습니다.'
+          : `${label} 카테고리 Task를 보여줍니다.`
+      }
+      accessibilityLabel={`${label}, ${count}개`}
+      accessibilityRole="button"
+      accessibilityState={{ disabled, selected: active }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.categoryRow,
+        active && { backgroundColor: theme.colors.primarySoft },
+        pressed && { backgroundColor: theme.colors.surfaceMuted },
+        disabled && styles.categoryRowDisabled,
+      ]}
+    >
+      <AppText tone={active ? 'primary' : 'default'} weight={active ? 'bold' : 'medium'}>
+        {label}
+      </AppText>
+      <AppText tone="secondary">{count}</AppText>
+    </Pressable>
   );
 }
 
@@ -314,6 +481,30 @@ const styles = StyleSheet.create({
     width: 40,
   },
   menuLabel: { flex: 1 },
+  categoryHeadingCopy: { flex: 1, gap: 2 },
+  categoryList: {
+    borderLeftWidth: StyleSheet.hairlineWidth,
+    marginBottom: spacing[2],
+    marginLeft: 36,
+    paddingLeft: spacing[4],
+  },
+  categoryRow: {
+    alignItems: 'center',
+    borderRadius: radii.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    minHeight: 48,
+    paddingHorizontal: spacing[4],
+  },
+  categoryRowDisabled: { opacity: 0.58 },
+  categoryState: {
+    alignItems: 'center',
+    borderRadius: radii.lg,
+    flexDirection: 'row',
+    gap: spacing[2],
+    minHeight: 48,
+    paddingHorizontal: spacing[4],
+  },
   header: {
     alignItems: 'center',
     borderBottomWidth: StyleSheet.hairlineWidth,

@@ -1,17 +1,17 @@
 # Smoke Test Log
 
-Last updated: 2026-09-05
+Last updated: 2026-09-06
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
 ## 자동 검증 기준선
 
-- 날짜: 2026-09-05
-- frontend 기준: 현재 작업 트리, base `2f7faf5`
+- 날짜: 2026-09-06
+- frontend 기준: 현재 작업 트리, base `3721265`
 - 명령: `npm run validate`
 - 결과: 통과
-- 테스트: 94 suites, 474 tests
-- 대표 화면: Expo Web mock · Chrome · 390×844, 14개 PNG를 2026-09-05 기준으로 갱신
+- 테스트: 95 suites, 476 tests
+- 대표 화면: Expo Web mock · Chrome · 390×844, 카테고리 drawer 접힘·펼침·검색 이동 4개 PNG를 2026-09-06에 추가
 - 브라우저: ChatGPT 앱 내장 브라우저가 `Invalid browser service environment`로 연결되지 않아 Chrome 자동화로 대체했으며 console error는 없었음
 
 ## 백엔드 source 확인
@@ -40,6 +40,7 @@ Last updated: 2026-09-05
 - Task 예상 시간 5~1440분 검증·mock 저장·합계·표시 형식
 - Daily Plan 확정 snapshot summary의 표시·접근성 label과 하루 마감 이동 즉시 반영
 - 개인·Workspace Task 체크리스트 CRUD·정렬, 원형 진행률과 VIEWER 403 계약
+- 개인 카테고리 drawer 집계·접힘 상태와 이름 있는 category exact-match 검색 이동
 - 운영 Web export의 real mode·HTTPS API URL 검사
 
 자동 검증만으로 확정할 수 없는 항목:
