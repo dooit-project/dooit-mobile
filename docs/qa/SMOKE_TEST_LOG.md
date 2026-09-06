@@ -96,6 +96,7 @@ Last updated: 2026-09-06
 ```bash
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:auth:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
+EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:daily-execution:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:search:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:workspace-roles:real
 EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:recurrence:real
@@ -113,6 +114,8 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run check:backend-ready
 - 일정의 `notificationEnabled`·`notifyAt` 저장과 후보 `scheduledAt` 일치
 
 `smoke:auth:real`은 등록 계정 로그인 응답의 access·refresh credential, refresh token rotation, 회전된 access로 `/me` 조회, logout 뒤 refresh session 폐기를 확인한다.
+
+`smoke:daily-execution:real`은 실행마다 임시 guest와 Task를 만들고 quick-capture의 `낼모레`·`N시 반`·`HH:mm`, 개인 category 집계, checklist CRUD·완료·재개·정렬, Daily Plan 확정 snapshot summary를 확인한 뒤 생성 Task와 refresh session을 정리한다.
 
 ## Workspace 실행 OpenAPI 기준선
 
@@ -233,3 +236,14 @@ API mode / URL:
 - readiness: `UP` 응답 후 metadata 단계까지 진행했지만 `GET /api/v1/system/metadata`가 HTTP 401을 반환해 통합 검사가 중단됐다.
 - 최신 OpenAPI: 8개 auth·password reset operation의 2xx response와 token response schema가 여전히 누락됐다.
 - 판정: `BLOCKED` — metadata endpoint의 익명 접근을 복구하고 OpenAPI 성공 응답·token schema를 보완한 백엔드 배포 후 `npm run check:backend-ready` 재실행
+
+### 2026-09-06 신규 Daily Execution local real 재검사
+
+- frontend 기준: `2b0f2d5` 이후 작업 트리
+- backend source: `d4c4243`; 관련 통합 테스트 3종 `BUILD SUCCESSFUL`
+- 실행 인스턴스: Docker image `dooit-backend:63a54d5`와 IntelliJ Java process가 모두 8080에 리슨
+- 명령: `npm run smoke:daily-execution:real`
+- 결과: IPv4 Docker와 IPv6 Java 모두 첫 `POST /api/v1/auth/guest`가 HTTP 500으로 중단
+- 데이터 정리: Task 생성 전 실패하여 잔여 테스트 Task 없음
+- 모바일 전체 검증: 96 suites, 479 tests 통과
+- 판정: `BLOCKED` — 실행 인스턴스 하나로 정리하고 guest 생성 500을 복구한 뒤 재실행

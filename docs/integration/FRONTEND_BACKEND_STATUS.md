@@ -1,6 +1,6 @@
 # 프론트엔드·백엔드 연동 현황
 
-Last verified: 2026-09-05
+Last verified: 2026-09-06
 
 이 문서는 모바일에서 사용하는 백엔드 계약의 단일 현황판이다. 앞으로 할 일의 우선순위는 [`ROADMAP.md`](../product/ROADMAP.md), 실제 연결 절차는 [`BACKEND_INTEGRATION_RUNBOOK.md`](./BACKEND_INTEGRATION_RUNBOOK.md), 세부 일일 실행 계약은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
@@ -8,14 +8,14 @@ Last verified: 2026-09-05
 
 | 구분                 | 확인 결과                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------- |
-| 백엔드 source        | `origin/main` = `6a78afe03fa5c805b6defe3b7de5793ca9a4e4e5`                              |
+| 백엔드 source        | local `main` = `d4c4243`                                                                |
 | 관련 커밋            | Workspace 체크리스트, Task 카테고리 요약, 일일 계획 결과 요약, 빠른 등록 구어 표현 파싱 |
 | 관련 테스트          | Daily Plan 6, Task API 37, Checklist 5, OpenAPI 7 통과                                  |
 | production readiness | `UP`                                                                                    |
-| production metadata  | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=docker-20260829`                   |
+| production metadata  | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=63a54d5`                           |
 | production OpenAPI   | 익명 요청 HTTP 403                                                                      |
 
-source 구현 완료와 production 반영 완료는 구분한다. 현재 metadata만으로는 production이 `6a78afe`를 실행한다고 볼 수 없으며, 아래 migration 적용 여부도 확인되지 않았다.
+source 구현 완료와 production 반영 완료는 구분한다. 현재 metadata만으로는 production image `63a54d5`가 최신 source를 실행한다고 볼 수 없으며, 아래 migration 적용 여부도 확인되지 않았다.
 
 ```text
 docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
@@ -23,13 +23,13 @@ docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
 
 ## 신규·변경 API와 모바일 상태
 
-| API                                         | 백엔드 계약                                                                      | 현재 모바일                   | 다음 프론트 작업                   |
-| ------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------- |
-| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정 연결 완료     | local real·production smoke        |
-| `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | 하루 마감 결과 연결 완료      | migration 후 real·production smoke |
-| `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | 접이식 drawer·named 이동 완료 | null-category 검색 계약·real smoke |
-| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·권한 UI 완료   | 역할별 real·production smoke       |
-| `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결 완료                     | local real·production 입력 smoke   |
+| API                                         | 백엔드 계약                                                                      | 현재 모바일                       | 다음 프론트 작업                   |
+| ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------- |
+| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정·real smoke 추가   | guest 500 복구 후 local·production |
+| `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | 하루 마감 결과·real smoke 추가    | migration 후 local·production      |
+| `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | drawer·named 이동·real smoke 추가 | null-category 검색·guest 500 복구  |
+| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·개인 smoke 추가    | Workspace 역할별·production smoke  |
+| `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결·real 입력 smoke 추가         | guest 500 복구 후 local·production |
 
 기존 개인 Task URL과 DTO에는 깨지는 변경이 없다. 카테고리 요약은 Workspace Task를 포함하지 않으며 카테고리 생성·이름 변경·삭제·사용자 지정 정렬 API를 대신하지 않는다.
 Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실행 Task 합계까지 연결했다.
@@ -47,10 +47,11 @@ UI가 바뀌는 1~3번은 Product Design 검토와 390×844 캡처 판정을 포
 
 ### 배포에 반드시 필요한 요청
 
-- `6a78afe`를 포함한 이미지를 production에 배포하고 필요한 migration 전체를 순서대로 적용한다.
+- `d4c4243` 기준 신규 API를 포함한 이미지를 production에 배포하고 필요한 migration 전체를 순서대로 적용한다.
 - metadata의 `commitSha`가 `local`이 아닌 배포 commit을 반환하도록 빌드 정보를 주입한다.
 - 같은 배포의 readiness, metadata, OpenAPI와 migration 적용 기록을 제공한다.
 - 인증된 OpenAPI 확인 방법을 제공하거나 검사 환경에서 계약 문서를 읽을 수 있게 한다.
+- local `POST /api/v1/auth/guest` HTTP 500을 복구하고 8080의 Docker·IntelliJ 중 검증 기준 인스턴스를 하나로 고정한다.
 - Android 실제 기기에서 신규 API와 기존 핵심 흐름을 함께 smoke할 수 있는 production 후보를 고정한다.
 
 ### 제품 결정 후 요청할 계약

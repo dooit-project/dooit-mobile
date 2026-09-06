@@ -1,6 +1,6 @@
 # 일일 계획·실행 API 계약
 
-Last verified: 2026-09-05
+Last verified: 2026-09-06
 
 이 문서는 `오늘 계획 → 실행 → 하루 마감`에 사용하는 현재 백엔드 계약과 아직 남은 요청만 기록한다. 배포 여부와 모바일 연결 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md)를 따른다.
 

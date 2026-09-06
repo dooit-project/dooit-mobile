@@ -269,6 +269,14 @@ EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-ready
 2. 최신 인증·멱등성·Task 알림 OpenAPI 계약
 3. Workspace 23개 operation 계약
 
+신규 Daily Execution 계약을 실제 데이터로 확인할 때는 아래 스모크를 사용한다.
+
+```bash
+EXPO_PUBLIC_API_URL=<검증 URL> npm run smoke:daily-execution:real
+```
+
+이 스모크는 임시 guest 범위에서 quick-capture 파싱, 개인 category 요약, checklist CRUD, Daily Plan summary를 확인한다. 생성된 Task와 refresh session은 종료 단계에서 정리하며 production 실행 전에는 대상 URL과 guest 계정 생성 정책을 다시 확인한다.
+
 ## 8. 현재 남은 연동과 계약
 
 프론트에서 바로 연결할 항목:

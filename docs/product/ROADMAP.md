@@ -36,6 +36,9 @@ Last updated: 2026-09-05
   - [ ] backend null-category 검색 필터가 생기면 `미분류` 이동을 활성화한다.
 - [x] 개인·Workspace Task 상세에 체크리스트를 추가하고 VIEWER 변경 행동을 제한한다.
 - [ ] 신규 API client를 local real backend와 production Android에서 검증한다.
+  - [x] quick-capture·category·개인 checklist·Daily Plan summary 통합 스모크 명령을 추가한다.
+  - [ ] local guest 생성 500을 복구한 실행 인스턴스에서 통합 스모크를 통과시킨다.
+  - [ ] Workspace OWNER·EDITOR·VIEWER checklist와 production Android를 검증한다.
 
 ## P1. UI·제품 검증
 

@@ -75,6 +75,7 @@
     "apk:save": "node scripts/save-eas-apk.js",
     "smoke:auth:real": "node scripts/smoke-auth-real.js",
     "smoke:guest:real": "node scripts/smoke-guest-real.js",
+    "smoke:daily-execution:real": "node scripts/smoke-daily-execution-real.js",
     "smoke:search:real": "node scripts/smoke-search-real.js",
     "smoke:workspace-roles:real": "node scripts/smoke-workspace-roles-real.js",
     "smoke:recurrence:real": "node scripts/smoke-recurrence-real.js",
