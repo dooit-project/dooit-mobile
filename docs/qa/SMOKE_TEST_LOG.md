@@ -267,3 +267,13 @@ API mode / URL:
 - 자동 검사: `check:eas-setup`이 project ID 존재와 실제 slug 일치를 별도로 확인하도록 보강
 - 모바일 전체 검증: 97 suites, 483 tests 통과
 - 판정: `BLOCKED` — `@hyunseung2/dooit-mobile` 생성·연결과 signing credential 확인 전 build 금지
+
+### 2026-09-08 EAS project 생성·연결
+
+- Expo project: `@hyunseung2/dooit-mobile`
+- project ID: `e67d09ae-0fd9-4305-af7a-af395c8f21be`
+- `npm run check:eas-setup`: 계정·project ID·slug 포함 전체 통과
+- Android application identifier: `pj.dooit`
+- Android credential: 메뉴 접근 성공, 새 project라 keystore 없음
+- 설정 정적 검사: 통과
+- 판정: project 연결 `PASS`; managed keystore 생성과 preview build는 최신 backend 배포 확인 뒤 진행

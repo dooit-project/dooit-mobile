@@ -159,8 +159,10 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 - [x] scheme 유지 여부: `dooit`
 - [x] API mode별 빌드 설정: mock development, real preview/production
 - [x] Android signing credential 운영 기준과 비밀 값 제외 원칙
-- [ ] `@hyunseung2/dooit-mobile` EAS project 생성·연결
-- [ ] 새 project에서 Android signing credential 접근과 기존 APK update 호환성 확인
+- [x] `@hyunseung2/dooit-mobile` EAS project 생성·연결
+- [x] 새 project에서 Android signing credential 메뉴 접근 확인
+- [ ] EAS managed keystore 생성과 최초 APK signing fingerprint 기준선 기록
+- [ ] 이후 APK update install에서 signing key 연속성 확인
 - [x] EAS preview/production `EXPO_PUBLIC_API_URL` 등록: `https://dooitapi.hsng.pe.kr`
 - [x] 현재 공개 범위와 version·runtimeVersion·OTA 기준 문서화
 - [ ] 공개 대상 플랫폼이 [`RELEASE_SCOPE_POLICY.md`](../product/RELEASE_SCOPE_POLICY.md)의 승격 조건을 통과했다.
@@ -168,7 +170,7 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 
 `npm run check:release-static`으로 앱 이름, slug, scheme, icon/splash/favicon 파일 존재, PNG 크기, Android APK profile과 public 환경값을 함께 확인한다. `npm run check:eas-setup`은 Expo 로그인과 EAS project 연결 후 별도로 실행한다.
 
-Expo project owner, `dooit-mobile` slug, 새 project id와 signing credential이 확인되기 전에는 실제 배포용 build를 만들지 않는다. 현재 `app.json`의 project id는 기존 `todolab-mobile`을 가리킨다.
+Expo project owner, `dooit-mobile` slug와 새 project ID 연결은 확인했다. managed keystore 생성과 최신 backend 배포 식별이 끝나기 전에는 실제 release 후보 build를 만들지 않는다.
 
 ## 11. 릴리즈 판정
 

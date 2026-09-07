@@ -4,16 +4,16 @@ Dooit Mobile을 Expo Go나 Metro 없이 Android 기기에 직접 설치해 실�
 
 ## 1. 현재 확정한 앱 식별자
 
-| 항목                  | 값           | 메모                                                                             |
-| --------------------- | ------------ | -------------------------------------------------------------------------------- |
-| 앱 이름               | `Dooit`      | `app.json`                                                                       |
-| Android package       | `pj.dooit`   | 개인 APK용 기준값. Play Store 또는 조직 도메인 정책이 생기면 출시 전 재검토한다. |
-| iOS bundle identifier | `pj.dooit`   | iOS 배포는 후순위지만 Android와 같은 기준값을 먼저 맞춘다.                       |
-| App version           | `1.0.0`      | `package.json`, `app.json`                                                       |
-| Android versionCode   | `1`          | APK update install 전 증가 정책을 유지한다.                                      |
-| Scheme                | `dooit`      | deep link 정책 확정 전까지 유지한다.                                             |
-| Expo owner            | `hyunseung2` | `app.json`                                                                       |
-| EAS project id        | 재연결 필요  | 현재 id가 기존 `todolab-mobile` project를 가리켜 새 `dooit-mobile` project 필요  |
+| 항목                  | 값                                     | 메모                                                                             |
+| --------------------- | -------------------------------------- | -------------------------------------------------------------------------------- |
+| 앱 이름               | `Dooit`                                | `app.json`                                                                       |
+| Android package       | `pj.dooit`                             | 개인 APK용 기준값. Play Store 또는 조직 도메인 정책이 생기면 출시 전 재검토한다. |
+| iOS bundle identifier | `pj.dooit`                             | iOS 배포는 후순위지만 Android와 같은 기준값을 먼저 맞춘다.                       |
+| App version           | `1.0.0`                                | `package.json`, `app.json`                                                       |
+| Android versionCode   | `1`                                    | APK update install 전 증가 정책을 유지한다.                                      |
+| Scheme                | `dooit`                                | deep link 정책 확정 전까지 유지한다.                                             |
+| Expo owner            | `hyunseung2`                           | `app.json`                                                                       |
+| EAS project id        | `e67d09ae-0fd9-4305-af7a-af395c8f21be` | `@hyunseung2/dooit-mobile` 연결 완료                                             |
 
 식별자를 변경하면 기존 Android 앱과 다른 앱으로 설치될 수 있고, 기존 SecureStore 로그인 상태와 앱 데이터가 이어지지 않을 수 있다.
 
@@ -70,14 +70,16 @@ npm run check:eas-setup
 
 ## 5. EAS project 연결
 
-Expo 계정 로그인이 끝난 뒤 `@hyunseung2/dooit-mobile` project를 새로 만들고 연결한다. 현재 `app.json`의 project id는 기존 `@hyunseung2/todolab-mobile`을 가리키므로 유효한 연결로 판정하지 않는다.
+`@hyunseung2/dooit-mobile` project를 생성하고 `app.json`에 연결했다.
 
 ```bash
-eas login
-eas init
+eas project:info --json
+npm run check:eas-setup
 ```
 
-연결 뒤 Expo dashboard의 slug가 `dooit-mobile`인지, `app.json`의 `expo.extra.eas.projectId`가 새 project id인지 확인한다. 기존 project id는 재사용하지 않으며 `.expo/` 로컬 상태는 Git에 커밋하지 않는다.
+현재 project ID는 `e67d09ae-0fd9-4305-af7a-af395c8f21be`다. Expo dashboard의 slug `dooit-mobile`, `app.json`의 project ID, `npm run check:eas-setup` 결과를 함께 확인한다. `.expo/` 로컬 상태는 Git에 커밋하지 않는다.
+
+Android credential 메뉴 접근은 확인했지만 새 project에는 아직 keystore가 없다. preview build를 승인한 뒤 EAS managed keystore를 생성하고, 생성 여부만 기록하며 비밀 값은 문서나 로그에 남기지 않는다.
 
 ## 6. 개인 APK 생성
 
