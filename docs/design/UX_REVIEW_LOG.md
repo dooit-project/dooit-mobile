@@ -1,6 +1,6 @@
 # UX Review
 
-Last updated: 2026-09-05
+Last updated: 2026-09-09
 
 이 문서는 현재 화면에서 유지할 UX 결정과 아직 검증할 위험만 기록한다. 완료된 수정 과정과 과거 화면별 pass 기록은 보관하지 않는다. 시각 기준은 [`DESIGN.md`](./DESIGN.md), 현재 화면 구조는 [`SCREEN_GUIDE.md`](./SCREEN_GUIDE.md), 앞으로 할 일은 [`ROADMAP.md`](../product/ROADMAP.md)를 따른다.
 
@@ -101,6 +101,9 @@ Last updated: 2026-09-05
 
 ## 현재 확인된 기준
 
+- 핵심 화면 Web light 반응형 근거는 [`responsive-core-2026-09-09`](../audits/responsive-core-2026-09-09/README.md)에 둔다. Today는 320·390·430px, drawer·빠른 기록·Calendar는 320px에서 주요 action 잘림과 가로 overflow가 없다.
+- 320px drawer 하단 항목은 스크롤 뒤 접근할 수 있지만 스크롤 표시가 없어 추가 메뉴 발견성이 약할 수 있다.
+- Chrome zoom은 React Native Web의 실제 `fontScale`을 바꾸지 않았으므로 font scale 1.5·dark mode·가상 키보드는 native에서 미검증 상태다.
 - Web 320×844, 390×844, 430×932 최초 사용 화면은 가로 overflow 없이 동작한다.
 - Web 320px·390px·430px와 browser zoom 150%에서 시작·로그인·회원가입 제목과 주요 CTA가 잘리지 않는다.
 - 게스트 설명은 430px에서 마지막 `요.`가 고립되지 않도록 한 문장 길이를 줄였다.

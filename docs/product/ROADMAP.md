@@ -1,6 +1,6 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-09-07
+Last updated: 2026-09-09
 
 이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 백엔드 계약 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md), 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md), 과거 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력에서 확인한다.
 
@@ -50,6 +50,8 @@ Last updated: 2026-09-07
 - [x] 체크리스트 화면은 Product Design 3안을 비교하고 A안+B안 결합안을 390×844로 검증한다.
 - [x] 카테고리 메뉴는 Product Design 3안을 비교하고 달력 아래 접이식 선택안을 390×844로 구현한다.
 - [ ] 320dp·390dp·430dp, font scale 1.0·1.5, light·dark에서 핵심 행동과 줄바꿈을 확인한다.
+  - [x] Web light에서 Today 320·390·430px와 drawer·빠른 기록·Calendar 320px를 캡처한다.
+  - [ ] Android에서 font scale 1.5·dark mode·가상 키보드 상태를 캡처한다.
 - [ ] VoiceOver·TalkBack, Android back, iOS gesture, safe area와 키보드를 실제 기기에서 확인한다.
 - [ ] Workspace 초대·체크리스트를 OWNER·EDITOR·VIEWER별로 real smoke한다.
 - [ ] 실제 API 지연과 대량 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
