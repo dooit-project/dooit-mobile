@@ -277,3 +277,16 @@ API mode / URL:
 - Android credential: 메뉴 접근 성공, 새 project라 keystore 없음
 - 설정 정적 검사: 통과
 - 판정: project 연결 `PASS`; managed keystore 생성과 preview build는 최신 backend 배포 확인 뒤 진행
+
+### 2026-09-08 production backend 재검사
+
+- URL: `https://dooitapi.hsng.pe.kr`
+- backend local source: `d1b2ddc`
+- readiness: `UP`
+- metadata: `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=local`
+- OpenAPI: HTTP 403
+- Daily Execution smoke: guest 응답에 `refreshToken`이 없어 중단
+- 데이터 정리: Task 생성 전 실패. refresh token이 없어 생성된 임시 guest session logout은 불가
+- 검사 보강: `commitSha`·`imageTag`의 `local`, `unknown`, `n/a` placeholder를 배포 식별 성공으로 인정하지 않도록 변경
+- 모바일 전체 검증: 97 suites, 491 tests 통과
+- 판정: `BLOCKED` — 최신 backend image·migration 배포와 식별 가능한 metadata 필요

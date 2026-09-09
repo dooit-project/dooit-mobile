@@ -1,6 +1,7 @@
 const {
   checkBackendDeployment,
   findDeploymentVersion,
+  isConcreteDeploymentIdentifier,
   normalizeMetadata,
 } = require('../check-backend-deployment');
 
@@ -62,6 +63,22 @@ describe('checkBackendDeployment', () => {
       'HTTP 503, status DOWN',
     );
   });
+
+  it('placeholder metadata는 배포 식별 성공으로 인정하지 않는다', async () => {
+    const request = jest
+      .fn()
+      .mockResolvedValueOnce(response(200, { status: 'UP' }))
+      .mockResolvedValueOnce(
+        response(200, {
+          status: 'success',
+          data: { commitSha: 'local', imageTag: 'local', version: '1.0-SNAPSHOT' },
+        }),
+      );
+
+    await expect(checkBackendDeployment('https://api.example.com', request)).rejects.toThrow(
+      'concrete commitSha or imageTag',
+    );
+  });
 });
 
 describe('findDeploymentVersion', () => {
@@ -80,5 +97,15 @@ describe('normalizeMetadata', () => {
         data: { commitSha: ' abc1234 ', imageTag: '', version: '1.2.3' },
       }),
     ).toEqual({ commitSha: 'abc1234', imageTag: undefined, version: '1.2.3' });
+  });
+});
+
+describe('isConcreteDeploymentIdentifier', () => {
+  it.each(['local', ' unknown ', 'N/A', '', undefined])('%p는 placeholder로 판정한다', (value) => {
+    expect(isConcreteDeploymentIdentifier(value)).toBe(false);
+  });
+
+  it.each(['d1b2ddc', 'dooit-backend:20260908'])('%p는 실제 식별자로 판정한다', (value) => {
+    expect(isConcreteDeploymentIdentifier(value)).toBe(true);
   });
 });

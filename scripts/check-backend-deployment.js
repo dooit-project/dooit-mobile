@@ -45,6 +45,11 @@ function normalizeMetadata(body) {
   };
 }
 
+function isConcreteDeploymentIdentifier(value) {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  return !['local', 'unknown', 'undefined', 'none', 'n/a'].includes(value.trim().toLowerCase());
+}
+
 async function readJsonResponse(response) {
   try {
     return await response.json();
@@ -78,9 +83,13 @@ async function checkBackendDeployment(apiUrl, request = fetch) {
 
   const metadataBody = await readJsonResponse(metadataResponse);
   const metadata = normalizeMetadata(metadataBody);
-  const deploymentVersion = findDeploymentVersion(metadata);
+  const deploymentVersion = [metadata.commitSha, metadata.imageTag].find(
+    isConcreteDeploymentIdentifier,
+  );
   if (!deploymentVersion) {
-    throw new Error('Backend deployment metadata must include commitSha, imageTag, or version.');
+    throw new Error(
+      `Backend deployment metadata must include a concrete commitSha or imageTag; received commitSha=${metadata.commitSha ?? 'missing'}, imageTag=${metadata.imageTag ?? 'missing'}.`,
+    );
   }
 
   return { deploymentVersion, metadata, readiness: readiness.status };
@@ -107,4 +116,9 @@ if (require.main === module) {
   });
 }
 
-module.exports = { checkBackendDeployment, findDeploymentVersion, normalizeMetadata };
+module.exports = {
+  checkBackendDeployment,
+  findDeploymentVersion,
+  isConcreteDeploymentIdentifier,
+  normalizeMetadata,
+};

@@ -7,9 +7,9 @@ Last updated: 2026-09-07
 ## 현재 상태
 
 - 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 97 suites, 483 tests 통과이며 카테고리 drawer 캡처는 2026-09-06 기준으로 갱신됐다.
-- 백엔드 local `main`은 `d4c4243`이며 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
-- production은 readiness `UP`이지만 metadata가 `commitSha=local`, `imageTag=63a54d5`를 반환하므로 최신 source 배포와 migration 적용은 아직 증명되지 않았다.
+- 최신 검증 기준선은 97 suites, 491 tests 통과이며 카테고리 drawer 캡처는 2026-09-06 기준으로 갱신됐다.
+- 백엔드 local `main`은 `d1b2ddc`이며 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
+- production은 readiness `UP`이지만 metadata의 commit·image가 모두 `local`이고 guest refresh token도 없어 최신 source 배포와 migration 적용은 증명되지 않았다.
 - EAS project는 `@hyunseung2/dooit-mobile`로 생성·연결했고 project ID·slug 자동 검사를 통과했다. Android credential 접근은 가능하지만 managed keystore는 아직 없다.
 
 ## P0. 출시 기반 복구

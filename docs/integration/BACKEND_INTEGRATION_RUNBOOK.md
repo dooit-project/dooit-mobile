@@ -247,7 +247,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run smoke:guest:real
 EXPO_PUBLIC_API_URL=<배포 URL> npm run check:backend-deployment
 ```
 
-검사기는 `GET /actuator/health/readiness`의 `UP`과 `GET /api/v1/system/metadata`의 `commitSha`·`imageTag`·`version` 중 하나 이상을 요구하며, 제공된 값을 모두 출력해 smoke log에 기록할 수 있게 한다.
+검사기는 `GET /actuator/health/readiness`의 `UP`과 `GET /api/v1/system/metadata`의 실제 `commitSha` 또는 `imageTag`를 요구한다. `local`, `unknown`, `n/a` 같은 placeholder와 일반 앱 version만으로는 배포 source를 식별할 수 없어 실패 처리한다.
 
 최신 백엔드 배포의 OpenAPI 계약도 함께 확인한다.
 

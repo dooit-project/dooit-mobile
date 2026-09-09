@@ -1,6 +1,6 @@
 # 프론트엔드·백엔드 연동 현황
 
-Last verified: 2026-09-06
+Last verified: 2026-09-08
 
 이 문서는 모바일에서 사용하는 백엔드 계약의 단일 현황판이다. 앞으로 할 일의 우선순위는 [`ROADMAP.md`](../product/ROADMAP.md), 실제 연결 절차는 [`BACKEND_INTEGRATION_RUNBOOK.md`](./BACKEND_INTEGRATION_RUNBOOK.md), 세부 일일 실행 계약은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
@@ -8,14 +8,14 @@ Last verified: 2026-09-06
 
 | 구분                 | 확인 결과                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------- |
-| 백엔드 source        | local `main` = `d4c4243`                                                                |
+| 백엔드 source        | local `main` = `d1b2ddc`                                                                |
 | 관련 커밋            | Workspace 체크리스트, Task 카테고리 요약, 일일 계획 결과 요약, 빠른 등록 구어 표현 파싱 |
 | 관련 테스트          | Daily Plan 6, Task API 37, Checklist 5, OpenAPI 7 통과                                  |
 | production readiness | `UP`                                                                                    |
-| production metadata  | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=63a54d5`                           |
+| production metadata  | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=local`                             |
 | production OpenAPI   | 익명 요청 HTTP 403                                                                      |
 
-source 구현 완료와 production 반영 완료는 구분한다. 현재 metadata만으로는 production image `63a54d5`가 최신 source를 실행한다고 볼 수 없으며, 아래 migration 적용 여부도 확인되지 않았다.
+source 구현 완료와 production 반영 완료는 구분한다. 현재 metadata는 concrete commit/image를 전혀 제공하지 않으며 production guest 응답에도 `refreshToken`이 없어 최신 source 실행으로 볼 수 없다. 아래 migration 적용 여부도 확인되지 않았다.
 
 ```text
 docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
@@ -47,7 +47,7 @@ UI가 바뀌는 1~3번은 Product Design 검토와 390×844 캡처 판정을 포
 
 ### 배포에 반드시 필요한 요청
 
-- `d4c4243` 기준 신규 API를 포함한 이미지를 production에 배포하고 필요한 migration 전체를 순서대로 적용한다.
+- `d1b2ddc` 기준 신규 API를 포함한 이미지를 production에 배포하고 필요한 migration 전체를 순서대로 적용한다.
 - metadata의 `commitSha`가 `local`이 아닌 배포 commit을 반환하도록 빌드 정보를 주입한다.
 - 같은 배포의 readiness, metadata, OpenAPI와 migration 적용 기록을 제공한다.
 - 인증된 OpenAPI 확인 방법을 제공하거나 검사 환경에서 계약 문서를 읽을 수 있게 한다.
