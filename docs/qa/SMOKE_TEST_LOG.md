@@ -1,16 +1,16 @@
 # Smoke Test Log
 
-Last updated: 2026-09-06
+Last updated: 2026-09-11
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
 ## 자동 검증 기준선
 
-- 날짜: 2026-09-06
-- frontend 기준: 현재 작업 트리, base `3721265`
+- 날짜: 2026-09-10
+- frontend 기준: `81995c5` (preview 빌드 전 검증)
 - 명령: `npm run validate`
 - 결과: 통과
-- 테스트: 95 suites, 476 tests
+- 테스트: 97 suites, 491 tests
 - 대표 화면: Expo Web mock · Chrome · 390×844, 카테고리 drawer 접힘·펼침·검색 이동 4개 PNG를 2026-09-06에 추가
 - 브라우저: ChatGPT 앱 내장 브라우저가 `Invalid browser service environment`로 연결되지 않아 Chrome 자동화로 대체했으며 console error는 없었음
 
@@ -170,9 +170,9 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run check:backend-ready
 판정:
 
 - 이 APK는 이후 최초 사용·게스트 복구·알림 기능을 포함하지 않아 현재 release 후보가 아니다.
-- 현재 `main` 기준 preview APK를 새로 빌드해야 한다.
+- 최신 제출 정보는 아래 2026-09-10 기록을 따른다.
 
-### 최신 preview APK 빌드
+### 과거 preview APK 빌드 (2026-08-21)
 
 - 제출 날짜: 2026-08-21
 - EAS build id: `38acdebc-b5ba-4027-9a43-aacc368bf33f`
@@ -183,6 +183,18 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run check:backend-ready
 - app version / versionCode: `1.0.0` / `1`
 - 포함 기준: `expo-notifications` production dependency와 native config plugin 정적 검사 통과
 - 후속: build 완료 뒤 artifact를 저장하고 실제 Android 기기에서 Tailscale 연결 상태로 cold start·게스트 시작·알림 smoke를 수행한다.
+
+### 최신 preview 제출 (2026-09-10)
+
+- EAS build id: `23dcd244-9d8a-4be1-bd45-284ba0e8a531`
+- [빌드 페이지](https://expo.dev/accounts/hyunseung2/projects/dooit-mobile/builds/23dcd244-9d8a-4be1-bd45-284ba0e8a531)
+- 마지막 확인: 2026-09-10 EAS 대기열 등록. 2026-09-11 문서 정리에서 최종 상태를 재조회하지 않았으므로 완료 여부는 미확인이다.
+- frontend 기준: `81995c5`, profile: `preview`, version / versionCode: `1.0.0` / `1`
+- API mode / URL: `real` / `https://dooitapi.hsng.pe.kr`
+- project: `@hyunseung2/dooit-mobile`, `e67d09ae-0fd9-4305-af7a-af395c8f21be`
+- 사전 확인: `npm run validate` 97 suites·491 tests 통과, `npm run check:eas-setup` 통과
+- Android credential: 새 project에서 EAS managed keystore 생성 완료. 비밀 값은 기록하지 않았으며 새 fingerprint는 미기록이다.
+- 미확인: 최종 artifact, 설치·cold start·실사용, backend 배포 버전·migration·production smoke
 
 ## 다음 기록 양식
 

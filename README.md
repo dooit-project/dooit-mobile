@@ -39,7 +39,7 @@ Dooit은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하�
 
 ## 현재 상태
 
-핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐습니다. Web은 `https://dooit.hsng.pe.kr`, API는 `https://dooitapi.hsng.pe.kr`에 연결되어 있습니다. 신규 Daily Plan 결과·개인 카테고리 요약·체크리스트 계약과 `@hyunseung2/dooit-mobile` EAS project 연결까지 완료했으며, 최신 백엔드 배포와 Android signing credential을 준비한 뒤 실기기 release 후보를 검증하는 단계입니다.
+핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐습니다. Web은 `https://dooit.hsng.pe.kr`, API는 `https://dooitapi.hsng.pe.kr`에 연결되어 있습니다. 오늘 계획·예상 시간·하루 결과·개인 카테고리 탐색·체크리스트 UI까지 연결됐습니다. EAS project 연결과 managed keystore 생성을 마치고 2026-09-10 Android preview 빌드를 제출했으며, 빌드 결과 확인과 최신 백엔드 배포·실기기 검증이 남았습니다.
 
 - 게스트·회원가입·로그인·세션 복구
 - Today·Inbox·완료 기록·Calendar·검색
@@ -48,7 +48,7 @@ Dooit은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하�
 - 로컬 알림 동기화와 알림 선택 이동
 - mock/real API 분리와 Android·iOS·Web 공통 UI
 
-진행 중인 항목과 출시 조건은 [제품 로드맵](./docs/product/ROADMAP.md)에 투명하게 기록합니다.
+현재 기능 범위는 [PRD](./docs/product/PRD.md), 진행 중인 항목과 출시 조건은 [제품 로드맵](./docs/product/ROADMAP.md)에 투명하게 기록합니다.
 
 ## 빠르게 실행하기
 

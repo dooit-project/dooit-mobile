@@ -4,6 +4,8 @@ Last verified: 2026-09-08
 
 이 문서는 모바일에서 사용하는 백엔드 계약의 단일 현황판이다. 앞으로 할 일의 우선순위는 [`ROADMAP.md`](../product/ROADMAP.md), 실제 연결 절차는 [`BACKEND_INTEGRATION_RUNBOOK.md`](./BACKEND_INTEGRATION_RUNBOOK.md), 세부 일일 실행 계약은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
+문서 정리: 2026-09-11. 아래 환경 결과는 마지막 확인일 기준이며 이번 정리에서 백엔드를 재조회하지 않았다.
+
 ## 확인 기준
 
 | 구분                 | 확인 결과                                                                               |
@@ -15,7 +17,7 @@ Last verified: 2026-09-08
 | production metadata  | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=local`                             |
 | production OpenAPI   | 익명 요청 HTTP 403                                                                      |
 
-source 구현 완료와 production 반영 완료는 구분한다. 현재 metadata는 concrete commit/image를 전혀 제공하지 않으며 production guest 응답에도 `refreshToken`이 없어 최신 source 실행으로 볼 수 없다. 아래 migration 적용 여부도 확인되지 않았다.
+source 구현 완료와 production 반영 완료는 구분한다. 마지막 확인 당시 metadata는 concrete commit/image를 전혀 제공하지 않으며 production guest 응답에도 `refreshToken`이 없어 최신 source 실행으로 볼 수 없다. 아래 migration 적용 여부도 확인되지 않았다.
 
 ```text
 docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
@@ -41,7 +43,7 @@ Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실�
 3. Daily Plan과 summary를 local real API로 확인하고 migration 미적용·404 상태를 구분한다.
 4. production 배포 확인 뒤 Android 실기기 smoke를 수행한다.
 
-UI가 바뀌는 1~3번은 Product Design 검토와 390×844 캡처 판정을 포함한다. 로컬 Web 검증은 ChatGPT 앱의 내장 브라우저를 기본으로 사용하고, 연결이 불가능하거나 Chrome 고유 동작을 확인해야 할 때 로컬 Chrome/Playwright를 사용한다.
+검증 중 UI 수정이 필요하면 Product Design 검토와 실제 화면 감사를 진행한다. 로컬 Web 검증은 ChatGPT 앱의 내장 브라우저를 기본으로 사용하며, 접근 실패 시 연결·주소·서버 상태를 먼저 복구한다. 다른 브라우저로 전환한 경우 사유와 실제 환경을 audit에 기록한다.
 
 ## 백엔드·운영에 요청할 항목
 

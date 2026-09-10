@@ -1,17 +1,17 @@
 # Workspace 후속 기능 우선순위
 
-Last updated: 2026-09-03
+Last updated: 2026-09-11
 
 Workspace 일정 공유 이후의 초대 거절, 체크리스트와 주간 리포트 범위를 관리한다. 현재 계약과 연결 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md)를 따른다.
 
 ## 결정
 
-| 후보             | 우선순위    | 현재 결정                                                       |
-| ---------------- | ----------- | --------------------------------------------------------------- |
-| 초대 거절        | P1, QA 남음 | API·mock·cache·확인 UI 완료. 반응형·접근성·real smoke 진행      |
-| 체크리스트       | P1, 연결 전 | 백엔드 개인·Workspace 권한 계약 완료. Task 상세 UI와 검증 진행  |
-| 계층형 하위 Task | 보류        | 체크리스트로 해결되지 않는 반복 요구가 확인될 때 재검토         |
-| 주간 리포트      | 탐색        | 출시 범위에서 제외하고 실제 회고 행동과 필요한 지표를 먼저 확인 |
+| 후보             | 우선순위           | 현재 결정                                                             |
+| ---------------- | ------------------ | --------------------------------------------------------------------- |
+| 초대 거절        | P1, QA 남음        | API·mock·cache·확인 UI 완료. 반응형·접근성·real smoke 진행            |
+| 체크리스트       | 구현 완료, QA 남음 | 상세 CRUD·정렬·VIEWER 제한과 local 역할 검증 완료. production QA 남음 |
+| 계층형 하위 Task | 보류               | 체크리스트로 해결되지 않는 반복 요구가 확인될 때 재검토               |
+| 주간 리포트      | 탐색               | 출시 범위에서 제외하고 실제 회고 행동과 필요한 지표를 먼저 확인       |
 
 ## 초대 거절
 
@@ -41,16 +41,8 @@ Workspace 일정 공유 이후의 초대 거절, 체크리스트와 주간 리�
 
 완료 수치만 강조하거나 홈 정보 밀도를 높이지 않는다. 사용자가 지난주 결과를 실제로 되돌아보는지, 개인과 Workspace를 분리할지, 완료·이월·D-Day 중 무엇이 다음 행동으로 이어지는지 확인한 뒤 결정한다.
 
-## 구현 순서
+## 남은 검증
 
-```text
-신규 API 타입·client·mock
-  → 개인 Task 체크리스트
-  → Workspace OWNER·EDITOR·VIEWER 상태
-  → Product Design 캡처 점검
-  → 320px·글자 확대·keyboard·스크린리더
-  → local real API
-  → production Android smoke
-```
+초대 거절의 반응형·접근성과 production 역할별 검증은 [로드맵](./ROADMAP.md)에서 추적한다. 개인·Workspace 체크리스트 UI와 local OWNER·EDITOR·VIEWER 권한 검증은 완료됐으며 다시 신규 구현 작업으로 잡지 않는다.
 
-공유 UI가 바뀌는 단계에서는 [`WORKSPACE_UI_FLOW.md`](./WORKSPACE_UI_FLOW.md)의 캡처 순서로 Product Design 점검을 수행한다.
+공유 UI가 바뀌면 [Workspace 흐름](./WORKSPACE_UI_FLOW.md)에 따라 실제 화면을 점검한다.

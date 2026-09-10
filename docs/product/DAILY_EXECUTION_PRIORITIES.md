@@ -1,6 +1,8 @@
-# 오늘 실행 루프 우선순위
+# 오늘 실행 루프 구현 결정
 
-Last updated: 2026-09-05
+Last updated: 2026-09-11
+
+이 문서는 구현된 실행 루프의 세부 결정과 제한을 보존한다. 현재 범위는 [PRD](./PRD.md), 남은 작업 순서는 [로드맵](./ROADMAP.md), 배포 확인은 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md)를 따른다.
 
 ## 목표
 
@@ -23,13 +25,13 @@ Last updated: 2026-09-05
 - 계획 확정 시점 focus snapshot 기반 하루 마감 결과와 항목별 즉시 이동 반영
 - 개인·Workspace Task 체크리스트 CRUD·정렬과 VIEWER 읽기 전용 UI
 
-## 다음 프론트 작업
+## 구현 상태와 제한
 
-### F0. 서버 계약을 연결하는 비시각 작업
+### 서버 계약 연결
 
 타입, API client, mock fixture, query key와 기본 cache 무효화를 완료했다. local real API와 production에서는 403·404·migration 미적용 응답을 추가 검증한다.
 
-### F1. 카테고리 탐색
+### 카테고리 탐색
 
 `GET /api/v1/tasks/categories`의 개인 Task 요약을 달력 아래 접이식 메뉴에 연결했다.
 
@@ -39,7 +41,7 @@ Last updated: 2026-09-05
 - 생성·이름 변경·삭제·사용자 지정 정렬 UI는 별도 API가 생기기 전 제공하지 않는다.
 - `전체`와 이름 있는 카테고리는 기존 검색 화면으로 이동한다. `미분류`는 검색 API에 null-category 필터가 추가되기 전 count만 표시한다.
 
-### F1. 체크리스트
+### 체크리스트
 
 개인·Workspace Task 상세에 한 단계 체크리스트를 연결했다.
 
@@ -48,31 +50,12 @@ Last updated: 2026-09-05
 - VIEWER에게 변경 행동을 노출하지 않고 서버 403도 권한 안내로 처리한다.
 - 계층형 subtask, 담당자, 날짜, 알림은 범위에서 제외한다.
 
-### F1. 서버 Daily Plan과 하루 결과
+### 서버 Daily Plan과 하루 결과
 
 - 계획 화면의 focus 순서와 확정 상태는 서버 Daily Plan에 연결했다.
 - `estimatedDurationMinutes` 입력·상세 표시와 오늘 총 예상 시간을 연결했다.
 - 계획 확정 시점 snapshot 기반 summary를 하루 마감 결과에 연결했다.
 - summary의 완료·다른 날짜 이동·기록함 이동·미결정을 생산성 점수로 바꾸지 않는다.
-
-### F2. 네이티브와 production 검증
-
-- 공유 메뉴와 iOS widget prototype을 development/preview build에서 실제 기기로 확인한다.
-- 최신 production image와 migration이 확인된 뒤 신규 API와 기존 핵심 흐름을 Android에서 smoke한다.
-- UI 변경은 Product Design 3안 비교와 390×844 캡처 판정을 거친다.
-
-## 백엔드 요청 우선순위
-
-| 우선순위 | 요청                                                   | 이유                                       | 요청 시점              |
-| -------- | ------------------------------------------------------ | ------------------------------------------ | ---------------------- |
-| B0       | 최신 source 배포, migration 적용, 식별 가능한 metadata | 구현된 계약을 production에서 안전하게 검증 | 즉시                   |
-| B0       | 인증된 OpenAPI 확인 경로                               | 실행 계약과 source의 일치 자동 검사        | 즉시                   |
-| B1       | 카테고리 CRUD·정렬·삭제 정책                           | 메뉴에서 직접 관리하는 기능                | 관리 UX를 승인할 때    |
-| B1       | 계획·마감 atomic batch mutation                        | 단건 처리의 부분 성공 방지                 | 실제 오류가 반복될 때  |
-| B1       | Web HttpOnly refresh cookie                            | Web 장기 세션의 credential 노출 축소       | 운영 host 정책 확정 시 |
-| B2       | 서버 push token·발송 소유권                            | local/push 중복 방지                       | push 활성화 승인 시    |
-
-일일 계획, 예상 소요 시간, 일일 결과 summary, 개인 카테고리 요약, 개인·Workspace 체크리스트와 새 빠른 등록 표현은 source 구현이 끝났으므로 백엔드 신규 요청 목록에서 제외한다.
 
 ## 의도적으로 보류
 

@@ -1,104 +1,36 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-09-09
+Last updated: 2026-09-11
 
-이 문서는 현재 제품 범위와 아직 끝나지 않은 일만 관리한다. 백엔드 계약 상태는 [`FRONTEND_BACKEND_STATUS.md`](../integration/FRONTEND_BACKEND_STATUS.md), 출시 판정은 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md), 과거 결과는 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)와 Git 이력에서 확인한다.
+현재 단계는 핵심 기능 구현 이후의 연동·출시 검증이다. 제품 범위는 [PRD](./PRD.md), API 배포 상태는 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md), 확인 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)에 둔다. 이 문서는 남은 작업의 우선순위만 관리한다.
 
-## 현재 상태
+## P0. Android preview와 운영 API 검증
 
-- 핵심 개인·Workspace 흐름, 오늘 계획·하루 마감·한 가지 실행과 앱 밖 빠른 기록 prototype이 구현됐다.
-- 최신 검증 기준선은 97 suites, 491 tests 통과이며 카테고리 drawer 캡처는 2026-09-06 기준으로 갱신됐다.
-- 백엔드 local `main`은 `d1b2ddc`이며 일일 결과 summary, 개인 카테고리 요약, Workspace 체크리스트와 빠른 등록 파싱 확장이 반영됐다.
-- production은 readiness `UP`이지만 metadata의 commit·image가 모두 `local`이고 guest refresh token도 없어 최신 source 배포와 migration 적용은 증명되지 않았다.
-- EAS project는 `@hyunseung2/dooit-mobile`로 생성·연결했고 project ID·slug 자동 검사를 통과했다. Android credential 접근은 가능하지만 managed keystore는 아직 없다.
+- [ ] 2026-09-10 제출한 [Android preview 빌드](https://expo.dev/accounts/hyunseung2/projects/dooit-mobile/builds/23dcd244-9d8a-4be1-bd45-284ba0e8a531)의 최종 상태와 APK를 확인한다. EAS project 연결과 managed keystore 생성은 완료됐고 새 키 fingerprint·복구 기준은 기록이 필요하다.
+- [ ] 백엔드 신규 API를 포함한 production commit/image, 실행 OpenAPI와 필수 migration 적용 기록을 같은 배포 기준으로 확인한다.
+- [ ] local guest 생성 500과 Workspace 반복 Task의 D-Day 연결 500을 복구한 인스턴스에서 real smoke를 재실행한다. 백엔드 변경은 별도 저장소에서 진행한다.
+- [ ] Android에서 Expo Go·Metro 없는 cold start, 게스트·계정 시작, 핵심 개인·Workspace 흐름과 신규 일일 실행 API를 검증한다.
+- [ ] APK·frontend/backend 버전·API URL·기기·설치 결과와 최소 하루 사용 결과를 smoke log에 기록한다.
 
-## P0. 출시 기반 복구
+## P1. 품질·오류 복구 검증
 
-- [x] `@hyunseung2/dooit-mobile` EAS project를 만들고 `app.json`의 project id를 새 값으로 교체한다.
-- [ ] `npm run check:eas-setup`과 Android managed signing credential 접근을 다시 확인한다.
-  - [x] `hyunseung2` 로그인과 현재 project ID의 `todolab-mobile` slug 불일치를 자동 검사한다.
-  - [x] 새 `dooit-mobile` project 연결과 Android credential 메뉴 접근을 확인한다.
-  - [ ] preview build 승인 후 EAS managed keystore를 생성하고 fingerprint 기준선을 기록한다.
-- [ ] 백엔드 `6a78afe` 포함 image와 필수 migration을 production에 반영한다.
-- [ ] metadata가 실제 commit/image를 식별하도록 고치고 readiness·metadata·OpenAPI·migration을 한 배포 단위로 확인한다.
-- [ ] 현재 `main` 기준 Android preview APK를 만들고 build id, frontend/backend commit, API URL을 smoke log에 남긴다.
-- [ ] Expo Go·Metro 없이 Android 실기기 cold start, 최소 하루 사용, 알림·복구·production 핵심 흐름을 확인한다.
-
-## P1. 신규 백엔드 계약 연결
-
-세부 순서는 [`DAILY_EXECUTION_PRIORITIES.md`](./DAILY_EXECUTION_PRIORITIES.md)와 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
-
-- [x] quick-capture mock parser와 테스트를 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 규칙에 맞춘다.
-- [x] Daily Plan·summary·category summary·checklist 타입, API client, mock fixture와 query cache를 추가한다.
-- [x] local preference 기반 오늘 계획을 서버 Daily Plan과 `estimatedDurationMinutes`에 연결한다.
-  - [x] 계획 화면에서 서버 focus 순서를 복원하고 `CONFIRMED` 저장 성공 후 Today로 이동한다.
-  - [x] Task 예상 시간 입력·상세 표시와 오늘 총 예상 시간을 연결한다.
-- [x] 하루 마감 결과를 계획 확정 시점 focus snapshot 기반 summary에 연결한다.
-- [ ] 카테고리 요약을 좌측 메뉴에 개인 범위로 연결한다.
-  - [x] 접이식 목록, 전체·이름 있는 카테고리 count와 exact-match 이동을 연결한다.
-  - [ ] backend null-category 검색 필터가 생기면 `미분류` 이동을 활성화한다.
-- [x] 개인·Workspace Task 상세에 체크리스트를 추가하고 VIEWER 변경 행동을 제한한다.
-- [ ] 신규 API client를 local real backend와 production Android에서 검증한다.
-  - [x] quick-capture·category·개인 checklist·Daily Plan summary 통합 스모크 명령을 추가한다.
-  - [ ] local guest 생성 500을 복구한 실행 인스턴스에서 통합 스모크를 통과시킨다.
-  - [x] local에서 Workspace OWNER·EDITOR·VIEWER checklist 권한 경계를 검증한다.
-  - [ ] production Android에서 신규 API를 검증한다.
-
-## P1. UI·제품 검증
-
-- [x] summary 화면은 Product Design 3안을 비교하고 선택안을 390×844로 검증한다.
-- [x] 체크리스트 화면은 Product Design 3안을 비교하고 A안+B안 결합안을 390×844로 검증한다.
-- [x] 카테고리 메뉴는 Product Design 3안을 비교하고 달력 아래 접이식 선택안을 390×844로 구현한다.
-- [ ] 320dp·390dp·430dp, font scale 1.0·1.5, light·dark에서 핵심 행동과 줄바꿈을 확인한다.
-  - [x] Web light에서 Today 320·390·430px와 drawer·빠른 기록·Calendar 320px를 캡처한다.
-  - [ ] Android에서 font scale 1.5·dark mode·가상 키보드 상태를 캡처한다.
-- [ ] VoiceOver·TalkBack, Android back, iOS gesture, safe area와 키보드를 실제 기기에서 확인한다.
-- [ ] Workspace 초대·체크리스트를 OWNER·EDITOR·VIEWER별로 real smoke한다.
-- [ ] 실제 API 지연과 대량 데이터에서 Today·Completed·Calendar 렌더링 시간을 측정한다.
-- [ ] 오류·복구, Workspace 역할별 흐름과 native 전용 상태의 캡처 근거를 보강한다.
-
-로컬 Web 화면 검증은 ChatGPT 앱의 내장 브라우저를 기본으로 한다. 내장 연결을 만들 수 없거나 Chrome 고유 동작이 필요한 경우 로컬 Chrome/Playwright로 같은 390×844 조건을 검증하고 환경과 결과를 audit에 기록한다.
-
-## P1. 네이티브 빠른 기록
-
-- [x] 공유 메뉴 text·URL 수신 확인 화면과 quick-capture 전달을 구현했다.
-- [x] iOS widget의 빠른 기록 deep link prototype과 native build 격리 검사를 구현했다.
-- [ ] iOS development build에서 widget deep link, 인증 bootstrap과 cold start를 확인한다.
-- [ ] Android 공유 메뉴에서 text·URL, 취소·재시도와 앱 종료 상태를 확인한다.
-- [ ] prototype을 release 범위에 포함할지 실기기 결과 뒤 승인한다.
-
-## P1. 운영·복구·보안
-
+- [ ] Android에서 320·390·430dp, font scale 1.5, dark mode·키보드 상태를 확인한다. Web light 반응형 근거는 [2026-09-09 audit](../audits/responsive-core-2026-09-09/README.md)에 있다.
+- [ ] 승인된 플랫폼에서 VoiceOver·TalkBack, Android back, iOS gesture, safe area·focus 복귀를 확인한다.
+- [ ] production Workspace 초대·체크리스트를 OWNER·EDITOR·VIEWER별로 검증한다. local 체크리스트 역할 경계는 통과했다.
 - [ ] 비밀번호 재설정 메일·deep link, guest 병합, refresh rotation·reuse, logout을 production에서 확인한다.
-- [ ] 생성 mutation timeout·동일 key replay와 payload 충돌 409를 real smoke한다.
-- [ ] 운영 Web의 CORS, CSP, `no-store`, 직접 경로 새로고침과 세션 만료를 확인한다.
-- [ ] Web refresh credential의 HttpOnly cookie 운영 여부를 확정한다.
-- [ ] Sentry project·DSN·운영 책임자를 정한 뒤 privacy 기준에 맞춰 연결한다.
-- [ ] 서버 push 자동 발송과 local suppression 계약은 production 검증과 별도 승인 전 활성화하지 않는다.
+- [ ] 로컬 알림의 권한·실제 전달·선택·앱 종료 상태와 중복 방지를 기기에서 확인한다.
+- [ ] 생성 mutation timeout·동일 key replay·payload 충돌 409와 네트워크 복구를 real smoke한다.
+- [ ] 실제 API 지연·대량 데이터에서 Today·Completed·Calendar 성능을 측정한다.
+- [ ] 운영 Web의 CORS·CSP·cache·직접 경로·세션 만료를 검증하고 HttpOnly refresh cookie 운영 여부를 확정한다.
+- [ ] 오류 수집 운영 책임자와 Sentry project·DSN을 확정한 뒤 privacy 기준에 맞춰 연결한다.
+- [ ] [릴리즈 체크리스트](../qa/RELEASE_CHECKLIST.md)에 후보별 결과를 대조하고 플랫폼별 배포 범위를 확정한다.
 
-## 백엔드에 남은 요청
+## 조건 충족 후 진행
 
-- 최신 image 배포, migration 적용과 실제 commit SHA가 담긴 metadata
-- 실행 OpenAPI를 확인할 수 있는 인증 또는 검사 경로
-- 카테고리 관리 승인 시 CRUD·사용자 지정 순서·삭제 정책
-- 단건 계획·마감의 부분 실패가 반복될 때 atomic batch mutation
-- Web 운영 형태 확정 시 HttpOnly refresh cookie
-- 서버 push 승인 시 token lifecycle·발송 멱등성·local/push 소유권
+- 미분류 목록 탐색: null-category 검색 계약이 준비된 뒤 활성화한다. 현재 요약 count와 이름 있는 카테고리 탐색은 구현됐다.
+- 카테고리 CRUD·정렬: 관리 UX와 삭제 정책을 결정한 뒤 계약을 요청한다.
+- 계획·마감 atomic batch: 단건 처리의 부분 실패가 실제로 반복될 때 요청한다.
+- 공유 메뉴·iOS widget: 별도 native build에서 인증 bootstrap·cold start·취소·재시도를 검증한 뒤 출시 포함 여부를 결정한다.
+- 서버 push: token lifecycle·발송 멱등성·local suppression 검증과 활성화 승인을 거친다.
 
-일일 계획, 예상 소요 시간, summary, 개인 카테고리 요약, 개인·Workspace 체크리스트와 빠른 등록 파싱은 이미 source에 있으므로 다시 개발 요청하지 않는다.
-
-## 출시 완료 기준
-
-- 신규 사용자가 게스트 또는 계정으로 시작하고 데이터 연결·복구에서 유실이나 중복이 없다.
-- 개인·Workspace 핵심 흐름과 신규 일일 실행 API가 production에서 일관된다.
-- Android/iOS 알림과 앱 밖 빠른 기록이 승인된 플랫폼의 실제 기기에서 검증된다.
-- Web 인증·데이터 동기화·직접 경로 접근이 운영 도메인에서 동작한다.
-- 최신 APK가 Expo Go·Metro 없이 시작되고 치명적 오류 없이 사용된다.
-- `npm run validate`와 [`RELEASE_CHECKLIST.md`](../qa/RELEASE_CHECKLIST.md)가 통과한다.
-
-## 범위 밖
-
-- 모바일에서 데이터베이스 직접 조회·수정
-- IP 주소·광고 ID·하드웨어 식별자를 인증 수단으로 사용
-- 비밀 값과 로컬 환경 파일 저장
-- 승인 전 Store 제출, OTA 배포와 서버 push 활성화
+추가 기능 후보와 제외 범위는 [PRD](./PRD.md), Store·OTA 승격 조건은 [배포 범위 정책](./RELEASE_SCOPE_POLICY.md)를 따른다.

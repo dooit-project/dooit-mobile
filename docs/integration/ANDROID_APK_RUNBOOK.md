@@ -79,7 +79,7 @@ npm run check:eas-setup
 
 현재 project ID는 `e67d09ae-0fd9-4305-af7a-af395c8f21be`다. Expo dashboard의 slug `dooit-mobile`, `app.json`의 project ID, `npm run check:eas-setup` 결과를 함께 확인한다. `.expo/` 로컬 상태는 Git에 커밋하지 않는다.
 
-Android credential 메뉴 접근은 확인했지만 새 project에는 아직 keystore가 없다. preview build를 승인한 뒤 EAS managed keystore를 생성하고, 생성 여부만 기록하며 비밀 값은 문서나 로그에 남기지 않는다.
+2026-09-10 사용자 빌드 요청으로 EAS managed keystore를 생성하고 preview 빌드를 제출했다. 최종 빌드 상태와 설치 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)를 따른다. 새 키 fingerprint·복구 기준은 추가 확인이 필요하며 비밀 값은 문서나 로그에 남기지 않는다.
 
 ## 6. 개인 APK 생성
 
@@ -197,7 +197,7 @@ EAS project 연결 후 확인할 것:
 eas credentials --platform android
 ```
 
-현재 preview credential 확인 결과:
+과거 project의 preview credential 확인 결과 (2026-08-03, 현재 project 키의 기준으로 사용하지 않음):
 
 ```text
 Android credential: EAS managed JKS
