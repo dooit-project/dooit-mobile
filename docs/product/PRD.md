@@ -27,6 +27,8 @@ Last updated: 2026-09-11
 
 Workspace 체크리스트는 ACTIVE 멤버가 조회하고 OWNER·EDITOR가 변경한다. VIEWER 변경 행동은 제공하지 않으며 서버 403은 권한 안내로 처리한다.
 
+Today의 `오늘 완료한 일` 영역은 완료 항목이 1개 이상일 때만 표시한다. 마지막 완료 항목을 다시 열어 0개가 되면 제목·개수·목록 전체를 숨긴다. [표시 조건 검증](../audits/today-completed-visibility-2026-09-11/README.md)을 참고한다.
+
 화면별 정상·예외·복구 시나리오는 [사용자 흐름 카탈로그](./USER_FLOW_CATALOG.md)에 둔다.
 
 ## 플랫폼과 배포 범위

@@ -316,38 +316,38 @@ export function TodayOverview({
         </View>
       ) : null}
 
-      <View style={styles.taskSection}>
-        <SectionHeader
-          title="오늘 완료한 일"
-          action={
-            <View style={styles.completedSectionActions}>
-              {doneTasks.length > completedPreview.length ? (
-                <Button
-                  accessibilityLabel={
-                    isCompletedExpanded
-                      ? '완료한 일 목록 접기'
-                      : `완료한 일 전체 ${doneTasks.length}개 보기`
-                  }
-                  variant="ghost"
-                  onPress={toggleCompleted}
-                  style={styles.completedToggleButton}
-                >
-                  {isCompletedExpanded ? '접기' : `전체 ${doneTasks.length}개 보기`}
-                </Button>
-              ) : (
-                <AppText tone="success" variant="label" weight="bold">
-                  {doneTasks.length}개
-                </AppText>
-              )}
-            </View>
-          }
-        />
+      {doneTasks.length > 0 ? (
+        <View style={styles.taskSection}>
+          <SectionHeader
+            title="오늘 완료한 일"
+            action={
+              <View style={styles.completedSectionActions}>
+                {doneTasks.length > completedPreview.length ? (
+                  <Button
+                    accessibilityLabel={
+                      isCompletedExpanded
+                        ? '완료한 일 목록 접기'
+                        : `완료한 일 전체 ${doneTasks.length}개 보기`
+                    }
+                    variant="ghost"
+                    onPress={toggleCompleted}
+                    style={styles.completedToggleButton}
+                  >
+                    {isCompletedExpanded ? '접기' : `전체 ${doneTasks.length}개 보기`}
+                  </Button>
+                ) : (
+                  <AppText tone="success" variant="label" weight="bold">
+                    {doneTasks.length}개
+                  </AppText>
+                )}
+              </View>
+            }
+          />
 
-        {reopenTask.error ? (
-          <InlineNotice message={reopenTask.error.message} tone="danger" />
-        ) : null}
+          {reopenTask.error ? (
+            <InlineNotice message={reopenTask.error.message} tone="danger" />
+          ) : null}
 
-        {doneTasks.length > 0 ? (
           <View style={styles.taskList}>
             {visibleDoneTasks.map((task) => (
               <TaskCard
@@ -375,8 +375,8 @@ export function TodayOverview({
               </Button>
             ) : null}
           </View>
-        ) : null}
-      </View>
+        </View>
+      ) : null}
 
       {executionTasks.length > 0 ? (
         <Button variant="secondary" onPress={() => router.push('/today/shutdown' as Href)}>
