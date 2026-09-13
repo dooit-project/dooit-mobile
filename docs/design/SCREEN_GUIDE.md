@@ -8,7 +8,7 @@ Dooit Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서다.
 
 - 화면 설명과 캡쳐 기준은 최신 UI 구조 기준으로 정리되어 있다.
 - mock Web 390×844 viewport 기준 실제 PNG 캡쳐를 생성했다.
-- 현재 대표 캡처 촬영일은 **2026-09-05**, 기준 커밋은 `11a5727`이다. 상세 환경과 화면 상태는 [`screenshots/README.md`](../screenshots/README.md)에서 확인한다.
+- 현재 대표 캡처 촬영일은 **2026-09-13**, 기준 커밋은 `c133220`이다. 상세 환경과 화면 상태는 [`screenshots/README.md`](../screenshots/README.md)에서 확인한다.
 - 사용자 흐름별 최신 mock Web 캡처와 판정은 [`USER_FLOW_CATALOG.md`](../product/USER_FLOW_CATALOG.md)의 UF-01~UF-08에서 관리한다.
 - 좌측 drawer의 category 접힘·펼침과 검색 이동은 [`task-categories-2026-09-06`](../audits/task-categories-2026-09-06/README.md)에서 관리한다.
 - Today 320·390·430px와 drawer·빠른 기록·Calendar 320px의 최신 light 반응형 근거는 [`responsive-core-2026-09-09`](../audits/responsive-core-2026-09-09/README.md)에서 관리한다. 실제 font scale 1.5·dark mode·가상 키보드는 native 미검증이다.

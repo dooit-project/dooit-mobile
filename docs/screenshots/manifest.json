@@ -1,6 +1,6 @@
 {
-  "capturedAt": "2026-09-05",
-  "sourceCommit": "11a5727",
+  "capturedAt": "2026-09-13",
+  "sourceCommit": "c133220",
   "environment": {
     "platform": "Expo Web",
     "apiMode": "mock",
@@ -11,19 +11,75 @@
   },
   "refreshAfterDays": 7,
   "screenshots": [
-    { "file": "today.png", "route": "/", "state": "데모 데이터가 있는 기본 화면" },
-    { "file": "quick-capture.png", "route": "/", "state": "빠른 기록 입력 중" },
-    { "file": "calendar.png", "route": "/calendar", "state": "오늘 선택, 일정 표시" },
-    { "file": "profile.png", "route": "/profile", "state": "더보기 허브" },
-    { "file": "settings.png", "route": "/settings", "state": "mock 개발자 진단" },
-    { "file": "search.png", "route": "/search", "state": "Today 검색 결과" },
-    { "file": "completed.png", "route": "/completed", "state": "이번 주 완료 기록" },
-    { "file": "dday.png", "route": "/dday", "state": "D-Day 목표 목록" },
-    { "file": "task-detail.png", "route": "/tasks/[taskId]", "state": "Today Task 상세" },
-    { "file": "organize.png", "route": "/today/review", "state": "지난 미완료와 추천" },
-    { "file": "task-new.png", "route": "/tasks/new", "state": "새 할 일 제목 입력" },
-    { "file": "login.png", "route": "/login", "state": "기본 로그인" },
-    { "file": "register.png", "route": "/register", "state": "기본 회원가입" },
-    { "file": "password-reset.png", "route": "/password-reset", "state": "재설정 메일 요청" }
+    {
+      "file": "today.png",
+      "route": "/",
+      "state": "mock Task 1개, 오늘 완료 항목 0개로 완료 영역 숨김"
+    },
+    {
+      "file": "quick-capture.png",
+      "route": "/",
+      "state": "빠른 기록 입력 중"
+    },
+    {
+      "file": "calendar.png",
+      "route": "/calendar",
+      "state": "오늘 선택, 예정 항목 없는 상태"
+    },
+    {
+      "file": "profile.png",
+      "route": "/profile",
+      "state": "게스트 더보기 허브 상단"
+    },
+    {
+      "file": "settings.png",
+      "route": "/settings",
+      "state": "mock 개발자 진단"
+    },
+    {
+      "file": "search.png",
+      "route": "/search",
+      "state": "검색어 입력 전 기본 상태"
+    },
+    {
+      "file": "completed.png",
+      "route": "/completed",
+      "state": "이번 주 완료 기록 없는 상태"
+    },
+    {
+      "file": "dday.png",
+      "route": "/dday",
+      "state": "D-Day 목표 없는 상태"
+    },
+    {
+      "file": "task-detail.png",
+      "route": "/tasks/[taskId]",
+      "state": "오늘로 이동한 mock Task 상세"
+    },
+    {
+      "file": "organize.png",
+      "route": "/today/review",
+      "state": "다시 판단할 항목 없는 상태"
+    },
+    {
+      "file": "task-new.png",
+      "route": "/tasks/new",
+      "state": "새 할 일 제목 입력"
+    },
+    {
+      "file": "login.png",
+      "route": "/login",
+      "state": "기본 로그인"
+    },
+    {
+      "file": "register.png",
+      "route": "/register",
+      "state": "기본 회원가입"
+    },
+    {
+      "file": "password-reset.png",
+      "route": "/password-reset",
+      "state": "재설정 메일 요청"
+    }
   ]
 }
