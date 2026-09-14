@@ -1,6 +1,6 @@
 # Dooit 사용자 흐름 카탈로그
 
-Last updated: 2026-09-03
+Last updated: 2026-09-14
 
 이 문서는 프론트엔드의 사용자 시나리오를 **진입 → 행동 → 결과 → 예외/복구** 순서로 연결하는 원본이다. 화면 단위 설명은 [`SCREEN_GUIDE.md`](../design/SCREEN_GUIDE.md), 실제 검증 절차는 [`SMOKE_TEST_CHECKLIST.md`](../qa/SMOKE_TEST_CHECKLIST.md), 시각 근거와 판정은 각 audit README를 따른다.
 
@@ -81,7 +81,7 @@ flowchart LR
 - 빠른 기록 저장 중·실패. 입력·성공과 Escape 닫기는 확인했다.
 - composer를 닫은 뒤 최신 기록 preview는 확인했다.
 - 기록함 0개·1개와 하루 정리 0개. 여러 개 상태에서는 추천·기록함 중복 노출을 확인했다.
-- 완료 0개·1~3개. 4개 이상 펼침/접힘은 확인했다.
+- 완료 0개·1개·마지막 항목 다시 열기 후 숨김은 [9월 11일 검증](../audits/today-completed-visibility-2026-09-11/README.md)에서 확인했다. 4개 이상 펼침/접힘은 과거 검증 기준이며 native 재검증이 필요하다.
 - Android·iOS 실제 공유 메뉴 payload와 iOS widget cold start·인증 bootstrap이 남았다.
 - 일일 계획 summary의 다중·이동·빈 상태는 [`daily-plan-summary-2026-09-05`](../audits/daily-plan-summary-2026-09-05/README.md)에서 확인했다.
 - quick-capture 신규 구어 표현은 mock parser 회귀 검사를 완료했으며 local real·production 입력 smoke가 남았다.
@@ -290,3 +290,7 @@ flowchart LR
 - diagram의 모든 화면 단계가 최신 캡처 또는 명시적인 `캡처 불가/미구현` 상태와 연결된다.
 - 화면 구조 변경 시 같은 flow ID와 캡처명을 갱신한다.
 - 이 문서와 audit이 충돌하면 실제 코드에 가까운 audit 판정을 먼저 갱신한다.
+
+## 전반 검토 보완 연결
+
+[9월 13~14일 감사](../audits/product-review-2026-09-13/README.md)에서 UF-02 날짜 전환·계획 진입, UF-03 직접 경로 뒤로 가기·초안 소실, 일정 폼 터치 영역을 보완 항목으로 확인했다. 핵심 흐름의 일부 확인이며 모든 UF의 real/native 통과 판정은 아니다.

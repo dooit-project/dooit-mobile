@@ -1,6 +1,6 @@
 # UX Review
 
-Last updated: 2026-09-09
+Last updated: 2026-09-14
 
 이 문서는 현재 화면에서 유지할 UX 결정과 아직 검증할 위험만 기록한다. 완료된 수정 과정과 과거 화면별 pass 기록은 보관하지 않는다. 시각 기준은 [`DESIGN.md`](./DESIGN.md), 현재 화면 구조는 [`SCREEN_GUIDE.md`](./SCREEN_GUIDE.md), 앞으로 할 일은 [`ROADMAP.md`](../product/ROADMAP.md)를 따른다.
 
@@ -181,3 +181,7 @@ Last updated: 2026-09-09
 3. 알림 권한 허용·거부와 시간·종일 일정 수신
 4. TalkBack 핵심 흐름과 Task 완료·알림 선택 피드백
 5. production API 지연·offline·계정 전환 상태
+
+## 전반 검토 후 남은 보완
+
+[9월 13~14일 실제 감사](../audits/product-review-2026-09-13/README.md)를 기준으로 직접 경로 복귀, 초안 복구, 실제 기능과 일치하는 계획 순서 안내, 데이터가 없는 경우에도 필요한 계획·결과 진입을 설계한다. 일정 알림 radio는 Web DOM 높이 38px로 측정됐으며 내부 44 기준과 native hit area를 대조한다. 미분류 비활성 이유와 메뉴 스크롤 발견성도 보완 대상이다. 신규 구조는 3안 비교·선택 뒤 구현한다.

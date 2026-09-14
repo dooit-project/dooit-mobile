@@ -161,7 +161,8 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 - [x] Android signing credential 운영 기준과 비밀 값 제외 원칙
 - [x] `@hyunseung2/dooit-mobile` EAS project 생성·연결
 - [x] 새 project에서 Android signing credential 메뉴 접근 확인
-- [ ] EAS managed keystore 생성과 최초 APK signing fingerprint 기준선 기록
+- [x] EAS managed keystore 생성과 preview 빌드 완료
+- [ ] 현재 signing fingerprint 기준선 기록
 - [ ] 이후 APK update install에서 signing key 연속성 확인
 - [x] EAS preview/production `EXPO_PUBLIC_API_URL` 등록: `https://dooitapi.hsng.pe.kr`
 - [x] 현재 공개 범위와 version·runtimeVersion·OTA 기준 문서화
@@ -170,7 +171,7 @@ Web 배포 후보라면 [`WEB_SECURITY_POLICY.md`](../integration/WEB_SECURITY_P
 
 `npm run check:release-static`으로 앱 이름, slug, scheme, icon/splash/favicon 파일 존재, PNG 크기, Android APK profile과 public 환경값을 함께 확인한다. `npm run check:eas-setup`은 Expo 로그인과 EAS project 연결 후 별도로 실행한다.
 
-Expo project owner, `dooit-mobile` slug와 새 project ID 연결은 확인했다. managed keystore 생성과 최신 backend 배포 식별이 끝나기 전에는 실제 release 후보 build를 만들지 않는다.
+Expo project owner, `dooit-mobile` slug와 새 project ID 연결은 확인했다. managed keystore 생성과 preview 완료, 운영 imageTag 식별은 확인했다. 최신 코드 APK 설치·업데이트와 migration·production smoke는 아직 필요하다.
 
 ## 11. 릴리즈 판정
 
@@ -200,3 +201,13 @@ Android 개인 APK 후보를 만들 때 [`ANDROID_APK_RUNBOOK.md`](../integratio
 - 비밀 값 또는 로컬 환경 파일이 포함되어 있다.
 - 작은 화면에서 핵심 action이 가려진다.
 - 접근성상 완료, 삭제, 로그인 같은 주요 action 목적을 알 수 없다.
+
+## 전반 검토에서 추가한 후보별 검사
+
+- [ ] 자정·하루 뒤 앱 복귀에서 Today·계획·마감 날짜가 일치한다.
+- [ ] 직접 URL·deep link로 연 작성 화면에서 안전하게 돌아갈 수 있다.
+- [ ] 작성 초안 복원 또는 소실 방지 동작을 확인했다.
+- [ ] 계획 순서 안내가 실제 조작과 일치하고 완료만 있는 날에도 결과에 접근할 수 있다.
+- [ ] 완료·재개 직후 상세·검색·Calendar에 이전 상태가 남지 않는다.
+- [ ] 사전 알림 문구·종일 알림의 서울 시간대 기준을 실제 기기에서 확인했다.
+- [ ] iOS Store 후보는 앱 내 계정 삭제 진입과 backend 삭제 계약을 확인했다. [Apple 공식 안내](https://developer.apple.com/support/offering-account-deletion-in-your-app)

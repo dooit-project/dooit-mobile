@@ -1,23 +1,23 @@
 # 프론트엔드·백엔드 연동 현황
 
-Last verified: 2026-09-08
+Last verified: 2026-09-13 (운영 공개 endpoint만 재확인)
 
 이 문서는 모바일에서 사용하는 백엔드 계약의 단일 현황판이다. 앞으로 할 일의 우선순위는 [`ROADMAP.md`](../product/ROADMAP.md), 실제 연결 절차는 [`BACKEND_INTEGRATION_RUNBOOK.md`](./BACKEND_INTEGRATION_RUNBOOK.md), 세부 일일 실행 계약은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
 
-문서 정리: 2026-09-11. 아래 환경 결과는 마지막 확인일 기준이며 이번 정리에서 백엔드를 재조회하지 않았다.
+문서 정리: 2026-09-14. readiness·metadata·익명 OpenAPI는 9월 13일 재조회했다. 백엔드 local source·관련 테스트·guest 응답·migration은 이번에 재확인하지 않았으므로 과거 결과로 구분한다.
 
 ## 확인 기준
 
-| 구분                 | 확인 결과                                                                               |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| 백엔드 source        | local `main` = `d1b2ddc`                                                                |
-| 관련 커밋            | Workspace 체크리스트, Task 카테고리 요약, 일일 계획 결과 요약, 빠른 등록 구어 표현 파싱 |
-| 관련 테스트          | Daily Plan 6, Task API 37, Checklist 5, OpenAPI 7 통과                                  |
-| production readiness | `UP`                                                                                    |
-| production metadata  | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=local`                             |
-| production OpenAPI   | 익명 요청 HTTP 403                                                                      |
+| 구분                         | 확인 결과                                                                               |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
+| 백엔드 source (9월 8일 기록) | local `main` = `d1b2ddc`                                                                |
+| 관련 커밋                    | Workspace 체크리스트, Task 카테고리 요약, 일일 계획 결과 요약, 빠른 등록 구어 표현 파싱 |
+| 관련 테스트                  | Daily Plan 6, Task API 37, Checklist 5, OpenAPI 7 통과                                  |
+| production readiness         | `UP`                                                                                    |
+| production metadata          | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=3bda00c`                           |
+| production OpenAPI           | 익명 요청 HTTP 403                                                                      |
 
-source 구현 완료와 production 반영 완료는 구분한다. 마지막 확인 당시 metadata는 concrete commit/image를 전혀 제공하지 않으며 production guest 응답에도 `refreshToken`이 없어 최신 source 실행으로 볼 수 없다. 아래 migration 적용 여부도 확인되지 않았다.
+source 구현 완료와 production 반영 완료는 구분한다. 현재 imageTag `3bda00c`는 배포 식별 검사를 통과한다. 다만 commitSha는 `local`이라 태그와 실제 source의 대응을 추가 확인해야 한다. 과거 guest 응답의 refreshToken 누락은 이번에 재검증하지 않았다. 아래 migration 적용 여부도 미확인이다.
 
 ```text
 docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
@@ -49,7 +49,7 @@ Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실�
 
 ### 배포에 반드시 필요한 요청
 
-- `d1b2ddc` 기준 신규 API를 포함한 이미지를 production에 배포하고 필요한 migration 전체를 순서대로 적용한다.
+- imageTag `3bda00c`가 포함하는 실제 source SHA와 신규 API·migration 전체의 적용 기록을 제공한다. 과거 local `d1b2ddc` 기록만으로 현재 배포 누락을 단정하지 않는다.
 - metadata의 `commitSha`가 `local`이 아닌 배포 commit을 반환하도록 빌드 정보를 주입한다.
 - 같은 배포의 readiness, metadata, OpenAPI와 migration 적용 기록을 제공한다.
 - 인증된 OpenAPI 확인 방법을 제공하거나 검사 환경에서 계약 문서를 읽을 수 있게 한다.
@@ -71,6 +71,6 @@ Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실�
 
 - production metadata가 배포 commit/image를 식별한다.
 - 필수 migration과 실행 OpenAPI가 같은 배포 단위를 가리킨다.
-- 신규 API 4종의 mobile mock·real 테스트가 통과한다.
+- 위 표의 Daily Plan·summary·category·checklist·quick-capture 계약에 대한 mobile mock·real 테스트가 통과한다.
 - Workspace OWNER/EDITOR/VIEWER 권한 차이가 UI와 HTTP 결과에서 일치한다.
 - Android production smoke 결과가 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록된다.

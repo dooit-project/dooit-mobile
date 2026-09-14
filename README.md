@@ -39,7 +39,7 @@ Dooit은 할 일, 일정, D-Day와 반복 계획을 한 흐름에서 관리하�
 
 ## 현재 상태
 
-핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐습니다. Web은 `https://dooit.hsng.pe.kr`, API는 `https://dooitapi.hsng.pe.kr`에 연결되어 있습니다. 오늘 계획·예상 시간·하루 결과·개인 카테고리 탐색·체크리스트 UI까지 연결됐습니다. EAS project 연결과 managed keystore 생성을 마치고 2026-09-10 Android preview 빌드를 제출했으며, 빌드 결과 확인과 최신 백엔드 배포·실기기 검증이 남았습니다.
+핵심 사용자 기능과 Workspace 일정 공유의 프론트 구현은 대부분 완료됐습니다. Web은 `https://dooit.hsng.pe.kr`, API는 `https://dooitapi.hsng.pe.kr`에 연결되어 있습니다. 오늘 계획·예상 시간·하루 결과·개인 카테고리 탐색·체크리스트 UI까지 연결됐습니다. EAS project 연결과 managed keystore 생성을 마치고 2026-09-10 Android preview 빌드를 제출했으며, 빌드 완료와 운영 이미지 태그는 확인했습니다. APK는 완료 영역 수정 전 코드이며, 최신 후보의 설치·migration·실기기 검증이 남았습니다.
 
 - 게스트·회원가입·로그인·세션 복구
 - Today·Inbox·완료 기록·Calendar·검색
@@ -167,3 +167,5 @@ route는 화면 조합에 집중하고, 사용자 기능은 `features/`, 외부 
 <p align="center">
   생각난 일은 가볍게 기록하고, 오늘 해야 할 일은 선명하게.
 </p>
+
+현재 보완 항목과 신규 기능 후보는 [2026-09-14 전반 검토](./docs/product/PRODUCT_REVIEW_2026-09-14.md)에 정리했습니다.

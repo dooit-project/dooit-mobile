@@ -1,18 +1,18 @@
 # Smoke Test Log
 
-Last updated: 2026-09-11
+Last updated: 2026-09-14
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
 
 ## 자동 검증 기준선
 
-- 날짜: 2026-09-10
-- frontend 기준: `81995c5` (preview 빌드 전 검증)
+- 날짜: 2026-09-14
+- frontend 기준: `dce8d20` + 전반 검토 문서 작업 트리
 - 명령: `npm run validate`
 - 결과: 통과
 - 테스트: 97 suites, 491 tests
-- 대표 화면: Expo Web mock · Chrome · 390×844, 카테고리 drawer 접힘·펼침·검색 이동 4개 PNG를 2026-09-06에 추가
-- 브라우저: ChatGPT 앱 내장 브라우저가 `Invalid browser service environment`로 연결되지 않아 Chrome 자동화로 대체했으며 console error는 없었음
+- 대표 화면: 2026-09-13 갱신. 전반 감사는 9월 13~14일 Chrome Web mock 390×844·320×844의 14개 캡처
+- 브라우저: 내장 브라우저 연결 불가 후 기존 Chrome 확장 연결 재사용. 이번 감사에서 직접 경로 GO_BACK 개발 경고를 확인했으며 상세는 전반 감사 보고서를 따른다.
 
 ## 백엔드 source 확인
 
@@ -184,17 +184,19 @@ EXPO_PUBLIC_API_URL=http://localhost:8080 npm run check:backend-ready
 - 포함 기준: `expo-notifications` production dependency와 native config plugin 정적 검사 통과
 - 후속: build 완료 뒤 artifact를 저장하고 실제 Android 기기에서 Tailscale 연결 상태로 cold start·게스트 시작·알림 smoke를 수행한다.
 
-### 최신 preview 제출 (2026-09-10)
+### 최신 확인 preview (2026-09-10 완료)
 
 - EAS build id: `23dcd244-9d8a-4be1-bd45-284ba0e8a531`
 - [빌드 페이지](https://expo.dev/accounts/hyunseung2/projects/dooit-mobile/builds/23dcd244-9d8a-4be1-bd45-284ba0e8a531)
-- 마지막 확인: 2026-09-10 EAS 대기열 등록. 2026-09-11 문서 정리에서 최종 상태를 재조회하지 않았으므로 완료 여부는 미확인이다.
+- 2026-09-13 EAS 재조회: `FINISHED`, 완료 시각 2026-09-10 02:12:34 KST.
+- [APK artifact](https://expo.dev/artifacts/eas/akvnbHPHkiVUBhSNQv_xl9MRPoI6nn-CMNSxN4jDA-A.apk). EAS 표시 만료: 2026-09-24 00:42 KST.
+- 최신 `c133220` 완료 영역 수정은 미포함이므로 새 코드 검증 후보로 다시 빌드해야 한다.
 - frontend 기준: `81995c5`, profile: `preview`, version / versionCode: `1.0.0` / `1`
 - API mode / URL: `real` / `https://dooitapi.hsng.pe.kr`
 - project: `@hyunseung2/dooit-mobile`, `e67d09ae-0fd9-4305-af7a-af395c8f21be`
 - 사전 확인: `npm run validate` 97 suites·491 tests 통과, `npm run check:eas-setup` 통과
 - Android credential: 새 project에서 EAS managed keystore 생성 완료. 비밀 값은 기록하지 않았으며 새 fingerprint는 미기록이다.
-- 미확인: 최종 artifact, 설치·cold start·실사용, backend 배포 버전·migration·production smoke
+- 미확인: APK 다운로드·설치·cold start·실사용, 해당 APK와 backend migration·production smoke
 
 ## 다음 기록 양식
 
@@ -302,3 +304,10 @@ API mode / URL:
 - 검사 보강: `commitSha`·`imageTag`의 `local`, `unknown`, `n/a` placeholder를 배포 식별 성공으로 인정하지 않도록 변경
 - 모바일 전체 검증: 97 suites, 491 tests 통과
 - 판정: `BLOCKED` — 최신 backend image·migration 배포와 식별 가능한 metadata 필요
+
+## 2026-09-13~14 전반 검토
+
+- 코드 기준: `dce8d20`, Chrome Web mock 390×844 및 일정·달력 320×844.
+- [14단계 화면·코드 감사](../audits/product-review-2026-09-13/README.md): 날짜 전환 후 남은 Today 날짜, 직접 작성 URL 뒤로 가기 실패, 새로고침 초안 소실, 순서 안내·UI 불일치 확인.
+- 9월 13일 공개 운영 endpoint: readiness UP, metadata commitSha=local / imageTag=3bda00c, 익명 OpenAPI 403. `check:backend-deployment` 통과. 인증·mutation·migration은 재검증하지 않음.
+- native, Workspace 역할별·실제 계정·대량 데이터 성능은 이번 범위에서 미검증.

@@ -1,6 +1,6 @@
 # Dooit 제품 요구사항
 
-Last updated: 2026-09-11
+Last updated: 2026-09-14
 
 현재 구현된 제품 범위와 제한을 관리하는 PRD다. 남은 작업은 [로드맵](./ROADMAP.md), 실행 계약과 배포 상태는 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md), 검증 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)를 따른다. 구현 완료는 production 검증이나 공개 출시 완료를 뜻하지 않는다.
 
@@ -33,7 +33,7 @@ Today의 `오늘 완료한 일` 영역은 완료 항목이 1개 이상일 때만
 
 ## 플랫폼과 배포 범위
 
-- Android: 내부 preview APK를 우선 검증한다. 2026-09-10 빌드 제출과 EAS managed keystore 생성이 확인됐으며 완료·설치 결과는 smoke log에서 관리한다.
+- Android: 내부 preview APK를 우선 검증한다. 2026-09-10 preview 빌드 완료와 EAS managed keystore 생성이 확인됐다. APK는 `81995c5` 기준으로 최신 완료 영역 수정이 없으며 새 후보와 실제 설치·업데이트 검증이 필요하다. 결과는 smoke log에서 관리한다.
 - iOS: 제품 범위에 포함하며 실제 기기 검증과 내부 배포 준비가 남았다.
 - Web: 공통 UI와 정적 배포를 지원하며 운영 도메인의 인증·보안·직접 경로 접근을 검증한다.
 - Store 공개와 OTA는 [배포 범위 정책](./RELEASE_SCOPE_POLICY.md)에 따른 별도 단계다.
@@ -43,6 +43,12 @@ Today의 `오늘 완료한 일` 영역은 완료 항목이 1개 이상일 때만
 공유 메뉴 text·URL 수신과 iOS widget 빠른 기록은 prototype이다. 기본 preview의 필수 완료 기능으로 취급하지 않으며 별도 native build와 실제 기기 결과를 바탕으로 포함 여부를 결정한다. 기술 근거는 [앱 밖 빠른 기록 스파이크](./OUTSIDE_APP_QUICK_CAPTURE_SPIKE.md)를 따른다.
 
 미분류 목록 탐색, 카테고리 관리, atomic batch, Web HttpOnly refresh cookie는 필요한 계약과 운영 결정을 먼저 확정한다. 습관 tracker, Pomodoro, Matrix, Kanban·Gantt·Timeline, AI 자동 일정 배치, 생산성 점수·연속 달성, 계층형 subtask, 주간 리포트와 복잡한 협업은 현재 출시 범위에 포함하지 않는다.
+
+## 현재 구현에서 확인된 보완점
+
+[2026-09-14 제품 검토](./PRODUCT_REVIEW_2026-09-14.md)에서 날짜 전환·직접 진입 뒤로 가기·작성 초안 소실을 확인했다. 오늘 계획은 서버 순서 복원·확정까지 연결됐지만 사용자가 focus를 선택하거나 Today 순서를 바꾸는 UI는 없다. 하루 마감은 미완료 항목 이동·결과 조회이며 서버 `CLOSED` 저장 의미는 아직 확정하지 않았다.
+
+초안 복구·실행 취소·focus 선택·미분류 탐색을 우선 후보로 검토한다. 데이터 내보내기와 계정 삭제는 현재 제공 기능이 아니며 후속 계약·출시 범위 결정이 필요하다. 검토 후보를 구현 완료 목록에 포함하지 않는다.
 
 ## 완료 기준
 

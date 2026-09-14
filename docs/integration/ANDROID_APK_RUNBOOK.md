@@ -79,7 +79,7 @@ npm run check:eas-setup
 
 현재 project ID는 `e67d09ae-0fd9-4305-af7a-af395c8f21be`다. Expo dashboard의 slug `dooit-mobile`, `app.json`의 project ID, `npm run check:eas-setup` 결과를 함께 확인한다. `.expo/` 로컬 상태는 Git에 커밋하지 않는다.
 
-2026-09-10 사용자 빌드 요청으로 EAS managed keystore를 생성하고 preview 빌드를 제출했다. 최종 빌드 상태와 설치 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)를 따른다. 새 키 fingerprint·복구 기준은 추가 확인이 필요하며 비밀 값은 문서나 로그에 남기지 않는다.
+2026-09-10 사용자 빌드 요청으로 EAS managed keystore를 생성하고 preview 빌드를 제출했다. 9월 13일 조회에서 FINISHED와 artifact를 확인했다. APK는 `81995c5` 기준이라 최신 완료 영역 변경이 없으며, 새 코드 후보·versionCode·설치 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)를 따른다. 새 키 fingerprint·복구 기준은 추가 확인이 필요하며 비밀 값은 문서나 로그에 남기지 않는다.
 
 ## 6. 개인 APK 생성
 
