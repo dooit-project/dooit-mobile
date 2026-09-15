@@ -15,7 +15,10 @@ PRIMARY = (82, 104, 121, 255)
 def trimmed_source() -> Image.Image:
     image = Image.open(SOURCE).convert("RGBA")
     alpha = image.getchannel("A")
-    bbox = alpha.getbbox()
+    # Ignore nearly transparent generation residue around the mark. Including those
+    # pixels makes the visible artwork shrink and appear offset inside app icons.
+    visible_alpha = alpha.point(lambda value: 255 if value >= 16 else 0)
+    bbox = visible_alpha.getbbox()
     if bbox is None:
         raise ValueError(f"Brand source has no visible pixels: {SOURCE}")
     return image.crop(bbox)

@@ -1,10 +1,10 @@
 # 브랜드 자산 점검
 
-Last updated: 2026-08-30
+Last updated: 2026-09-15
 
 ## 점검 범위
 
-2026-08-23에 현재 `icon.png`, Android adaptive foreground·background·monochrome, `splash-icon.png`, `favicon.png` 원본을 직접 확인했다. PNG 크기와 설정 연결은 `npm run check:release-assets`로 별도 검사한다.
+2026-09-15에 현재 `icon.png`, Android adaptive foreground·background·monochrome, `splash-icon.png`, `favicon.png` 원본을 직접 확인했다. PNG 크기와 설정 연결은 `npm run check:release-assets`로 별도 검사한다.
 
 ## 현재 판정
 
@@ -20,6 +20,11 @@ Last updated: 2026-08-30
 모든 플랫폼 자산은 `assets/images/dooit-minimal-icon-v3.png`에서 파생한다. `scripts/generate-brand-assets.py`를 실행하면 규격별 PNG를 동일한 기준으로 다시 생성할 수 있다.
 
 ## 이번 수정
+
+- 원본 가장자리의 거의 투명한 생성 잔여 픽셀을 실제 그림 경계에서 제외했다. 이 픽셀이 포함되면서 심볼이 작아지고 한쪽으로 치우쳐 보이던 문제를 수정했다.
+- 실제 그림 경계를 기준으로 심볼을 확대하고 다시 중앙 정렬했다. 앱 icon, Android foreground·monochrome, splash와 favicon을 같은 방식으로 재생성했다.
+- Android foreground의 실제 표시 영역은 512px 캔버스 안의 약 328×330px로, adaptive icon의 중앙 안전 영역을 유지한다.
+- 원형·squircle launcher mask와 실제 홈 화면 배치는 새 Android 빌드 설치 후 확인해야 한다.
 
 - `expo-splash-screen` 배경을 흰색에서 앱 light theme primary `#526879`로 바꿨다.
 - 흰색 splash mark가 배경 위에서 사라지지 않도록 정적 설정 검사에 배경값을 추가했다.
