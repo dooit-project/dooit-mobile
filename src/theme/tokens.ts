@@ -123,7 +123,7 @@ export const typography = {
 export const sizes = {
   touchTarget: 44,
   contentMaxWidth: 720,
-  bottomTabHeight: 64,
+  bottomTabHeight: 72,
   screenPadding: 16,
   cardPadding: 16,
 } as const;

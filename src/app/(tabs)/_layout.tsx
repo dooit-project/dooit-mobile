@@ -7,14 +7,19 @@ import {
   Platform,
   Pressable,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PlannerDrawer, PlannerHeader, TabBarIcon, TabBarLabel } from '@/components/navigation';
-import { sizes, spacing, useAppTheme } from '@/theme';
+import { sizes, spacing, typography, useAppTheme } from '@/theme';
 
 export default function TabLayout() {
   const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
+  const { fontScale } = useWindowDimensions();
+  const labelExtraHeight = Math.ceil(typography.lineHeight.caption * Math.max(0, fontScale - 1));
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
   const closeMenu = useCallback(() => {
@@ -41,12 +46,14 @@ export default function TabLayout() {
           tabBarActiveTintColor: theme.colors.primaryPressed,
           tabBarInactiveTintColor: theme.colors.textMuted,
           tabBarHideOnKeyboard: true,
+          tabBarLabelPosition: 'below-icon',
           tabBarStyle: {
             backgroundColor: theme.colors.surface,
             borderTopColor: theme.colors.border,
-            height: Platform.OS === 'web' ? sizes.bottomTabHeight : undefined,
-            paddingBottom: Platform.OS === 'web' ? spacing[1] : undefined,
-            paddingTop: Platform.OS === 'web' ? spacing[1] : undefined,
+            // Custom height replaces the navigator default, including its safe-area height.
+            height: sizes.bottomTabHeight + labelExtraHeight + insets.bottom,
+            paddingBottom: spacing[2] + insets.bottom,
+            paddingTop: spacing[2],
           },
         }}
       >

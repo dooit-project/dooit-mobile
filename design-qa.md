@@ -1,5 +1,10 @@
 # Task Category Navigation Design QA
 
+## 2026-09-14 하단 탭 보완
+
+- [하단 탭 높이·safe area 검토와 실제 캡처](./docs/audits/bottom-tab-safe-area-2026-09-14/README.md)
+- Web 320/390/430 화면과 탭 이동 확인, 전체 validate 통과. 내장 브라우저가 제공되지 않아 앞선 감사의 Chrome 연결을 이어 사용했다. Android·iOS 홈 제스처 영역과 실제 글자 배율 검증은 새 설치 빌드에서 필요하다.
+
 final result: passed
 
 ## Comparison target
