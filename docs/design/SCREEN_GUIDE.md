@@ -327,6 +327,7 @@ docs/screenshots/
 개발 참고:
 
 - 첫 설치 상태에서 access token 없이 받은 401은 세션 만료 안내로 보여주지 않는다.
+- 로그인 화면 제목은 첫 로그인·회원가입 직후에는 `로그인해요`, 등록 계정의 기존 세션 만료(`expired=1`)에만 `다시 로그인해요`로 표시한다.
 - 비밀번호 재설정 API 계약은 [`API_PASSWORD_RESET.md`](../api/API_PASSWORD_RESET.md)를 따른다. 이메일 요청, token 검증, 새 비밀번호 저장과 로그인 완료 안내를 제공한다.
 - 현재 `assets/images/icon.png`는 Expo 기본 icon이므로 최종 brand asset 확정 후 인증 화면의 임시 `T` mark를 함께 교체한다.
 

@@ -6,7 +6,7 @@ import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { replaceUserQueryCache } from '@/features/auth/auth-query-cache';
-import { shouldShowFirstUseReturn } from '@/features/auth/auth-return-navigation';
+import { getLoginHeading, shouldShowFirstUseReturn } from '@/features/auth/auth-return-navigation';
 import { getAuthSubmissionErrorMessage } from '@/features/auth/auth-submission-error';
 import { createGuestMergeRouteParams } from '@/features/auth/guest-merge-result';
 import { getGuestContinueMessage } from '@/features/auth/guest-recovery-copy';
@@ -77,7 +77,7 @@ export function LoginOverview() {
         </View>
         <View style={styles.heroCopy}>
           <AppText accessibilityRole="header" variant="display" weight="heavy">
-            다시 로그인해요
+            {getLoginHeading(params)}
           </AppText>
           <AppText tone="secondary" variant="body">
             로그인하면 일정과 할 일, 완료 기록이 동기화돼요.
