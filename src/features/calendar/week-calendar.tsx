@@ -62,7 +62,7 @@ export function WeekCalendar() {
   };
 
   return (
-    <Screen scroll contentContainerStyle={styles.screen}>
+    <Screen safeAreaEdges={['left', 'right']} scroll contentContainerStyle={styles.screen}>
       <ContextualFeatureTip
         message="날짜를 누르면 그날의 할 일과 일정을 볼 수 있어요. 여러 날 일정은 이어진 막대로 표시해요."
         tipIds={['calendar.overview']}

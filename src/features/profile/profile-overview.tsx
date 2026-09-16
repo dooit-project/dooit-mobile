@@ -110,7 +110,7 @@ export function ProfileOverview() {
   });
 
   return (
-    <Screen scroll contentContainerStyle={styles.screen}>
+    <Screen safeAreaEdges={['left', 'right']} scroll contentContainerStyle={styles.screen}>
       <View style={styles.section}>
         <AppText tone="secondary" variant="caption" weight="bold">
           계정
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   screen: {
     gap: spacing[5],
     paddingBottom: 104,
-    paddingTop: spacing[8],
+    paddingTop: spacing[4],
   },
   identityCard: {
     alignItems: 'center',

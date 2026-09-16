@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren } from 'react';
 import type { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
 type ScreenProps = PropsWithChildren<{
   scroll?: boolean;
   contentMaxWidth?: number;
+  safeAreaEdges?: ComponentProps<typeof SafeAreaView>['edges'];
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   scrollViewProps?: Omit<ScrollViewProps, 'contentContainerStyle'>;
@@ -17,6 +18,7 @@ export function Screen({
   children,
   scroll = false,
   contentMaxWidth = sizes.contentMaxWidth,
+  safeAreaEdges,
   style,
   contentContainerStyle,
   scrollViewProps,
@@ -27,7 +29,10 @@ export function Screen({
 
   if (scroll) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }, style]}>
+      <SafeAreaView
+        edges={safeAreaEdges}
+        style={[styles.safeArea, { backgroundColor: theme.colors.background }, style]}
+      >
         <ScrollView
           automaticallyAdjustKeyboardInsets
           keyboardDismissMode="on-drag"
@@ -51,7 +56,10 @@ export function Screen({
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }, style]}>
+    <SafeAreaView
+      edges={safeAreaEdges}
+      style={[styles.safeArea, { backgroundColor: theme.colors.background }, style]}
+    >
       <View style={[styles.content, styles.flex, responsiveContentStyle, contentContainerStyle]}>
         {children}
       </View>

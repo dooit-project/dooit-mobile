@@ -43,6 +43,7 @@ export default function TodayScreen() {
   return (
     <View style={styles.container}>
       <Screen
+        safeAreaEdges={['left', 'right']}
         scroll
         contentContainerStyle={styles.screen}
         scrollViewProps={{
