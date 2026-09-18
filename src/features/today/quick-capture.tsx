@@ -15,11 +15,17 @@ import { APP_TIME_ZONE, toApiLocalDate } from '@/utils';
 
 type QuickCaptureProps = {
   isExpanded: boolean;
+  showCollapsedTrigger?: boolean;
   onExpandedChange: (isExpanded: boolean) => void;
   onCaptured?: (response: TaskQuickCaptureResponse) => void;
 };
 
-export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: QuickCaptureProps) {
+export function QuickCapture({
+  isExpanded,
+  showCollapsedTrigger = true,
+  onCaptured,
+  onExpandedChange,
+}: QuickCaptureProps) {
   const theme = useAppTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -240,7 +246,7 @@ export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: Quick
             <InlineNotice message={moveToToday.error.message} tone="danger" />
           ) : null}
         </Card>
-      ) : (
+      ) : showCollapsedTrigger ? (
         <Pressable
           accessibilityHint="하단 입력창을 열어 기록함에 할 일을 추가합니다."
           accessibilityLabel="빠르게 기록 열기"
@@ -260,7 +266,7 @@ export function QuickCapture({ isExpanded, onCaptured, onExpandedChange }: Quick
             +
           </AppText>
         </Pressable>
-      )}
+      ) : null}
     </View>
   );
 }

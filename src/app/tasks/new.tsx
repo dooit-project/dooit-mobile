@@ -18,7 +18,7 @@ import {
   markNotificationPermissionPrompted,
 } from '@/services/preferences';
 import { spacing, useAppTheme } from '@/theme';
-import type { TaskResponse, TaskUpsertRequest } from '@/types';
+import type { TaskResponse, TaskType, TaskUpsertRequest } from '@/types';
 import { isLocalDateString } from '@/utils';
 
 export default function NewTaskScreen() {
@@ -28,7 +28,10 @@ export default function NewTaskScreen() {
   const createTask = useCreateTask();
   const [notificationPromptTask, setNotificationPromptTask] = useState<TaskResponse | null>(null);
   const initialDate = params.date && isLocalDateString(params.date) ? params.date : undefined;
-  const initialType = params.type === 'SCHEDULE' ? 'SCHEDULE' : undefined;
+  const initialType: TaskType | undefined =
+    params.type === 'SCHEDULE' || params.type === 'TODO' || params.type === 'IDEA'
+      ? params.type
+      : undefined;
   const autoFocusTitle = isQuickCaptureEntry(params.quickCapture);
 
   const openTask = (task: TaskResponse) => {
@@ -63,7 +66,13 @@ export default function NewTaskScreen() {
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title={initialType === 'SCHEDULE' ? '새 일정' : '새 할 일'}
+        title={
+          initialType === 'SCHEDULE'
+            ? '새 일정'
+            : initialType === 'IDEA'
+              ? '새 아이디어'
+              : '새 할 일'
+        }
         leading={
           <IconButton
             accessibilityLabel="이전 화면으로 돌아가기"

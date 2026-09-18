@@ -63,3 +63,29 @@ final result: passed
 - 320dp and 430dp, font scale 1.5, dark theme
 - Android TalkBack, iOS VoiceOver and native drawer gesture/back behavior
 - production API latency, category changes while the drawer is open and offline recovery
+
+## 2026-09-18 Today 유형별 작성 진입
+
+- Source visual truth: [`docs/audits/today-capture-entry-2026-09-18/reference-selected.png`](./docs/audits/today-capture-entry-2026-09-18/reference-selected.png)
+- Implementation screenshot: [`docs/audits/today-capture-entry-2026-09-18/01-today-empty-390x844.jpg`](./docs/audits/today-capture-entry-2026-09-18/01-today-empty-390x844.jpg)
+- Viewport and normalization: generated source 853×1844, mechanically normalized to 390×844; implementation 390×844 CSS pixels at density 1
+- State: light theme, mock API, 신규 게스트 빈 상태
+- Full-view evidence: [`04-comparison-full.png`](./docs/audits/today-capture-entry-2026-09-18/04-comparison-full.png)
+- Focused header evidence: [`05-comparison-header.png`](./docs/audits/today-capture-entry-2026-09-18/05-comparison-header.png)
+- Interaction evidence: 일정은 오늘 날짜가 선택된 `새 일정`, 할 일은 기존 composer, 아이디어는 `새 아이디어`로 진입했다.
+- Typography: existing `AppText` scale and weights preserve the selected hierarchy without adding a font dependency.
+- Spacing: 320px first pass에서 `아이디어`가 잘려 아이콘, gap, padding과 label size를 줄인 뒤 전체 label을 재확인했다.
+- Colors: existing highlight amber, sage and blue tokens map to the three types. Final idle borders blend into `surfaceMuted`.
+- Assets: `SymbolView` icons only; no generated runtime asset, placeholder, custom SVG or CSS drawing.
+- Copy: recommendation copy and `시작하기` were omitted as requested. Date, `오늘`, `무엇을 남길까요?` and the three type labels remain.
+- State difference: source has populated lists while implementation evidence is the mock guest empty state. The focused header is state-equivalent; existing list and empty components were intentionally preserved.
+- Browser console errors: zero. Existing React Native Web `shadow*` deprecation warning remains outside this change.
+- Remaining P3/device checks: dark theme, font scale 1.5, native Android/iOS and screen readers.
+
+Comparison history:
+
+1. 320px first capture found the `아이디어` label truncated.
+2. Icon size, gap, horizontal padding and label size were reduced.
+3. 320×844 and 390×844 captures confirmed all three labels and touch targets remain visible.
+
+final result: passed

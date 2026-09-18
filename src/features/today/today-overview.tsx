@@ -76,7 +76,7 @@ export function TodayOverview({
   const [completedVisibleCount, setCompletedVisibleCount] = useState(COMPLETED_RENDER_BATCH_SIZE);
   const [isInboxFocused, setIsInboxFocused] = useState(false);
   const [isReviewFocused, setIsReviewFocused] = useState(false);
-  const { scheduleTasks, executionTasks } = splitTodayTasks(todayTasks);
+  const { scheduleTasks, executionTasks, ideaTasks } = splitTodayTasks(todayTasks);
   const totalEstimatedDurationMinutes = getTotalEstimatedDurationMinutes(executionTasks);
   const reviewItemCount = staleTasks.length + recommendations.length;
   const latestInboxTask = getLatestInboxTask(inboxTasks);
@@ -128,7 +128,7 @@ export function TodayOverview({
   return (
     <View style={styles.container}>
       <ContextualFeatureTip
-        message="+ 버튼으로 할 일을 기록해요. 체크박스를 누르면 완료됩니다."
+        message="상단에서 일정, 할 일, 아이디어를 바로 기록해요. 체크박스를 누르면 완료됩니다."
         tipIds={['today.quickCapture', 'today.completeTask']}
         title="Today를 시작하는 방법"
       />
@@ -230,6 +230,24 @@ export function TodayOverview({
           />
         )}
       </View>
+
+      {ideaTasks.length > 0 ? (
+        <View style={styles.taskSection}>
+          <SectionHeader
+            title="떠오른 아이디어"
+            action={
+              <AppText tone="primary" variant="label" weight="bold">
+                {ideaTasks.length}개
+              </AppText>
+            }
+          />
+          <View style={styles.taskList}>
+            {ideaTasks.map((task) => (
+              <TaskCard key={task.id} task={task} onOpen={() => openTask(task.id)} />
+            ))}
+          </View>
+        </View>
+      ) : null}
 
       {feedback ? (
         <FadeInView duration={motion.duration.normal}>

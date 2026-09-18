@@ -43,7 +43,8 @@ describe('splitTodayTasks', () => {
 
     expect(splitTodayTasks([schedule, todo, idea])).toEqual({
       scheduleTasks: [schedule],
-      executionTasks: [todo, idea],
+      executionTasks: [todo],
+      ideaTasks: [idea],
     });
   });
 
@@ -54,6 +55,7 @@ describe('splitTodayTasks', () => {
     expect(splitTodayTasks([schedule, duplicate])).toEqual({
       scheduleTasks: [schedule],
       executionTasks: [],
+      ideaTasks: [],
     });
   });
 });

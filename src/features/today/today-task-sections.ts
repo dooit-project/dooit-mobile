@@ -15,7 +15,8 @@ export function splitTodayTasks(tasks: TaskResponse[]) {
       scheduleIds.add(task.id);
       return true;
     }),
-    executionTasks: tasks.filter((task) => task.type !== 'SCHEDULE'),
+    executionTasks: tasks.filter((task) => task.type === 'TODO'),
+    ideaTasks: tasks.filter((task) => task.type === 'IDEA'),
   };
 }
 

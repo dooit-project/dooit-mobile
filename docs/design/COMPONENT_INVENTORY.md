@@ -60,7 +60,7 @@ Task row 기준:
 
 | 컴포넌트              | 위치                                           | 역할                                 | 주의점                                 |
 | --------------------- | ---------------------------------------------- | ------------------------------------ | -------------------------------------- |
-| `TodayWeekStrip`      | `src/features/today/today-week-strip.tsx`      | 주간 mini calendar                   | 경계 제거, 월 경계·일정 dot 확인       |
+| `TodayHeader`         | `src/features/today/today-header.tsx`          | 오늘 날짜·화면명·유형별 작성 진입    | 320px label, 44pt touch target 확인    |
 | `TodayOverview`       | `src/features/today/today-overview.tsx`        | 일정, 오늘 할 일, 정리, 완료 section | 첫 viewport에서 핵심 목록이 보여야 함  |
 | `QuickCapture`        | `src/features/today/quick-capture.tsx`         | 하단 빠른 기록 composer/FAB          | keyboard, safe area, tab bar 겹침 확인 |
 | `TodayReviewScreen`   | `src/features/today/today-review-screen.tsx`   | 지난 미완료, 추천, 기록함 정리       | action copy가 실제 동작과 맞아야 함    |
@@ -69,7 +69,7 @@ Task row 기준:
 Today 기본 순서:
 
 ```text
-TodayWeekStrip
+TodayHeader
 → 일정
 → 오늘 할 일
 → 정리할 항목
