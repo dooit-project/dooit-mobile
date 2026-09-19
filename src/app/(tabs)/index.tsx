@@ -4,7 +4,13 @@ import { useEffect, useState } from 'react';
 
 import { InlineNotice, Screen } from '@/components/ui';
 import { getGuestMergeNoticeMessage } from '@/features/auth';
-import { QuickCapture, TodayHeader, TodayOverview, useTodayOverview } from '@/features/today';
+import {
+  QuickCapture,
+  TodayCaptureDock,
+  TodayHeader,
+  TodayOverview,
+  useTodayOverview,
+} from '@/features/today';
 import { spacing, useAppTheme } from '@/theme';
 import { toApiLocalDate } from '@/utils';
 
@@ -69,16 +75,7 @@ export default function TodayScreen() {
             message="먼저 할 일을 확인했어요. 이제 한 가지씩 시작해 보세요."
           />
         ) : null}
-        <TodayHeader
-          date={today}
-          onCreateIdea={() =>
-            router.push({ pathname: '/tasks/new', params: { type: 'IDEA', quickCapture: '1' } })
-          }
-          onCreateSchedule={() =>
-            router.push({ pathname: '/tasks/new', params: { date: today, type: 'SCHEDULE' } })
-          }
-          onCreateTask={() => setIsQuickCaptureExpanded(true)}
-        />
+        <TodayHeader date={today} />
         <TodayOverview
           date={today}
           overview={overview}
@@ -90,12 +87,24 @@ export default function TodayScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.quickCaptureLayer}
       >
-        <QuickCapture
-          isExpanded={isQuickCaptureExpanded}
-          showCollapsedTrigger={false}
-          onCaptured={(response) => setRecentCapturedTaskId(response.task.id)}
-          onExpandedChange={setIsQuickCaptureExpanded}
-        />
+        {isQuickCaptureExpanded ? (
+          <QuickCapture
+            isExpanded
+            showCollapsedTrigger={false}
+            onCaptured={(response) => setRecentCapturedTaskId(response.task.id)}
+            onExpandedChange={setIsQuickCaptureExpanded}
+          />
+        ) : (
+          <TodayCaptureDock
+            onCreateIdea={() =>
+              router.push({ pathname: '/tasks/new', params: { type: 'IDEA', quickCapture: '1' } })
+            }
+            onCreateSchedule={() =>
+              router.push({ pathname: '/tasks/new', params: { date: today, type: 'SCHEDULE' } })
+            }
+            onCreateTask={() => setIsQuickCaptureExpanded(true)}
+          />
+        )}
       </KeyboardAvoidingView>
     </View>
   );
@@ -107,7 +116,7 @@ const styles = StyleSheet.create({
   },
   screen: {
     gap: spacing[4],
-    paddingBottom: 104,
+    paddingBottom: 144,
     paddingTop: spacing[4],
   },
   quickCaptureLayer: {

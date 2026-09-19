@@ -17,6 +17,32 @@
 
 final result: passed
 
+## 2026-09-18 Today 하단 작성 진입·브랜드 크기
+
+- Source visual truth: [`docs/audits/today-capture-dock-2026-09-18/reference-before-390x844.jpg`](./docs/audits/today-capture-dock-2026-09-18/reference-before-390x844.jpg)와 사용자의 배치 수정 지시
+- Implementation screenshot: [`docs/audits/today-capture-dock-2026-09-18/01-today-dock-390x844.jpg`](./docs/audits/today-capture-dock-2026-09-18/01-today-dock-390x844.jpg)
+- Viewport and normalization: source와 implementation 모두 390×844 CSS pixels, density 1
+- State: light theme, mock API, 신규 게스트 빈 상태
+- Full-view evidence: [`05-comparison.png`](./docs/audits/today-capture-dock-2026-09-18/05-comparison.png)
+- Focused evidence: 320px dock·composer와 390px drawer는 audit의 `02`, `03`, `04` 캡처로 확인했다. 글자와 control이 원본 크기에서 읽혀 별도 crop은 만들지 않았다.
+- Typography: 독립된 `오늘` display text를 제거하고 header wordmark는 title, drawer wordmark는 display scale로 올렸다.
+- Spacing: 작성 진입은 하단 tab 위에 고정하고 scroll content에 144px bottom padding을 제공한다.
+- Colors: 기존 surface, border, amber, sage, blue token을 그대로 사용한다.
+- Assets: 기존 Material Community Icons와 `SymbolView`만 사용하며 새 raster·SVG asset은 없다.
+- Copy: 상단 `오늘`을 제거하고 onboarding 안내를 `화면 아래에서`로 수정했다. 하단 tab과 `오늘 할 일`은 navigation·section 이름으로 유지한다.
+- Primary interactions: 일정·아이디어 작성 이동, 할 일 composer open/close, drawer open/close를 확인했다.
+- Browser console errors: zero. 기존 React Native Web `shadow*` deprecation warning은 이 변경 밖에 남아 있다.
+- Actionable P0/P1/P2: none.
+- Remaining P3/device checks: native safe area·keyboard, font scale 1.5, dark theme, screen readers, 긴 목록의 마지막 row.
+
+Comparison history:
+
+1. 이전 구현은 작성 진입이 첫 viewport 상단에 있었다.
+2. 작성 진입을 하단 dock으로 이동하고 상단 display text를 제거했다.
+3. 390×844와 320×844에서 label, tab, composer, drawer를 다시 캡처해 겹침이 없음을 확인했다.
+
+final result: passed
+
 ## Comparison target
 
 - Source visual truth: [`docs/audits/task-categories-2026-09-06/reference-selected-390x844.png`](./docs/audits/task-categories-2026-09-06/reference-selected-390x844.png)

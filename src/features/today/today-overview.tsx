@@ -128,7 +128,7 @@ export function TodayOverview({
   return (
     <View style={styles.container}>
       <ContextualFeatureTip
-        message="상단에서 일정, 할 일, 아이디어를 바로 기록해요. 체크박스를 누르면 완료됩니다."
+        message="화면 아래에서 일정, 할 일, 아이디어를 바로 기록해요. 체크박스를 누르면 완료됩니다."
         tipIds={['today.quickCapture', 'today.completeTask']}
         title="Today를 시작하는 방법"
       />

@@ -95,7 +95,9 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
         >
           <MaterialCommunityIcons color={theme.colors.text} name="menu" size={26} />
         </Pressable>
-        <AppText weight="bold">dooit</AppText>
+        <AppText variant="title" weight="heavy">
+          dooit
+        </AppText>
       </View>
     );
   },
@@ -238,7 +240,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
           <View style={styles.brandRow}>
             <View style={styles.brandCopy}>
               <View style={styles.wordmarkRow}>
-                <AppText style={{ color: theme.colors.primary }} variant="title" weight="heavy">
+                <AppText style={{ color: theme.colors.primary }} variant="display" weight="heavy">
                   dooit
                 </AppText>
                 <View style={[styles.wordmarkDot, { backgroundColor: theme.colors.warning }]} />
@@ -453,7 +455,7 @@ const styles = StyleSheet.create({
   },
   brandCopy: { flex: 1, gap: spacing[2] },
   wordmarkRow: { alignItems: 'flex-start', flexDirection: 'row' },
-  wordmarkDot: { borderRadius: radii.full, height: 6, marginLeft: 2, marginTop: 3, width: 6 },
+  wordmarkDot: { borderRadius: radii.full, height: 8, marginLeft: 2, marginTop: 2, width: 8 },
   closeButton: {
     alignItems: 'center',
     borderRadius: radii.full,
