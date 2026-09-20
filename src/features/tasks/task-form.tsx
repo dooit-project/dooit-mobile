@@ -74,6 +74,12 @@ const taskTypes: { value: TaskType; label: string }[] = [
   { value: 'IDEA', label: '아이디어' },
 ];
 
+const titlePlaceholders: Record<TaskType, string> = {
+  TODO: '예: 은행 앱 이체 확인',
+  SCHEDULE: '예: 팀 주간 회의',
+  IDEA: '예: 주말에 만들고 싶은 것',
+};
+
 export function TaskForm({
   autoFocusTitle = false,
   initialTask,
@@ -123,16 +129,22 @@ export function TaskForm({
           initialTask.description ||
           initialTask.category ||
           initialTask.estimatedDurationMinutes ||
-          initialTask.type !== 'TODO' ||
-          initialTask.allDay,
+          initialTask.notificationEnabled === false ||
+          initialTask.notifyAt ||
+          initialTask.recurrence,
         )
-      : initialType !== undefined && initialType !== 'TODO',
+      : false,
   );
   const titleLength = values.title.trim().length;
   const hasTitleValidationError = validationMessage === '제목을 입력해 주세요.';
   const hasEstimatedDurationValidationError = validationMessage?.startsWith('예상 시간은');
   const canSubmit = titleLength > 0 && !isSubmitting;
   const isSchedule = values.type === 'SCHEDULE';
+  const detailsToggleLabel = isDetailsExpanded
+    ? '추가 정보 접기'
+    : isSchedule
+      ? '알림·반복·추가 정보 보기'
+      : '설명·예상 시간·카테고리 추가';
 
   const updateField = <Key extends keyof TaskFormValues>(key: Key, value: TaskFormValues[Key]) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -236,7 +248,7 @@ export function TaskForm({
             onBlur={() => setFocusedField(null)}
             onChangeText={(value) => updateField('title', value)}
             onFocus={() => setFocusedField('title')}
-            placeholder="예: 은행 앱 이체 확인"
+            placeholder={titlePlaceholders[values.type]}
             placeholderTextColor={theme.colors.textMuted}
             returnKeyType="next"
             style={[
@@ -425,7 +437,26 @@ export function TaskForm({
                 </View>
               </View>
             ) : null}
+          </View>
+        ) : null}
 
+        <Pressable
+          accessibilityLabel={detailsToggleLabel}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: isDetailsExpanded }}
+          onPress={() => setIsDetailsExpanded((current) => !current)}
+          style={({ pressed }) => [
+            styles.detailsToggle,
+            { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+          ]}
+        >
+          <AppText tone="secondary" variant="label" weight="semibold">
+            {detailsToggleLabel} ›
+          </AppText>
+        </Pressable>
+
+        {isDetailsExpanded && isSchedule ? (
+          <View style={styles.scheduleSettings}>
             <View style={styles.field}>
               <AppText variant="label" weight="bold">
                 알림
@@ -606,20 +637,6 @@ export function TaskForm({
           </View>
         ) : null}
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ expanded: isDetailsExpanded }}
-          onPress={() => setIsDetailsExpanded((current) => !current)}
-          style={({ pressed }) => [
-            styles.detailsToggle,
-            { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-          ]}
-        >
-          <AppText tone="secondary" variant="label" weight="semibold">
-            {isDetailsExpanded ? '추가 정보 접기' : '설명·카테고리·예상 시간 추가'} ›
-          </AppText>
-        </Pressable>
-
         {isDetailsExpanded ? (
           <View style={styles.field}>
             <View style={styles.labelRow}>
@@ -788,6 +805,9 @@ const styles = StyleSheet.create({
   scheduleFields: {
     gap: spacing[3],
   },
+  scheduleSettings: {
+    gap: spacing[4],
+  },
   timeRow: {
     flexDirection: 'row',
     gap: spacing[2],
@@ -835,7 +855,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: spacing[3],
   },
   notificationGrid: {
@@ -848,7 +868,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: spacing[3],
   },
   customRecurrence: {
@@ -864,7 +884,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 38,
+    minHeight: 44,
   },
   intervalRow: {
     alignItems: 'center',
@@ -896,9 +916,11 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   detailsToggle: {
+    alignItems: 'center',
     alignSelf: 'flex-start',
     borderRadius: radii.full,
-    minHeight: 32,
+    justifyContent: 'center',
+    minHeight: 44,
     paddingHorizontal: spacing[2],
     paddingVertical: spacing[1],
   },

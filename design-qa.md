@@ -17,6 +17,14 @@
 
 final result: passed
 
+## 2026-09-20 Task 작성 기본 정보 우선 노출
+
+- [Task 작성 점진적 공개 검토와 실제 화면 감사](./docs/audits/task-form-progressive-disclosure-2026-09-20/README.md)
+- 새 일정과 새 아이디어의 선택 정보를 기본 접힘으로 바꾸고, 유형별 제목 예시와 44px 추가 정보·선택 행동을 적용했다.
+- Web Chrome의 390×844와 320×844에서 일정 기본·펼침, 아이디어 기본 상태와 접근성 tree를 확인했다.
+
+final result: passed
+
 ## 2026-09-18 Today 하단 작성 진입·브랜드 크기
 
 - Source visual truth: [`docs/audits/today-capture-dock-2026-09-18/reference-before-390x844.jpg`](./docs/audits/today-capture-dock-2026-09-18/reference-before-390x844.jpg)와 사용자의 배치 수정 지시

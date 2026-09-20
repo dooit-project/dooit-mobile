@@ -47,7 +47,7 @@ Dooit Mobile의 공통 UI 컴포넌트와 주요 도메인 컴포넌트 사용 �
 | `ScheduleCard`         | `src/features/tasks/schedule-card.tsx`           | 일정 row                | Today, Calendar 선택 날짜 목록                 | 일정은 Task와 다르게 시간 metadata를 강조 |
 | `TodayTaskList`        | `src/features/today/today-task-list.tsx`         | Today 실행 목록 wrapper | Today                                          | 정렬/완료 상태를 목록 단위로 다룰 때 사용 |
 | `TaskDateQuickActions` | `src/features/tasks/task-date-quick-actions.tsx` | 날짜 빠른 변경 action   | Task 상세                                      | 44pt touch target 유지                    |
-| `TaskForm`             | `src/features/tasks/task-form.tsx`               | Task 작성/수정 form     | 새 Task, Task 수정                             | 일정은 날짜·시작·종료 시간을 직접 입력    |
+| `TaskForm`             | `src/features/tasks/task-form.tsx`               | Task 작성/수정 form     | 새 Task, Task 수정                             | 필수 정보 우선, 선택 정보 44pt 펼침 진입  |
 
 Task row 기준:
 

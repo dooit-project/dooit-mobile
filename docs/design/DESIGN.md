@@ -401,7 +401,7 @@ Today의 기본 정보 순서는 다음과 같다.
 - planner section은 공통 `SectionHeader`의 8px 의미 marker, 굵은 제목, 우측 count·action 문법을 사용한다.
 - 목표 화면은 개별 목표를 낮은 outline row로 표시하고 생성·메뉴 action은 ghost 수준으로 유지한다.
 - 완료 기록은 주 이동과 날짜 선택을 한 compact surface로 묶고 완료 checkbox로 다시 열기 동작을 처리해 중복 버튼을 줄인다.
-- Task 작성은 하나의 flat sheet 안에서 제목·유형·일정 날짜·시간·선택 정보를 나누고 입력 배경과 취소 action의 대비를 낮춘다.
+- Task 작성은 하나의 flat sheet 안에서 제목·유형·일정 날짜·시간을 먼저 보여 주고 알림·반복·설명·예상 시간·카테고리는 한 번에 펼친다. 입력 배경과 취소 action의 대비는 낮춘다.
 - Quick Capture와 sheet형 입력의 focus 상태는 브라우저 기본 파란 outline처럼 튀지 않게 한다. focus는 primary-soft border와 흰 surface 전환으로 표시하고, 오류 상태만 danger border를 사용한다.
 - Task 상세는 hero·날짜·정보·목표를 낮은 outline section으로 구분하고 metadata 행에는 얇은 rule을 사용한다.
 - 과거 기록 검색은 프로필의 보조 목적지로 두고 날짜·키워드·상태를 함께 탐색할 수 있게 한다.
@@ -437,7 +437,7 @@ Today의 기본 정보 순서는 다음과 같다.
 - D-Day: compact header의 추가 행동, D-Day 숫자 중심 목표 card, 필요할 때 펼치는 연결 Task 순서를 사용한다.
 - Profile: 모든 폭에서 52–60px 세로 navigation row와 divider를 사용하고 desktop에서도 가로 tile로 전환하지 않는다.
 - Completed: 통계보다 완료 card 목록을 우선하고 날짜 선택과 요약을 compact하게 둔다.
-- Task 작성·상세: 제목, 유형, 일정 날짜, 시작·종료 시간처럼 자주 쓰는 필드를 먼저 두고 낮은 빈도의 설명·카테고리는 점진적으로 펼친다.
+- Task 작성·상세: 제목, 유형, 일정 날짜, 시작·종료 시간처럼 자주 쓰는 필드를 먼저 두고 낮은 빈도의 알림·반복·설명·예상 시간·카테고리는 점진적으로 펼친다.
 - 빈 상태와 오류는 가능한 한 큰 카드 대신 inline state를 사용하고 문구와 CTA를 한 번씩만 제공한다.
 
 ### Component meaning
