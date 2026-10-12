@@ -13,6 +13,7 @@ import {
   getAuthAccountType,
   getRefreshToken,
   setAuthAccountType,
+  setAuthEmail,
   setSessionCredential,
 } from './auth-token-store';
 import { mockApiClient } from './mock-api-client';
@@ -117,6 +118,7 @@ async function refreshSession() {
         refreshTokenExpiresAt: response.refreshExpiresAt,
       });
       await setAuthAccountType(response.user.accountType);
+      await setAuthEmail(response.user.accountType === 'REGISTERED' ? response.user.email : null);
       return response;
     })
     .finally(() => {

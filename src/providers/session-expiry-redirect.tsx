@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import type { PropsWithChildren } from 'react';
 import { useEffect } from 'react';
 
-import { getAuthAccountType, subscribeSessionExpired } from '@/services/api';
+import { getAuthAccountType, getAuthEmail, subscribeSessionExpired } from '@/services/api';
 import type { AccountType, AuthenticatedUserResponse } from '@/types';
 
 import { queryClient } from './query-provider';
@@ -10,10 +10,14 @@ import { queryClient } from './query-provider';
 export function getSessionExpiryParams(
   user: AuthenticatedUserResponse | undefined,
   persistedAccountType: AccountType | null = null,
+  persistedEmail: string | null = null,
 ) {
-  return (user?.accountType ?? persistedAccountType) === 'GUEST'
-    ? { guestExpired: '1' as const }
-    : { expired: '1' as const };
+  if ((user?.accountType ?? persistedAccountType) === 'GUEST') {
+    return { guestExpired: '1' as const };
+  }
+
+  const email = user?.email ?? persistedEmail;
+  return email ? { email, expired: '1' as const } : { expired: '1' as const };
 }
 
 export function SessionExpiryRedirect({ children }: PropsWithChildren) {
@@ -26,7 +30,7 @@ export function SessionExpiryRedirect({ children }: PropsWithChildren) {
         queryClient.clear();
         router.replace({
           pathname: '/login',
-          params: getSessionExpiryParams(user, getAuthAccountType()),
+          params: getSessionExpiryParams(user, getAuthAccountType(), getAuthEmail()),
         });
       }),
     [router],

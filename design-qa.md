@@ -1,5 +1,10 @@
 # Task Category Navigation Design QA
 
+## 2026-09-17 재로그인 이메일 유지
+
+- [재로그인 이메일과 삭제 동작 감사](./docs/audits/login-email-prefill-2026-09-17/README.md)
+- 등록 계정 세션 만료의 이메일 채움, 44px 삭제 버튼, 삭제 후 포커스 복귀와 최초 로그인 빈 상태를 390×844 Web 화면에서 확인했다.
+
 ## 2026-09-17 탭 상단 safe area
 
 - [탭 상단 흰색 구간 원인과 수정 후 감사](./docs/audits/top-content-gap-2026-09-16/README.md)

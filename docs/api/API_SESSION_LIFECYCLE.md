@@ -74,6 +74,7 @@ token 응답에는 최소 다음 필드를 둔다.
 - refresh 중 발생한 API 요청은 무한 재시도하지 않고 한 번의 refresh 결과를 공유한다.
 - offline이면 기존 화면과 입력을 유지하고 연결 복구 뒤 갱신한다. refresh 만료가 확정됐을 때만 로그인 또는 새 게스트 선택으로 보낸다.
 - 401에서 refresh가 가능한 계정은 한 번 갱신 후 원 요청을 한 번만 재시도한다.
+- 등록 계정 로그인 성공 시 마지막 이메일을 기기에 보관해 세션 만료 재로그인에만 미리 채운다. 게스트 전환 시 저장 이메일을 삭제한다.
 
 ## 현재 프론트 구현과 차이
 
@@ -82,6 +83,7 @@ token 응답에는 최소 다음 필드를 둔다.
 - 동시에 시작된 요청은 하나의 refresh 결과를 공유하며, 401은 refresh 성공 뒤 원 요청을 한 번만 재시도한다.
 - logout은 서버 refresh session 폐기를 요청하고 성공 여부와 무관하게 로컬 credential을 제거한다.
 - Web은 refresh token을 JavaScript 저장소에 보관하지 않으며 HttpOnly cookie 계약 확정 전까지 기존 access-token 동작을 유지한다.
+- 마지막 등록 계정 이메일은 native SecureStore, Web localStorage에 보관한다. 비밀번호와 refresh token은 이 값과 함께 저장하지 않는다.
 
 백엔드 source 계약은 준비됐지만 production 반영과 프론트 연결 전에는 access token 수명을 단독으로 줄이지 않는다.
 

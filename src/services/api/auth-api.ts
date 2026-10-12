@@ -16,6 +16,7 @@ import {
   clearSessionCredential,
   getRefreshToken,
   setAuthAccountType,
+  setAuthEmail,
   setSessionCredential,
 } from './auth-token-store';
 
@@ -29,6 +30,7 @@ async function persistTokenResponse(response: TokenResponse) {
     refreshTokenExpiresAt: response.refreshExpiresAt,
   });
   await setAuthAccountType(response.user.accountType);
+  await setAuthEmail(response.user.accountType === 'REGISTERED' ? response.user.email : null);
 }
 
 export function isTokenResponse(response: UserResponse | TokenResponse): response is TokenResponse {

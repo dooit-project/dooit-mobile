@@ -1,15 +1,18 @@
 import {
   clearAccessToken,
   getAuthAccountType,
+  getAuthEmail,
   getAccessToken,
   getAccessTokenExpiresAt,
   getRefreshToken,
   getRefreshTokenExpiresAt,
   initializeAccessToken,
   initializeAuthAccountType,
+  initializeAuthEmail,
   resetAuthTokenStoreForTesting,
   setAccessToken,
   setAuthAccountType,
+  setAuthEmail,
   setSessionCredential,
   subscribeAccessToken,
 } from '../auth-token-store';
@@ -104,5 +107,25 @@ describe('auth token store', () => {
 
     expect(getAccessToken()).toBeNull();
     expect(getAuthAccountType()).toBe('GUEST');
+  });
+
+  it('등록 계정 이메일을 SecureStore에 저장하고 cold start에 복원한다', async () => {
+    await setAuthEmail(' user@example.com ');
+
+    expect(getAuthEmail()).toBe('user@example.com');
+    expect(mockSecureStore.get('dooit.authEmail')).toBe('user@example.com');
+
+    resetAuthTokenStoreForTesting();
+    await initializeAuthEmail();
+
+    expect(getAuthEmail()).toBe('user@example.com');
+  });
+
+  it('게스트 전환을 위해 저장 이메일을 지울 수 있다', async () => {
+    await setAuthEmail('user@example.com');
+    await setAuthEmail(null);
+
+    expect(getAuthEmail()).toBeNull();
+    expect(mockSecureStore.get('dooit.authEmail')).toBeUndefined();
   });
 });

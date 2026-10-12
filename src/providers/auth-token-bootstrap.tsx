@@ -10,6 +10,7 @@ import {
   authApi,
   initializeAccessToken,
   initializeAuthAccountType,
+  initializeAuthEmail,
   initializeRefreshCredential,
   subscribeAccessToken,
 } from '@/services/api';
@@ -22,6 +23,7 @@ import { queryClient } from './query-provider';
 type BootstrapDependencies = {
   initializeToken: () => Promise<string | null>;
   initializeAccountType?: () => Promise<unknown>;
+  initializeEmail?: () => Promise<unknown>;
   initializeRefreshCredential?: () => Promise<unknown>;
   getCurrentUser: () => ReturnType<typeof authApi.me>;
   refreshGuest?: () => ReturnType<typeof authApi.refreshGuest>;
@@ -80,6 +82,7 @@ export function shouldRenderAppRoutes(status: AuthBootstrapStatus, pathname: str
 const defaultDependencies: BootstrapDependencies = {
   initializeToken: initializeAccessToken,
   initializeAccountType: initializeAuthAccountType,
+  initializeEmail: initializeAuthEmail,
   initializeRefreshCredential,
   getCurrentUser: () => authApi.me(),
   refreshGuest: () => authApi.refreshGuest(),
@@ -93,6 +96,7 @@ export async function bootstrapAuthSession(dependencies = defaultDependencies) {
   }
 
   await dependencies.initializeAccountType?.();
+  await dependencies.initializeEmail?.();
   await dependencies.initializeRefreshCredential?.();
 
   const user = await dependencies.getCurrentUser();

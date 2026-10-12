@@ -5,6 +5,7 @@ import type { AccountType, LocalDateTimeString } from '@/types';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'dooit.accessToken';
 const ACCOUNT_TYPE_STORAGE_KEY = 'dooit.authAccountType';
+const AUTH_EMAIL_STORAGE_KEY = 'dooit.authEmail';
 const ACCESS_TOKEN_EXPIRES_AT_STORAGE_KEY = 'dooit.accessTokenExpiresAt';
 const REFRESH_TOKEN_STORAGE_KEY = 'dooit.refreshToken';
 const REFRESH_TOKEN_EXPIRES_AT_STORAGE_KEY = 'dooit.refreshTokenExpiresAt';
@@ -16,11 +17,13 @@ type AccessTokenListener = (token: string | null) => void;
 
 let memoryAccessToken: string | null = null;
 let memoryAccountType: AccountType | null = null;
+let memoryAuthEmail: string | null = null;
 let memoryAccessTokenExpiresAt: LocalDateTimeString | null = null;
 let memoryRefreshToken: string | null = null;
 let memoryRefreshTokenExpiresAt: LocalDateTimeString | null = null;
 let initialized = false;
 let accountTypeInitialized = false;
+let authEmailInitialized = false;
 let refreshCredentialInitialized = false;
 const accessTokenListeners = new Set<AccessTokenListener>();
 
@@ -31,6 +34,11 @@ function normalizeToken(token: string | null | undefined) {
 
 function normalizeAccountType(value: string | null | undefined): AccountType | null {
   return value === 'GUEST' || value === 'REGISTERED' ? value : null;
+}
+
+function normalizeEmail(value: string | null | undefined) {
+  const normalized = value?.trim();
+  return normalized ? normalized : null;
 }
 
 function getWebStorage() {
@@ -148,6 +156,28 @@ export async function initializeAuthAccountType() {
   return memoryAccountType;
 }
 
+export function getAuthEmail() {
+  if (memoryAuthEmail) return memoryAuthEmail;
+
+  if (Platform.OS === 'web') {
+    memoryAuthEmail = normalizeEmail(getWebStorage()?.getItem(AUTH_EMAIL_STORAGE_KEY));
+  }
+
+  return memoryAuthEmail;
+}
+
+export async function initializeAuthEmail() {
+  if (authEmailInitialized) return memoryAuthEmail;
+
+  const persistedValue =
+    Platform.OS === 'web'
+      ? getWebStorage()?.getItem(AUTH_EMAIL_STORAGE_KEY)
+      : await SecureStore.getItemAsync(AUTH_EMAIL_STORAGE_KEY);
+  memoryAuthEmail = normalizeEmail(persistedValue);
+  authEmailInitialized = true;
+  return memoryAuthEmail;
+}
+
 export async function initializeRefreshCredential() {
   if (Platform.OS === 'web' || refreshCredentialInitialized) {
     return memoryRefreshToken;
@@ -219,6 +249,21 @@ export async function setAuthAccountType(accountType: AccountType) {
   }
 }
 
+export async function setAuthEmail(email: string | null | undefined) {
+  memoryAuthEmail = normalizeEmail(email);
+  authEmailInitialized = true;
+
+  if (Platform.OS === 'web') {
+    const storage = getWebStorage();
+    if (memoryAuthEmail) storage?.setItem(AUTH_EMAIL_STORAGE_KEY, memoryAuthEmail);
+    else storage?.removeItem(AUTH_EMAIL_STORAGE_KEY);
+  } else if (memoryAuthEmail) {
+    await SecureStore.setItemAsync(AUTH_EMAIL_STORAGE_KEY, memoryAuthEmail);
+  } else {
+    await SecureStore.deleteItemAsync(AUTH_EMAIL_STORAGE_KEY);
+  }
+}
+
 export async function setAccessToken(token: string | null | undefined) {
   const previousToken = memoryAccessToken;
   memoryAccessToken = normalizeToken(token);
@@ -251,11 +296,13 @@ export function subscribeAccessToken(listener: AccessTokenListener) {
 export function resetAuthTokenStoreForTesting() {
   memoryAccessToken = null;
   memoryAccountType = null;
+  memoryAuthEmail = null;
   memoryAccessTokenExpiresAt = null;
   memoryRefreshToken = null;
   memoryRefreshTokenExpiresAt = null;
   initialized = false;
   accountTypeInitialized = false;
+  authEmailInitialized = false;
   refreshCredentialInitialized = false;
   accessTokenListeners.clear();
 }

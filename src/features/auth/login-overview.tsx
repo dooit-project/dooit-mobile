@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Href } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -26,6 +27,7 @@ export function LoginOverview() {
   const queryClient = useQueryClient();
   const authState = useAuthState();
   const theme = useAppTheme();
+  const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const [email, setEmail] = useState(() => params.email ?? '');
   const [password, setPassword] = useState('');
@@ -96,28 +98,49 @@ export function LoginOverview() {
             <AppText variant="label" weight="bold">
               이메일
             </AppText>
-            <TextInput
-              accessibilityLabel="이메일"
-              autoCapitalize="none"
-              autoComplete="email"
-              editable={!login.isPending}
-              inputMode="email"
-              onChangeText={setEmail}
-              onSubmitEditing={() => passwordInputRef.current?.focus()}
-              placeholder="you@example.com"
-              placeholderTextColor={theme.colors.textMuted}
-              returnKeyType="next"
+            <View
               style={[
-                styles.input,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.text,
-                },
+                styles.emailField,
+                { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
               ]}
-              textContentType="username"
-              value={email}
-            />
+            >
+              <TextInput
+                ref={emailInputRef}
+                accessibilityLabel="이메일"
+                autoCapitalize="none"
+                autoComplete="email"
+                editable={!login.isPending}
+                inputMode="email"
+                onChangeText={setEmail}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+                placeholder="you@example.com"
+                placeholderTextColor={theme.colors.textMuted}
+                returnKeyType="next"
+                style={[styles.emailInput, { color: theme.colors.text }]}
+                textContentType="username"
+                value={email}
+              />
+              {email ? (
+                <Pressable
+                  accessibilityLabel="이메일 지우기"
+                  accessibilityRole="button"
+                  disabled={login.isPending}
+                  onPress={() => {
+                    setEmail('');
+                    emailInputRef.current?.focus();
+                  }}
+                  style={styles.clearButton}
+                >
+                  <View style={[styles.clearIcon, { backgroundColor: theme.colors.surfaceMuted }]}>
+                    <MaterialCommunityIcons
+                      color={theme.colors.textSecondary}
+                      name="close"
+                      size={16}
+                    />
+                  </View>
+                </Pressable>
+              ) : null}
+            </View>
           </View>
 
           <View style={styles.field}>
@@ -279,13 +302,32 @@ const styles = StyleSheet.create({
   field: {
     gap: spacing[2],
   },
-  input: {
+  emailField: {
+    alignItems: 'center',
     borderRadius: radii.lg,
     borderWidth: 1,
-    fontSize: typography.size.body,
+    flexDirection: 'row',
     minHeight: 52,
-    paddingHorizontal: spacing[4],
+    paddingLeft: spacing[4],
+    paddingRight: spacing[1],
+  },
+  emailInput: {
+    flex: 1,
+    fontSize: typography.size.body,
     paddingVertical: spacing[2],
+  },
+  clearButton: {
+    alignItems: 'center',
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  clearIcon: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
   },
   passwordField: {
     alignItems: 'center',
