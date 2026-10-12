@@ -14,7 +14,7 @@ Dooit Mobile의 주요 화면을 실제 캡쳐와 함께 설명하는 문서다.
 - Today 320·390·430px와 drawer·빠른 기록·Calendar 320px의 최신 light 반응형 근거는 [`responsive-core-2026-09-09`](../audits/responsive-core-2026-09-09/README.md)에서 관리한다. 실제 font scale 1.5·dark mode·가상 키보드는 native 미검증이다.
 - `docs/screenshots`는 화면 구조 참고용이며 실제 release 판정은 최신 APK와 실기기 QA를 따른다.
 - 화면 구조가 바뀌면 아래 파일명을 유지한 채 다시 캡쳐한다.
-- 대표 캡처는 촬영 후 7일이 되기 전에 갱신하며 `npm run docs:check`에서 만료 여부를 검사한다.
+- 대표 캡처는 촬영 후 30일이 되기 전에 갱신하며 `npm run docs:check`에서 만료 여부를 검사한다.
 
 ## 화면 점검 범위
 

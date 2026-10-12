@@ -9,7 +9,7 @@
     "theme": "light",
     "timezone": "Asia/Seoul"
   },
-  "refreshAfterDays": 7,
+  "refreshAfterDays": 30,
   "screenshots": [
     {
       "file": "today.png",
