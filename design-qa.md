@@ -17,6 +17,13 @@
 
 final result: passed
 
+## 2026-09-21 Task 작성 화면 안전한 복귀
+
+- [직접 진입과 앱 내부 진입 복귀 감사](./docs/audits/task-form-safe-exit-2026-09-21/README.md)
+- 작성 화면을 직접 열었을 때 뒤로가기와 취소가 Today로 이동하고, 앱 내부 진입은 기존 history로 돌아가는 것을 Web Chrome에서 확인했다.
+
+final result: passed
+
 ## 2026-09-20 Task 작성 기본 정보 우선 노출
 
 - [Task 작성 점진적 공개 검토와 실제 화면 감사](./docs/audits/task-form-progressive-disclosure-2026-09-20/README.md)

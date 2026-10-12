@@ -12,6 +12,7 @@ import {
   syncUpcomingTaskNotifications,
 } from '@/features/notifications';
 import { TaskForm, useCreateTask } from '@/features/tasks';
+import { leaveNewTaskScreen } from '@/features/tasks/new-task-navigation';
 import { isQuickCaptureEntry } from '@/features/tasks/quick-capture-entry';
 import {
   initializeAppPreferences,
@@ -33,6 +34,7 @@ export default function NewTaskScreen() {
       ? params.type
       : undefined;
   const autoFocusTitle = isQuickCaptureEntry(params.quickCapture);
+  const leaveScreen = () => leaveNewTaskScreen(router);
 
   const openTask = (task: TaskResponse) => {
     router.replace({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } });
@@ -76,7 +78,7 @@ export default function NewTaskScreen() {
         leading={
           <IconButton
             accessibilityLabel="이전 화면으로 돌아가기"
-            onPress={router.back}
+            onPress={leaveScreen}
             style={styles.headerButton}
           >
             <SymbolView
@@ -95,7 +97,7 @@ export default function NewTaskScreen() {
         initialType={initialType}
         isSubmitting={createTask.isPending}
         submitLabel="저장하기"
-        onCancel={() => router.back()}
+        onCancel={leaveScreen}
         onSubmit={handleSubmit}
       />
 
