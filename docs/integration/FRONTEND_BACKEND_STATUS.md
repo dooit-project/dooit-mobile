@@ -67,6 +67,10 @@ Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실�
 
 이미 source에 구현된 일일 계획, 예상 소요 시간, summary, 개인 카테고리 요약, 개인·Workspace 체크리스트와 빠른 등록 파싱을 다시 신규 구현 요청하지 않는다.
 
+## 신규 제품 방향 요청 — 계약 미확정
+
+2026-10-12 시스템·실천 증거·AI 회고·다독임 요구를 [복사 전달용 백엔드 개발 요청서](../api/API_PERSONAL_SYSTEMS_REQUEST.md)에 정리했다. 신규 API 경로는 제안이며 백엔드 구현·배포·합의를 확인하지 않았다. 사용자 확인으로 요청서는 2026-10-12 백엔드 담당자에게 전달 완료했으며 회신 대기 상태다. 이 기록은 위 기존 API의 검증 날짜를 갱신하지 않는다. 프론트엔드 작업과 제품 원칙은 [제품 제안](../product/PERSONAL_SYSTEM_EXPERIENCE.md), 순서는 [로드맵](../product/ROADMAP.md)을 따른다.
+
 ## 완료 판정
 
 - production metadata가 배포 commit/image를 식별한다.

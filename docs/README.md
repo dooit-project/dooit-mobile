@@ -12,6 +12,14 @@
 
 프론트엔드의 화면별 사용자 시나리오와 캡처 근거는 [`product/USER_FLOW_CATALOG.md`](./product/USER_FLOW_CATALOG.md)와 각 `audits/` README에서 확인한다. 오늘 실행 루프의 구현 결정과 제한은 [`product/DAILY_EXECUTION_PRIORITIES.md`](./product/DAILY_EXECUTION_PRIORITIES.md), 좌측 메뉴와 카테고리 탐색 구조는 [`product/NAVIGATION_INFORMATION_ARCHITECTURE.md`](./product/NAVIGATION_INFORMATION_ARCHITECTURE.md)에 정리한다.
 
+## 신규 제품 방향: 시스템·실천 증거·다독임
+
+- [제품 제안과 프론트엔드 작업 분해](./product/PERSONAL_SYSTEM_EXPERIENCE.md): 사용자 흐름, 기존 기능 재사용, 주요 화면, AI·명언 원칙과 최소 구현 범위
+- [백엔드 복사 전달용 요청서](./api/API_PERSONAL_SYSTEMS_REQUEST.md): 신규 개발 요구, 데이터·API 제안, 미결정 정책과 수용 기준
+- [로드맵](./product/ROADMAP.md): 계약 확정부터 시각 방향 선택·구현·검증까지의 미완료 작업
+
+현재는 문서화 단계이며 기능 구현이나 API 합의가 완료된 상태가 아니다.
+
 ## 문서 패키지
 
 | 디렉터리                                                      | 역할                                               | 대표 문서                                                                                                            |

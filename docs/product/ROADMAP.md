@@ -1,6 +1,6 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-09-14
+Last updated: 2026-10-12
 
 현재 단계는 핵심 기능 구현 이후의 연동·출시 검증이다. 제품 범위는 [PRD](./PRD.md), API 배포 상태는 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md), 확인 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)에 둔다. 이 문서는 남은 작업의 우선순위만 관리한다.
 
@@ -37,6 +37,17 @@ Last updated: 2026-09-14
 - [ ] 운영 Web의 CORS·CSP·cache·직접 경로·세션 만료를 검증하고 HttpOnly refresh cookie 운영 여부를 확정한다.
 - [ ] 오류 수집 운영 책임자와 Sentry project·DSN을 확정한 뒤 privacy 기준에 맞춰 연결한다.
 - [ ] [릴리즈 체크리스트](../qa/RELEASE_CHECKLIST.md)에 후보별 결과를 대조하고 플랫폼별 배포 범위를 확정한다.
+
+## 신규 제품 방향: 시스템·실천 증거·다독임
+
+2026-10-12 논의한 후속 제품 방향이다. 현재 출시 검증과 구분하며 아직 구현하지 않았다. [제품 제안·프론트 작업 분해](./PERSONAL_SYSTEM_EXPERIENCE.md)와 [복사 전달용 백엔드 요청서](../api/API_PERSONAL_SYSTEMS_REQUEST.md)를 원본으로 관리한다. 상세 FE/BE 항목의 중복 체크리스트는 만들지 않는다.
+
+- [ ] S1. 백엔드 기존 반복 Task 재사용 여부와 시스템·회차·실천·주간 증거 계약을 확정한다. 완료 취소·휴식·시간대·게스트·동시 수정 정책을 포함한다.
+- [ ] S2. 시스템 생성·Today 실행·주간 증거·다독임에 대한 시각안 3개를 비교하고 방향을 선택한다. 선택 전 화면 구현하지 않는다.
+- [ ] S3. 확정 계약의 mock·client와 시스템 하나 생성→기본/최소 실천→주간 증거→조정 흐름을 구현한다. 백엔드 변경은 별도 저장소에서 진행한다.
+- [ ] S4. AI 초안·주간 요약과 직접 입력·정형 요약 대체 경로를 연결한다. 조정 AI는 핵심 루프 이후 연결할 수 있다.
+- [ ] S5. 정적 응원·출처 확인 명언·잠깐 쉬어가기, 노출 빈도·덜 보기와 로컬 알림을 연결한다. 문구 CMS·서버 push는 제외한다.
+- [ ] S6. 실제 화면 감사·Android/iOS/Web·real API 검증과 `npm run validate` 결과를 기록한다.
 
 ## 추가 기능 후보
 
