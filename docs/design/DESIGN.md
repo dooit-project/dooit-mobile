@@ -1,5 +1,7 @@
 # Dooit Mobile Design System
 
+2026-10-12 현재 구현 보충: Today는 주간 strip을 렌더링하지 않고 날짜 한 줄을 사용한다. 아래 Today strip 관련 규칙은 과거 설계로 현재 구현의 근거가 아니다. [최신 화면 검토와 개선 제안](../audits/ui-structure-2026-10-12/README.md)을 우선 참고하며 새 시각 방향 확정 후 관련 규칙을 정리한다.
+
 ## 1. 문서 목적
 
 이 문서는 Dooit 모바일 클라이언트의 시각 언어와 상호작용 원칙을 AI와 개발자가 같은 기준으로 적용하기 위한 `DESIGN.md`다.

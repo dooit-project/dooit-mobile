@@ -12,10 +12,25 @@
 
 프론트엔드의 화면별 사용자 시나리오와 캡처 근거는 [`product/USER_FLOW_CATALOG.md`](./product/USER_FLOW_CATALOG.md)와 각 `audits/` README에서 확인한다. 오늘 실행 루프의 구현 결정과 제한은 [`product/DAILY_EXECUTION_PRIORITIES.md`](./product/DAILY_EXECUTION_PRIORITIES.md), 좌측 메뉴와 카테고리 탐색 구조는 [`product/NAVIGATION_INFORMATION_ARCHITECTURE.md`](./product/NAVIGATION_INFORMATION_ARCHITECTURE.md)에 정리한다.
 
-## 신규 제품 방향: 시스템·실천 증거·다독임
+## 최신 UI·UX 검토
+
+- [TO-BE 화면 제안 보드 3개](./design/to-be-2026-10-13/README.md): 주요 화면·하단 탐색·변경 이유를 한눈에 비교하는 계획 이미지. 1번 구조+2번 스타일 조합 선택, 생성 이미지의 보완점도 기록
+- [2026-10-13 화면 필요성·위치 재검토](./product/PRODUCT_ARCHITECTURE_REVIEW_2026-10-13.md): 유명 앱·디자인 자료, 탐색 구조 세 안, 오늘·계획·돌아보기 추천, 페이지별 통합·이동, 프론트/백엔드 경계와 수정 순서
+- [2026-10-12–13 실제 화면 감사](./audits/product-architecture-2026-10-12/README.md): 10개 화면, 빈 상태·게스트 제한·날짜 변화와 검증 한계
+- [2026-10-12 UI 세부 감사](./audits/ui-structure-2026-10-12/README.md): 하단 탭·작성 dock·달력 밀도·빠른 기록 불일치
+
+시스템 실행 시각안은 사용자가 3번의 제안형 sheet를 선택했다. 전체 탐색은 1번 구조+2번 스타일 조합을 선택했고 상세 시안 검토 전이다. 현재 Today에는 주간 strip이 없다.
+
+## 신규 제품 방향: 목표·실행 계획·실천 여정
+
+- [최신 목표·실행 계획·지나온 길](./product/GOAL_JOURNEY_EXPERIENCE.md): 목표·날짜 설정, 여러 반복 계획과 일회성 노력, 이미 한 일 기록, 목표별 여정. 앞선 단일 시스템 제한을 대체
+- [목표 중심 백엔드 변경 요청서](./api/API_GOAL_JOURNEY_CHANGE_REQUEST.md): 이미 전달한 요청의 범위 수정본, 2026-10-13 전달 완료·회신 대기
+
+- [매일 행동과 세 원칙 점검](./product/DAILY_SYSTEM_FIT_REVIEW_2026-10-13.md): 운동·영단어의 기존 지원/제약, 가벼운 반복·근거 회고·바람 연결과 순환 동기 문구
+- [일상 반복 백엔드 보충 확인서](./api/API_PERSONAL_SYSTEMS_DAILY_CLARIFICATION.md): 시간 없는 반복·선택적 다음 행동·기존 템플릿/자연어 확인, 목표 중심 변경 요청서에서 참조해 전달
 
 - [제품 제안과 프론트엔드 작업 분해](./product/PERSONAL_SYSTEM_EXPERIENCE.md): 사용자 흐름, 기존 기능 재사용, 주요 화면, AI·명언 원칙과 최소 구현 범위
-- [백엔드 복사 전달용 요청서](./api/API_PERSONAL_SYSTEMS_REQUEST.md): 신규 개발 요구, 데이터·API 제안, 미결정 정책과 수용 기준
+- [백엔드 복사 전달용 요청서](./api/API_PERSONAL_SYSTEMS_REQUEST.md): 이미 전달한 초기 시스템 요청 원본. 단일 시스템 제한은 최신 목표 중심 변경 요청에서 수정
 - [로드맵](./product/ROADMAP.md): 계약 확정부터 시각 방향 선택·구현·검증까지의 미완료 작업
 
 현재는 문서화 단계이며 기능 구현이나 API 합의가 완료된 상태가 아니다.

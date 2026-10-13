@@ -78,3 +78,7 @@ Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실�
 - 위 표의 Daily Plan·summary·category·checklist·quick-capture 계약에 대한 mobile mock·real 테스트가 통과한다.
 - Workspace OWNER/EDITOR/VIEWER 권한 차이가 UI와 HTTP 결과에서 일치한다.
 - Android production smoke 결과가 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록된다.
+
+## 목표 중심 범위 수정 — 전달 완료, 회신 대기
+
+2026-10-13 사용자가 목표 하나에 여러 반복 계획과 일회성 노력을 연결하고 목표별 지나온 길을 보는 경험을 명확히 요청했다. [목표 중심 변경 요청서](../api/API_GOAL_JOURNEY_CHANGE_REQUEST.md)는 기존 전달본의 단일 시스템 제한을 수정하며, 사용자 확인으로 백엔드 담당자에게 전달됐다. 회신·계약 합의·구현·배포는 미확인이다. [일상 반복 보충 확인서](../api/API_PERSONAL_SYSTEMS_DAILY_CLARIFICATION.md)는 이 변경 요청에서 참조해 함께 전달됐으며 별도 중복 요청하지 않는다.
