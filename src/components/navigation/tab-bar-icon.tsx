@@ -1,9 +1,10 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { SymbolViewProps } from 'expo-symbols';
 import { SymbolView } from 'expo-symbols';
 import { Platform, StyleSheet, View } from 'react-native';
 import type { ColorValue } from 'react-native';
 
-import { radii, spacing, useAppTheme } from '@/theme';
+import { radii, spacing } from '@/theme';
 
 type TabBarIconProps = {
   color: ColorValue;
@@ -12,12 +13,11 @@ type TabBarIconProps = {
   size: number;
 };
 
-export function TabBarIcon({ color, focused = false, name, size }: TabBarIconProps) {
-  const theme = useAppTheme();
+export function TabBarIcon({ color, name, size }: TabBarIconProps) {
   const webName = typeof name === 'object' && name ? name.web : undefined;
 
   return (
-    <View style={[styles.container, focused && { backgroundColor: theme.colors.primarySoft }]}>
+    <View style={styles.container}>
       {Platform.OS === 'web' ? (
         <WebTabIcon color={color} name={webName} size={size} />
       ) : (
@@ -29,9 +29,6 @@ export function TabBarIcon({ color, focused = false, name, size }: TabBarIconPro
           weight="semibold"
         />
       )}
-      {focused ? (
-        <View style={[styles.indicator, { backgroundColor: theme.colors.primary }]} />
-      ) : null}
     </View>
   );
 }
@@ -43,6 +40,10 @@ type WebTabIconProps = {
 };
 
 function WebTabIcon({ color, name, size }: WebTabIconProps) {
+  if (name === 'checklist' || name === 'history') {
+    return <MaterialCommunityIcons color={color as string} name={name} size={size} />;
+  }
+
   if (name === 'today') {
     return (
       <View accessible={false} style={[styles.webTodayIcon, { height: size, width: size }]}>
@@ -84,13 +85,6 @@ const styles = StyleSheet.create({
     minWidth: 44,
     paddingHorizontal: spacing[2],
     position: 'relative',
-  },
-  indicator: {
-    borderRadius: radii.full,
-    bottom: -3,
-    height: 2,
-    position: 'absolute',
-    width: 18,
   },
   webCalendarIcon: {
     borderRadius: radii.sm,

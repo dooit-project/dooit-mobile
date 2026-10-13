@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, Card, InlineNotice } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
@@ -8,6 +8,11 @@ import type { DdayGoalRequest } from '@/types';
 
 import { useCreateDdayGoal } from './use-create-dday-goal';
 import { type DdayGoalFormValues, validateDdayGoal } from './dday-validation';
+import {
+  ddayGoalColors,
+  setDdayGoalColor,
+  type DdayGoalColor,
+} from './dday-goal-colors';
 
 type DdayCreateFormProps = {
   onCancel: () => void;
@@ -27,6 +32,7 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<ReturnType<typeof validateDdayGoal>>({});
   const [focusedField, setFocusedField] = useState<DdayFormField | null>(null);
+  const [selectedColor, setSelectedColor] = useState<DdayGoalColor>(ddayGoalColors[0].value);
 
   const updateField = (field: keyof DdayGoalFormValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -48,7 +54,12 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
     };
 
     createGoal.mutate(request, {
-      onSuccess: () => {
+      onSuccess: async (createdGoal) => {
+        try {
+          await setDdayGoalColor(createdGoal.id, selectedColor);
+        } catch {
+          // The goal itself was created. Today can still use its deterministic fallback color.
+        }
         setValues(initialValues);
         onCreated();
       },
@@ -59,10 +70,10 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
     <Card style={styles.card}>
       <View style={styles.heading}>
         <AppText variant="bodyLarge" weight="bold">
-          새 D-Day
+          새 목표
         </AppText>
         <AppText tone="secondary" variant="caption">
-          지난 날짜도 기록할 수 있어요.
+          이루고 싶은 것과 기준이 될 날짜를 정해보세요.
         </AppText>
       </View>
 
@@ -76,7 +87,7 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
           </AppText>
         </View>
         <TextInput
-          accessibilityLabel="D-Day 목표 이름"
+          accessibilityLabel="목표 이름"
           editable={!createGoal.isPending}
           maxLength={ddayGoalLimits.title}
           onBlur={() => setFocusedField(null)}
@@ -109,10 +120,42 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
 
       <View style={styles.field}>
         <AppText variant="label" weight="bold">
+          목표 색상
+        </AppText>
+        <View accessibilityRole="radiogroup" style={styles.colorOptions}>
+          {ddayGoalColors.map((color) => {
+            const selected = selectedColor === color.value;
+            return (
+              <Pressable
+                accessibilityLabel={`${color.label} 색상`}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: selected }}
+                key={color.id}
+                onPress={() => setSelectedColor(color.value)}
+                style={({ pressed }) => [
+                  styles.colorButton,
+                  {
+                    borderColor: selected ? theme.colors.text : 'transparent',
+                    opacity: pressed ? 0.72 : 1,
+                  },
+                ]}
+              >
+                <View style={[styles.colorSwatch, { backgroundColor: color.value }]} />
+              </Pressable>
+            );
+          })}
+        </View>
+        <AppText tone="secondary" variant="caption">
+          오늘 목록에서 목표를 구분할 때 사용해요.
+        </AppText>
+      </View>
+
+      <View style={styles.field}>
+        <AppText variant="label" weight="bold">
           목표 날짜
         </AppText>
         <TextInput
-          accessibilityLabel="D-Day 목표 날짜"
+          accessibilityLabel="목표 날짜"
           autoCapitalize="none"
           editable={!createGoal.isPending}
           maxLength={10}
@@ -186,5 +229,23 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: spacing[2],
+  },
+  colorOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+  },
+  colorButton: {
+    alignItems: 'center',
+    borderRadius: radii.full,
+    borderWidth: 2,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  colorSwatch: {
+    borderRadius: radii.full,
+    height: 26,
+    width: 26,
   },
 });

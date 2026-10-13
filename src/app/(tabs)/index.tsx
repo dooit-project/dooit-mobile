@@ -7,7 +7,6 @@ import { getGuestMergeNoticeMessage } from '@/features/auth';
 import {
   QuickCapture,
   TodayCaptureDock,
-  TodayHeader,
   TodayOverview,
   useTodayOverview,
 } from '@/features/today';
@@ -29,7 +28,6 @@ export default function TodayScreen() {
   const today = toApiLocalDate(now);
   const overview = useTodayOverview(today);
   const [isQuickCaptureExpanded, setIsQuickCaptureExpanded] = useState(false);
-  const [recentCapturedTaskId, setRecentCapturedTaskId] = useState<number | null>(null);
   const [linkedNoticeMessage] = useState(() =>
     params.linked === '1' ? getGuestMergeNoticeMessage(params) : null,
   );
@@ -75,13 +73,7 @@ export default function TodayScreen() {
             message="먼저 할 일을 확인했어요. 이제 한 가지씩 시작해 보세요."
           />
         ) : null}
-        <TodayHeader date={today} />
-        <TodayOverview
-          date={today}
-          overview={overview}
-          recentCapturedTaskId={recentCapturedTaskId}
-          onOpenQuickCapture={() => setIsQuickCaptureExpanded(true)}
-        />
+        <TodayOverview date={today} overview={overview} />
       </Screen>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -91,7 +83,6 @@ export default function TodayScreen() {
           <QuickCapture
             isExpanded
             showCollapsedTrigger={false}
-            onCaptured={(response) => setRecentCapturedTaskId(response.task.id)}
             onExpandedChange={setIsQuickCaptureExpanded}
           />
         ) : (
@@ -115,9 +106,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   screen: {
-    gap: spacing[4],
-    paddingBottom: 144,
-    paddingTop: spacing[4],
+    gap: spacing[5],
+    paddingBottom: 112,
+    paddingTop: spacing[5],
   },
   quickCaptureLayer: {
     bottom: 0,

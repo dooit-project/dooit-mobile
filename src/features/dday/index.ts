@@ -1,5 +1,11 @@
 export { ddayApi } from './dday-api';
 export { DdayCreateForm } from './dday-create-form';
+export {
+  ddayGoalColors,
+  getDdayGoalFallbackColor,
+  setDdayGoalColor,
+  useDdayGoalColors,
+} from './dday-goal-colors';
 export { DdayGoalTasks } from './dday-goal-tasks';
 export { DdayTodayTaskForm } from './dday-today-task-form';
 export { createDdayTodayTask } from './dday-today-task-workflow';

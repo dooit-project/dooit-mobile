@@ -81,7 +81,7 @@ export default function TabLayout() {
           name="calendar"
           options={{
             title: '달력',
-            tabBarAccessibilityLabel: '캘린더',
+            tabBarAccessibilityLabel: '달력',
             tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="달력" />,
             tabBarIcon: ({ color, focused, size }) => (
               <TabBarIcon
@@ -94,21 +94,42 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name="plan"
           options={{
-            title: '더보기',
-            tabBarAccessibilityLabel: '더보기',
-            tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="더보기" />,
+            title: '계획',
+            tabBarAccessibilityLabel: '계획',
+            tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="계획" />,
             tabBarIcon: ({ color, focused, size }) => (
               <TabBarIcon
                 color={color}
                 focused={focused}
                 size={size}
-                name={{ ios: 'ellipsis.circle', android: 'more_horiz', web: 'more_horiz' }}
+                name={{
+                  ios: focused ? 'checklist.checked' : 'checklist',
+                  android: 'checklist',
+                  web: 'checklist',
+                }}
               />
             ),
           }}
         />
+        <Tabs.Screen
+          name="review"
+          options={{
+            title: '돌아보기',
+            tabBarAccessibilityLabel: '돌아보기',
+            tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="돌아보기" />,
+            tabBarIcon: ({ color, focused, size }) => (
+              <TabBarIcon
+                color={color}
+                focused={focused}
+                size={size}
+                name={{ ios: 'clock.arrow.circlepath', android: 'history', web: 'history' }}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen name="profile" options={{ href: null }} />
       </Tabs>
       <PlannerDrawer visible={menuOpen} onClose={closeMenu} />
     </View>

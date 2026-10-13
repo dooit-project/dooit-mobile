@@ -26,7 +26,7 @@ import { useCompletedWeek } from './use-completed-week';
 
 const TASK_RENDER_BATCH_SIZE = 20;
 
-export function CompletedOverview() {
+export function CompletedOverview({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
   const theme = useAppTheme();
   const today = toApiLocalDate();
@@ -50,19 +50,21 @@ export function CompletedOverview() {
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title="완료 기록"
+        title={embedded ? '돌아보기' : '완료 기록'}
         leading={
-          <IconButton
-            accessibilityLabel="더보기 화면으로 돌아가기"
-            onPress={router.back}
-            style={styles.headerButton}
-          >
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-              size={20}
-              tintColor={theme.colors.text}
-            />
-          </IconButton>
+          embedded ? undefined : (
+            <IconButton
+              accessibilityLabel="더보기 화면으로 돌아가기"
+              onPress={router.back}
+              style={styles.headerButton}
+            >
+              <SymbolView
+                name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
+                size={20}
+                tintColor={theme.colors.text}
+              />
+            </IconButton>
+          )
         }
       />
 

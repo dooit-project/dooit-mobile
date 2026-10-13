@@ -1,6 +1,6 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-10-13
+Last updated: 2026-10-14
 
 현재 단계는 핵심 기능 구현 이후의 연동·출시 검증이다. 제품 범위는 [PRD](./PRD.md), API 배포 상태는 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md), 확인 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)에 둔다. 이 문서는 남은 작업의 우선순위만 관리한다.
 
@@ -38,12 +38,11 @@ Last updated: 2026-10-13
 - [ ] 오류 수집 운영 책임자와 Sentry project·DSN을 확정한 뒤 privacy 기준에 맞춰 연결한다.
 - [ ] [릴리즈 체크리스트](../qa/RELEASE_CHECKLIST.md)에 후보별 결과를 대조하고 플랫폼별 배포 범위를 확정한다.
 
-## 전반 UI·UX 개선 — 구조·스타일 조합 선택, 상세 시안 검토 전
+## 전반 UI·UX 개선 — Today 재탐색 1번 구현 중
 
-[화면 필요성·위치 재검토](./PRODUCT_ARCHITECTURE_REVIEW_2026-10-13.md)와 [10개 실제 화면 감사](../audits/product-architecture-2026-10-12/README.md)를 기준으로 진행한다. 사용자가 오늘·계획·돌아보기 구조(보드 1번)와 간결한 목록·여백(보드 2번)을 조합하는 방향을 선택했다. 아직 구현된 상태는 아니다. 기존 출시 P0와 별도 개선 순서다.
+[화면 필요성·위치 재검토](./PRODUCT_ARCHITECTURE_REVIEW_2026-10-13.md)와 [10개 실제 화면 감사](../audits/product-architecture-2026-10-12/README.md)를 기준으로 진행한다. 사용자는 후속 비교에서 [운영 앱 참고 재탐색 1번](../design/to-be-2026-10-14/TODAY_REFERENCE_INSPIRED_OPTIONS.md)을 선택했다. 목표별 편집 목록, 단일 추가 메뉴, 네 개 하단 탭, 작은 순환 문구와 목표 색상 선택을 먼저 구현한다.
 
-- [ ] U1. [TO-BE 보드](../design/to-be-2026-10-13/README.md)의 1번 구조 + 2번 스타일 선택을 반영한 조합 시안을 검토한다. [목표 여정](./GOAL_JOURNEY_EXPERIENCE.md)의 목표 상세·여러 반복 계획·일회성 노력·지나온 길, 순환 동기 문구와 간단한 실천 확인을 포함한다. 기존 실행 sheet 선택은 유지하고 Today 주간 strip은 복원하지 않는다.
-- [ ] U2. 선택 후 tab·header·작성 진입을 구현하고 실제 화면 감사한다. drawer/더보기 중복을 정리하되 기존 목적지·deep link·계정 범위를 보존한다.
+- [ ] U2. 선택한 tab·header·Today 목록·작성 진입의 실제 화면 감사를 진행하고 세부 밀도를 보정한다. 목표 색상은 서버 계약 전 로컬에 저장하며 이후 계정 동기화 값으로 이전한다. drawer/더보기 중복을 정리하되 기존 목적지·deep link·계정 범위를 보존한다.
 - [ ] U3. 빠른 기록의 선택 유형·저장 유형·성공 안내 불일치를 mock/real에서 확인하고 별도 수정한다. API 변경 필요 시 이미 전달한 요청서와 별개의 백엔드 추가 요청을 작성한다.
 - [ ] U4. 달력 밀도·범위, D-Day 명칭, 템플릿 진입, icon·용어·게스트 안내를 순차 개선한다. [앞선 UI 감사](../audits/ui-structure-2026-10-12/README.md)의 시각 문제도 추적한다.
 - [ ] U5. 대표 screenshots의 30일 갱신 주기에 맞춰 전체 기준 세트를 재촬영한다. 부분 audit 캡처로 대표 세트의 촬영일을 바꾸지 않는다.

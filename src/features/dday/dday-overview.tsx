@@ -21,12 +21,13 @@ import { formatDateLabel } from '@/utils';
 
 import { getDdayLabel } from './dday-label';
 import { DdayCreateForm } from './dday-create-form';
+import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors';
 import { DdayGoalTasks } from './dday-goal-tasks';
 import { DdayTodayTaskForm } from './dday-today-task-form';
 import { useDeleteDdayGoal } from './use-delete-dday-goal';
 import { useDdayGoals } from './use-dday-goals';
 
-export function DdayOverview() {
+export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
   const theme = useAppTheme();
   const [isCreating, setIsCreating] = useState(false);
@@ -38,28 +39,31 @@ export function DdayOverview() {
   const goals = [...(query.data ?? [])].sort((left, right) =>
     left.targetDate.localeCompare(right.targetDate),
   );
+  const goalColors = useDdayGoalColors(goals.map((goal) => goal.id));
 
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title="목표"
+        title={embedded ? '계획' : '목표'}
         leading={
-          <IconButton
-            accessibilityLabel="더보기 화면으로 돌아가기"
-            onPress={router.back}
-            style={styles.headerButton}
-          >
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-              size={20}
-              tintColor={theme.colors.text}
-            />
-          </IconButton>
+          embedded ? undefined : (
+            <IconButton
+              accessibilityLabel="더보기 화면으로 돌아가기"
+              onPress={router.back}
+              style={styles.headerButton}
+            >
+              <SymbolView
+                name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
+                size={20}
+                tintColor={theme.colors.text}
+              />
+            </IconButton>
+          )
         }
         action={
           isCreating ? undefined : (
             <Button
-              accessibilityLabel="새 D-Day 목표 만들기"
+              accessibilityLabel="새 목표 만들기"
               size="compact"
               variant="secondary"
               onPress={() => setIsCreating(true)}
@@ -71,9 +75,9 @@ export function DdayOverview() {
       />
 
       <ContextualFeatureTip
-        message="중요한 날짜를 목표로 만들고 오늘 실행할 할 일을 연결해요."
+        message="원하는 방향을 목표로 만들고 오늘 반복할 일을 연결해요."
         tipIds={['dday.linkedTasks']}
-        title="D-Day로 목표 이어가기"
+        title="목표를 오늘의 행동으로 이어가기"
       />
 
       {isCreating ? (
@@ -103,7 +107,7 @@ export function DdayOverview() {
         />
       ) : goals.length === 0 ? (
         <EmptyState
-          title="아직 D-Day가 없어요"
+          title="아직 목표가 없어요"
           description="상단의 추가 버튼으로 첫 목표를 만들어 보세요."
         />
       ) : (
@@ -114,6 +118,7 @@ export function DdayOverview() {
               <DdayGoalCard
                 expanded={expandedGoalIds.includes(goal.id)}
                 goal={goal}
+                goalColor={goalColors[String(goal.id)] ?? getDdayGoalFallbackColor(goal.id)}
                 menuOpen={menuGoalId === goal.id}
                 onCreateTodayTask={() => {
                   setMenuGoalId(null);
@@ -167,6 +172,7 @@ export function DdayOverview() {
 
 function DdayGoalCard({
   goal,
+  goalColor,
   expanded,
   menuOpen,
   onCreateTodayTask,
@@ -175,6 +181,7 @@ function DdayGoalCard({
   onRequestDelete,
 }: {
   goal: DdayGoalResponse;
+  goalColor: string;
   expanded: boolean;
   menuOpen: boolean;
   onCreateTodayTask: () => void;
@@ -196,9 +203,12 @@ function DdayGoalCard({
           accessibilityLabel={`${goal.title}, ${dayLabel}, 목표일 ${formatDateLabel(goal.targetDate)}`}
           style={styles.goalCopy}
         >
-          <AppText numberOfLines={2} weight="semibold">
-            {goal.title}
-          </AppText>
+          <View style={styles.goalTitleRow}>
+            <View style={[styles.goalColorDot, { backgroundColor: goalColor }]} />
+            <AppText numberOfLines={2} style={styles.goalTitle} weight="semibold">
+              {goal.title}
+            </AppText>
+          </View>
           <AppText tone="secondary" variant="caption">
             {formatDateLabel(goal.targetDate, {
               year: 'numeric',
@@ -247,7 +257,7 @@ function DdayGoalCard({
             할 일 추가
           </Button>
           <Button
-            accessibilityLabel={`${goal.title} D-Day 삭제`}
+            accessibilityLabel={`${goal.title} 목표 삭제`}
             size="compact"
             variant="ghost"
             style={styles.goalMenuAction}
@@ -380,5 +390,18 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing[1],
     minWidth: 0,
+  },
+  goalTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing[2],
+  },
+  goalColorDot: {
+    borderRadius: radii.full,
+    height: 9,
+    width: 9,
+  },
+  goalTitle: {
+    flex: 1,
   },
 });

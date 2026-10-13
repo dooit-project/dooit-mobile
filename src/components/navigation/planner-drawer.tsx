@@ -65,6 +65,21 @@ type PlannerHeaderProps = {
   onMenuPress: () => void;
 };
 
+const motivationalLines = [
+  '천 리 길도 발밑에서 시작된다',
+  '작은 행동이 원하는 방향을 만든다',
+  '오늘의 한 번이 내일의 증거가 된다',
+  '조금이어도 다시 시작하면 된다',
+] as const;
+
+function getDailyMotivationalLine() {
+  const now = new Date();
+  const dayNumber = Math.floor(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86_400_000,
+  );
+  return motivationalLines[dayNumber % motivationalLines.length];
+}
+
 export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerHeaderProps>(
   function PlannerHeader({ onMenuPress }, ref) {
     const theme = useAppTheme();
@@ -97,6 +112,9 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
         </Pressable>
         <AppText variant="title" weight="heavy">
           dooit
+        </AppText>
+        <AppText numberOfLines={1} style={styles.motivation} tone="muted" variant="caption">
+          {getDailyMotivationalLine()}
         </AppText>
       </View>
     );
@@ -521,5 +539,9 @@ const styles = StyleSheet.create({
     height: sizes.touchTarget,
     justifyContent: 'center',
     width: sizes.touchTarget,
+  },
+  motivation: {
+    flex: 1,
+    marginLeft: spacing[1],
   },
 });
