@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Button, EmptyState, InlineNotice, SectionHeader } from '@/components/ui';
+import { AppText, Button, EmptyState, InlineNotice } from '@/components/ui';
 import { spacing, useAppTheme } from '@/theme';
+import { formatDateLabel } from '@/utils';
 
-import { TaskCard } from '../tasks/task-card';
+import { getRecurrenceLabel } from '../tasks/recurrence-presentation';
 import { useDdayGoalTasks } from './use-dday-goal-tasks';
 
 type DdayGoalTasksProps = {
@@ -47,25 +49,55 @@ export function DdayGoalTasks({ goalId, goalTitle }: DdayGoalTasksProps) {
   if (tasks.length === 0) {
     return (
       <EmptyState
-        title="연결된 할 일이 없어요"
-        description="할 일 상세에서 이 목표를 연결할 수 있어요."
+        title="연결된 항목이 없어요"
+        description="할 일이나 일정 상세에서 이 목표를 연결할 수 있어요."
       />
     );
   }
 
   return (
     <View style={styles.container}>
-      <SectionHeader count={tasks.length} title="연결된 할 일" />
       <View style={styles.taskList}>
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onOpen={() =>
-              router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } })
-            }
-          />
-        ))}
+        {tasks.map((task) => {
+          const recurrence = getRecurrenceLabel(task);
+          const date = task.targetDate ?? task.plannedDate ?? task.startAt?.slice(0, 10);
+          const subtitle =
+            recurrence ?? (date ? formatDateLabel(date, { month: 'long', day: 'numeric' }) : null);
+          return (
+            <Pressable
+              key={task.id}
+              accessibilityRole="button"
+              accessibilityLabel={`${task.title}${subtitle ? ', ' + subtitle : ''}, 상세 보기`}
+              onPress={() =>
+                router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } })
+              }
+              style={({ pressed }) => [
+                styles.taskRow,
+                { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name={
+                  recurrence
+                    ? 'repeat'
+                    : task.type === 'SCHEDULE'
+                      ? 'calendar-blank-outline'
+                      : 'file-document-outline'
+                }
+                size={22}
+                color={theme.colors.textSecondary}
+              />
+              <View style={styles.copy}>
+                <AppText>{task.title}</AppText>
+                {subtitle ? (
+                  <AppText variant="caption" tone="secondary">
+                    {subtitle}
+                  </AppText>
+                ) : null}
+              </View>
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
@@ -75,6 +107,15 @@ const styles = StyleSheet.create({
   container: {
     gap: spacing[2],
   },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    minHeight: 64,
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[1],
+  },
+  copy: { flex: 1, minWidth: 0, gap: spacing[1] },
   taskList: {
     gap: spacing[1],
   },

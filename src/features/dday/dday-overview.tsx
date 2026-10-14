@@ -1,7 +1,7 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import {
   AppText,
@@ -12,14 +12,10 @@ import {
   InlineNotice,
   PageHeader,
   Screen,
-  SectionHeader,
 } from '@/components/ui';
-import { ContextualFeatureTip } from '@/features/onboarding';
-import { radii, spacing, useAppTheme } from '@/theme';
+import { spacing, useAppTheme } from '@/theme';
 import type { DdayGoalResponse } from '@/types';
 import { formatDateLabel } from '@/utils';
-
-import { getDdayLabel } from './dday-label';
 import { DdayCreateForm } from './dday-create-form';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors';
 import { DdayGoalTasks } from './dday-goal-tasks';
@@ -30,74 +26,49 @@ import { useDdayGoals } from './use-dday-goals';
 export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
   const theme = useAppTheme();
-  const [isCreating, setIsCreating] = useState(false);
-  const [confirmingDeleteGoalId, setConfirmingDeleteGoalId] = useState<number | null>(null);
-  const [creatingTaskGoalId, setCreatingTaskGoalId] = useState<number | null>(null);
-  const [expandedGoalIds, setExpandedGoalIds] = useState<number[]>([]);
-  const [menuGoalId, setMenuGoalId] = useState<number | null>(null);
   const query = useDdayGoals();
-  const goals = [...(query.data ?? [])].sort((left, right) =>
-    left.targetDate.localeCompare(right.targetDate),
-  );
-  const goalColors = useDdayGoalColors(goals.map((goal) => goal.id));
+  const goals = [...(query.data ?? [])].sort((a, b) => a.targetDate.localeCompare(b.targetDate));
+  const colors = useDdayGoalColors(goals.map((item) => item.id));
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const goal = goals.find((item) => item.id === selectedId) ?? goals[0];
+  const selectGoal = (id: number) => {
+    setSelectedId(id);
+    setShowAll(false);
+    setCreating(false);
+    setMenuOpen(false);
+    setAdding(false);
+    setDeleting(false);
+  };
 
   return (
-    <Screen scroll contentContainerStyle={styles.screen}>
-      <PageHeader
-        title={embedded ? '계획' : '목표'}
-        leading={
-          embedded ? undefined : (
-            <IconButton
-              accessibilityLabel="더보기 화면으로 돌아가기"
-              onPress={router.back}
-              style={styles.headerButton}
-            >
-              <SymbolView
-                name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-                size={20}
-                tintColor={theme.colors.text}
-              />
+    <Screen
+      scroll
+      safeAreaEdges={embedded ? ['left', 'right'] : undefined}
+      contentContainerStyle={styles.screen}
+    >
+      {!embedded ? (
+        <PageHeader
+          title="목표"
+          leading={
+            <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
+              <MaterialCommunityIcons name="arrow-left" size={22} color={theme.colors.text} />
             </IconButton>
-          )
-        }
-        action={
-          isCreating ? undefined : (
-            <Button
-              accessibilityLabel="새 목표 만들기"
-              size="compact"
-              variant="secondary"
-              onPress={() => setIsCreating(true)}
-            >
-              새 목표
-            </Button>
-          )
-        }
-      />
-
-      <ContextualFeatureTip
-        message="원하는 방향을 목표로 만들고 오늘 반복할 일을 연결해요."
-        tipIds={['dday.linkedTasks']}
-        title="목표를 오늘의 행동으로 이어가기"
-      />
-
-      {isCreating ? (
-        <DdayCreateForm
-          onCancel={() => setIsCreating(false)}
-          onCreated={() => setIsCreating(false)}
+          }
         />
       ) : null}
-
       {query.isPending ? (
-        <View accessibilityLabel="D-Day 목표를 불러오는 중" style={styles.stateRow}>
+        <View style={styles.stateRow} accessibilityLabel="목표를 불러오는 중">
           <ActivityIndicator color={theme.colors.primary} />
-          <AppText tone="secondary" variant="label">
-            목표를 불러오고 있어요.
-          </AppText>
         </View>
       ) : query.error ? (
         <InlineNotice
-          message={query.error.message}
           title="목표를 불러오지 못했어요"
+          message={query.error.message}
           tone="danger"
           action={
             <Button size="compact" variant="ghost" onPress={() => void query.refetch()}>
@@ -105,169 +76,207 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
             </Button>
           }
         />
-      ) : goals.length === 0 ? (
-        <EmptyState
-          title="아직 목표가 없어요"
-          description="상단의 추가 버튼으로 첫 목표를 만들어 보세요."
-        />
       ) : (
-        <View style={styles.goalList}>
-          <SectionHeader count={goals.length} title="나의 목표" />
-          {goals.map((goal) => (
-            <View key={goal.id} style={styles.goalItem}>
-              <DdayGoalCard
-                expanded={expandedGoalIds.includes(goal.id)}
-                goal={goal}
-                goalColor={goalColors[String(goal.id)] ?? getDdayGoalFallbackColor(goal.id)}
-                menuOpen={menuGoalId === goal.id}
-                onCreateTodayTask={() => {
-                  setMenuGoalId(null);
-                  setCreatingTaskGoalId(goal.id);
+        <>
+          {goals.length ? (
+            <View style={[styles.navigation, { borderBottomColor: theme.colors.border }]}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabs}>
+                {goals.map((item) => (
+                  <Pressable
+                    key={item.id}
+                    accessibilityRole="tab"
+                    accessibilityLabel={item.title}
+                    accessibilityState={{ selected: item.id === goal?.id }}
+                    onPress={() => selectGoal(item.id)}
+                    style={({ pressed }) => [
+                      styles.tab,
+                      {
+                        borderBottomColor:
+                          item.id === goal?.id ? theme.colors.primary : 'transparent',
+                        backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent',
+                      },
+                    ]}
+                  >
+                    <View
+                      style={[
+                        styles.dot,
+                        {
+                          backgroundColor:
+                            colors[String(item.id)] ?? getDdayGoalFallbackColor(item.id),
+                        },
+                      ]}
+                    />
+                    <AppText
+                      numberOfLines={1}
+                      style={styles.tabTitle}
+                      weight={item.id === goal?.id ? 'bold' : 'regular'}
+                    >
+                      {item.title}
+                    </AppText>
+                  </Pressable>
+                ))}
+              </ScrollView>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="전체 목표"
+                accessibilityState={{ expanded: showAll }}
+                onPress={() => {
+                  setShowAll(!showAll);
+                  setMenuOpen(false);
                 }}
-                onRequestDelete={() => {
-                  setMenuGoalId(null);
-                  setConfirmingDeleteGoalId(goal.id);
-                }}
-                onToggleMenu={() =>
-                  setMenuGoalId((current) => (current === goal.id ? null : goal.id))
-                }
-                onToggleTasks={() =>
-                  setExpandedGoalIds((current) =>
-                    current.includes(goal.id)
-                      ? current.filter((goalId) => goalId !== goal.id)
-                      : [...current, goal.id],
-                  )
-                }
-              />
-              {expandedGoalIds.includes(goal.id) ? (
-                <DdayGoalTasks goalId={goal.id} goalTitle={goal.title} />
+                style={({ pressed }) => [
+                  styles.allGoals,
+                  { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="view-grid-outline"
+                  size={20}
+                  color={theme.colors.textSecondary}
+                />
+                <AppText variant="label" tone="secondary">
+                  전체 목표
+                </AppText>
+              </Pressable>
+            </View>
+          ) : null}
+          {showAll ? (
+            <View style={styles.selector}>
+              {goals.map((item) => (
+                <Pressable
+                  key={item.id}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.title}
+                  accessibilityState={{ selected: item.id === goal?.id }}
+                  onPress={() => selectGoal(item.id)}
+                  style={({ pressed }) => [
+                    styles.goalOption,
+                    { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.dot,
+                      {
+                        backgroundColor:
+                          colors[String(item.id)] ?? getDdayGoalFallbackColor(item.id),
+                      },
+                    ]}
+                  />
+                  <AppText style={styles.optionTitle}>{item.title}</AppText>
+                  {item.id === goal?.id ? (
+                    <MaterialCommunityIcons name="check" size={20} color={theme.colors.primary} />
+                  ) : null}
+                </Pressable>
+              ))}
+              <Button size="compact" variant="ghost" onPress={() => setCreating(true)}>
+                새 목표 만들기
+              </Button>
+            </View>
+          ) : null}
+          {creating ? (
+            <DdayCreateForm
+              onCancel={() => setCreating(false)}
+              onCreated={() => setCreating(false)}
+            />
+          ) : null}
+          {goal ? (
+            <View key={goal.id} style={styles.goal}>
+              <View style={styles.goalHeader}>
+                <View style={styles.goalCopy}>
+                  <AppText weight="bold" style={styles.goalTitle}>
+                    {goal.title}
+                  </AppText>
+                  <AppText variant="label" tone="secondary">
+                    목표일{' '}
+                    {formatDateLabel(goal.targetDate, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </AppText>
+                </View>
+                <IconButton
+                  accessibilityLabel={`${goal.title} 관리 메뉴`}
+                  expanded={menuOpen}
+                  style={styles.headerButton}
+                  onPress={() => setMenuOpen(!menuOpen)}
+                >
+                  <MaterialCommunityIcons
+                    name="dots-horizontal"
+                    size={24}
+                    color={theme.colors.textSecondary}
+                  />
+                </IconButton>
+              </View>
+              {menuOpen ? (
+                <View style={styles.menu}>
+                  <Button
+                    size="compact"
+                    variant="ghost"
+                    onPress={() => {
+                      setDeleting(true);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    목표 삭제
+                  </Button>
+                  <Button size="compact" variant="ghost" onPress={() => setMenuOpen(false)}>
+                    닫기
+                  </Button>
+                </View>
               ) : null}
-              {creatingTaskGoalId === goal.id ? (
-                <DdayTodayTaskForm
-                  goalId={goal.id}
-                  goalTitle={goal.title}
-                  onCancel={() => setCreatingTaskGoalId(null)}
-                  onCreated={() => {
-                    setCreatingTaskGoalId(null);
-                    setExpandedGoalIds((current) =>
-                      current.includes(goal.id) ? current : [...current, goal.id],
-                    );
+              {deleting ? (
+                <DdayDeleteConfirmation
+                  goal={goal}
+                  onCancel={() => setDeleting(false)}
+                  onDeleted={() => {
+                    setDeleting(false);
+                    setSelectedId(null);
                   }}
                 />
               ) : null}
-              {confirmingDeleteGoalId === goal.id ? (
-                <DdayDeleteConfirmation
-                  goal={goal}
-                  onCancel={() => setConfirmingDeleteGoalId(null)}
-                  onDeleted={() => setConfirmingDeleteGoalId(null)}
+              <DdayGoalTasks goalId={goal.id} goalTitle={goal.title} />
+              {adding ? (
+                <DdayTodayTaskForm
+                  goalId={goal.id}
+                  goalTitle={goal.title}
+                  onCancel={() => setAdding(false)}
+                  onCreated={() => setAdding(false)}
                 />
-              ) : null}
+              ) : (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${goal.title} 목표에 오늘 할 일 추가`}
+                  onPress={() => setAdding(true)}
+                  style={({ pressed }) => [
+                    styles.addItem,
+                    { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="plus"
+                    size={22}
+                    color={theme.colors.textSecondary}
+                  />
+                  <AppText tone="secondary" weight="semibold">
+                    항목 추가
+                  </AppText>
+                </Pressable>
+              )}
             </View>
-          ))}
-        </View>
+          ) : (
+            <View style={styles.selector}>
+              <EmptyState
+                title="원하는 방향부터 정해볼까요?"
+                description="목표를 만들고, 꾸준히 할 일을 연결해 보세요."
+              />
+              {!creating ? <Button onPress={() => setCreating(true)}>첫 목표 만들기</Button> : null}
+            </View>
+          )}
+        </>
       )}
     </Screen>
-  );
-}
-
-function DdayGoalCard({
-  goal,
-  goalColor,
-  expanded,
-  menuOpen,
-  onCreateTodayTask,
-  onToggleMenu,
-  onToggleTasks,
-  onRequestDelete,
-}: {
-  goal: DdayGoalResponse;
-  goalColor: string;
-  expanded: boolean;
-  menuOpen: boolean;
-  onCreateTodayTask: () => void;
-  onToggleMenu: () => void;
-  onToggleTasks: () => void;
-  onRequestDelete: () => void;
-}) {
-  const theme = useAppTheme();
-  const dayLabel = getDdayLabel(goal.daysLeft);
-  const isToday = goal.daysLeft === 0;
-  const isPast = goal.daysLeft < 0;
-  const tone = isToday ? 'warning' : isPast ? 'secondary' : 'primary';
-
-  return (
-    <Card padded={false} style={styles.goalCard}>
-      <View style={styles.goalContent}>
-        <View
-          accessible
-          accessibilityLabel={`${goal.title}, ${dayLabel}, 목표일 ${formatDateLabel(goal.targetDate)}`}
-          style={styles.goalCopy}
-        >
-          <View style={styles.goalTitleRow}>
-            <View style={[styles.goalColorDot, { backgroundColor: goalColor }]} />
-            <AppText numberOfLines={2} style={styles.goalTitle} weight="semibold">
-              {goal.title}
-            </AppText>
-          </View>
-          <AppText tone="secondary" variant="caption">
-            {formatDateLabel(goal.targetDate, {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              weekday: 'short',
-            })}
-          </AppText>
-        </View>
-        <View style={styles.goalTrailing}>
-          <AppText tone={tone} variant="bodyLarge" weight="heavy">
-            {dayLabel}
-          </AppText>
-          <IconButton
-            accessibilityHint="Today 할 일 추가와 목표 삭제 행동을 표시합니다."
-            accessibilityLabel={`${goal.title} 목표 메뉴 ${menuOpen ? '닫기' : '열기'}`}
-            expanded={menuOpen}
-            onPress={onToggleMenu}
-          >
-            <AppText tone="secondary" weight="bold">
-              ⋯
-            </AppText>
-          </IconButton>
-        </View>
-      </View>
-      <View style={[styles.goalFooter, { borderTopColor: theme.colors.border }]}>
-        <Button
-          accessibilityLabel={`${goal.title} 연결된 할 일 ${expanded ? '접기' : '펼치기'}`}
-          accessibilityState={{ expanded }}
-          size="compact"
-          variant="ghost"
-          onPress={onToggleTasks}
-        >
-          {expanded ? '할 일 접기' : '할 일 보기'}
-        </Button>
-      </View>
-      {menuOpen ? (
-        <View style={[styles.goalMenu, { borderTopColor: theme.colors.border }]}>
-          <Button
-            accessibilityLabel={`${goal.title} 목표의 Today 할 일 만들기`}
-            size="compact"
-            variant="ghost"
-            style={styles.goalMenuAction}
-            onPress={onCreateTodayTask}
-          >
-            할 일 추가
-          </Button>
-          <Button
-            accessibilityLabel={`${goal.title} 목표 삭제`}
-            size="compact"
-            variant="ghost"
-            style={styles.goalMenuAction}
-            onPress={onRequestDelete}
-          >
-            삭제
-          </Button>
-        </View>
-      ) : null}
-    </Card>
   );
 }
 
@@ -324,84 +333,55 @@ function DdayDeleteConfirmation({
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    gap: spacing[4],
-    paddingTop: spacing[4],
-  },
-  headerButton: {
-    backgroundColor: 'transparent',
-  },
-  stateRow: {
-    alignItems: 'center',
+  screen: { gap: spacing[4], paddingTop: 0 },
+  navigation: {
     flexDirection: 'row',
-    gap: spacing[3],
+    alignItems: 'stretch',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  tabs: { flex: 1, minWidth: 0 },
+  tab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    minHeight: 48,
+    paddingHorizontal: spacing[2],
+    borderBottomWidth: 2,
+  },
+  tabTitle: { maxWidth: 160 },
+  dot: { width: 9, height: 9, borderRadius: 5 },
+  allGoals: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 64,
-  },
-  errorCopy: {
     gap: spacing[1],
-  },
-  deleteCard: {
-    gap: spacing[3],
-  },
-  deleteActions: {
-    gap: spacing[2],
-  },
-  goalList: {
-    gap: spacing[2],
-  },
-  goalItem: {
-    gap: spacing[2],
-  },
-  goalCard: {
-    borderRadius: radii.md,
-    overflow: 'hidden',
-  },
-  goalContent: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing[3],
-    minHeight: 60,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
-  },
-  goalTrailing: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  goalFooter: {
-    alignItems: 'flex-start',
-    borderTopWidth: StyleSheet.hairlineWidth,
+    minHeight: 48,
     paddingHorizontal: spacing[2],
   },
-  goalMenu: {
-    borderTopWidth: StyleSheet.hairlineWidth,
+  selector: { gap: spacing[3] },
+  goalOption: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 48 },
+  optionTitle: { flex: 1 },
+  goal: { gap: spacing[3], paddingTop: 4 },
+  goalHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[2] },
+  goalCopy: { flex: 1, minWidth: 0, gap: spacing[1] },
+  goalTitle: { fontSize: 22, lineHeight: 30 },
+  headerButton: { backgroundColor: 'transparent' },
+  menu: { alignItems: 'flex-end', gap: spacing[1] },
+  addItem: {
     flexDirection: 'row',
-    gap: spacing[1],
-    justifyContent: 'flex-end',
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
-  },
-  goalMenuAction: {
-    minHeight: 36,
-  },
-  goalCopy: {
-    flex: 1,
-    gap: spacing[1],
-    minWidth: 0,
-  },
-  goalTitleRow: {
     alignItems: 'center',
+    gap: spacing[3],
+    minHeight: 44,
+    paddingHorizontal: spacing[1],
+  },
+  stateRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing[2],
+    minHeight: 72,
   },
-  goalColorDot: {
-    borderRadius: radii.full,
-    height: 9,
-    width: 9,
-  },
-  goalTitle: {
-    flex: 1,
-  },
+  errorCopy: { gap: spacing[1] },
+  deleteCard: { gap: spacing[3] },
+  deleteActions: { gap: spacing[2] },
 });

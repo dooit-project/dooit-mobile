@@ -40,7 +40,7 @@ type WebTabIconProps = {
 };
 
 function WebTabIcon({ color, name, size }: WebTabIconProps) {
-  if (name === 'checklist' || name === 'history') {
+  if (name === 'checklist' || name === 'history' || name === 'format-list-bulleted') {
     return <MaterialCommunityIcons color={color as string} name={name} size={size} />;
   }
 

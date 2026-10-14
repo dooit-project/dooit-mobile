@@ -1,0 +1,11 @@
+Use case: ui-mockup, edit selected final Dooit mobile plan screen.
+Input image is the edit target and established design language. Produce ONE revised normal-state app screen, not alternatives or a comparison board. Target logical viewport 390x844, same portrait ratio as reference, sharp high-resolution Korean UI, white background.
+Create realistic production-quality UI with clear hierarchy, intentional spacing. Preserve lowercase blue dooit, hamburger, small phrase "작게 시작해도 괜찮아요"; horizontal goal tabs with blue dot active "토익 900점", sage dot "건강한 몸", and fixed grid icon "전체 목표"; active underline. Preserve bottom navigation four labels "오늘", "달력", "계획", "돌아보기". No big page heading 계획.
+Requested precise changes:
+1. REMOVE the entire separate "순서 편집" row and its icon and collapse its vacated space. Keep only the ellipsis beside selected goal title "토익 900점 받기". Reordering now belongs inside that CLOSED ellipsis menu; don't show menu or handles or instructional callouts.
+2. Goal subtitle remains "목표일 2026년 11월 30일". Tighten excess space between tabs, goal title, and list. Goal title 22 logical px, subtitle 14. First row naturally follows goal header with ~24px gap.
+3. List icons should be consistent fine-stroke 20-22 logical px, smaller than reference, with ~12px gap to titles. Rows are tappable but no chevrons, no checkboxes. Body titles ~16px, secondary text ~13px. Row heights 64-68px for two-line entries. No horizontal row dividers, borders, shadows or cards. Spacing/alignment delineates rows.
+Rows exactly: calendar icon "토익 시험 접수" / "10월 20일"; repeat icon "영단어 30개 외우기" / "매일"; repeat icon "토익 문제 5개 풀기" / "토 · 일"; document icon "교재 구매" with NO subtitle "날짜 미정", vertically balanced single-line row.
+4. Keep one inline modest "+ 항목 추가" directly below list, not a floating action button.
+5. Replace bottom selected 계획 checkbox icon with a neat outline structured-list icon, three horizontal lines with small bullets, blue selected. Other icons remain sun, calendar, clock.
+No status bar, bezel, device mockup, browser, progress %, streaks, extra effort language, standalone date or today title. No new content. Current anchor date 2026-10-15. Preserve spacious calm style while making top content compact. Show only default state; empty space below short list is intentional.

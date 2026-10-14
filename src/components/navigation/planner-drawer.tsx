@@ -93,6 +93,7 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
             backgroundColor: theme.colors.background,
             borderBottomColor: theme.colors.border,
             paddingTop: insets.top,
+            minHeight: 52 + insets.top,
           },
         ]}
       >
@@ -530,7 +531,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: spacing[2],
-    minHeight: 56,
+    minHeight: 52,
     paddingHorizontal: spacing[3],
   },
   headerButton: {

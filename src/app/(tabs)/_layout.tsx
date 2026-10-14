@@ -105,9 +105,9 @@ export default function TabLayout() {
                 focused={focused}
                 size={size}
                 name={{
-                  ios: focused ? 'checklist.checked' : 'checklist',
-                  android: 'checklist',
-                  web: 'checklist',
+                  ios: 'list.bullet',
+                  android: 'format_list_bulleted',
+                  web: 'format-list-bulleted',
                 }}
               />
             ),
