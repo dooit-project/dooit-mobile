@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, Card, InlineNotice } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 import { ddayGoalLimits } from '@/types';
 import type { DdayGoalRequest, DdayGoalResponse } from '@/types';
+import { formatDateLabel, isLocalDateString, toApiLocalDate } from '@/utils';
+import { shiftMonth } from '@/features/calendar/calendar-date';
 
 import { useCreateDdayGoal } from './use-create-dday-goal';
-import { type DdayGoalFormValues, validateDdayGoal } from './dday-validation';
+import {
+  type DdayGoalFormValues,
+  formatDdayTargetDateInput,
+  validateDdayGoal,
+} from './dday-validation';
 import { ddayGoalColors, setDdayGoalColor, type DdayGoalColor } from './dday-goal-colors';
 
 type DdayCreateFormProps = {
@@ -29,6 +35,11 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
   const [errors, setErrors] = useState<ReturnType<typeof validateDdayGoal>>({});
   const [focusedField, setFocusedField] = useState<DdayFormField | null>(null);
   const [selectedColor, setSelectedColor] = useState<DdayGoalColor>(ddayGoalColors[0].value);
+  const [isFinalizing, setIsFinalizing] = useState(false);
+  const submitting = useRef(false);
+  const isBusy = createGoal.isPending || isFinalizing;
+  const today = toApiLocalDate();
+  const quickDates = [1, 3, 6].map((months) => ({ months, date: shiftMonth(today, months) }));
 
   const updateField = (field: keyof DdayGoalFormValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -37,6 +48,7 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
   };
 
   const handleSubmit = () => {
+    if (submitting.current || isBusy) return;
     const nextErrors = validateDdayGoal(values);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -49,8 +61,13 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
       targetDate: values.targetDate.trim() as DdayGoalRequest['targetDate'],
     };
 
+    submitting.current = true;
     createGoal.mutate(request, {
+      onError: () => {
+        submitting.current = false;
+      },
       onSuccess: async (createdGoal) => {
+        setIsFinalizing(true);
         try {
           await setDdayGoalColor(createdGoal.id, selectedColor);
         } catch {
@@ -84,7 +101,7 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
         </View>
         <TextInput
           accessibilityLabel="목표 이름"
-          editable={!createGoal.isPending}
+          editable={!isBusy}
           maxLength={ddayGoalLimits.title}
           onBlur={() => setFocusedField(null)}
           onChangeText={(value) => updateField('title', value)}
@@ -125,7 +142,8 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
               <Pressable
                 accessibilityLabel={`${color.label} 색상`}
                 accessibilityRole="radio"
-                accessibilityState={{ checked: selected }}
+                accessibilityState={{ checked: selected, disabled: isBusy }}
+                disabled={isBusy}
                 key={color.id}
                 onPress={() => setSelectedColor(color.value)}
                 style={({ pressed }) => [
@@ -150,15 +168,36 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
         <AppText variant="label" weight="bold">
           목표 날짜
         </AppText>
+        <View style={styles.quickDates}>
+          {quickDates.map(({ months, date }) =>
+            date ? (
+              <Button
+                key={months}
+                size="compact"
+                variant={values.targetDate === date ? 'secondary' : 'ghost'}
+                disabled={isBusy}
+                accessibilityState={{ selected: values.targetDate === date }}
+                accessibilityLabel={`${months}개월 후, ${formatDateLabel(date, { year: 'numeric', month: 'long', day: 'numeric' })}`}
+                style={styles.quickDateButton}
+                onPress={() => updateField('targetDate', date)}
+              >
+                {months}개월 후
+              </Button>
+            ) : null,
+          )}
+        </View>
         <TextInput
           accessibilityLabel="목표 날짜"
+          accessibilityHint="연도 네 자리, 월 두 자리, 일 두 자리 순서로 입력하세요. 구분선은 자동으로 들어가요."
           autoCapitalize="none"
-          editable={!createGoal.isPending}
+          keyboardType="number-pad"
+          inputMode="numeric"
+          editable={!isBusy}
           maxLength={10}
           onBlur={() => setFocusedField(null)}
-          onChangeText={(value) => updateField('targetDate', value)}
+          onChangeText={(value) => updateField('targetDate', formatDdayTargetDateInput(value))}
           onFocus={() => setFocusedField('targetDate')}
-          placeholder="YYYY-MM-DD"
+          placeholder="예: 20261130"
           placeholderTextColor={theme.colors.textMuted}
           style={[
             styles.input,
@@ -179,9 +218,18 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
           <AppText tone="danger" variant="caption">
             {errors.targetDate}
           </AppText>
+        ) : isLocalDateString(values.targetDate) ? (
+          <AppText accessibilityLiveRegion="polite" tone="secondary" variant="caption">
+            {formatDateLabel(values.targetDate, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              weekday: 'long',
+            })}
+          </AppText>
         ) : (
           <AppText tone="secondary" variant="caption">
-            예: 2026-12-31
+            연도·월·일을 숫자 8자리로 입력해 주세요.
           </AppText>
         )}
       </View>
@@ -189,10 +237,10 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
       {createGoal.error ? <InlineNotice message={createGoal.error.message} tone="danger" /> : null}
 
       <View style={styles.actions}>
-        <Button disabled={createGoal.isPending} fullWidth variant="secondary" onPress={onCancel}>
+        <Button disabled={isBusy} fullWidth variant="secondary" onPress={onCancel}>
           취소
         </Button>
-        <Button fullWidth loading={createGoal.isPending} onPress={handleSubmit}>
+        <Button fullWidth loading={isBusy} onPress={handleSubmit}>
           목표 만들기
         </Button>
       </View>
@@ -226,6 +274,8 @@ const styles = StyleSheet.create({
   actions: {
     gap: spacing[2],
   },
+  quickDates: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+  quickDateButton: { flexGrow: 1, minWidth: 88 },
   colorOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
