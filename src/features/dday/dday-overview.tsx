@@ -28,6 +28,8 @@ import { formatDateLabel } from '@/utils';
 import { DdayCreateForm } from './dday-create-form';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors';
 import { DdayGoalTasks } from './dday-goal-tasks';
+import { DdayGoalOrderList } from './dday-goal-order-list';
+import { applyDdayGoalOrder, useDdayGoalOrder } from './use-dday-goal-order';
 import { useDeleteDdayGoal } from './use-delete-dday-goal';
 import { useDdayGoals } from './use-dday-goals';
 import { useDdayPlanSelection } from './use-dday-plan-selection';
@@ -60,12 +62,16 @@ function DdayPlanOverview({
   selectionScope,
 }: {
   embedded: boolean;
-  selectionScope: string | null;
+  selectionScope: string;
 }) {
   const router = useRouter();
   const theme = useAppTheme();
   const query = useDdayGoals();
-  const goals = [...(query.data ?? [])].sort((a, b) => a.targetDate.localeCompare(b.targetDate));
+  const goalOrder = useDdayGoalOrder(selectionScope);
+  const goals = applyDdayGoalOrder(
+    [...(query.data ?? [])].sort((a, b) => a.targetDate.localeCompare(b.targetDate)),
+    goalOrder.ids,
+  );
   const colors = useDdayGoalColors(goals.map((item) => item.id));
   const {
     selectedId,
@@ -79,6 +85,13 @@ function DdayPlanOverview({
   const [creating, setCreating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [draftOrder, setDraftOrder] = useState<number[]>([]);
+  const [orderHistory, setOrderHistory] = useState<number[][]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const draftGoals = applyDdayGoalOrder(goals, draftOrder);
   const goal = goals.find((item) => item.id === selectedId) ?? goals[0];
   const currentGoalId = goal?.id;
   const searchTerm = search.trim().normalize('NFKC').toLocaleLowerCase();
@@ -99,12 +112,51 @@ function DdayPlanOverview({
     setDeleting(false);
     setSearch('');
   };
+  const startOrdering = () => {
+    setDraftOrder(goals.map((item) => item.id));
+    setOrderHistory([]);
+    setOrderError(null);
+    setSearch('');
+    setMenuOpen(false);
+    setIsOrdering(true);
+  };
+  const moveGoal = (from: number, to: number) => {
+    if (
+      isSavingOrder ||
+      from === to ||
+      from < 0 ||
+      to < 0 ||
+      from >= draftGoals.length ||
+      to >= draftGoals.length
+    )
+      return;
+    const current = draftGoals.map((item) => item.id);
+    const next = [...current];
+    const [id] = next.splice(from, 1);
+    next.splice(to, 0, id);
+    setOrderHistory((history) => [...history, current]);
+    setDraftOrder(next);
+  };
+  const saveOrder = async () => {
+    setIsSavingOrder(true);
+    setOrderError(null);
+    try {
+      await goalOrder.save(draftGoals.map((item) => item.id));
+      setIsOrdering(false);
+      setOrderHistory([]);
+    } catch {
+      setOrderError('순서를 저장하지 못했어요. 다시 시도해 주세요.');
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
 
   return (
     <Screen
       scroll
       safeAreaEdges={embedded ? ['left', 'right'] : undefined}
       contentContainerStyle={styles.screen}
+      scrollViewProps={{ scrollEnabled: !isDragging }}
     >
       {!embedded ? (
         <PageHeader
@@ -116,7 +168,7 @@ function DdayPlanOverview({
           }
         />
       ) : null}
-      {query.isPending || isRestoring ? (
+      {query.isPending || isRestoring || goalOrder.isRestoring ? (
         <View style={styles.stateRow} accessibilityLabel="목표를 불러오는 중">
           <ActivityIndicator color={theme.colors.primary} />
         </View>
@@ -148,7 +200,8 @@ function DdayPlanOverview({
                     key={item.id}
                     accessibilityRole="tab"
                     accessibilityLabel={item.title}
-                    accessibilityState={{ selected: item.id === goal?.id }}
+                    accessibilityState={{ selected: item.id === goal?.id, disabled: isOrdering }}
+                    disabled={isOrdering}
                     onPress={() => selectGoal(item.id)}
                     onLayout={(event) => {
                       tabPositions.current[item.id] = event.nativeEvent.layout.x;
@@ -185,7 +238,8 @@ function DdayPlanOverview({
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="전체 목표"
-                accessibilityState={{ expanded: showAll }}
+                accessibilityState={{ expanded: showAll, disabled: isOrdering }}
+                disabled={isOrdering}
                 onPress={() => {
                   setShowAll(!showAll);
                   setMenuOpen(false);
@@ -207,7 +261,57 @@ function DdayPlanOverview({
               </Pressable>
             </View>
           ) : null}
-          {showAll ? (
+          {showAll && isOrdering ? (
+            <View style={styles.selector}>
+              <AppText weight="semibold">목표 순서 바꾸기</AppText>
+              <AppText tone="secondary" variant="caption">
+                손잡이를 끌거나 화살표로 옮겨보세요. 현재 순서는 이 기기에 저장돼요.
+              </AppText>
+              <DdayGoalOrderList
+                items={draftGoals.map((item) => ({
+                  id: item.id,
+                  title: item.title,
+                  color: colors[String(item.id)] ?? getDdayGoalFallbackColor(item.id),
+                }))}
+                disabled={isSavingOrder}
+                onMove={moveGoal}
+                onDragging={setIsDragging}
+              />
+              {orderError ? <InlineNotice message={orderError} tone="danger" /> : null}
+              <View style={styles.orderActions}>
+                <Button
+                  size="compact"
+                  variant="ghost"
+                  disabled={isSavingOrder || isDragging}
+                  onPress={() => {
+                    setIsOrdering(false);
+                    setOrderError(null);
+                  }}
+                >
+                  취소
+                </Button>
+                <Button
+                  size="compact"
+                  variant="ghost"
+                  disabled={isSavingOrder || isDragging || orderHistory.length === 0}
+                  onPress={() => {
+                    setDraftOrder(orderHistory[orderHistory.length - 1]);
+                    setOrderHistory((history) => history.slice(0, -1));
+                  }}
+                >
+                  되돌리기
+                </Button>
+                <Button
+                  size="compact"
+                  loading={isSavingOrder}
+                  disabled={isDragging}
+                  onPress={() => void saveOrder()}
+                >
+                  완료
+                </Button>
+              </View>
+            </View>
+          ) : showAll ? (
             <View style={styles.selector}>
               <View style={[styles.searchField, { borderColor: theme.colors.border }]}>
                 <MaterialCommunityIcons
@@ -281,6 +385,11 @@ function DdayPlanOverview({
               >
                 새 목표 만들기
               </Button>
+              {goals.length > 1 ? (
+                <Button size="compact" variant="ghost" onPress={startOrdering}>
+                  목표 순서 바꾸기
+                </Button>
+              ) : null}
             </View>
           ) : null}
           {creating ? (
@@ -289,7 +398,7 @@ function DdayPlanOverview({
               onCreated={(createdGoal) => selectGoal(createdGoal.id)}
             />
           ) : null}
-          {goal && !creating ? (
+          {goal && !creating && !isOrdering ? (
             <View key={goal.id} style={styles.goal}>
               <View style={styles.goalHeader}>
                 <View style={styles.goalCopy}>
@@ -363,7 +472,7 @@ function DdayPlanOverview({
                 </AppText>
               </Pressable>
             </View>
-          ) : !creating ? (
+          ) : !creating && !isOrdering ? (
             <View style={styles.selector}>
               <EmptyState
                 title="원하는 방향부터 정해볼까요?"
@@ -457,6 +566,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[2],
   },
   selector: { gap: spacing[3] },
+  orderActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: spacing[2],
+    flexWrap: 'wrap',
+  },
   searchField: {
     flexDirection: 'row',
     alignItems: 'center',
