@@ -4,9 +4,10 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Button, EmptyState, InlineNotice } from '@/components/ui';
 import { spacing, useAppTheme } from '@/theme';
-import { formatDateLabel } from '@/utils';
+import { formatDateLabel, toApiLocalDate } from '@/utils';
 
 import { getRecurrenceLabel } from '../tasks/recurrence-presentation';
+import { getDdayOccurrenceDate, getDdayPlanItems } from './dday-plan-items';
 import { useDdayGoalTasks } from './use-dday-goal-tasks';
 
 type DdayGoalTasksProps = {
@@ -19,6 +20,7 @@ export function DdayGoalTasks({ goalId, goalTitle }: DdayGoalTasksProps) {
   const theme = useAppTheme();
   const query = useDdayGoalTasks(goalId);
   const tasks = query.data ?? [];
+  const items = getDdayPlanItems(tasks, toApiLocalDate());
 
   if (query.isPending) {
     return (
@@ -58,16 +60,38 @@ export function DdayGoalTasks({ goalId, goalTitle }: DdayGoalTasksProps) {
   return (
     <View style={styles.container}>
       <View style={styles.taskList}>
-        {tasks.map((task) => {
-          const recurrence = getRecurrenceLabel(task);
-          const date = task.targetDate ?? task.plannedDate ?? task.startAt?.slice(0, 10);
-          const subtitle =
-            recurrence ?? (date ? formatDateLabel(date, { month: 'long', day: 'numeric' }) : null);
+        {items.map(({ key, task, recurring, onlyCompleted }) => {
+          const recurrence = getRecurrenceLabel(task) ?? (recurring ? '반복' : null);
+          const date = getDdayOccurrenceDate(task);
+          const dateLabel = date ? formatDateLabel(date, { month: 'long', day: 'numeric' }) : null;
+          const exceptionLabel = task.recurrenceException
+            ? task.recurrenceException === 'MOVED'
+              ? '이동됨'
+              : task.recurrenceException === 'SKIPPED'
+                ? '건너뜀'
+                : '개별 수정'
+            : null;
+          const subtitle = (
+            exceptionLabel
+              ? [
+                  dateLabel,
+                  exceptionLabel,
+                  onlyCompleted && task.recurrenceException !== 'SKIPPED' ? '완료' : null,
+                ]
+              : [recurrence ?? dateLabel, onlyCompleted ? (recurring ? '완료 기록' : '완료') : null]
+          )
+            .filter(Boolean)
+            .join(' · ');
           return (
             <Pressable
-              key={task.id}
+              key={key}
               accessibilityRole="button"
               accessibilityLabel={`${task.title}${subtitle ? ', ' + subtitle : ''}, 상세 보기`}
+              accessibilityHint={
+                recurring
+                  ? '연결된 반복 회차의 상세를 엽니다. 수정할 때 적용 범위를 선택할 수 있어요.'
+                  : undefined
+              }
               onPress={() =>
                 router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } })
               }
@@ -78,7 +102,7 @@ export function DdayGoalTasks({ goalId, goalTitle }: DdayGoalTasksProps) {
             >
               <MaterialCommunityIcons
                 name={
-                  recurrence
+                  recurring
                     ? 'repeat'
                     : task.type === 'SCHEDULE'
                       ? 'calendar-blank-outline'
