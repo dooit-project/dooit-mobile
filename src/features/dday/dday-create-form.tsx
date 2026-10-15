@@ -4,19 +4,15 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { AppText, Button, Card, InlineNotice } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 import { ddayGoalLimits } from '@/types';
-import type { DdayGoalRequest } from '@/types';
+import type { DdayGoalRequest, DdayGoalResponse } from '@/types';
 
 import { useCreateDdayGoal } from './use-create-dday-goal';
 import { type DdayGoalFormValues, validateDdayGoal } from './dday-validation';
-import {
-  ddayGoalColors,
-  setDdayGoalColor,
-  type DdayGoalColor,
-} from './dday-goal-colors';
+import { ddayGoalColors, setDdayGoalColor, type DdayGoalColor } from './dday-goal-colors';
 
 type DdayCreateFormProps = {
   onCancel: () => void;
-  onCreated: () => void;
+  onCreated: (goal: DdayGoalResponse) => void;
 };
 
 type DdayFormField = 'title' | 'targetDate';
@@ -61,7 +57,7 @@ export function DdayCreateForm({ onCancel, onCreated }: DdayCreateFormProps) {
           // The goal itself was created. Today can still use its deterministic fallback color.
         }
         setValues(initialValues);
-        onCreated();
+        onCreated(createdGoal);
       },
     });
   };

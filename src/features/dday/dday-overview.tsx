@@ -1,7 +1,14 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import {
   AppText,
@@ -14,6 +21,8 @@ import {
   Screen,
 } from '@/components/ui';
 import { spacing, useAppTheme } from '@/theme';
+import { env } from '@/config/env';
+import { useAuthState } from '@/features/auth';
 import type { DdayGoalResponse } from '@/types';
 import { formatDateLabel } from '@/utils';
 import { DdayCreateForm } from './dday-create-form';
@@ -21,25 +30,74 @@ import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors'
 import { DdayGoalTasks } from './dday-goal-tasks';
 import { useDeleteDdayGoal } from './use-delete-dday-goal';
 import { useDdayGoals } from './use-dday-goals';
+import { useDdayPlanSelection } from './use-dday-plan-selection';
 
 export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
+  const theme = useAppTheme();
+  const auth = useAuthState();
+  const scope =
+    auth.status === 'guest' || auth.status === 'registered'
+      ? JSON.stringify([env.apiMode, env.apiUrl ?? null, auth.user.id])
+      : null;
+  if (scope === null) {
+    return (
+      <Screen safeAreaEdges={embedded ? ['left', 'right'] : undefined}>
+        {auth.status === 'error' ? (
+          <InlineNotice tone="danger" message={auth.error.message} />
+        ) : (
+          <View style={styles.stateRow} accessibilityLabel="계획을 불러오는 중">
+            <ActivityIndicator color={theme.colors.primary} />
+          </View>
+        )}
+      </Screen>
+    );
+  }
+  return <DdayPlanOverview key={scope ?? 'pending'} embedded={embedded} selectionScope={scope} />;
+}
+
+function DdayPlanOverview({
+  embedded,
+  selectionScope,
+}: {
+  embedded: boolean;
+  selectionScope: string | null;
+}) {
   const router = useRouter();
   const theme = useAppTheme();
   const query = useDdayGoals();
   const goals = [...(query.data ?? [])].sort((a, b) => a.targetDate.localeCompare(b.targetDate));
   const colors = useDdayGoalColors(goals.map((item) => item.id));
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const {
+    selectedId,
+    isRestoring,
+    selectGoal: setSelectedId,
+  } = useDdayPlanSelection(selectionScope);
+  const tabsRef = useRef<ScrollView>(null);
+  const tabPositions = useRef<Record<number, number>>({});
+  const [search, setSearch] = useState('');
   const [showAll, setShowAll] = useState(false);
   const [creating, setCreating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const goal = goals.find((item) => item.id === selectedId) ?? goals[0];
+  const currentGoalId = goal?.id;
+  const searchTerm = search.trim().normalize('NFKC').toLocaleLowerCase();
+  const matchingGoals = goals.filter((item) =>
+    item.title.normalize('NFKC').toLocaleLowerCase().includes(searchTerm),
+  );
+  const revealSelectedTab = useCallback(() => {
+    if (currentGoalId === undefined) return;
+    const x = tabPositions.current[currentGoalId];
+    if (x !== undefined) tabsRef.current?.scrollTo({ x: Math.max(0, x - 8), animated: false });
+  }, [currentGoalId]);
+  useEffect(() => revealSelectedTab(), [revealSelectedTab]);
   const selectGoal = (id: number) => {
     setSelectedId(id);
     setShowAll(false);
     setCreating(false);
     setMenuOpen(false);
     setDeleting(false);
+    setSearch('');
   };
 
   return (
@@ -58,7 +116,7 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
           }
         />
       ) : null}
-      {query.isPending ? (
+      {query.isPending || isRestoring ? (
         <View style={styles.stateRow} accessibilityLabel="목표를 불러오는 중">
           <ActivityIndicator color={theme.colors.primary} />
         </View>
@@ -77,7 +135,14 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
         <>
           {goals.length ? (
             <View style={[styles.navigation, { borderBottomColor: theme.colors.border }]}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabs}>
+              <ScrollView
+                ref={tabsRef}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.tabs}
+                onLayout={revealSelectedTab}
+                onContentSizeChange={revealSelectedTab}
+              >
                 {goals.map((item) => (
                   <Pressable
                     key={item.id}
@@ -85,6 +150,10 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
                     accessibilityLabel={item.title}
                     accessibilityState={{ selected: item.id === goal?.id }}
                     onPress={() => selectGoal(item.id)}
+                    onLayout={(event) => {
+                      tabPositions.current[item.id] = event.nativeEvent.layout.x;
+                      if (item.id === goal?.id) revealSelectedTab();
+                    }}
                     style={({ pressed }) => [
                       styles.tab,
                       {
@@ -120,6 +189,7 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
                 onPress={() => {
                   setShowAll(!showAll);
                   setMenuOpen(false);
+                  setSearch('');
                 }}
                 style={({ pressed }) => [
                   styles.allGoals,
@@ -139,7 +209,42 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
           ) : null}
           {showAll ? (
             <View style={styles.selector}>
-              {goals.map((item) => (
+              <View style={[styles.searchField, { borderColor: theme.colors.border }]}>
+                <MaterialCommunityIcons
+                  name="magnify"
+                  size={20}
+                  color={theme.colors.textSecondary}
+                />
+                <TextInput
+                  accessibilityLabel="목표 검색"
+                  placeholder="목표 검색"
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholderTextColor={theme.colors.textMuted}
+                  autoCorrect={false}
+                  returnKeyType="search"
+                  style={[styles.searchInput, { color: theme.colors.text }]}
+                />
+                {search ? (
+                  <IconButton
+                    accessibilityLabel="목표 검색어 지우기"
+                    style={styles.headerButton}
+                    onPress={() => setSearch('')}
+                  >
+                    <MaterialCommunityIcons
+                      name="close"
+                      size={20}
+                      color={theme.colors.textSecondary}
+                    />
+                  </IconButton>
+                ) : null}
+              </View>
+              {matchingGoals.length === 0 ? (
+                <AppText accessibilityLiveRegion="polite" tone="secondary">
+                  찾는 목표가 없어요.
+                </AppText>
+              ) : null}
+              {matchingGoals.map((item) => (
                 <Pressable
                   key={item.id}
                   accessibilityRole="button"
@@ -166,7 +271,14 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
                   ) : null}
                 </Pressable>
               ))}
-              <Button size="compact" variant="ghost" onPress={() => setCreating(true)}>
+              <Button
+                size="compact"
+                variant="ghost"
+                onPress={() => {
+                  setCreating(true);
+                  setShowAll(false);
+                }}
+              >
                 새 목표 만들기
               </Button>
             </View>
@@ -174,10 +286,10 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
           {creating ? (
             <DdayCreateForm
               onCancel={() => setCreating(false)}
-              onCreated={() => setCreating(false)}
+              onCreated={(createdGoal) => selectGoal(createdGoal.id)}
             />
           ) : null}
-          {goal ? (
+          {goal && !creating ? (
             <View key={goal.id} style={styles.goal}>
               <View style={styles.goalHeader}>
                 <View style={styles.goalCopy}>
@@ -251,7 +363,7 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
                 </AppText>
               </Pressable>
             </View>
-          ) : (
+          ) : !creating ? (
             <View style={styles.selector}>
               <EmptyState
                 title="원하는 방향부터 정해볼까요?"
@@ -259,7 +371,7 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
               />
               {!creating ? <Button onPress={() => setCreating(true)}>첫 목표 만들기</Button> : null}
             </View>
-          )}
+          ) : null}
         </>
       )}
     </Screen>
@@ -345,6 +457,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[2],
   },
   selector: { gap: spacing[3] },
+  searchField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingLeft: spacing[3],
+    minHeight: 44,
+  },
+  searchInput: { flex: 1, minWidth: 0, fontSize: 16, paddingVertical: spacing[3] },
   goalOption: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], minHeight: 48 },
   optionTitle: { flex: 1 },
   goal: { gap: spacing[3], paddingTop: 4 },
