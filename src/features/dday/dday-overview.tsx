@@ -19,7 +19,6 @@ import { formatDateLabel } from '@/utils';
 import { DdayCreateForm } from './dday-create-form';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors';
 import { DdayGoalTasks } from './dday-goal-tasks';
-import { DdayTodayTaskForm } from './dday-today-task-form';
 import { useDeleteDdayGoal } from './use-delete-dday-goal';
 import { useDdayGoals } from './use-dday-goals';
 
@@ -33,7 +32,6 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
   const [showAll, setShowAll] = useState(false);
   const [creating, setCreating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const goal = goals.find((item) => item.id === selectedId) ?? goals[0];
   const selectGoal = (id: number) => {
@@ -41,7 +39,6 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
     setShowAll(false);
     setCreating(false);
     setMenuOpen(false);
-    setAdding(false);
     setDeleting(false);
   };
 
@@ -237,33 +234,22 @@ export function DdayOverview({ embedded = false }: { embedded?: boolean }) {
                 />
               ) : null}
               <DdayGoalTasks goalId={goal.id} goalTitle={goal.title} />
-              {adding ? (
-                <DdayTodayTaskForm
-                  goalId={goal.id}
-                  goalTitle={goal.title}
-                  onCancel={() => setAdding(false)}
-                  onCreated={() => setAdding(false)}
-                />
-              ) : (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`${goal.title} 목표에 오늘 할 일 추가`}
-                  onPress={() => setAdding(true)}
-                  style={({ pressed }) => [
-                    styles.addItem,
-                    { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-                  ]}
-                >
-                  <MaterialCommunityIcons
-                    name="plus"
-                    size={22}
-                    color={theme.colors.textSecondary}
-                  />
-                  <AppText tone="secondary" weight="semibold">
-                    항목 추가
-                  </AppText>
-                </Pressable>
-              )}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${goal.title} 목표에 항목 추가`}
+                onPress={() =>
+                  router.push({ pathname: '/tasks/new', params: { goalId: String(goal.id) } })
+                }
+                style={({ pressed }) => [
+                  styles.addItem,
+                  { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+                ]}
+              >
+                <MaterialCommunityIcons name="plus" size={22} color={theme.colors.textSecondary} />
+                <AppText tone="secondary" weight="semibold">
+                  항목 추가
+                </AppText>
+              </Pressable>
             </View>
           ) : (
             <View style={styles.selector}>
