@@ -27,7 +27,11 @@ import type { DdayGoalResponse } from '@/types';
 import { formatDateLabel } from '@/utils';
 import { DdayCreateForm } from './dday-create-form';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors';
-import { DdayGoalTasks } from './dday-goal-tasks';
+import {
+  DdayGoalTasks,
+  type DdayGoalTasksHandle,
+  type DdayItemOrderState,
+} from './dday-goal-tasks';
 import { DdayGoalOrderList } from './dday-goal-order-list';
 import { applyDdayGoalOrder, useDdayGoalOrder } from './use-dday-goal-order';
 import { useDeleteDdayGoal } from './use-delete-dday-goal';
@@ -91,6 +95,12 @@ function DdayPlanOverview({
   const [isDragging, setIsDragging] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const goalItemsRef = useRef<DdayGoalTasksHandle>(null);
+  const [itemOrderState, setItemOrderState] = useState<DdayItemOrderState>({
+    editing: false,
+    saving: false,
+    canEdit: false,
+  });
   const draftGoals = applyDdayGoalOrder(goals, draftOrder);
   const goal = goals.find((item) => item.id === selectedId) ?? goals[0];
   const currentGoalId = goal?.id;
@@ -200,8 +210,11 @@ function DdayPlanOverview({
                     key={item.id}
                     accessibilityRole="tab"
                     accessibilityLabel={item.title}
-                    accessibilityState={{ selected: item.id === goal?.id, disabled: isOrdering }}
-                    disabled={isOrdering}
+                    accessibilityState={{
+                      selected: item.id === goal?.id,
+                      disabled: isOrdering || itemOrderState.editing,
+                    }}
+                    disabled={isOrdering || itemOrderState.editing}
                     onPress={() => selectGoal(item.id)}
                     onLayout={(event) => {
                       tabPositions.current[item.id] = event.nativeEvent.layout.x;
@@ -238,8 +251,11 @@ function DdayPlanOverview({
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="전체 목표"
-                accessibilityState={{ expanded: showAll, disabled: isOrdering }}
-                disabled={isOrdering}
+                accessibilityState={{
+                  expanded: showAll,
+                  disabled: isOrdering || itemOrderState.editing,
+                }}
+                disabled={isOrdering || itemOrderState.editing}
                 onPress={() => {
                   setShowAll(!showAll);
                   setMenuOpen(false);
@@ -414,21 +430,45 @@ function DdayPlanOverview({
                     })}
                   </AppText>
                 </View>
-                <IconButton
-                  accessibilityLabel={`${goal.title} 관리 메뉴`}
-                  expanded={menuOpen}
-                  style={styles.headerButton}
-                  onPress={() => setMenuOpen(!menuOpen)}
-                >
-                  <MaterialCommunityIcons
-                    name="dots-horizontal"
-                    size={24}
-                    color={theme.colors.textSecondary}
-                  />
-                </IconButton>
+                {itemOrderState.editing ? (
+                  <Button
+                    size="compact"
+                    loading={itemOrderState.saving}
+                    disabled={isDragging}
+                    onPress={() => goalItemsRef.current?.saveOrder()}
+                  >
+                    완료
+                  </Button>
+                ) : (
+                  <IconButton
+                    accessibilityLabel={`${goal.title} 관리 메뉴`}
+                    expanded={menuOpen}
+                    style={styles.headerButton}
+                    onPress={() => setMenuOpen(!menuOpen)}
+                  >
+                    <MaterialCommunityIcons
+                      name="dots-horizontal"
+                      size={24}
+                      color={theme.colors.textSecondary}
+                    />
+                  </IconButton>
+                )}
               </View>
               {menuOpen ? (
                 <View style={styles.menu}>
+                  <Button
+                    size="compact"
+                    variant="ghost"
+                    disabled={!itemOrderState.canEdit}
+                    onPress={() => {
+                      setMenuOpen(false);
+                      setShowAll(false);
+                      setDeleting(false);
+                      goalItemsRef.current?.startOrdering();
+                    }}
+                  >
+                    순서 바꾸기
+                  </Button>
                   <Button
                     size="compact"
                     variant="ghost"
@@ -454,23 +494,36 @@ function DdayPlanOverview({
                   }}
                 />
               ) : null}
-              <DdayGoalTasks goalId={goal.id} goalTitle={goal.title} />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`${goal.title} 목표에 항목 추가`}
-                onPress={() =>
-                  router.push({ pathname: '/tasks/new', params: { goalId: String(goal.id) } })
-                }
-                style={({ pressed }) => [
-                  styles.addItem,
-                  { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-                ]}
-              >
-                <MaterialCommunityIcons name="plus" size={22} color={theme.colors.textSecondary} />
-                <AppText tone="secondary" weight="semibold">
-                  항목 추가
-                </AppText>
-              </Pressable>
+              <DdayGoalTasks
+                ref={goalItemsRef}
+                goalId={goal.id}
+                goalTitle={goal.title}
+                selectionScope={selectionScope}
+                onOrderStateChange={setItemOrderState}
+                onDragging={setIsDragging}
+              />
+              {!itemOrderState.editing ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${goal.title} 목표에 항목 추가`}
+                  onPress={() =>
+                    router.push({ pathname: '/tasks/new', params: { goalId: String(goal.id) } })
+                  }
+                  style={({ pressed }) => [
+                    styles.addItem,
+                    { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="plus"
+                    size={22}
+                    color={theme.colors.textSecondary}
+                  />
+                  <AppText tone="secondary" weight="semibold">
+                    항목 추가
+                  </AppText>
+                </Pressable>
+              ) : null}
             </View>
           ) : !creating && !isOrdering ? (
             <View style={styles.selector}>
