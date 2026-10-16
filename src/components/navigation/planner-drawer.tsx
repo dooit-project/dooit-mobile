@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/ui';
 import { useTaskCategories } from '@/features/tasks';
+import { useMotivationalLine } from '@/features/motivation/use-motivational-line';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
 
 import {
@@ -65,25 +66,12 @@ type PlannerHeaderProps = {
   onMenuPress: () => void;
 };
 
-const motivationalLines = [
-  '천 리 길도 발밑에서 시작된다',
-  '작은 행동이 원하는 방향을 만든다',
-  '오늘의 한 번이 내일의 증거가 된다',
-  '조금이어도 다시 시작하면 된다',
-] as const;
-
-function getDailyMotivationalLine() {
-  const now = new Date();
-  const dayNumber = Math.floor(
-    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86_400_000,
-  );
-  return motivationalLines[dayNumber % motivationalLines.length];
-}
-
 export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerHeaderProps>(
   function PlannerHeader({ onMenuPress }, ref) {
     const theme = useAppTheme();
     const insets = useSafeAreaInsets();
+    const pathname = usePathname();
+    const { line, showNext } = useMotivationalLine(pathname);
 
     return (
       <View
@@ -114,9 +102,25 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
         <AppText variant="title" weight="heavy">
           dooit
         </AppText>
-        <AppText numberOfLines={1} style={styles.motivation} tone="muted" variant="caption">
-          {getDailyMotivationalLine()}
-        </AppText>
+        <Pressable
+          style={({ pressed }) => [styles.motivation, { opacity: pressed ? 0.65 : 1 }]}
+          onPress={showNext}
+          accessibilityRole="button"
+          accessibilityLabel={`${line.text}${line.kind === 'quote' ? `, ${line.author}, 한국어 의역` : ''}`}
+          accessibilityHint="다른 문장을 보려면 누르세요."
+        >
+          <View style={styles.motivationCopy}>
+            <AppText numberOfLines={1} tone="muted" variant="caption">
+              {line.text}
+            </AppText>
+            {line.kind === 'quote' ? (
+              <AppText numberOfLines={1} tone="muted" variant="caption" style={styles.quoteAuthor}>
+                {line.author} · 의역
+              </AppText>
+            ) : null}
+          </View>
+          <MaterialCommunityIcons name="refresh" size={13} color={theme.colors.textMuted} />
+        </Pressable>
       </View>
     );
   },
@@ -544,5 +548,12 @@ const styles = StyleSheet.create({
   motivation: {
     flex: 1,
     marginLeft: spacing[1],
+    minHeight: 44,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[1],
   },
+  motivationCopy: { flex: 1, minWidth: 0 },
+  quoteAuthor: { fontSize: 10, lineHeight: 14 },
 });
