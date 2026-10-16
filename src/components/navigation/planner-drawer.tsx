@@ -102,25 +102,32 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
         <AppText variant="title" weight="heavy">
           dooit
         </AppText>
-        <Pressable
-          style={({ pressed }) => [styles.motivation, { opacity: pressed ? 0.65 : 1 }]}
-          onPress={showNext}
-          accessibilityRole="button"
-          accessibilityLabel={`${line.text}${line.kind === 'quote' ? `, ${line.author}, 한국어 의역` : ''}`}
-          accessibilityHint="다른 문장을 보려면 누르세요."
-        >
-          <View style={styles.motivationCopy}>
-            <AppText numberOfLines={1} tone="muted" variant="caption">
-              {line.text}
-            </AppText>
-            {line.kind === 'quote' ? (
-              <AppText numberOfLines={1} tone="muted" variant="caption" style={styles.quoteAuthor}>
-                {line.author} · 의역
+        {line ? (
+          <Pressable
+            style={({ pressed }) => [styles.motivation, { opacity: pressed ? 0.65 : 1 }]}
+            onPress={showNext}
+            accessibilityRole="button"
+            accessibilityLabel={`${line.text}${line.kind === 'quote' ? `, ${line.author}, 한국어 의역` : ''}`}
+            accessibilityHint="다른 문장을 보려면 누르세요."
+          >
+            <View style={styles.motivationCopy}>
+              <AppText numberOfLines={1} tone="muted" variant="caption">
+                {line.text}
               </AppText>
-            ) : null}
-          </View>
-          <MaterialCommunityIcons name="refresh" size={13} color={theme.colors.textMuted} />
-        </Pressable>
+              {line.kind === 'quote' ? (
+                <AppText
+                  numberOfLines={1}
+                  tone="muted"
+                  variant="caption"
+                  style={styles.quoteAuthor}
+                >
+                  {line.author} · 의역
+                </AppText>
+              ) : null}
+            </View>
+            <MaterialCommunityIcons name="refresh" size={13} color={theme.colors.textMuted} />
+          </Pressable>
+        ) : null}
       </View>
     );
   },

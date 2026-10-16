@@ -14,6 +14,7 @@ import {
 } from '@/components/ui';
 import { env } from '@/config';
 import { NotificationSettingsCard } from '@/features/notifications';
+import { MotivationSettingsCard } from '@/features/motivation/motivation-settings-card';
 import { getAccessToken, subscribeAccessToken } from '@/services/api';
 import { resetFeatureTips } from '@/services/preferences';
 import { radii, spacing, useAppTheme } from '@/theme';
@@ -32,7 +33,7 @@ export function SettingsOverview() {
   >('idle');
 
   return (
-    <Screen contentContainerStyle={styles.screen}>
+    <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
         title="설정"
         leading={
@@ -49,6 +50,7 @@ export function SettingsOverview() {
       {__DEV__ ? <DeveloperDiagnosticsCard /> : null}
 
       <NotificationSettingsCard />
+      <MotivationSettingsCard />
 
       <Card variant="outlined" style={styles.section}>
         <View style={styles.sectionHeader}>
