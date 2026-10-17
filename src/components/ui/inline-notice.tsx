@@ -9,6 +9,7 @@ type InlineNoticeTone = 'default' | 'success' | 'warning' | 'danger';
 
 type InlineNoticeProps = {
   message: string;
+  messageVariant?: 'body' | 'caption';
   title?: string;
   tone?: InlineNoticeTone;
   action?: ReactNode;
@@ -17,6 +18,7 @@ type InlineNoticeProps = {
 
 export function InlineNotice({
   message,
+  messageVariant = 'caption',
   title,
   tone = 'default',
   action,
@@ -67,7 +69,7 @@ export function InlineNotice({
             {title}
           </AppText>
         ) : null}
-        <AppText tone={title ? 'secondary' : appearance.textTone} variant="caption">
+        <AppText tone={title ? 'secondary' : appearance.textTone} variant={messageVariant}>
           {message}
         </AppText>
       </View>
