@@ -75,9 +75,9 @@ export function TaskTemplateOverview() {
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title="Task 템플릿"
+        title="할 일 템플릿"
         leading={
-          <IconButton accessibilityLabel="더보기 화면으로 돌아가기" onPress={router.back}>
+          <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}
@@ -103,7 +103,7 @@ export function TaskTemplateOverview() {
       {isCreating ? <TaskTemplateCreateForm onClose={() => setIsCreating(false)} /> : null}
 
       {templatesQuery.isPending ? (
-        <View accessibilityLabel="Task 템플릿을 불러오는 중" style={styles.stateRow}>
+        <View accessibilityLabel="할 일 템플릿을 불러오는 중" style={styles.stateRow}>
           <ActivityIndicator color={theme.colors.primary} />
           <AppText tone="secondary" variant="label">
             템플릿을 불러오고 있어요.
@@ -290,7 +290,7 @@ function TaskTemplateEditForm({
           </AppText>
         </View>
         <TextInput
-          accessibilityLabel="Task 템플릿 이름 편집"
+          accessibilityLabel="할 일 템플릿 이름 편집"
           editable={!updateTemplate.isPending}
           maxLength={30}
           onChangeText={(value) => {
@@ -324,7 +324,7 @@ function TaskTemplateEditForm({
           </AppText>
         </View>
         <TextInput
-          accessibilityLabel="Task 템플릿 설명 편집"
+          accessibilityLabel="할 일 템플릿 설명 편집"
           editable={!updateTemplate.isPending}
           maxLength={300}
           multiline
@@ -357,7 +357,7 @@ function TaskTemplateEditForm({
           </AppText>
         </View>
         <TextInput
-          accessibilityLabel="Task 템플릿 분류 편집"
+          accessibilityLabel="할 일 템플릿 분류 편집"
           editable={!updateTemplate.isPending}
           maxLength={30}
           onChangeText={(value) => {
@@ -447,7 +447,7 @@ function TaskTemplateCreateForm({ onClose }: { onClose: () => void }) {
           </AppText>
         </View>
         <TextInput
-          accessibilityLabel="Task 템플릿 이름"
+          accessibilityLabel="할 일 템플릿 이름"
           editable={!createTemplate.isPending}
           maxLength={30}
           onChangeText={(value) => {
@@ -483,7 +483,7 @@ function TaskTemplateCreateForm({ onClose }: { onClose: () => void }) {
           </AppText>
         </View>
         <TextInput
-          accessibilityLabel="Task 템플릿 설명"
+          accessibilityLabel="할 일 템플릿 설명"
           editable={!createTemplate.isPending}
           maxLength={300}
           multiline

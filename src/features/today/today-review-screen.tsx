@@ -171,7 +171,7 @@ export function TodayReviewScreen() {
               loading={!focus && replaceDailyPlan.isPending}
               onPress={() => (focus ? router.replace('/') : finishDailyPlan())}
             >
-              {focus ? 'Today로 돌아가기' : '오늘 계획 마치기'}
+              {focus ? '오늘로 돌아가기' : '오늘 계획 마치기'}
             </Button>
           }
         />

@@ -50,7 +50,7 @@ export function TodayFocusScreen() {
             tone="danger"
             action={
               <Button size="compact" variant="ghost" onPress={leaveFocus}>
-                Today로 돌아가기
+                오늘로 돌아가기
               </Button>
             }
           />
@@ -87,7 +87,7 @@ export function TodayFocusScreen() {
             </AppText>
             <AppText align="center" tone="secondary" variant="bodyLarge">
               {complete.isSuccess
-                ? '한 가지를 끝냈어요. 이제 Today로 돌아가도 좋아요.'
+                ? '한 가지를 끝냈어요. 이제 오늘로 돌아가도 좋아요.'
                 : metadata || '지금 이 순간, 이 한 가지에만 온전히 집중해 보세요.'}
             </AppText>
           </View>
@@ -104,7 +104,7 @@ export function TodayFocusScreen() {
                 style={styles.primaryButton}
                 onPress={leaveFocus}
               >
-                Today로 돌아가기
+                오늘로 돌아가기
               </Button>
             ) : (
               <Button

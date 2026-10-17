@@ -207,7 +207,7 @@ export function SearchOverview() {
             : '검색'
         }
         leading={
-          <IconButton accessibilityLabel="더보기 화면으로 돌아가기" onPress={router.back}>
+          <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

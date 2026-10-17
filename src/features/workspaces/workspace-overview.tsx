@@ -44,7 +44,7 @@ export function WorkspaceOverview() {
         title="공유 공간"
         description="함께 관리할 일정과 목표를 공간별로 나눠요."
         leading={
-          <IconButton accessibilityLabel="더보기 화면으로 돌아가기" onPress={router.back}>
+          <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

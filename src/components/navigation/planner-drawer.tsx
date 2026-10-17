@@ -31,6 +31,7 @@ type DrawerItem = {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   match?: string;
+  focus?: 'inbox' | 'stale';
 };
 
 export const plannerDrawerGroups: DrawerItem[][] = [
@@ -41,15 +42,17 @@ export const plannerDrawerGroups: DrawerItem[][] = [
       href: { pathname: '/today/review', params: { focus: 'inbox' } },
       icon: 'inbox-outline',
       label: '기록함',
-      match: '/inbox',
+      match: '/today/review',
+      focus: 'inbox',
     },
     {
       href: { pathname: '/today/review', params: { focus: 'stale' } },
       icon: 'history',
       label: '오래 미룬 일',
-      match: '/overdue',
+      match: '/today/review',
+      focus: 'stale',
     },
-    { href: '/completed', icon: 'checkbox-marked-circle-outline', label: '완료 기록' },
+    { href: '/completed', icon: 'checkbox-marked-circle-outline', label: '날짜별 완료 기록' },
   ],
   [
     { href: '/dday', icon: 'flag-outline', label: '목표' },
@@ -57,7 +60,8 @@ export const plannerDrawerGroups: DrawerItem[][] = [
   ],
   [
     { href: '/search', icon: 'magnify', label: '검색' },
-    { href: '/templates', icon: 'checkbox-multiple-marked-outline', label: 'Task 템플릿' },
+    { href: '/templates', icon: 'checkbox-multiple-marked-outline', label: '할 일 템플릿' },
+    { href: '/profile', icon: 'account-circle-outline', label: '계정' },
     { href: '/settings', icon: 'tune-variant', label: '설정' },
   ],
 ];
@@ -143,7 +147,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const router = useRouter();
-  const params = useGlobalSearchParams<{ browse?: string; category?: string }>();
+  const params = useGlobalSearchParams<{ browse?: string; category?: string; focus?: string }>();
   const closeButtonRef = useRef<ComponentRef<typeof Pressable>>(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const categories = useTaskCategories();
@@ -204,7 +208,9 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
         ? pathname === '/'
         : pathname.startsWith(item.match)
       : pathname.startsWith(String(item.href));
-    const active = item.href === '/search' && categoryBrowseActive ? false : matchesPath;
+    const matchesFocus = !item.focus || params.focus === item.focus;
+    const active =
+      item.href === '/search' && categoryBrowseActive ? false : matchesPath && matchesFocus;
 
     return (
       <Pressable

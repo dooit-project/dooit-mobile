@@ -50,11 +50,11 @@ export function CompletedOverview({ embedded = false }: { embedded?: boolean }) 
   return (
     <Screen scroll contentContainerStyle={styles.screen}>
       <PageHeader
-        title={embedded ? '돌아보기' : '완료 기록'}
+        title={embedded ? '돌아보기' : '날짜별 완료 기록'}
         leading={
           embedded ? undefined : (
             <IconButton
-              accessibilityLabel="더보기 화면으로 돌아가기"
+              accessibilityLabel="이전 화면으로 돌아가기"
               onPress={router.back}
               style={styles.headerButton}
             >
@@ -204,7 +204,7 @@ export function CompletedOverview({ embedded = false }: { embedded?: boolean }) 
               }
               title="이날 완료한 일이 없어요"
               description="다른 날짜를 선택해 완료 기록을 확인해 보세요."
-              primaryAction={<Button onPress={() => router.replace('/')}>Today로 돌아가기</Button>}
+              primaryAction={<Button onPress={() => router.replace('/')}>오늘로 돌아가기</Button>}
             />
           )}
 

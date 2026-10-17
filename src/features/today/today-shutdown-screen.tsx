@@ -138,7 +138,7 @@ export function TodayShutdownScreen() {
           }
           title="오늘 정리가 끝났어요"
           description={resolvedTaskIds.length > 0 ? moveSummary : '옮길 미완료 항목이 없어요.'}
-          primaryAction={<Button onPress={() => router.replace('/')}>Today로 돌아가기</Button>}
+          primaryAction={<Button onPress={() => router.replace('/')}>오늘로 돌아가기</Button>}
         />
       ) : (
         <View style={styles.section}>
@@ -178,7 +178,7 @@ export function TodayShutdownScreen() {
             ))}
           </View>
           <AppText tone="secondary" variant="caption">
-            그대로 둘 항목은 처리하지 않고 Today로 돌아가도 돼요.
+            그대로 둘 항목은 처리하지 않고 오늘로 돌아가도 돼요.
           </AppText>
         </View>
       )}
