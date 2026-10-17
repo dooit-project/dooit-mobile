@@ -35,9 +35,8 @@ type DrawerItem = {
 };
 
 export const plannerDrawerGroups: DrawerItem[][] = [
+  [{ href: '/search', icon: 'magnify', label: '검색' }],
   [
-    { href: '/', icon: 'white-balance-sunny', label: '오늘', match: '/' },
-    { href: '/calendar', icon: 'calendar-blank-outline', label: '달력' },
     {
       href: { pathname: '/today/review', params: { focus: 'inbox' } },
       icon: 'inbox-outline',
@@ -55,16 +54,16 @@ export const plannerDrawerGroups: DrawerItem[][] = [
     { href: '/completed', icon: 'checkbox-marked-circle-outline', label: '날짜별 완료 기록' },
   ],
   [
-    { href: '/dday', icon: 'flag-outline', label: '목표' },
+    { href: '/templates', icon: 'checkbox-multiple-marked-outline', label: '할 일 템플릿' },
     { href: '/workspaces', icon: 'account-multiple-outline', label: '공유 공간' },
   ],
   [
-    { href: '/search', icon: 'magnify', label: '검색' },
-    { href: '/templates', icon: 'checkbox-multiple-marked-outline', label: '할 일 템플릿' },
     { href: '/profile', icon: 'account-circle-outline', label: '계정' },
     { href: '/settings', icon: 'tune-variant', label: '설정' },
   ],
 ];
+
+const drawerGroupTitles = [null, '기록 정리', '도구', '내 계정'] as const;
 
 type PlannerHeaderProps = {
   onMenuPress: () => void;
@@ -91,7 +90,7 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
       >
         <Pressable
           ref={ref}
-          accessibilityHint="전체 탐색 메뉴를 엽니다."
+          accessibilityHint="기록 정리와 도구, 계정 메뉴를 엽니다."
           accessibilityLabel="나의 플래너 메뉴 열기"
           accessibilityRole="button"
           hitSlop={8}
@@ -150,6 +149,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
   const params = useGlobalSearchParams<{ browse?: string; category?: string; focus?: string }>();
   const closeButtonRef = useRef<ComponentRef<typeof Pressable>>(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [focusedRow, setFocusedRow] = useState<string | null>(null);
   const categories = useTaskCategories();
   const categorySummaries = categories.data ?? [];
   const categoryItems = getPlannerCategoryNavigationItems(categorySummaries);
@@ -219,25 +219,21 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
         accessibilityLabel={item.label}
         accessibilityRole="button"
         accessibilityState={{ selected: active }}
+        onFocus={() => setFocusedRow(item.label)}
+        onBlur={() => setFocusedRow(null)}
         onPress={() => open(item.href)}
         style={({ pressed }) => [
           styles.menuRow,
+          { borderColor: focusedRow === item.label ? theme.colors.primary : 'transparent' },
           active && { backgroundColor: theme.colors.primarySoft },
           pressed && { backgroundColor: theme.colors.surfaceMuted },
         ]}
       >
-        <View
-          style={[
-            styles.iconBox,
-            {
-              backgroundColor: active ? theme.colors.highlightBlue : theme.colors.surfaceMuted,
-            },
-          ]}
-        >
+        <View style={styles.iconBox}>
           <MaterialCommunityIcons
             color={active ? theme.colors.primary : theme.colors.textSecondary}
             name={item.icon}
-            size={24}
+            size={20}
           />
         </View>
         <AppText style={styles.menuLabel} variant="bodyLarge" weight={active ? 'bold' : 'medium'}>
@@ -269,31 +265,32 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
             {
               backgroundColor: theme.colors.surface,
               paddingBottom: Math.max(insets.bottom, spacing[4]),
-              paddingTop: Math.max(insets.top, spacing[5]),
+              paddingTop: insets.top,
             },
           ]}
         >
           <View style={styles.brandRow}>
-            <View style={styles.brandCopy}>
-              <View style={styles.wordmarkRow}>
-                <AppText style={{ color: theme.colors.primary }} variant="display" weight="heavy">
-                  dooit
-                </AppText>
-                <View style={[styles.wordmarkDot, { backgroundColor: theme.colors.warning }]} />
-              </View>
-              <AppText variant="display" weight="heavy">
-                나의 플래너
-              </AppText>
-            </View>
+            <AppText
+              style={[styles.brandCopy, { color: theme.colors.primary }]}
+              variant="title"
+              weight="heavy"
+            >
+              dooit
+            </AppText>
             <Pressable
               ref={closeButtonRef}
               accessibilityLabel="나의 플래너 메뉴 닫기"
               accessibilityRole="button"
               hitSlop={8}
               onPress={onClose}
+              onFocus={() => setFocusedRow('close')}
+              onBlur={() => setFocusedRow(null)}
               style={({ pressed }) => [
                 styles.closeButton,
-                { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+                {
+                  backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent',
+                  borderColor: focusedRow === 'close' ? theme.colors.primary : 'transparent',
+                },
               ]}
             >
               <MaterialCommunityIcons color={theme.colors.text} name="close" size={28} />
@@ -306,47 +303,49 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
             style={styles.menuScroll}
           >
             {plannerDrawerGroups.map((group, groupIndex) => (
-              <View
-                key={groupIndex}
-                style={[
-                  styles.menuGroup,
-                  groupIndex > 0 && {
-                    borderTopColor: theme.colors.border,
-                    borderTopWidth: StyleSheet.hairlineWidth,
-                  },
-                ]}
-              >
-                {groupIndex === 0 ? (
+              <View key={groupIndex} style={styles.menuGroup}>
+                {drawerGroupTitles[groupIndex] ? (
+                  <AppText
+                    accessibilityRole="header"
+                    tone="secondary"
+                    variant="caption"
+                    weight="semibold"
+                    style={styles.groupTitle}
+                  >
+                    {drawerGroupTitles[groupIndex]}
+                  </AppText>
+                ) : null}
+                {groupIndex === 1 ? (
                   <>
-                    {group.slice(0, 2).map((item) => renderItem(item, groupIndex))}
+                    {group.slice(0, 1).map((item) => renderItem(item, groupIndex))}
                     <Pressable
-                      accessibilityHint="개인 Task 카테고리 목록을 펼치거나 접습니다."
+                      accessibilityHint="개인 할 일 카테고리 목록을 펼치거나 접습니다."
                       accessibilityLabel="카테고리"
                       accessibilityRole="button"
-                      accessibilityState={{ expanded: categoriesExpanded }}
+                      accessibilityState={{
+                        expanded: categoriesExpanded,
+                        selected: categoryBrowseActive,
+                      }}
+                      onFocus={() => setFocusedRow('categories')}
+                      onBlur={() => setFocusedRow(null)}
                       onPress={() => setCategoriesExpanded((current) => !current)}
                       style={({ pressed }) => [
                         styles.menuRow,
+                        {
+                          borderColor:
+                            focusedRow === 'categories' ? theme.colors.primary : 'transparent',
+                        },
                         categoryBrowseActive && { backgroundColor: theme.colors.primarySoft },
                         pressed && { backgroundColor: theme.colors.surfaceMuted },
                       ]}
                     >
-                      <View
-                        style={[
-                          styles.iconBox,
-                          {
-                            backgroundColor: categoryBrowseActive
-                              ? theme.colors.highlightBlue
-                              : theme.colors.surfaceMuted,
-                          },
-                        ]}
-                      >
+                      <View style={styles.iconBox}>
                         <MaterialCommunityIcons
                           color={
                             categoryBrowseActive ? theme.colors.primary : theme.colors.textSecondary
                           }
                           name="folder-outline"
-                          size={24}
+                          size={20}
                         />
                       </View>
                       <View style={styles.categoryHeadingCopy}>
@@ -372,10 +371,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                     </Pressable>
 
                     {categoriesExpanded ? (
-                      <View
-                        accessibilityLabel="개인 Task 카테고리"
-                        style={[styles.categoryList, { borderLeftColor: theme.colors.border }]}
-                      >
+                      <View accessibilityLabel="개인 할 일 카테고리" style={styles.categoryList}>
                         {categories.isPending ? (
                           <View style={styles.categoryState}>
                             <ActivityIndicator color={theme.colors.primary} size="small" />
@@ -387,9 +383,17 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                           <Pressable
                             accessibilityLabel="카테고리 다시 불러오기"
                             accessibilityRole="button"
+                            onFocus={() => setFocusedRow('category-retry')}
+                            onBlur={() => setFocusedRow(null)}
                             onPress={() => void categories.refetch()}
                             style={({ pressed }) => [
                               styles.categoryState,
+                              {
+                                borderColor:
+                                  focusedRow === 'category-retry'
+                                    ? theme.colors.primary
+                                    : 'transparent',
+                              },
                               pressed && { backgroundColor: theme.colors.surfaceMuted },
                             ]}
                           >
@@ -413,7 +417,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                         )}
                       </View>
                     ) : null}
-                    {group.slice(2).map((item) => renderItem(item, groupIndex))}
+                    {group.slice(1).map((item) => renderItem(item, groupIndex))}
                   </>
                 ) : (
                   group.map((item) => renderItem(item, groupIndex))
@@ -441,27 +445,35 @@ function CategoryRow({
   onPress: () => void;
 }) {
   const theme = useAppTheme();
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
     <Pressable
       accessibilityHint={
         disabled
-          ? '미분류 Task 탐색은 서버 필터가 준비된 뒤 사용할 수 있습니다.'
-          : `${label} 카테고리 Task를 보여줍니다.`
+          ? '미분류 할 일 탐색은 서버 필터가 준비된 뒤 사용할 수 있습니다.'
+          : `${label} 카테고리의 할 일을 보여줍니다.`
       }
       accessibilityLabel={`${label}, ${count}개`}
       accessibilityRole="button"
       accessibilityState={{ disabled, selected: active }}
       disabled={disabled}
       onPress={onPress}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       style={({ pressed }) => [
         styles.categoryRow,
+        { borderColor: isFocused ? theme.colors.primary : 'transparent' },
         active && { backgroundColor: theme.colors.primarySoft },
         pressed && { backgroundColor: theme.colors.surfaceMuted },
         disabled && styles.categoryRowDisabled,
       ]}
     >
-      <AppText tone={active ? 'primary' : 'default'} weight={active ? 'bold' : 'medium'}>
+      <AppText
+        style={styles.categoryLabel}
+        tone={active ? 'primary' : 'default'}
+        weight={active ? 'bold' : 'medium'}
+      >
         {label}
       </AppText>
       <AppText tone="secondary">{count}</AppText>
@@ -484,49 +496,52 @@ const styles = StyleSheet.create({
     width: '86%',
   },
   brandRow: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     flexDirection: 'row',
     gap: spacing[3],
-    paddingHorizontal: spacing[6],
+    minHeight: 52,
+    paddingHorizontal: spacing[5],
   },
-  brandCopy: { flex: 1, gap: spacing[2] },
-  wordmarkRow: { alignItems: 'flex-start', flexDirection: 'row' },
-  wordmarkDot: { borderRadius: radii.full, height: 8, marginLeft: 2, marginTop: 2, width: 8 },
+  brandCopy: { flex: 1 },
   closeButton: {
     alignItems: 'center',
-    borderRadius: radii.full,
+    borderRadius: radii.md,
+    borderWidth: 1,
     height: sizes.touchTarget,
     justifyContent: 'center',
     width: sizes.touchTarget,
   },
-  menuContent: { paddingBottom: spacing[8], paddingHorizontal: spacing[4], paddingTop: spacing[8] },
+  menuContent: { paddingBottom: spacing[6], paddingHorizontal: spacing[4], paddingTop: spacing[2] },
   menuScroll: { flex: 1 },
-  menuGroup: { paddingVertical: spacing[4] },
+  menuGroup: { paddingVertical: spacing[2] },
+  groupTitle: { paddingHorizontal: spacing[3], paddingTop: spacing[3], paddingBottom: spacing[2] },
   menuRow: {
     alignItems: 'center',
-    borderRadius: radii.xl,
+    borderRadius: radii.sm,
+    borderWidth: 1,
     flexDirection: 'row',
-    gap: spacing[4],
-    minHeight: 60,
+    gap: spacing[3],
+    minHeight: 48,
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2],
   },
   iconBox: {
     alignItems: 'center',
-    borderRadius: radii.md,
-    height: 40,
+    height: 24,
     justifyContent: 'center',
-    width: 40,
+    width: 24,
   },
   menuLabel: { flex: 1 },
   categoryHeadingCopy: { flex: 1, gap: 2 },
   categoryList: {
-    borderLeftWidth: StyleSheet.hairlineWidth,
     marginBottom: spacing[2],
-    marginLeft: 36,
-    paddingLeft: spacing[4],
+    marginLeft: 40,
+    paddingLeft: spacing[2],
   },
+  categoryLabel: { flex: 1, flexShrink: 1 },
   categoryRow: {
+    borderWidth: 1,
+    gap: spacing[2],
     alignItems: 'center',
     borderRadius: radii.lg,
     flexDirection: 'row',
@@ -536,6 +551,8 @@ const styles = StyleSheet.create({
   },
   categoryRowDisabled: { opacity: 0.58 },
   categoryState: {
+    borderWidth: 1,
+    borderColor: 'transparent',
     alignItems: 'center',
     borderRadius: radii.lg,
     flexDirection: 'row',
