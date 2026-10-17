@@ -1,5 +1,5 @@
-import { CompletedOverview } from '@/features/completed';
+import { WeeklyEvidenceOverview } from '@/features/completed';
 
 export default function ReviewScreen() {
-  return <CompletedOverview embedded />;
+  return <WeeklyEvidenceOverview />;
 }
