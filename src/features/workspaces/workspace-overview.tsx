@@ -16,7 +16,7 @@ import {
 import { useAuthState } from '@/features/auth';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString, WorkspaceInvitationResponse, WorkspaceRole } from '@/types';
-import { formatDateLabel } from '@/utils';
+import { getScreenBackAction, formatDateLabel } from '@/utils';
 import {
   useAcceptWorkspaceInvitation,
   useDeclineWorkspaceInvitation,
@@ -44,7 +44,7 @@ export function WorkspaceOverview() {
         title="공유 공간"
         description="함께 관리할 일정과 목표를 공간별로 나눠요."
         leading={
-          <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
+          <IconButton {...getScreenBackAction(router)}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

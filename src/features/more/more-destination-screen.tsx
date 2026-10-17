@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { EmptyState, IconButton, PageHeader, Screen } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
+import { getScreenBackAction } from '@/utils';
 
 type MoreDestinationScreenProps = {
   title: string;
@@ -27,7 +28,7 @@ export function MoreDestinationScreen({
       <PageHeader
         title={title}
         leading={
-          <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
+          <IconButton {...getScreenBackAction(router)}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

@@ -19,7 +19,7 @@ import { useDailyPlan, useReplaceDailyPlan } from '@/features/daily-plan';
 import { TaskCard, useMoveTaskToToday } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
-import { toApiLocalDate } from '@/utils';
+import { getScreenBackAction, toApiLocalDate } from '@/utils';
 
 import { useTodayOverview } from './use-today-overview';
 import { getDailyPlanFocusTasks } from './today-review-items';
@@ -70,11 +70,7 @@ export function TodayReviewScreen() {
         title={presentation.title}
         description={presentation.description}
         leading={
-          <IconButton
-            accessibilityLabel="Today 화면으로 돌아가기"
-            onPress={router.back}
-            style={styles.backButton}
-          >
+          <IconButton {...getScreenBackAction(router)} style={styles.backButton}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

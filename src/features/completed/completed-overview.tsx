@@ -19,7 +19,7 @@ import { TaskCard, useReopenTask } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString } from '@/types';
-import { formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
+import { getScreenBackAction, formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
 
 import { getCompletedSummary } from './completed-summary';
 import { useCompletedWeek } from './use-completed-week';
@@ -53,11 +53,7 @@ export function CompletedOverview({ embedded = false }: { embedded?: boolean }) 
         title={embedded ? '돌아보기' : '날짜별 완료 기록'}
         leading={
           embedded ? undefined : (
-            <IconButton
-              accessibilityLabel="이전 화면으로 돌아가기"
-              onPress={router.back}
-              style={styles.headerButton}
-            >
+            <IconButton {...getScreenBackAction(router)} style={styles.headerButton}>
               <SymbolView
                 name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
                 size={20}

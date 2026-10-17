@@ -16,7 +16,7 @@ import {
 } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type { TaskTemplateResponse } from '@/types';
-import { toApiLocalDate } from '@/utils';
+import { getScreenBackAction, toApiLocalDate } from '@/utils';
 
 import {
   useCreateTaskFromTemplate,
@@ -77,7 +77,7 @@ export function TaskTemplateOverview() {
       <PageHeader
         title="할 일 템플릿"
         leading={
-          <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
+          <IconButton {...getScreenBackAction(router)}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

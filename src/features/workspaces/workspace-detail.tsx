@@ -36,7 +36,7 @@ import type {
   WorkspaceRole,
 } from '@/types';
 import { taskLimits } from '@/types';
-import { formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
+import { getScreenBackAction, formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
 import {
   useInviteWorkspaceMember,
   useRemoveWorkspaceMember,
@@ -103,7 +103,7 @@ export function WorkspaceDetail({ workspaceId }: { workspaceId: number | null })
         title={detail.data?.name ?? '공유 공간'}
         description={detail.data?.description ?? undefined}
         leading={
-          <IconButton accessibilityLabel="공유 공간 목록으로 돌아가기" onPress={router.back}>
+          <IconButton {...getScreenBackAction(router, '/workspaces', '공유 공간 목록으로 이동')}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

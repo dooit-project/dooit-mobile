@@ -24,7 +24,7 @@ import { spacing, useAppTheme } from '@/theme';
 import { env } from '@/config/env';
 import { useAuthState } from '@/features/auth';
 import type { DdayGoalResponse } from '@/types';
-import { formatDateLabel } from '@/utils';
+import { getScreenBackAction, formatDateLabel } from '@/utils';
 import { DdayCreateForm } from './dday-create-form';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from './dday-goal-colors';
 import {
@@ -172,7 +172,7 @@ function DdayPlanOverview({
         <PageHeader
           title="목표"
           leading={
-            <IconButton accessibilityLabel="이전 화면으로 돌아가기" onPress={router.back}>
+            <IconButton {...getScreenBackAction(router)}>
               <MaterialCommunityIcons name="arrow-left" size={22} color={theme.colors.text} />
             </IconButton>
           }

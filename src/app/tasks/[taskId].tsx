@@ -33,7 +33,7 @@ import type {
   TaskType,
   TaskUpsertRequest,
 } from '@/types';
-import { formatDateLabel, formatTimeLabel } from '@/utils';
+import { formatDateLabel, formatTimeLabel, getScreenBackAction } from '@/utils';
 
 export default function TaskDetailScreen() {
   const router = useRouter();
@@ -95,11 +95,7 @@ export default function TaskDetailScreen() {
       <PageHeader
         title={isEditing ? '할 일 수정' : '할 일 상세'}
         leading={
-          <IconButton
-            accessibilityLabel="이전 화면으로 돌아가기"
-            onPress={router.back}
-            style={styles.headerButton}
-          >
+          <IconButton {...getScreenBackAction(router)} style={styles.headerButton}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}

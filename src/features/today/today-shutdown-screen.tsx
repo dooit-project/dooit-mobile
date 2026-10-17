@@ -19,7 +19,7 @@ import { useChangeTaskDate } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
 import type { DailyPlanSummaryResponse, LocalDateString, TaskResponse } from '@/types';
-import { shiftLocalDate, toApiLocalDate } from '@/utils';
+import { getScreenBackAction, shiftLocalDate, toApiLocalDate } from '@/utils';
 
 import {
   getDailyPlanSummaryAccessibilityLabel,
@@ -75,7 +75,7 @@ export function TodayShutdownScreen() {
         title="하루 마감"
         description="끝내지 못한 일을 내일로 옮기거나 기록함에 내려놓아요."
         leading={
-          <IconButton accessibilityLabel="Today 화면으로 돌아가기" onPress={router.back}>
+          <IconButton {...getScreenBackAction(router)}>
             <SymbolView
               name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
               size={20}
