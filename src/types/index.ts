@@ -54,6 +54,17 @@ export type {
 } from './goal-plan';
 export { goalPlanLimits } from './goal-plan';
 export type {
+  GoalDirectLogRequest,
+  GoalDirectLogResponse,
+  GoalJourneyItem,
+  GoalJourneyQuery,
+  GoalJourneyRange,
+  GoalJourneyResponse,
+  GoalJourneySourceType,
+  GoalJourneySummary,
+} from './goal-journey';
+export { goalDirectLogLimits } from './goal-journey';
+export type {
   DailyPlanRequest,
   DailyPlanResponse,
   DailyPlanStatus,

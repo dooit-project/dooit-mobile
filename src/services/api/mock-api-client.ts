@@ -4,6 +4,7 @@ import { createMockGoalStore } from './mock-goal-store';
 import { createMockGoalPlanStore } from './mock-goal-plan-store';
 import { createMockGoalOccurrenceStore } from './mock-goal-occurrence-store';
 import type { MockGoalTaskAction } from './mock-goal-occurrence-store';
+import { createMockGoalDirectLogStore } from './mock-goal-direct-log-store';
 
 import type {
   AuthenticatedUserResponse,
@@ -62,6 +63,7 @@ type MockQueryParams = Record<string, MockQueryValue>;
 type MockApiOptions = {
   query?: MockQueryParams;
   signal?: AbortSignal;
+  idempotencyKey?: string;
 };
 
 const now = '2026-06-30T09:00:00';
@@ -90,6 +92,9 @@ const goalOccurrenceStore = createMockGoalOccurrenceStore({
   goal: (goalId, ownerId, date) => goalStore.snapshotAt(goalId, ownerId, date),
   syncTask: syncGoalOccurrenceTask,
 });
+const goalDirectLogStore = createMockGoalDirectLogStore((goalId, ownerId, date) =>
+  goalStore.snapshotAt(goalId, ownerId, date),
+);
 const WORKSPACES_PATH = '/api/v1/workspaces';
 const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 const recommendedTaskIds = new Set([6]);
@@ -601,6 +606,7 @@ function transferOwnership(sourceUserId: number, targetUserId: number) {
   goalStore.transferOwnership(sourceUserId, targetUserId);
   goalPlanStore.transferOwnership(sourceUserId, targetUserId);
   goalOccurrenceStore.transferOwnership(sourceUserId, targetUserId);
+  goalDirectLogStore.transferOwnership(sourceUserId, targetUserId);
   const transferIds = (store: Map<number, Set<number>>) => {
     const sourceIds = store.get(sourceUserId);
     if (!sourceIds || sourceIds.size === 0) {
@@ -1719,6 +1725,16 @@ export const mockApiClient = {
   async post<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    if (goalDirectLogStore.handles('POST', path)) {
+      return goalDirectLogStore.request(
+        'POST',
+        path,
+        body,
+        getMockActor().id,
+        options.idempotencyKey,
+      ) as T;
+    }
+
     if (goalPlanStore.handles('POST', path)) {
       return goalPlanStore.request('POST', path, body, {
         ownerId: getMockActor().id,
@@ -2193,6 +2209,10 @@ export const mockApiClient = {
   async patch<T>(path: string, _body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    if (goalDirectLogStore.handles('PATCH', path)) {
+      return goalDirectLogStore.request('PATCH', path, _body, getMockActor().id) as T;
+    }
+
     if (goalPlanStore.handles('PATCH', path)) {
       return goalPlanStore.request('PATCH', path, _body, {
         ownerId: getMockActor().id,
@@ -2336,6 +2356,10 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalDirectLogStore.handles('DELETE', path)) {
+      return goalDirectLogStore.request('DELETE', path, undefined, getMockActor().id) as T;
+    }
 
     if (goalOccurrenceStore.handles('DELETE', path)) {
       return goalOccurrenceStore.request(

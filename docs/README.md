@@ -6,7 +6,7 @@
 
 2026-10-18 백엔드 회신은 [회신 대조와 후속 작업](./integration/BACKEND_HANDOFF_2026-10-18.md)에 반영했다. Goal API는 운영 배포/목표 smoke 완료 보고·모바일 미연동, requestedType은 로컬 구현·운영 미배포다. [최신 연동 현황](./integration/FRONTEND_BACKEND_STATUS.md)과 [로드맵](./product/ROADMAP.md)의 다음 순서를 우선한다.
 
-후속 [Goal 클라이언트 기반 F1a](./integration/GOAL_CLIENT_FOUNDATION_2026-10-18.md)는 `0359caf`, [반복 계획·회차 기반 F1b-1](./integration/GOAL_PLAN_CLIENT_FOUNDATION_2026-10-18.md)은 `c3d17cc`로 커밋했다(미검증). [날짜별 회차·Task 동기화 F1b-2](./integration/GOAL_OCCURRENCE_MOCK_2026-10-18.md)는 mock 코드 추가 단계다(미커밋·미검증). 기존 화면의 새 Goal 전환·native 알림·여정 연결은 다음 작업이다.
+후속 Goal 기반은 `0359caf`, 반복 계획은 `c3d17cc`, [회차·Task 동기화](./integration/GOAL_OCCURRENCE_MOCK_2026-10-18.md)는 `39bc77e`로 커밋했다(미검증). [직접 기록·여정 조회 계약 F1c-1](./integration/GOAL_DIRECT_LOG_FOUNDATION_2026-10-18.md)은 코드 추가 단계다(미커밋·미검증). 여정 통합 mock과 기존 화면의 새 Goal 전환·native 알림 연결은 남아 있다.
 
 1. [`product/PRD.md`](./product/PRD.md): 현재 제품 범위·구현 상태·제한
 2. [`product/ROADMAP.md`](./product/ROADMAP.md): 남은 연동·출시 검증 우선순위

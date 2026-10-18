@@ -1,6 +1,8 @@
 # 날짜별 회차와 Task 동기화 — F1b-2
 
-2026-10-18 · 코드 반영, 미커밋·미검증
+2026-10-18 · `39bc77e` 커밋, 미검증
+
+후속 [F1c-1 직접 기록·여정 조회 계약](./GOAL_DIRECT_LOG_FOUNDATION_2026-10-18.md)에서 직접 기록 API/mock과 여정 조회 타입·API를 추가했다. 통합 여정 mock과 일회성 Task Goal 연결은 다음 단위다.
 
 [반복 계획·회차 API 기반](./GOAL_PLAN_CLIENT_FOUNDATION_2026-10-18.md)은 `c3d17cc`로 커밋했다. 이번에는 백엔드 GoalPlanOccurrenceService·GoalPracticeResultService·GoalOccurrenceTaskLinkService·TaskTxService/domain을 대조해 mock의 회차 및 연결 Task를 구현했다. Android/iOS/Web 공통 코드이며 화면/정보 구조 변경·새 의존성·실제 API 호출은 없다.
 
