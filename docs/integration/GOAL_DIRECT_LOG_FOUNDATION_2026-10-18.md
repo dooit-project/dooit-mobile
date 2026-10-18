@@ -1,6 +1,8 @@
 # 직접 기록·여정 조회 계약 — F1c-1
 
-2026-10-18 · 코드 반영, 미커밋·미검증
+2026-10-18 · `8bf28c5` 커밋, 미검증
+
+후속 [F1c-2 목표 여정 집계·일회성 Task 연결](./GOAL_JOURNEY_MOCK_2026-10-18.md)에서 통합 mock과 Goal 연결을 추가했다. 아래 미구현 설명은 F1c-1 당시 범위이며 hook·화면 연결은 여전히 후속이다.
 
 [회차·Task 동기화](./GOAL_OCCURRENCE_MOCK_2026-10-18.md)는 `39bc77e`로 커밋했다. 이번 단계는 GoalDirectLog/Journey controller·DTO·service·domain을 읽고 직접 기록의 저장 기반과 여정 조회 계약을 추가했다. Android/iOS/Web 공통 코드이며 화면·새 의존성·운영 데이터 변경은 없다.
 

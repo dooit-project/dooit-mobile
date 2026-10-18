@@ -37,6 +37,11 @@ function normalize(body: unknown): Normalized {
     invalid('시간대를 확인해 주세요.');
   }
   return {
+    forJourney(ownerId: number, goalId: number) {
+      return [...records.values()]
+        .filter((record) => record.ownerId === ownerId && record.log.goalId === goalId)
+        .map((record) => ({ ...record.log }));
+    },
     title,
     practicedDate: request.practicedDate,
     practicedTimeZone: zone,

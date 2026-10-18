@@ -47,6 +47,13 @@ function content(body: Record<string, unknown>, context: Context) {
     return invalid('본인 소유의 D-Day만 연결할 수 있어요.');
   }
   return {
+    snapshotVersion(goalId: number, ownerId: number, version: number) {
+      find(goalId, ownerId);
+      const selected = versions
+        .get(goalId)!
+        .find((entry) => entry.goal.currentVersion === version)!;
+      return { ...selected.goal };
+    },
     title,
     desiredOutcome: optionalText(body.desiredOutcome, goalLimits.desiredOutcome),
     motivationText: optionalText(body.motivationText, goalLimits.motivationText),

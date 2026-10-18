@@ -53,6 +53,8 @@ export const taskLimits = {
 
 export type TaskUpsertRequest = {
   title: string;
+  /** New personal Goal; independent from D-Day. Null/omission does not unlink on update. */
+  linkedGoalId?: number | null;
   description?: string | null;
   type?: TaskType | null;
   startAt?: LocalDateTimeString | null;
@@ -146,6 +148,7 @@ export type TaskRecurrenceResponse = {
 
 export type TaskResponse = {
   id: number;
+  linkedGoalId?: number | null;
   type: TaskType;
   title: string;
   description: string | null;

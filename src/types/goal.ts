@@ -3,6 +3,8 @@ import type { LocalDateString, LocalDateTimeString } from './date-time';
 /** New Goal IDs belong to /goals, independently of legacy /dday-goals IDs. */
 export type GoalStatus = 'ACTIVE' | 'PAUSED' | 'ACHIEVED' | 'ARCHIVED';
 export type GoalFuturePlanPolicy = 'PAUSE_FUTURE' | 'KEEP_FUTURE';
+export type GoalTaskCreateRequest = { title: string; date: LocalDateString };
+export type GoalTaskLinkRequest = { goalId: number };
 
 export const goalLimits = { title: 120, desiredOutcome: 500, motivationText: 500 } as const;
 

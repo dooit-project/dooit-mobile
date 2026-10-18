@@ -5,6 +5,7 @@ import { createMockGoalPlanStore } from './mock-goal-plan-store';
 import { createMockGoalOccurrenceStore } from './mock-goal-occurrence-store';
 import type { MockGoalTaskAction } from './mock-goal-occurrence-store';
 import { createMockGoalDirectLogStore } from './mock-goal-direct-log-store';
+import { createMockGoalJourneyStore } from './mock-goal-journey-store';
 
 import type {
   AuthenticatedUserResponse,
@@ -18,6 +19,9 @@ import type {
   LoginRequest,
   LocalDateString,
   GoalPlanOccurrenceResponse,
+  GoalResponse,
+  GoalTaskCreateRequest,
+  GoalTaskLinkRequest,
   RegisterRequest,
   TaskRecommendationResponse,
   TaskCategorySummaryResponse,
@@ -56,6 +60,7 @@ import {
   shiftLocalDate,
   toApiLocalDate,
   toApiLocalDateTime,
+  parseApiLocalDate,
 } from '@/utils';
 
 type MockQueryValue = string | number | boolean | null | undefined;
@@ -95,6 +100,25 @@ const goalOccurrenceStore = createMockGoalOccurrenceStore({
 const goalDirectLogStore = createMockGoalDirectLogStore((goalId, ownerId, date) =>
   goalStore.snapshotAt(goalId, ownerId, date),
 );
+const goalJourneyStore = createMockGoalJourneyStore({
+  goal: (goalId, ownerId) =>
+    goalStore.request('GET', `/api/v1/goals/${goalId}`, undefined, {
+      ownerId,
+      visibleDdayIds: [],
+    }) as GoalResponse,
+  goalVersion: (goalId, ownerId, version) => goalStore.snapshotVersion(goalId, ownerId, version),
+  logs: (ownerId, goalId) => goalDirectLogStore.forJourney(ownerId, goalId),
+  occurrences: (ownerId, goalId) => goalOccurrenceStore.forJourney(ownerId, goalId),
+  plans: (ownerId) => goalPlanStore.forMaterialization(ownerId),
+  tasks: (ownerId) =>
+    getVisibleTasks()
+      .filter(
+        (task) =>
+          !goalLinkedTaskOwners.has(task.id) || goalLinkedTaskOwners.get(task.id) === ownerId,
+      )
+      .map(cloneTask),
+  isOccurrenceTask: (taskId, ownerId) => goalOccurrenceStore.forTask(taskId, ownerId) !== null,
+});
 const WORKSPACES_PATH = '/api/v1/workspaces';
 const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 const recommendedTaskIds = new Set([6]);
@@ -108,6 +132,7 @@ let nextWorkspaceMemberId = 1;
 let nextChecklistItemId = 1;
 let currentUser: UserResponse | null = null;
 const taskIdsByUser = new Map<number, Set<number>>();
+const goalLinkedTaskOwners = new Map<number, number>();
 const goalIdsByUser = new Map<number, Set<number>>();
 const taskTemplates: TaskTemplateResponse[] = [];
 const workspaces: WorkspaceResponse[] = [];
@@ -273,6 +298,7 @@ function createTask(
     deferReason: overrides.deferReason ?? null,
     deferReasonLabel: overrides.deferReasonLabel ?? null,
     ddayGoalId: overrides.ddayGoalId ?? null,
+    linkedGoalId: overrides.linkedGoalId ?? null,
     ddayGoalTitle: overrides.ddayGoalTitle ?? null,
     ddayGoalTargetDate: overrides.ddayGoalTargetDate ?? null,
     ddayDaysLeft: overrides.ddayDaysLeft ?? null,
@@ -585,6 +611,8 @@ function getVisibleTasks() {
   return tasks.filter(
     (task) =>
       (!ownedIds || ownedIds.has(task.id)) &&
+      (!goalLinkedTaskOwners.has(task.id) ||
+        goalLinkedTaskOwners.get(task.id) === getMockActor().id) &&
       goalOccurrenceStore.canAccessTask(task.id, getMockActor().id),
   );
 }
@@ -603,6 +631,9 @@ function rememberGoal(goalId: number) {
 }
 
 function transferOwnership(sourceUserId: number, targetUserId: number) {
+  goalLinkedTaskOwners.forEach((ownerId, taskId) => {
+    if (ownerId === sourceUserId) goalLinkedTaskOwners.set(taskId, targetUserId);
+  });
   goalStore.transferOwnership(sourceUserId, targetUserId);
   goalPlanStore.transferOwnership(sourceUserId, targetUserId);
   goalOccurrenceStore.transferOwnership(sourceUserId, targetUserId);
@@ -790,6 +821,47 @@ function applyTaskRequest(task: TaskResponse, request: TaskUpsertRequest) {
   applyTaskRecurrence(task, request);
   task.updatedAt = now;
 
+  return cloneTask(task);
+}
+
+function requirePersonalGoal(goalId: number) {
+  if (!Number.isSafeInteger(goalId) || goalId < 1) {
+    throw new ApiClientError('목표 ID를 확인해 주세요.', {
+      kind: 'http',
+      status: 400,
+      code: 10001,
+    });
+  }
+  goalStore.request('GET', `/api/v1/goals/${goalId}`, undefined, {
+    ownerId: getMockActor().id,
+    visibleDdayIds: [],
+  });
+}
+function validateStandaloneGoalTask(task: TaskResponse) {
+  if (task.recurrenceSeriesId || goalOccurrenceStore.forTask(task.id, getMockActor().id)) {
+    throw new ApiClientError('반복 회차의 목표 연결은 계획에서 변경해 주세요.', {
+      kind: 'http',
+      status: 409,
+      code: 70005,
+    });
+  }
+}
+function validateGoalRequest(request: TaskUpsertRequest, task?: TaskResponse) {
+  if (request.linkedGoalId == null) return;
+  if (request.recurrence) {
+    throw new ApiClientError('반복 Task에 일회성 목표를 연결할 수 없어요.', {
+      kind: 'http',
+      status: 400,
+      code: 10001,
+    });
+  }
+  if (task) validateStandaloneGoalTask(task);
+  requirePersonalGoal(request.linkedGoalId);
+}
+function linkPersonalGoal(task: TaskResponse, goalId: number | null) {
+  task.linkedGoalId = goalId;
+  goalLinkedTaskOwners.set(task.id, getMockActor().id);
+  task.updatedAt = toApiLocalDateTime(new Date());
   return cloneTask(task);
 }
 
@@ -1418,6 +1490,14 @@ export const mockApiClient = {
   async get<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    const journeyMatch = /^\/api\/v1\/goals\/(\d+)\/journey$/.exec(path);
+    if (journeyMatch)
+      return goalJourneyStore.get(
+        Number(journeyMatch[1]),
+        getMockActor().id,
+        options.query ?? {},
+      ) as T;
+
     if (goalOccurrenceStore.handles('GET', path)) {
       return goalOccurrenceStore.request(
         'GET',
@@ -1725,6 +1805,41 @@ export const mockApiClient = {
   async post<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    const goalTaskMatch = /^\/api\/v1\/goals\/(\d+)\/tasks$/.exec(path);
+    if (goalTaskMatch) {
+      const goalId = Number(goalTaskMatch[1]);
+      const request = body as GoalTaskCreateRequest | undefined;
+      if (
+        !request ||
+        typeof request.title !== 'string' ||
+        !request.title.trim() ||
+        request.title.length > 30 ||
+        typeof request.date !== 'string' ||
+        !parseApiLocalDate(request.date)
+      ) {
+        throw new ApiClientError('할 일 제목과 날짜를 확인해 주세요.', {
+          kind: 'http',
+          status: 400,
+          code: 10001,
+        });
+      }
+      requirePersonalGoal(goalId);
+      const task = createTask({
+        id: nextTaskId++,
+        title: request.title,
+        type: 'TODO',
+        status: 'TODAY',
+        targetDate: request.date,
+        plannedDate: request.date,
+        todayOrder: getNextTodayOrder(request.date),
+        linkedGoalId: goalId,
+      });
+      task.unscheduled = true;
+      tasks.unshift(task);
+      rememberTask(task.id);
+      return linkPersonalGoal(task, goalId) as T;
+    }
+
     if (goalDirectLogStore.handles('POST', path)) {
       return goalDirectLogStore.request(
         'POST',
@@ -1904,6 +2019,7 @@ export const mockApiClient = {
 
     if (path === TASKS_PATH) {
       const request = body as TaskUpsertRequest;
+      validateGoalRequest(request);
       const task = createTask({
         id: nextTaskId,
         title: request.title,
@@ -1924,6 +2040,8 @@ export const mockApiClient = {
       nextTaskId += 1;
       tasks.unshift(task);
       rememberTask(task.id);
+
+      if (request.linkedGoalId != null) return linkPersonalGoal(task, request.linkedGoalId) as T;
 
       return cloneTask(task) as T;
     }
@@ -2096,6 +2214,15 @@ export const mockApiClient = {
   async put<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    const goalLinkMatch = /^\/api\/v1\/tasks\/(\d+)\/goal-link$/.exec(path);
+    if (goalLinkMatch) {
+      const task = getTask(Number(goalLinkMatch[1]));
+      const request = body as GoalTaskLinkRequest | undefined;
+      validateStandaloneGoalTask(task);
+      requirePersonalGoal(request?.goalId as number);
+      return linkPersonalGoal(task, request!.goalId) as T;
+    }
+
     if (goalOccurrenceStore.handles('PUT', path)) {
       return goalOccurrenceStore.request('PUT', path, body, getMockActor().id, options.query) as T;
     }
@@ -2177,7 +2304,15 @@ export const mockApiClient = {
 
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
-      return applyTaskRequest(getTask(taskId), body as TaskUpsertRequest) as T;
+      const task = getTask(taskId);
+      const request = body as TaskUpsertRequest;
+      validateGoalRequest(request, task);
+      applyTaskRequest(task, request);
+      return (
+        request.linkedGoalId == null
+          ? cloneTask(task)
+          : linkPersonalGoal(task, request.linkedGoalId)
+      ) as T;
     }
 
     const templateId = getTemplateId(path);
@@ -2356,6 +2491,13 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    const goalLinkMatch = /^\/api\/v1\/tasks\/(\d+)\/goal-link$/.exec(path);
+    if (goalLinkMatch) {
+      const task = getTask(Number(goalLinkMatch[1]));
+      validateStandaloneGoalTask(task);
+      return linkPersonalGoal(task, null) as T;
+    }
 
     if (goalDirectLogStore.handles('DELETE', path)) {
       return goalDirectLogStore.request('DELETE', path, undefined, getMockActor().id) as T;

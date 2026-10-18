@@ -57,6 +57,12 @@ function text(value: unknown, max: number): string | null {
 }
 function copy(occurrence: GoalPlanOccurrenceResponse): GoalPlanOccurrenceResponse {
   return {
+    forJourney(ownerId: number, goalId: number) {
+      // Read stored rows without materializing dates or refreshing snapshots/Tasks.
+      return [...records.values()]
+        .filter((record) => record.ownerId === ownerId && record.occurrence.goalId === goalId)
+        .map(response);
+    },
     ...occurrence,
     result: occurrence.result
       ? { ...occurrence.result, difficulties: [...occurrence.result.difficulties] }

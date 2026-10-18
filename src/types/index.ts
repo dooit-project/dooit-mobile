@@ -27,6 +27,8 @@ export type {
   GoalResponse,
   GoalStatus,
   GoalStatusRequest,
+  GoalTaskCreateRequest,
+  GoalTaskLinkRequest,
   GoalUpdateRequest,
 } from './goal';
 export { goalLimits } from './goal';
