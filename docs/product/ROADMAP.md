@@ -10,8 +10,10 @@ Last updated: 2026-10-18
 
 - [x] 목표 중심 요청에 대한 회신을 접수하고 로컬 Goal 계약·DTO/controller와 빠른 기록 회신을 대조했다. 일반 목표 API 전체를 신규 구현 대기로 두지 않는다.
 - [ ] F1. Goal/Plan/회차/직접 기록/여정의 모바일 DTO·API·query key·mock 기반을 추가한다. 기존 D-Day ID/연결과 새 Goal/linkedGoalId를 구분하고 실패·409·비활성 AI 상태를 모델링한다.
-  - [x] F1a 코드 반영: Goal 생성·목록/상세·전체 내용 수정·상태·달성/취소 DTO/API, D-Day와 분리된 query key, 계정별 mock 저장·병합을 추가했다. 날짜 선택·nullable 응답·보관 상태·권한 경계를 모델링했다. [구현 범위](../integration/GOAL_CLIENT_FOUNDATION_2026-10-18.md). 미커밋·미검증이며 화면 연결 완료가 아니다.
-  - [ ] F1b **다음 작업:** Plan/회차 DTO·API·query key·mock을 연결한다. 미래 계획 정책과 Task 동기화·충돌 버전·기본/최소/휴식 경계를 반영한다.
+  - [x] F1a 코드 반영: Goal 생성·목록/상세·전체 내용 수정·상태·달성/취소 DTO/API, D-Day와 분리된 query key, 계정별 mock 저장·병합을 추가했다. 날짜 선택·nullable 응답·보관 상태·권한 경계를 모델링했다. [구현 범위](../integration/GOAL_CLIENT_FOUNDATION_2026-10-18.md). `0359caf`로 커밋했으며 미검증·화면 미연결이다.
+  - [ ] F1b Plan/회차 DTO·API·query key·mock을 연결한다. 미래 계획 정책과 Task 동기화·충돌 버전·기본/최소/휴식 경계를 반영한다.
+    - [x] F1b-1 코드 반영: Plan/회차 DTO·API·query key, 계획 CRUD mock·계정 병합·목표 미래 정책 연결. [상세와 미구현 경계](../integration/GOAL_PLAN_CLIENT_FOUNDATION_2026-10-18.md). 미커밋·미검증·화면 미연결.
+    - [ ] F1b-2 **다음 작업:** version 이력·기간 회차 mock·실천/휴식/409와 연결 Task·체크리스트·focus 동기화. 알림과 일반 Task 조작의 양방향 경계를 포함한다.
   - [ ] F1c 직접 기록·여정 DTO/API/mock, Idempotency-Key와 cursor 충돌·전체 집계를 연결한다. AI 비활성 오류와 독립 ID 연결도 이 단계까지 마무리한다.
 - [ ] F2. 선택된 계획 UI에 Goal 목록·작성/수정·선택 목표일·상태를 연결한다. 기존 D-Day/Task는 보존하며 명시적인 ID 대응·이행 경로를 정한다. 실제 개인 시스템 일괄 이관은 하지 않는다.
 - [ ] F3. 목표 아래 여러 실행 계획과 날짜별 회차를 오늘에 연결한다. 기본/최소/휴식·다음 행동·결과 취소·Task 동기화와 알림 중복 억제를 반영한다. 기간 회차 조회는 1~31일이다.

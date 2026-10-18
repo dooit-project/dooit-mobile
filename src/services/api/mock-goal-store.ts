@@ -66,7 +66,9 @@ function validatePolicy(body: Record<string, unknown>) {
 }
 
 /** In-memory Goal CRUD only. Plans/version history and journey are separate follow-up work. */
-export function createMockGoalStore() {
+export function createMockGoalStore(
+  options: { pauseFuturePlans?: (goalId: number, ownerId: number) => void } = {},
+) {
   let nextId = 1;
   const records = new Map<number, { ownerId: number; goal: GoalResponse }>();
 
@@ -149,6 +151,9 @@ export function createMockGoalStore() {
           goal.status = status as GoalStatus;
           if (status === 'ACTIVE') goal.achievedAt = null;
           if (status === 'ACHIEVED') goal.achievedAt ??= now;
+        }
+        if (goal.status !== 'ACTIVE' && request.futurePlanPolicy !== 'KEEP_FUTURE') {
+          options.pauseFuturePlans?.(goal.id, context.ownerId);
         }
       }
       goal.updatedAt = now;

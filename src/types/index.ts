@@ -31,6 +31,29 @@ export type {
 } from './goal';
 export { goalLimits } from './goal';
 export type {
+  GoalActionVariant,
+  GoalNextActionPatchKind,
+  GoalOccurrenceListQuery,
+  GoalOccurrenceStatus,
+  GoalOccurrenceVersionQuery,
+  GoalPlanActionRequest,
+  GoalPlanActionResponse,
+  GoalPlanCreateRequest,
+  GoalPlanListQuery,
+  GoalPlanOccurrenceResponse,
+  GoalPlanResponse,
+  GoalPlanScheduleRequest,
+  GoalPlanScheduleResponse,
+  GoalPlanStatus,
+  GoalPlanStatusRequest,
+  GoalPlanUpdateRequest,
+  GoalPracticeDifficulty,
+  GoalPracticeResultRequest,
+  GoalPracticeResultResponse,
+  GoalScheduleDay,
+} from './goal-plan';
+export { goalPlanLimits } from './goal-plan';
+export type {
   DailyPlanRequest,
   DailyPlanResponse,
   DailyPlanStatus,

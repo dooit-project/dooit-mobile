@@ -1,6 +1,7 @@
 import { ApiClientError } from './api-error';
 import { getAccessToken } from './auth-token-store';
 import { createMockGoalStore } from './mock-goal-store';
+import { createMockGoalPlanStore } from './mock-goal-plan-store';
 
 import type {
   AuthenticatedUserResponse,
@@ -61,7 +62,15 @@ const AUTH_PATH = '/api/v1/auth';
 const TASKS_PATH = '/api/v1/tasks';
 const TASK_TEMPLATES_PATH = '/api/v1/task-templates';
 const DDAYS_PATH = '/api/v1/dday-goals';
-const goalStore = createMockGoalStore();
+function pauseGoalPlans(goalId: number, ownerId: number): void {
+  goalPlanStore.pauseForGoal(goalId, ownerId);
+}
+const goalStore = createMockGoalStore({
+  pauseFuturePlans: pauseGoalPlans,
+});
+const goalPlanStore = createMockGoalPlanStore((goalId, ownerId) =>
+  goalStore.request('GET', `/api/v1/goals/${goalId}`, undefined, { ownerId, visibleDdayIds: [] }),
+);
 const WORKSPACES_PATH = '/api/v1/workspaces';
 const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 const recommendedTaskIds = new Set([6]);
@@ -503,6 +512,7 @@ function rememberGoal(goalId: number) {
 
 function transferOwnership(sourceUserId: number, targetUserId: number) {
   goalStore.transferOwnership(sourceUserId, targetUserId);
+  goalPlanStore.transferOwnership(sourceUserId, targetUserId);
   const transferIds = (store: Map<number, Set<number>>) => {
     const sourceIds = store.get(sourceUserId);
     if (!sourceIds || sourceIds.size === 0) {
@@ -1237,6 +1247,13 @@ export const mockApiClient = {
   async get<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    if (goalPlanStore.handles('GET', path)) {
+      return goalPlanStore.request('GET', path, undefined, {
+        ownerId: getMockActor().id,
+        query: options.query,
+      }) as T;
+    }
+
     if (goalStore.handles('GET', path)) {
       return goalStore.request('GET', path, undefined, {
         ownerId: getMockActor().id,
@@ -1526,6 +1543,13 @@ export const mockApiClient = {
 
   async post<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalPlanStore.handles('POST', path)) {
+      return goalPlanStore.request('POST', path, body, {
+        ownerId: getMockActor().id,
+        query: options.query,
+      }) as T;
+    }
 
     if (goalStore.handles('POST', path)) {
       return goalStore.request('POST', path, body, {
@@ -1969,6 +1993,13 @@ export const mockApiClient = {
 
   async patch<T>(path: string, _body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalPlanStore.handles('PATCH', path)) {
+      return goalPlanStore.request('PATCH', path, _body, {
+        ownerId: getMockActor().id,
+        query: options.query,
+      }) as T;
+    }
 
     if (goalStore.handles('PATCH', path)) {
       return goalStore.request('PATCH', path, _body, {

@@ -1,6 +1,8 @@
 # Goal 클라이언트 기반 — F1a
 
-2026-10-18 · 코드 반영, 미커밋·미검증
+2026-10-18 · `0359caf` 커밋, 미검증
+
+후속 [F1b-1 반복 계획·회차 기반](./GOAL_PLAN_CLIENT_FOUNDATION_2026-10-18.md)에서 Plan CRUD mock과 미래 계획 정지 정책을 추가했다. 아래 미구현 설명은 F1a 당시 범위이며 회차·Task 동기화는 여전히 후속이다.
 
 [백엔드 회신](./BACKEND_HANDOFF_2026-10-18.md) 이후 첫 구현 단위다. 로컬 백엔드 GoalV1Controller·DTO·GoalService·Goal domain을 대조했다. API 호출·데이터 이관·화면 변경은 하지 않았다. Android/iOS/Web 공통 통신 코드에 해당하며 새 의존성은 없다.
 
