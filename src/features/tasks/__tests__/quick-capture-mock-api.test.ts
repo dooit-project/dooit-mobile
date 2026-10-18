@@ -159,4 +159,161 @@ describe('Mock task quick capture API', () => {
       task: { title: '운동', allDay: true, type: 'SCHEDULE' },
     });
   });
+  test.each([
+    ['오늘 영단어 30개', '2026-10-18'],
+    ['내일 영단어 30개', '2026-10-19'],
+  ])('TODO 선택과 %s는 시각 구간 없이 계획일로 저장한다', async (text, date) => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text,
+        requestedType: 'TODO',
+        referenceDate: '2026-10-18',
+      },
+    );
+    expect(response).toMatchObject({
+      parsed: true,
+      parsedType: 'TODO',
+      parsedDate: date,
+      parsedTime: null,
+      task: {
+        type: 'TODO',
+        plannedDate: date,
+        targetDate: date,
+        status: 'TODAY',
+        startAt: null,
+        endAt: null,
+        allDay: false,
+        unscheduled: true,
+      },
+    });
+    if (date !== '2026-10-18') {
+      const today = await mockApiClient.get<TaskQuickCaptureResponse['task'][]>(
+        '/api/v1/tasks/today',
+        {
+          query: { date: '2026-10-18' },
+        },
+      );
+      expect(today.map((task) => task.id)).not.toContain(response.task.id);
+    }
+  });
+
+  test('날짜 없는 TODO 선택은 referenceDate가 있어도 기록함을 유지한다', async () => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text: '로그인 버튼 연결하기',
+        requestedType: 'TODO',
+        referenceDate: '2026-10-18',
+      },
+    );
+    expect(response).toMatchObject({
+      parsed: false,
+      parsedType: 'TODO',
+      task: { type: 'TODO', status: 'INBOX', plannedDate: null, startAt: null },
+    });
+  });
+
+  test.each(['내일 오후 3시 새로운 생각', '매주 월요일 운동', '2026-02-30 99:99 새로운 생각'])(
+    'IDEA 선택은 %s의 날짜나 시각을 해석하지 않고 보존한다',
+    async (text) => {
+      const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+        '/api/v1/tasks/quick-capture',
+        {
+          text,
+          requestedType: 'IDEA',
+          referenceDate: '2026-10-18',
+        },
+      );
+      expect(response).toMatchObject({
+        parsed: false,
+        parsedType: 'IDEA',
+        parsedDate: null,
+        parsedTime: null,
+        parsedRecurrenceFrequency: null,
+        parsedByDays: [],
+        task: {
+          type: 'IDEA',
+          title: text,
+          plannedDate: null,
+          startAt: null,
+          status: 'INBOX',
+          recurrenceSeriesId: null,
+        },
+      });
+    },
+  );
+
+  test('긴 IDEA 문구는 설명에 전체를 보존한다', async () => {
+    const text = '내일 새로운 아이디어를 생각해 보고 세부 내용을 아주 자세하게 적어 두기';
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text,
+        requestedType: 'IDEA',
+      },
+    );
+    expect(response.task.title).toHaveLength(30);
+    expect(response.task.description).toBe(text);
+  });
+
+  test.each([
+    ['TODO', '내일 오후 3시 공부'],
+    ['TODO', '매주 월요일 운동'],
+    ['SCHEDULE', '회의 준비'],
+    ['UNKNOWN', '내일 공부'],
+    [0, '내일 공부'],
+    ['', '내일 공부'],
+  ])('미지원 유형 조합 %s + %s는 생성하지 않는다', async (requestedType, text) => {
+    const before = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      { text: '검증 전 기록' },
+    );
+    await expect(
+      mockApiClient.post('/api/v1/tasks/quick-capture', {
+        text,
+        requestedType,
+        referenceDate: '2026-10-18',
+      }),
+    ).rejects.toMatchObject({ status: 400, code: 10001 });
+    const after = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      { text: '검증 후 기록' },
+    );
+    expect(after.task.id).toBe(before.task.id + 1);
+  });
+
+  test('SCHEDULE의 주간 반복은 task 원본에도 저장한다', async () => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text: '매주 월요일 운동',
+        requestedType: 'SCHEDULE',
+        referenceDate: '2026-10-18',
+      },
+    );
+    const saved = await mockApiClient.get<TaskQuickCaptureResponse['task']>(
+      `/api/v1/tasks/${response.task.id}`,
+    );
+    expect(saved.recurrenceSeriesId).toBe(response.task.id);
+    expect(saved.recurrenceRule).toContain('BYDAY=MO');
+    expect(saved.recurrence?.frequency).toBe('WEEKLY');
+  });
+
+  test('null 유형은 기존 자동 해석과 같은 종일 일정을 만든다', async () => {
+    const response = await mockApiClient.post<TaskQuickCaptureResponse>(
+      '/api/v1/tasks/quick-capture',
+      {
+        text: '내일 공부',
+        requestedType: null,
+        referenceDate: '2026-10-18',
+      },
+    );
+    expect(response.task).toMatchObject({
+      type: 'SCHEDULE',
+      allDay: true,
+      startAt: '2026-10-19T00:00:00',
+      endAt: '2026-10-20T00:00:00',
+    });
+  });
 });

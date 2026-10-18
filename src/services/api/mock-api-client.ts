@@ -287,6 +287,48 @@ const quickCaptureWeekdays = [
 
 function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
   const originalText = request.text.trim().replace(/\s+/g, ' ');
+  if (!originalText || originalText.length > 100) {
+    throw new ApiClientError('빠른 등록 원문은 1자 이상 100자 이하여야 합니다.', {
+      kind: 'http',
+      status: 400,
+      code: 10001,
+    });
+  }
+  if (
+    request.requestedType != null &&
+    !['TODO', 'SCHEDULE', 'IDEA'].includes(request.requestedType)
+  ) {
+    throw new ApiClientError(
+      'requestedType은 TODO, SCHEDULE, IDEA 문자열 또는 null이어야 합니다.',
+      {
+        kind: 'http',
+        status: 400,
+        code: 10001,
+      },
+    );
+  }
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: request.timeZone || 'Asia/Seoul' });
+  } catch {
+    throw new ApiClientError('올바르지 않은 timezone입니다.', {
+      kind: 'http',
+      status: 400,
+      code: 10001,
+    });
+  }
+  if (request.requestedType === 'IDEA') {
+    return {
+      originalText,
+      title: originalText.slice(0, 30),
+      description: originalText.length > 30 ? originalText : null,
+      parsed: false,
+      parsedDate: null,
+      parsedTime: null,
+      type: 'IDEA' as const,
+      recurrenceFrequency: null,
+      parsedByDays: [],
+    };
+  }
   const referenceDate = request.referenceDate ?? today;
   let parsedDate: LocalDateString | null = null;
   let parsedTime: string | null = null;
@@ -392,6 +434,27 @@ function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
   }
 
   const parsed = parsedDate !== null || parsedTime !== null || recurrenceFrequency !== null;
+  const type: TaskType = request.requestedType ?? (parsed ? 'SCHEDULE' : 'TODO');
+  if (type === 'TODO' && (parsedTime !== null || recurrenceFrequency !== null)) {
+    throw new ApiClientError(
+      'TODO 빠른 등록은 시각 또는 반복 표현을 지원하지 않습니다. 날짜만 입력해주세요.',
+      {
+        kind: 'http',
+        status: 400,
+        code: 10001,
+      },
+    );
+  }
+  if (type === 'SCHEDULE' && !parsed) {
+    throw new ApiClientError(
+      'SCHEDULE 빠른 등록에는 날짜, 시각 또는 지원하는 반복 표현이 필요합니다.',
+      {
+        kind: 'http',
+        status: 400,
+        code: 10001,
+      },
+    );
+  }
   const normalizedTitle =
     consumedTokens
       .reduce((title, token) => title.replace(token, ' '), originalText)
@@ -401,7 +464,8 @@ function parseMockQuickCapture(request: TaskQuickCaptureRequest) {
   return {
     originalText,
     title: normalizedTitle.slice(0, 30),
-    description: originalText.length > 30 ? originalText : null,
+    description: normalizedTitle.length > 30 ? originalText : null,
+    type,
     parsed,
     parsedDate,
     parsedTime,
@@ -1740,24 +1804,44 @@ export const mockApiClient = {
     if (path === `${TASKS_PATH}/quick-capture`) {
       const request = body as TaskQuickCaptureRequest;
       const parsed = parseMockQuickCapture(request);
-      const startAt = parsed.parsedDate
-        ? `${parsed.parsedDate}T${parsed.parsedTime ?? '00:00:00'}`
-        : null;
-      const endAt = parsed.parsedDate
-        ? getMockQuickCaptureEndAt(parsed.parsedDate, parsed.parsedTime)
-        : null;
+      const isSchedule = parsed.type === 'SCHEDULE';
+      const startAt =
+        isSchedule && parsed.parsedDate
+          ? `${parsed.parsedDate}T${parsed.parsedTime ?? '00:00:00'}`
+          : null;
+      const endAt =
+        isSchedule && parsed.parsedDate
+          ? getMockQuickCaptureEndAt(parsed.parsedDate, parsed.parsedTime)
+          : null;
       const task = createTask({
         id: nextTaskId,
         title: parsed.title,
         description: parsed.description,
-        type: parsed.parsed ? 'SCHEDULE' : 'TODO',
+        type: parsed.type,
         startAt,
         endAt,
-        allDay: parsed.parsed && !parsed.parsedTime,
+        allDay: isSchedule && !parsed.parsedTime,
         category: request.defaultCategory ?? null,
         status: parsed.parsed ? 'TODAY' : 'INBOX',
         plannedDate: parsed.parsedDate,
+        targetDate: parsed.parsedDate,
       });
+      task.unscheduled = startAt === null && endAt === null;
+      if (parsed.recurrenceFrequency && startAt) {
+        applyTaskRecurrence(task, {
+          title: task.title,
+          type: task.type,
+          startAt,
+          endAt,
+          allDay: task.allDay,
+          recurrence: {
+            frequency: parsed.recurrenceFrequency,
+            interval: 1,
+            recurrenceRule: `FREQ=WEEKLY;INTERVAL=1;BYDAY=${parsed.parsedByDays.join(',')}`,
+            timeZone: request.timeZone ?? 'Asia/Seoul',
+          },
+        });
+      }
 
       nextTaskId += 1;
       tasks.unshift(task);
@@ -1769,7 +1853,7 @@ export const mockApiClient = {
         originalText: parsed.originalText,
         parsedDate: parsed.parsedDate,
         parsedTime: parsed.parsedTime,
-        parsedType: parsed.parsed ? 'SCHEDULE' : 'TODO',
+        parsedType: parsed.type,
         parsedRecurrenceFrequency: parsed.recurrenceFrequency,
         parsedByDays: parsed.parsedByDays,
         timeZone: request.timeZone ?? 'Asia/Seoul',

@@ -135,3 +135,7 @@ Comparison history:
 3. 320×844 and 390×844 captures confirmed all three labels and touch targets remain visible.
 
 final result: passed
+
+## 2026-10-18 빠른 기록 STG 연동
+
+[코드·자료 사전 검토와 검증 기록](docs/design/QUICK_CAPTURE_STG_INTEGRATION_2026-10-18.md). Today의 TODO 선택을 저장 유형으로 전달하고 mock도 서버와 맞췄다. 기존 UI 구조와 디자인 토큰은 유지했다. 실제 모바일 client→STG 수용 예시는 통과했다. iab/Chrome 연결 불가로 새 화면 캡처·시각·키보드·보조 기술 감사는 보류이며 통과 판정하지 않는다. Android/iOS 실기기와 PRD 배포도 미확인이다.

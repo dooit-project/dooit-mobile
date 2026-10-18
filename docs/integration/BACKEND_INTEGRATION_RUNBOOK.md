@@ -38,6 +38,19 @@ npm run web:real -- --port 8090 --clear
 
 `EXPO_PUBLIC_*` 값은 앱 번들에 포함되므로 토큰, 비밀번호, 서버 secret, API key를 넣지 않는다. `*_OVERRIDE` 값도 동일하게 public 값으로 취급한다.
 
+### localhost STG (2026-10-18)
+
+이 Mac의 STG는 `http://localhost:18080`이다. 기존 localhost:8080은 현재 PRD 포트이므로 STG 확인에 사용하지 않는다.
+
+```bash
+npm run web:stg
+npm run test:stg
+```
+
+Web 서버는 8090, API는 18080을 사용하며 기존 `.env.local`을 수정하지 않는다. STG의 DB/JWT가 분리돼 있으므로 STG용 새 게스트/로그인 session을 사용한다. Android Emulator API는 `http://10.0.2.2:18080`이다.
+
+빠른 기록 requestedType은 STG에서 지원한다. PRD 6cdc9e5는 미지원이므로 새 모바일 운영 release는 PRD API 반영 확인 뒤 진행한다. 자세한 연결·검증 범위와 화면 감사 제한은 [STG 연동 기록](../design/QUICK_CAPTURE_STG_INTEGRATION_2026-10-18.md)을 따른다.
+
 ## 2. 공통 API 응답 계약
 
 real API 응답은 공통 envelope을 사용해야 한다.

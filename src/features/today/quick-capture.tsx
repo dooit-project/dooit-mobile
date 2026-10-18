@@ -73,6 +73,7 @@ export function QuickCapture({
         text: normalizedTitle,
         referenceDate: toApiLocalDate(),
         timeZone: APP_TIME_ZONE,
+        requestedType: 'TODO',
       },
       {
         onSuccess: (response) => {
@@ -160,7 +161,7 @@ export function QuickCapture({
             <TextInput
               ref={inputRef}
               accessibilityLabel="빠르게 할 일 기록"
-              accessibilityHint="날짜와 시간을 해석해 할 일이나 일정으로 저장합니다."
+              accessibilityHint="날짜가 있으면 할 일의 계획일로 저장합니다. 시각과 반복 표현은 지원하지 않습니다."
               editable={!isBusy}
               enterKeyHint="done"
               maxLength={100}

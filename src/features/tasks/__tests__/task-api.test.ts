@@ -58,6 +58,17 @@ describe('Task API', () => {
     });
   });
 
+  test.each(['TODO', 'SCHEDULE', 'IDEA'] as const)(
+    '선택한 %s 유형을 빠른 기록 요청에 보존한다',
+    async (requestedType) => {
+      const request = { text: '내일 기록', requestedType, referenceDate: '2026-10-18' as const };
+      await taskApi.quickCapture(request);
+      expect(postMock).toHaveBeenCalledWith('/api/v1/tasks/quick-capture', request, {
+        signal: undefined,
+      });
+    },
+  );
+
   test('반복 Task 생성 payload를 그대로 전달한다', async () => {
     const request = {
       title: '주간 회의',

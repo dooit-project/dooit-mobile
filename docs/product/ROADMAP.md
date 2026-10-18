@@ -136,3 +136,10 @@ Last updated: 2026-10-18
 - 서버 push: token lifecycle·발송 멱등성·local suppression 검증과 활성화 승인을 거친다.
 
 추가 기능 후보와 제외 범위는 [PRD](./PRD.md), Store·OTA 승격 조건은 [배포 범위 정책](./RELEASE_SCOPE_POLICY.md)를 따른다.
+
+## 2026-10-18 빠른 기록 STG 연결 후속
+
+요청 타입·Today TODO 명시·mock 정책과 `web:stg`를 연결했다. 실제 모바일 apiClient/taskApi를 localhost STG에 연결한 수용 예시는 통과했다. [연동 기록](../design/QUICK_CAPTURE_STG_INTEGRATION_2026-10-18.md)의 결과가 F5/U3의 이전 요청 미전달·호출 보류 설명보다 우선한다. PRD는 미배포다.
+
+- [ ] 브라우저 연결 복구 또는 승인된 대체 도구로 실제 화면 감사.
+- [ ] STG에서 정책 확인 후 backend PRD 반영과 모바일 운영 release를 순서대로 진행.

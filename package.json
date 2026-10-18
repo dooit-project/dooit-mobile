@@ -52,6 +52,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "web:mock": "EXPO_PUBLIC_API_MODE_OVERRIDE=mock expo start --web",
+    "web:stg": "EXPO_PUBLIC_API_MODE_OVERRIDE=real EXPO_PUBLIC_API_URL_OVERRIDE=http://localhost:18080 expo start --web --localhost --port 8090",
     "web:real": "EXPO_PUBLIC_API_MODE_OVERRIDE=real EXPO_PUBLIC_API_URL_OVERRIDE=http://localhost:8080 expo start --web --localhost",
     "web:export:production": "npm run check:web-production-config && expo export --platform web",
     "typecheck": "tsc --noEmit",
@@ -81,6 +82,7 @@
     "smoke:recurrence:real": "node scripts/smoke-recurrence-real.js",
     "smoke:recurrence-actions:real": "node scripts/smoke-recurrence-actions-real.js",
     "test": "jest --runInBand",
+    "test:stg": "DOOIT_STG_INTEGRATION=1 jest --runInBand --runTestsByPath src/features/tasks/__tests__/task-api-stg.integration.test.ts",
     "validate": "npm run typecheck && npm run lint && npm run format:check && npm run docs:check && npm run check:release-static && npm test"
   },
   "jest": {

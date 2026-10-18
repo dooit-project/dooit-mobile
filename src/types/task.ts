@@ -70,6 +70,8 @@ export type TaskQuickCaptureRequest = {
   referenceDate?: LocalDateString | null;
   timeZone?: string | null;
   defaultCategory?: string | null;
+  /** Omitted/null keeps automatic interpretation; requires the updated backend. */
+  requestedType?: TaskType | null;
 };
 
 export type TaskQuickCaptureResponse = {
