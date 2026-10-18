@@ -43,4 +43,3 @@ Bottom fixed navigation about 68px plus safe padding, white with subtle top divi
 
 Critical invariants: small date at top and absolutely NO Today body heading; left menu remains visible; motivation beside dooit remains small; explicit calendar button; preserve goal-task grouping and simple check completion. Use the provided image as continuity reference but specifically remove the large Today header and reduce heavy typography, excess lines and repeated button weight. Render Korean accurately. Current date anchor 2026-10-14 Wednesday. App content only, one single polished native screen.
 ```
-

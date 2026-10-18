@@ -78,4 +78,3 @@ BOTTOM NAV: 4 equal-width destinations, white base and fine gray top divider, re
 Date anchor 2026-10-14, all visible task/event examples refer to today, but no current date displayed. Scheduled study is mock data. Quote already source checked (Laozi chapter64 Korean rendering); attribution opens on quote tap, not visible now.
 Preserve exact Korean copy, clean line spacing, realistic text sizes, no clipped content. User requests final focused Today UI: goal-linked tasks and appointments coexist naturally, unlinked tasks are called simply "할 일", creation consolidated, no clutter.
 ```
-

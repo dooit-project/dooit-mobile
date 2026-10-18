@@ -56,4 +56,3 @@ No invented avatars or user names. All rows fit naturally and retain 44px-ish ta
 
 Current date 2026-10-14 Wednesday. All mock history is prior to today. Preserve exact labels, clean alignment, consistent icon and text weights. No excessive bullet circles beside goal headings; goal typography and a small chevron suffice. Focus visual quality on reduced header height, smaller typography, functional hierarchy, clean navigation. The board should feel like a coherent desirable real app, not a wireframe or presentation covered in annotations.
 ```
-

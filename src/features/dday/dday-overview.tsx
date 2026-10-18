@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -108,12 +108,16 @@ function DdayPlanOverview({
   const matchingGoals = goals.filter((item) =>
     item.title.normalize('NFKC').toLocaleLowerCase().includes(searchTerm),
   );
-  const revealSelectedTab = useCallback(() => {
+  const revealSelectedTab = () => {
+    if (currentGoalId === undefined) return;
+    const x = tabPositions.current[currentGoalId];
+    if (x !== undefined) tabsRef.current?.scrollTo({ x: Math.max(0, x - 8), animated: false });
+  };
+  useEffect(() => {
     if (currentGoalId === undefined) return;
     const x = tabPositions.current[currentGoalId];
     if (x !== undefined) tabsRef.current?.scrollTo({ x: Math.max(0, x - 8), animated: false });
   }, [currentGoalId]);
-  useEffect(() => revealSelectedTab(), [revealSelectedTab]);
   const selectGoal = (id: number) => {
     setSelectedId(id);
     setShowAll(false);

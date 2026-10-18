@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import type { SymbolViewProps } from 'expo-symbols';
 import { SymbolView } from 'expo-symbols';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -6,10 +6,14 @@ import type { ColorValue } from 'react-native';
 
 import { radii, spacing } from '@/theme';
 
+type PlatformSymbolNames = Exclude<SymbolViewProps['name'], string>;
+
 type TabBarIconProps = {
   color: ColorValue;
   focused?: boolean;
-  name: SymbolViewProps['name'];
+  name:
+    | Exclude<SymbolViewProps['name'], PlatformSymbolNames>
+    | (Omit<PlatformSymbolNames, 'web'> & { web?: string });
   size: number;
 };
 
@@ -22,7 +26,7 @@ export function TabBarIcon({ color, name, size }: TabBarIconProps) {
         <WebTabIcon color={color} name={webName} size={size} />
       ) : (
         <SymbolView
-          name={name}
+          name={typeof name === 'object' ? { ios: name.ios, android: name.android } : name}
           size={size}
           tintColor={color}
           type="hierarchical"
@@ -40,7 +44,10 @@ type WebTabIconProps = {
 };
 
 function WebTabIcon({ color, name, size }: WebTabIconProps) {
-  if (name === 'checklist' || name === 'history' || name === 'format-list-bulleted') {
+  if (name === 'checklist') {
+    return <MaterialIcons color={color as string} name="checklist" size={size} />;
+  }
+  if (name === 'history' || name === 'format-list-bulleted') {
     return <MaterialCommunityIcons color={color as string} name={name} size={size} />;
   }
 

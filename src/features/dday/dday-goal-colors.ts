@@ -20,7 +20,9 @@ let memoryColors: GoalColorMap | null = null;
 
 function getWebStorage() {
   try {
-    return Platform.OS === 'web' && typeof globalThis !== 'undefined' && 'localStorage' in globalThis
+    return Platform.OS === 'web' &&
+      typeof globalThis !== 'undefined' &&
+      'localStorage' in globalThis
       ? globalThis.localStorage
       : null;
   } catch {

@@ -29,7 +29,9 @@ export function DdayOrderList({ items, disabled, onMove, onDragging }: Props) {
   const targetIndex = useRef(0);
   const targetItemId = useRef<OrderId | null>(null);
   const latest = useRef({ items, disabled, onMove, onDragging });
-  latest.current = { items, disabled, onMove, onDragging };
+  useEffect(() => {
+    latest.current = { items, disabled, onMove, onDragging };
+  }, [items, disabled, onMove, onDragging]);
 
   useEffect(
     () => () => {
@@ -41,6 +43,8 @@ export function DdayOrderList({ items, disabled, onMove, onDragging }: Props) {
   const itemIds = JSON.stringify(items.map((item) => item.id));
   const responders = useMemo(
     () =>
+      // PanResponder.create stores these callbacks; it invokes them only for gestures.
+      // eslint-disable-next-line react-hooks/refs -- No ref is read while registering handlers.
       (JSON.parse(itemIds) as OrderId[]).map((itemId) => {
         return PanResponder.create({
           onStartShouldSetPanResponder: () => !latest.current.disabled,
@@ -108,6 +112,8 @@ export function DdayOrderList({ items, disabled, onMove, onDragging }: Props) {
   const theme = useAppTheme();
   return (
     <View>
+      {/* panHandlers contain event callbacks, not render-time ref reads. */}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {items.map((item, index) => (
         <Animated.View
           key={item.id}

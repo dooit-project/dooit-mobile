@@ -48,4 +48,3 @@ Bottom anchored FOUR-tab bar 70px approx, subtle hairline top edge, consistent 2
 
 Preserve simple checkbox completion, goal context and quiet motivation. NO progress percentages, no "실천하기", no "추가 노력", no top calendar shortcut, no date/weekday title, no oversized Today heading, no repetitive creation links. Current date anchor 2026-10-14 but DO NOT SHOW current date. Single beautiful polished production-quality Korean app screen.
 ```
-

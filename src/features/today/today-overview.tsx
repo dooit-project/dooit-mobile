@@ -93,8 +93,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                     styles.goalDot,
                     {
                       backgroundColor:
-                        goalColors[String(group.goalId)] ??
-                        getDdayGoalFallbackColor(group.goalId),
+                        goalColors[String(group.goalId)] ?? getDdayGoalFallbackColor(group.goalId),
                     },
                   ]}
                 />
