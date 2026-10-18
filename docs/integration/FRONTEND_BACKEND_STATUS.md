@@ -1,88 +1,65 @@
 # 프론트엔드·백엔드 연동 현황
 
-Last verified: 2026-09-13 (운영 공개 endpoint만 재확인)
+Last updated: 2026-10-18 · 백엔드 전달 자료와 로컬 계약/코드 대조
 
-이 문서는 모바일에서 사용하는 백엔드 계약의 단일 현황판이다. 앞으로 할 일의 우선순위는 [`ROADMAP.md`](../product/ROADMAP.md), 실제 연결 절차는 [`BACKEND_INTEGRATION_RUNBOOK.md`](./BACKEND_INTEGRATION_RUNBOOK.md), 세부 일일 실행 계약은 [`API_DAILY_EXECUTION.md`](../api/API_DAILY_EXECUTION.md)를 따른다.
+모바일의 API 연동 현황판이다. 우선순위는 [로드맵](../product/ROADMAP.md), 이번 회신의 근거·제약·세부 작업은 [2026-10-18 백엔드 회신 반영](./BACKEND_HANDOFF_2026-10-18.md)에서 관리한다.
 
-문서 정리: 2026-09-14. readiness·metadata·익명 OpenAPI는 9월 13일 재조회했다. 백엔드 local source·관련 테스트·guest 응답·migration은 이번에 재확인하지 않았으므로 과거 결과로 구분한다.
+**백엔드 구현/배포 보고와 모바일 연결/검증을 구분한다.** 이번에는 사용자 전달 문서와 같은 작업 폴더의 백엔드 계약·DTO/controller를 읽었다. 운영 API 호출·DB 변경·이관·모바일 테스트/감사는 실행하지 않았다. 직접 수행한 공개 endpoint 검증의 기존 기준은 2026-09-13이며, 아래 10월 운영 확인은 백엔드 보고다.
 
-## 확인 기준
+## 현재 배포 기준
 
-| 구분                         | 확인 결과                                                                               |
-| ---------------------------- | --------------------------------------------------------------------------------------- |
-| 백엔드 source (9월 8일 기록) | local `main` = `d1b2ddc`                                                                |
-| 관련 커밋                    | Workspace 체크리스트, Task 카테고리 요약, 일일 계획 결과 요약, 빠른 등록 구어 표현 파싱 |
-| 관련 테스트                  | Daily Plan 6, Task API 37, Checklist 5, OpenAPI 7 통과                                  |
-| production readiness         | `UP`                                                                                    |
-| production metadata          | `version=1.0-SNAPSHOT`, `commitSha=local`, `imageTag=3bda00c`                           |
-| production OpenAPI           | 익명 요청 HTTP 403                                                                      |
+| 구분                    | 현재 기준과 확인 주체                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 운영 API                | `https://dooitapi.hsng.pe.kr`, 백엔드 보고 image `6cdc9e5`                                                  |
+| 배포 식별               | 백엔드가 image/full commit SHA 일치와 readiness 200/UP 확인 보고                                            |
+| 목표 schema             | 개인 시스템·목표 관련 10-12/14/15/16 migration 적용 완료 보고. 개인 사용자 데이터 이관은 미실행             |
+| 목표 API                | 백엔드가 공개 HTTPS 인증 후 목표/계획·최소 실천·직접 기록 멱등성·여정·다른 owner 404 확인 보고              |
+| 운영 Web                | `https://dooit.hsng.pe.kr`와 API CORS preflight 확인 보고. 모바일 Web UI 전체 감사 통과를 의미하지 않음     |
+| 빠른 기록 requestedType | 로컬 구현·백엔드 통합 테스트 완료 보고. 운영 `6cdc9e5`에는 없음, 배포 일정 미확정                           |
+| AI                      | 목표/계획 초안·조정·여정 요약 API 기반은 배포됐으나 기본 비활성 503. provider adapter/보관·삭제 정책 미확정 |
+| Android                 | 실제 기기 production smoke 미완료                                                                           |
 
-source 구현 완료와 production 반영 완료는 구분한다. 현재 imageTag `3bda00c`는 배포 식별 검사를 통과한다. 다만 commitSha는 `local`이라 태그와 실제 source의 대응을 추가 확인해야 한다. 과거 guest 응답의 refreshToken 누락은 이번에 재검증하지 않았다. 아래 migration 적용 여부도 미확인이다.
+과거 `3bda00c`, metadata `commitSha=local`은 9월 기록이다. 이를 현재 목표 API 배포 차단으로 계속 취급하지 않는다. 새 보고로 모든 기존 기능의 검증 날짜를 일괄 갱신하지도 않는다.
 
-```text
-docs/db/migrations/20260903_add_daily_plan_initial_focus_task.sql
-```
+## 계약과 모바일 상태
 
-## 신규·변경 API와 모바일 상태
+| 기능                                       | 백엔드 회신/로컬 문서에서 확인한 범위                                                | 현재 모바일와 남은 일                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Goal                                       | 새 `/api/v1/goals`, 선택 목표일, 상태·version·D-Day 연결                             | 아직 `/dday-goals` 기반. Goal DTO/API/mock·선택적 날짜·기존 ID 대응부터 연결                                   |
+| Goal Plan/회차                             | 복수/독립 계획, 시간 없는 선택 요일·기본/최소 행동·다음 행동·실천/휴식               | 기존 반복 일정 묶음만 표시. 새 계획과 회차 원본/Task 연결·버전 충돌을 연결                                     |
+| 직접 기록·여정                             | 실제 반복/Task/직접 기록 통합, 전체 범위 집계·cursor·snapshot                        | 기존 완료 Task 주간 목록만 구현. 직접 기록 멱등성·수정/취소·여정 응답·409 cursor 재시작 필요                   |
+| 기존 데이터                                | D-Day 보존, 개인 시스템별 명시적 이관 API                                            | 실제 이관 안 함. D-Day/Goal ID를 동일하게 취급하거나 일괄 이관하지 않음                                        |
+| 빠른 기록                                  | requestedType 생략/null 자동, TODO/IDEA/SCHEDULE 정책·미지원 조합 오류 회신          | 요청 DTO/mock에 새 필드 없음. 저장 원본 우선 안내는 `6b7ac90`. 제품 정책 확인·배포 확인 뒤 타입/mock/호출 연결 |
+| 목표 색상                                  | 확인한 Goal 생성/수정/조회 DTO에 colorKey 없음                                       | 로컬 저장 유지. 서버 색상 계약은 별도 회신 필요                                                                |
+| 목표/항목 순서                             | 이번 보고와 확인한 controller에 G-06 순서 저장 계약 없음                             | 계정/API별 로컬 저장 유지. G-06 추가분은 전달 확인 없음                                                        |
+| AI                                         | API 기반 존재, 기본 비활성                                                           | provider/정책 대기. 수동 CRUD·실천·정형 기록 조회를 우선하고 AI를 필수 조건으로 두지 않음                      |
+| timezone                                   | 사용자 설정 API와 사용자 timezone의 일정 조회 경계 제공. 응답 시각은 서울 wall-clock | 현재 클라이언트 Asia/Seoul 고정. 설정 API·프로필 DTO·날짜 구독·조회 경계의 일관성 검토가 별도 필요             |
+| 기존 일일 계획/체크리스트/검색/반복/템플릿 | 백엔드 구현 보고                                                                     | 기존 클라이언트 연결 유지. 신규 구현 중복 요청 없이 모바일 실제 환경 회귀 확인 필요                            |
+| push                                       | 발송 기반 구현, credential·실수신 확인 잔여                                          | 로컬 알림과 중복 억제·실수신·앱 종료 동작은 미완료                                                             |
 
-2026-10-18 코드 변경: 빠른 기록 성공 안내를 parser metadata 대신 저장된 Task 원본 기준으로 정리하고 `6b7ac90`으로 커밋했다(미검증). 오늘의 할 일 선택을 TODO로 보존하는 필드는 현재 요청 DTO에 없어 [추가 계약 요청](../api/API_QUICK_CAPTURE_TYPE_CHANGE_REQUEST.md)을 별도 작성했다. **미전달·미합의**이며 기존 목표 중심 요청서의 전달 여부와 구분한다. 서버·배포·실 API의 현재 상태는 새로 확인하지 않았다.
+## 다음 프론트 순서
 
-| API                                         | 백엔드 계약                                                                      | 현재 모바일                       | 다음 프론트 작업                   |
-| ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------- |
-| `GET/PUT /api/v1/daily-plans/{date}`        | focus 최대 3개와 `DRAFT/CONFIRMED/CLOSED` 상태                                   | focus 복원·확정·real smoke 추가   | guest 500 복구 후 local·production |
-| `GET /api/v1/daily-plans/{date}/summary`    | 계획 확정 시점 focus 기준 완료·이동·미결정 집계                                  | 하루 마감 결과·real smoke 추가    | migration 후 local·production      |
-| `GET /api/v1/tasks/categories`              | 개인 Task만 집계하며 `category=null`은 `미분류`                                  | drawer·named 이동·real smoke 추가 | null-category 검색·guest 500 복구  |
-| `/api/v1/tasks/{taskId}/checklist-items/**` | 개인·Workspace 지원. ACTIVE 멤버 조회, OWNER/EDITOR 변경, VIEWER 변경 403        | 상세 CRUD·정렬·역할별 local 확인  | production Android smoke           |
-| `POST /api/v1/tasks/quick-capture`          | 축약 상대일, 상대 주+요일, 한국어·슬래시 날짜, 단독 요일, `N시 반`, `HH:mm` 파싱 | 연결·real 입력 smoke 추가         | guest 500 복구 후 local·production |
+1. **Goal 계약 어댑터·DTO/API/mock:** 기존 D-Day 연결과 새 linkedGoalId를 구분한다. 운영 배포는 보고됐으므로 일반 Goal API 전체를 미구현/회신 대기로 두지 않는다.
+2. **목표 작성·계획 연결:** 선택 목표일·목표 상태·여러 실행 계획을 기존 선택 UI에 연결하고 기존 데이터 보존/이행 경로를 정한다.
+3. **오늘 회차:** 기본/최소/휴식·다음 행동·원본 연결 Task를 중복 없이 처리한다. 회차 조회 1~31일과 결과/휴식 충돌을 반영한다.
+4. **직접 기록·여정:** 동일 key 재시도·취소 보존, 전체 집계·페이지·409/70008 재시작을 연결한다. 기존 완료 기록과 데이터 원본을 명확히 구분한다.
+5. **빠른 기록 선택 유형:** 회신 정책 확인과 배포를 기다리는 동안 요청 타입/mock 준비 가능. 운영 지원 확인 전 필드 전송을 활성화하지 않는다.
+6. **독립 잔여:** 색상·G-06 서버 순서, 사용자 timezone 정합성, AI 제공자 정책을 별도 추적한다. 달력의 추가 시각 정리는 핵심 Goal 연동과 구분한다.
 
-기존 개인 Task URL과 DTO에는 깨지는 변경이 없다. 카테고리 요약은 Workspace Task를 포함하지 않으며 카테고리 생성·이름 변경·삭제·사용자 지정 정렬 API를 대신하지 않는다.
-Task `estimatedDurationMinutes`는 5~1440분 입력, 상세 표시와 Today 실행 Task 합계까지 연결했다.
+새 정보 구조/화면 선택지가 있으면 저장소 Product Design 정책을 따른다. 현재 날짜 갱신 코드 등 기존 미커밋 작업은 이번 문서 갱신과 별개로 유지했다. 사용자 요청에 따라 실제 검증은 계속 보류한다.
 
-## 프론트에서 바로 할 수 있는 일
+## 백엔드·운영 후속 확인
 
-1. 카테고리 drawer의 `전체`·이름 있는 개인 카테고리 이동을 real API로 확인하고 null-category 검색 계약 뒤 `미분류`를 활성화한다.
-2. 체크리스트의 Workspace OWNER·EDITOR·VIEWER local 검증은 완료했다. production Android에서 같은 권한 경계를 확인한다.
-3. Daily Plan과 summary를 local real API로 확인하고 migration 미적용·404 상태를 구분한다.
-4. production 배포 확인 뒤 Android 실기기 smoke를 수행한다.
+- requestedType 변경의 최종 커밋·배포 image·적용 일정과 회신 정책의 제품 확인. 상세는 [추가 요청서와 회신 상태](../api/API_QUICK_CAPTURE_TYPE_CHANGE_REQUEST.md).
+- Goal colorKey DTO/수정·기본값/기존 로컬 값 이전, G-06 순서 API·version·안정적 항목 ID. 이번 일반 목표 API 완료 보고만으로 완료 처리하지 않음.
+- 실제 개인 시스템 이관은 별도 사용자 선택과 복구 계획 후 진행. 이미 적용된 schema와 실제 데이터 이관을 구분.
+- Android 실제 기기: 실제 HTTPS URL·login/me·guest/병합·Today 생성/완료·신규 Goal 흐름.
+- 기존 local guest 500/Workspace 반복 Task 연결 500의 특정 재현은 모바일에서 새로 확인하지 않았다. 목표 smoke나 개인 D-Day 연결 회귀 수정만으로 이 두 재현이 모두 복구됐다고 단정하지 않음.
+- 서버 push credential/실수신, host 전원·recovery·offsite backup은 백엔드/운영 범위이며 모바일 저장소에서 구현하지 않음.
+- OpenAPI production 기본 비공개는 회신상 의도한 정책이다. local/test 계약 또는 승인된 명세 접근을 사용하며 익명 공개가 안 된다는 이유만으로 배포 실패로 보지 않음.
 
-검증 중 UI 수정이 필요하면 Product Design 검토와 실제 화면 감사를 진행한다. 로컬 Web 검증은 ChatGPT 앱의 내장 브라우저를 기본으로 사용하며, 접근 실패 시 연결·주소·서버 상태를 먼저 복구한다. 다른 브라우저로 전환한 경우 사유와 실제 환경을 audit에 기록한다.
+## 검증·완료 기준
 
-## 백엔드·운영에 요청할 항목
+백엔드가 확인한 운영 목표 API와 CORS는 보고 근거로 보존한다. 모바일 전체 완료는 목표/계획·회차·직접 기록·여정·기존 데이터 보존·계정/권한·날짜 경계·알림까지 실제 연결한 뒤 승인된 검증을 통해 별도로 판단한다. 현재 테스트·실제 화면 감사·실 API smoke는 보류 중이다.
 
-### 배포에 반드시 필요한 요청
-
-- imageTag `3bda00c`가 포함하는 실제 source SHA와 신규 API·migration 전체의 적용 기록을 제공한다. 과거 local `d1b2ddc` 기록만으로 현재 배포 누락을 단정하지 않는다.
-- metadata의 `commitSha`가 `local`이 아닌 배포 commit을 반환하도록 빌드 정보를 주입한다.
-- 같은 배포의 readiness, metadata, OpenAPI와 migration 적용 기록을 제공한다.
-- 인증된 OpenAPI 확인 방법을 제공하거나 검사 환경에서 계약 문서를 읽을 수 있게 한다.
-- local `POST /api/v1/auth/guest` HTTP 500을 복구하고 8080의 Docker·IntelliJ 중 검증 기준 인스턴스를 하나로 고정한다.
-- Workspace 반복 Task의 D-Day 연결 HTTP 500을 복구한다. 체크리스트 역할 검증은 통과했으며 실패 시 Workspace 자동 정리도 확인했다.
-- Android 실제 기기에서 신규 API와 기존 핵심 흐름을 함께 smoke할 수 있는 production 후보를 고정한다.
-
-### 제품 결정 후 요청할 계약
-
-- 검색 API에 `uncategorized=true`처럼 `category IS NULL`을 명시할 필터를 추가한다. summary API만으로는 `미분류` count는 알 수 있지만 cursor pagination을 보존한 목록 탐색은 불가능하다.
-- 카테고리 관리가 필요해지면 생성·이름 변경·삭제·사용자 지정 순서와 삭제 시 Task 처리 정책을 추가한다.
-- 단건 계획·마감 처리의 부분 실패가 반복 확인될 때만 atomic batch mutation을 요청한다.
-- Web 운영 형태를 정한 뒤 refresh credential의 HttpOnly cookie 계약을 확정한다.
-- 서버 push를 활성화할 때 token 등록·해제, 발송 멱등성과 local 알림 억제 소유권을 production에서 검증한다.
-
-이미 source에 구현된 일일 계획, 예상 소요 시간, summary, 개인 카테고리 요약, 개인·Workspace 체크리스트와 빠른 등록 파싱을 다시 신규 구현 요청하지 않는다.
-
-## 신규 제품 방향 요청 — 계약 미확정
-
-2026-10-12 시스템·실천 증거·AI 회고·다독임 요구를 [복사 전달용 백엔드 개발 요청서](../api/API_PERSONAL_SYSTEMS_REQUEST.md)에 정리했다. 신규 API 경로는 제안이며 백엔드 구현·배포·합의를 확인하지 않았다. 사용자 확인으로 요청서는 2026-10-12 백엔드 담당자에게 전달 완료했으며 회신 대기 상태다. 이 기록은 위 기존 API의 검증 날짜를 갱신하지 않는다. 프론트엔드 작업과 제품 원칙은 [제품 제안](../product/PERSONAL_SYSTEM_EXPERIENCE.md), 순서는 [로드맵](../product/ROADMAP.md)을 따른다.
-
-## 완료 판정
-
-- production metadata가 배포 commit/image를 식별한다.
-- 필수 migration과 실행 OpenAPI가 같은 배포 단위를 가리킨다.
-- 위 표의 Daily Plan·summary·category·checklist·quick-capture 계약에 대한 mobile mock·real 테스트가 통과한다.
-- Workspace OWNER/EDITOR/VIEWER 권한 차이가 UI와 HTTP 결과에서 일치한다.
-- Android production smoke 결과가 [`SMOKE_TEST_LOG.md`](../qa/SMOKE_TEST_LOG.md)에 기록된다.
-
-## 목표 중심 범위 수정 — 전달 완료, 회신 대기
-
-2026-10-13 사용자가 목표 하나에 여러 반복 계획과 일회성 노력을 연결하고 목표별 지나온 길을 보는 경험을 명확히 요청했다. [목표 중심 변경 요청서](../api/API_GOAL_JOURNEY_CHANGE_REQUEST.md)는 기존 전달본의 단일 시스템 제한을 수정하며, 사용자 확인으로 백엔드 담당자에게 전달됐다. 회신·계약 합의·구현·배포는 미확인이다. [일상 반복 보충 확인서](../api/API_PERSONAL_SYSTEMS_DAILY_CLARIFICATION.md)는 이 변경 요청에서 참조해 함께 전달됐으며 별도 중복 요청하지 않는다.
-
-2026-10-14 목표 색상도 계정 간 동기화가 필요한 Goal 속성으로 추가 요청했다. 프론트 초기 구현은 기존 API와 병행하기 위해 로컬 색상과 ID 기반 기본색을 사용하며, 백엔드 `colorKey` 생성·조회·수정 계약이 배포되면 서버 값을 우선하고 로컬 선택을 한 번 이전해야 한다.
+기존 2026-09-13의 운영 점검과 local Workspace 체크리스트 역할 검증 기록은 [smoke log](../qa/SMOKE_TEST_LOG.md)에 남긴다. 이번 문서 검토를 새 모바일 통과 기록으로 추가하지 않는다.

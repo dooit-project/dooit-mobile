@@ -4,6 +4,8 @@
 
 ## 현재 상태를 확인하는 순서
 
+2026-10-18 백엔드 회신은 [회신 대조와 후속 작업](./integration/BACKEND_HANDOFF_2026-10-18.md)에 반영했다. Goal API는 운영 배포/목표 smoke 완료 보고·모바일 미연동, requestedType은 로컬 구현·운영 미배포다. [최신 연동 현황](./integration/FRONTEND_BACKEND_STATUS.md)과 [로드맵](./product/ROADMAP.md)의 다음 순서를 우선한다.
+
 1. [`product/PRD.md`](./product/PRD.md): 현재 제품 범위·구현 상태·제한
 2. [`product/ROADMAP.md`](./product/ROADMAP.md): 남은 연동·출시 검증 우선순위
 3. [`integration/FRONTEND_BACKEND_STATUS.md`](./integration/FRONTEND_BACKEND_STATUS.md): 현재 API 계약, 프론트 실행 항목과 백엔드 요청
@@ -14,7 +16,8 @@
 
 ## 최신 UI·UX 검토
 
-- [달력 선택 날짜·표시 범위 정합성](./design/CALENDAR_DATE_SCOPE_2026-10-18.md): 3주에 포함된 달 조회·이전 날짜 placeholder 제거·범위 오류 재시도. 미커밋·미검증
+- [자정·복귀 후 오늘 기준일 갱신](./design/APP_TODAY_ROLLOVER_2026-10-18.md): 공통 날짜 구독·선택 맥락 보존·응답 날짜별 이동/완료 캐시. 미커밋·미검증
+- [달력 선택 날짜·표시 범위 정합성](./design/CALENDAR_DATE_SCOPE_2026-10-18.md): 3주에 포함된 달 조회·이전 날짜 placeholder 제거·범위 오류 재시도. `f3ad95a` 커밋·미검증
 - [빠른 기록 결과 안내 정합성](./design/QUICK_CAPTURE_RESULT_CONSISTENCY_2026-10-18.md): 실제 저장 원본 기준 안내·중복 제출 잠금, 선택 유형 보존은 백엔드 추가 요청 미전달
 - [계정 화면 집중 구성 시안 3개](./design/account-focus-2026-10-17/README.md): 추천 1번 반영, `2cbbb82` 커밋·푸시. 구현 미검증
 - [왼쪽 메뉴 밀도·중복 목적지 시안 3개](./design/menu-navigation-2026-10-17/README.md): 추천 2번 진행 승인, 보조 기능 9개·작은 헤더·간결한 행 코드 반영. 구현 미검증
