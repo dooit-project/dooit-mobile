@@ -74,6 +74,13 @@ export function getThreeWeekCalendarDates(value: LocalDateString): LocalDateStri
   );
 }
 
+/** The three-week grid may include dates in two different months or years. */
+export function getCalendarMonthStarts(dates: LocalDateString[]): LocalDateString[] {
+  return [
+    ...new Set(dates.filter(isLocalDateString).map((date) => `${date.slice(0, 7)}-01`)),
+  ].sort();
+}
+
 export function shiftMonth(value: LocalDateString, amount: number): LocalDateString | null {
   if (!isLocalDateString(value) || !Number.isInteger(amount)) {
     return null;

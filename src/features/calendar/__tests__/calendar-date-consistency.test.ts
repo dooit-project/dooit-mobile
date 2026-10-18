@@ -3,7 +3,12 @@ import type { TaskResponse } from '@/types';
 import { shiftLocalDate, toApiLocalDate } from '@/utils';
 
 import { dedupeCalendarDayTasks, getCalendarDayQueryKeys } from '../calendar-day-query';
-import { getMonthCalendarDates, getWeekDates } from '../calendar-date';
+import {
+  getCalendarMonthStarts,
+  getMonthCalendarDates,
+  getThreeWeekCalendarDates,
+  getWeekDates,
+} from '../calendar-date';
 
 describe('Today와 Calendar 날짜 일관성', () => {
   it('서울 자정 전후 instant를 서로 다른 로컬 날짜로 계산한다', () => {
@@ -39,5 +44,26 @@ describe('Calendar 선택 날짜 일정 중복 방지', () => {
     } as TaskResponse;
 
     expect(dedupeCalendarDayTasks([task, { ...task }])).toEqual([task]);
+  });
+});
+
+describe('3주 달력의 월 조회 범위', () => {
+  it('월초에 보이는 이전 달도 포함하고 날짜를 옮겨도 같은 월 key를 사용한다', () => {
+    expect(getCalendarMonthStarts(getThreeWeekCalendarDates('2026-10-01'))).toEqual([
+      '2026-09-01',
+      '2026-10-01',
+    ]);
+    expect(getCalendarMonthStarts(getThreeWeekCalendarDates('2026-10-02'))).toEqual([
+      '2026-09-01',
+      '2026-10-01',
+    ]);
+  });
+
+  it('연말의 다음 해 날짜를 포함하고 잘못된 날짜는 조회하지 않는다', () => {
+    expect(getCalendarMonthStarts(getThreeWeekCalendarDates('2026-12-31'))).toEqual([
+      '2026-12-01',
+      '2027-01-01',
+    ]);
+    expect(getCalendarMonthStarts(['잘못된 날짜', '2026-02-30'])).toEqual([]);
   });
 });

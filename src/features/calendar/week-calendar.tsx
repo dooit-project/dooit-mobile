@@ -4,8 +4,9 @@ import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { AppText, Screen } from '@/components/ui';
+import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { ContextualFeatureTip } from '@/features/onboarding';
+import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme, useMobileLayout } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 import { formatDateLabel, isLocalDateString, shiftLocalDate, toApiLocalDate } from '@/utils';
@@ -14,7 +15,7 @@ import { CalendarDayTasks } from './calendar-day-tasks';
 import { getThreeWeekCalendarDates } from './calendar-date';
 import { CALENDAR_DAY_WIDTH, getCalendarColumnBoundaryPercent } from './calendar-layout';
 import { CalendarPeriodBars, CalendarSingleDayLabels } from './calendar-period-bars';
-import { useCalendarRangeTasks } from './use-calendar-range-tasks';
+import { useCalendarVisibleTasks } from './use-calendar-visible-tasks';
 
 const weekdayLabels = ['월', '화', '수', '목', '금', '토', '일'];
 
@@ -29,7 +30,7 @@ export function WeekCalendar() {
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [pickerYear, setPickerYear] = useState(() => Number(selectedDate.slice(0, 4)));
   const calendarDates = useMemo(() => getThreeWeekCalendarDates(selectedDate), [selectedDate]);
-  const rangeTasks = useCalendarRangeTasks('MONTH', selectedDate);
+  const rangeTasks = useCalendarVisibleTasks(calendarDates);
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
   };
@@ -66,7 +67,7 @@ export function WeekCalendar() {
       <ContextualFeatureTip
         message="날짜를 누르면 그날의 할 일과 일정을 볼 수 있어요. 여러 날 일정은 이어진 막대로 표시해요."
         tipIds={['calendar.overview']}
-        title="Calendar 보는 방법"
+        title="달력 보는 방법"
       />
       <View style={styles.calendarSurface}>
         <View style={styles.calendarHeading}>
@@ -134,6 +135,23 @@ export function WeekCalendar() {
           />
         ) : null}
 
+        {rangeTasks.isPending ? (
+          <AppText accessibilityLiveRegion="polite" tone="secondary" variant="caption">
+            달력 일정을 불러오고 있어요.
+          </AppText>
+        ) : rangeTasks.error ? (
+          <InlineNotice
+            title="달력 일정을 불러오지 못했어요"
+            message={getUserFacingApiErrorMessage(rangeTasks.error)}
+            tone="danger"
+            action={
+              <Button variant="ghost" size="compact" onPress={() => void rangeTasks.refetch()}>
+                다시 시도
+              </Button>
+            }
+          />
+        ) : null}
+
         <MonthDateGrid
           dates={calendarDates}
           selectedDate={selectedDate}
@@ -144,7 +162,7 @@ export function WeekCalendar() {
         />
       </View>
 
-      <CalendarDayTasks date={selectedDate} />
+      <CalendarDayTasks key={selectedDate} date={selectedDate} />
     </Screen>
   );
 }

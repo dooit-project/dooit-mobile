@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Platform } from 'react-native';
 
 import { taskApi } from '@/features/tasks';
@@ -13,13 +13,11 @@ export function useCalendarDayTasks(date: LocalDateString) {
     queryKey: queryKeys.scheduled,
     queryFn: ({ signal }) => taskApi.getToday(date, signal),
     enabled: canFetch,
-    placeholderData: keepPreviousData,
   });
   const doneQuery = useQuery({
     queryKey: queryKeys.done,
     queryFn: ({ signal }) => taskApi.getDone(date, signal),
     enabled: canFetch,
-    placeholderData: keepPreviousData,
   });
   const queries = [scheduledQuery, doneQuery];
 

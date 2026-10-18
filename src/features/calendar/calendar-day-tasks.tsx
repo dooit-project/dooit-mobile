@@ -46,7 +46,7 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
       ) : null}
 
       {query.isPending ? (
-        <ListSkeleton accessibilityLabel={`${dateLabel} Task를 불러오는 중`} count={2} />
+        <ListSkeleton accessibilityLabel={`${dateLabel} 항목을 불러오는 중`} count={2} />
       ) : query.error ? (
         <InlineNotice
           action={
@@ -55,7 +55,7 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
             </Button>
           }
           message={getUserFacingApiErrorMessage(query.error)}
-          title="이 날짜의 Task를 불러오지 못했어요"
+          title="이 날짜의 항목을 불러오지 못했어요"
           tone="danger"
         />
       ) : !hasTasks ? (
