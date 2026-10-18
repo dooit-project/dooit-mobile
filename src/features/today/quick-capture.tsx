@@ -37,6 +37,7 @@ export function QuickCapture({
     paddingTop: screenPadding,
   };
   const inputRef = useRef<TextInput>(null);
+  const submittingRef = useRef(false);
   const today = toApiLocalDate();
   const quickCapture = useQuickCaptureTask();
   const moveToToday = useMoveTaskToToday(today);
@@ -44,7 +45,8 @@ export function QuickCapture({
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [result, setResult] = useState<TaskQuickCaptureResponse | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const canSubmit = title.trim().length > 0 && !quickCapture.isPending;
+  const isBusy = quickCapture.isPending || moveToToday.isPending;
+  const canSubmit = title.trim().length > 0 && !isBusy;
 
   const handleChange = (value: string) => {
     setTitle(value);
@@ -55,6 +57,7 @@ export function QuickCapture({
   };
 
   const handleSubmit = () => {
+    if (submittingRef.current || isBusy) return;
     const normalizedTitle = title.trim();
 
     if (!normalizedTitle) {
@@ -63,6 +66,7 @@ export function QuickCapture({
       return;
     }
 
+    submittingRef.current = true;
     quickCapture.mutate(
       {
         text: normalizedTitle,
@@ -76,6 +80,9 @@ export function QuickCapture({
           onCaptured?.(response);
           Keyboard.dismiss();
         },
+        onSettled: () => {
+          submittingRef.current = false;
+        },
       },
     );
   };
@@ -85,18 +92,24 @@ export function QuickCapture({
     requestAnimationFrame(() => inputRef.current?.focus());
   };
   const closeComposer = useCallback(() => {
+    if (submittingRef.current || quickCapture.isPending || moveToToday.isPending) return;
     onExpandedChange(false);
     setValidationMessage(null);
     setResult(null);
     moveToToday.reset();
     Keyboard.dismiss();
-  }, [moveToToday, onExpandedChange]);
+  }, [moveToToday, onExpandedChange, quickCapture.isPending]);
 
   const handleMoveToToday = () => {
-    if (!result) return;
+    if (!result || isBusy || submittingRef.current) return;
 
+    submittingRef.current = true;
     moveToToday.mutate(result.task.id, {
-      onSuccess: (task) => setResult((current) => (current ? { ...current, task } : current)),
+      onSuccess: (task) =>
+        setResult((current) => (current?.task.id === task.id ? { ...current, task } : current)),
+      onSettled: () => {
+        submittingRef.current = false;
+      },
     });
   };
 
@@ -107,7 +120,7 @@ export function QuickCapture({
   }, [isExpanded]);
 
   useEffect(() => {
-    if (Platform.OS !== 'web' || !isExpanded || quickCapture.isPending) return;
+    if (Platform.OS !== 'web' || !isExpanded || isBusy) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
@@ -118,7 +131,7 @@ export function QuickCapture({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [closeComposer, isExpanded, quickCapture.isPending]);
+  }, [closeComposer, isExpanded, isBusy]);
 
   return (
     <View style={[styles.container, containerInsets]}>
@@ -135,7 +148,7 @@ export function QuickCapture({
           <View style={styles.composerRow}>
             <IconButton
               accessibilityLabel="빠른 기록 닫기"
-              disabled={quickCapture.isPending}
+              disabled={isBusy}
               onPress={closeComposer}
               style={styles.closeButton}
             >
@@ -147,18 +160,14 @@ export function QuickCapture({
               ref={inputRef}
               accessibilityLabel="빠르게 할 일 기록"
               accessibilityHint="날짜와 시간을 해석해 할 일이나 일정으로 저장합니다."
-              editable={!quickCapture.isPending}
+              editable={!isBusy}
               enterKeyHint="done"
               maxLength={100}
               onBlur={() => setIsInputFocused(false)}
               onChangeText={handleChange}
               onFocus={() => setIsInputFocused(true)}
               onKeyPress={(event) => {
-                if (
-                  Platform.OS === 'web' &&
-                  event.nativeEvent.key === 'Escape' &&
-                  !quickCapture.isPending
-                ) {
+                if (Platform.OS === 'web' && event.nativeEvent.key === 'Escape' && !isBusy) {
                   closeComposer();
                 }
               }}
@@ -248,7 +257,7 @@ export function QuickCapture({
         </Card>
       ) : showCollapsedTrigger ? (
         <Pressable
-          accessibilityHint="하단 입력창을 열어 기록함에 할 일을 추가합니다."
+          accessibilityHint="입력창을 열어 날짜와 시간을 해석한 기록을 추가합니다."
           accessibilityLabel="빠르게 기록 열기"
           accessibilityRole="button"
           accessibilityState={{ expanded: false }}
