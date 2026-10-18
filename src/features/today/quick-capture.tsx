@@ -1,3 +1,4 @@
+import { useAppToday } from '@/services/time/use-app-today';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -38,9 +39,9 @@ export function QuickCapture({
   };
   const inputRef = useRef<TextInput>(null);
   const submittingRef = useRef(false);
-  const today = toApiLocalDate();
+  const today = useAppToday();
   const quickCapture = useQuickCaptureTask();
-  const moveToToday = useMoveTaskToToday(today);
+  const moveToToday = useMoveTaskToToday();
   const [title, setTitle] = useState('');
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [result, setResult] = useState<TaskQuickCaptureResponse | null>(null);
@@ -216,7 +217,7 @@ export function QuickCapture({
           {result ? (
             <InlineNotice
               actionPosition="bottom"
-              message={getQuickCaptureResultMessage(result)}
+              message={getQuickCaptureResultMessage(result, today)}
               title={result.task.title}
               tone="success"
               action={

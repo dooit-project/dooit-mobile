@@ -135,6 +135,12 @@ export function shiftLocalDate(value: LocalDateString, days: number): LocalDateS
   ].join('-');
 }
 
+export function getMillisecondsUntilNextAppDate(now: Date = new Date()) {
+  const nextDate = shiftLocalDate(toApiLocalDate(now), 1);
+  const midnight = nextDate ? parseApiLocalDate(nextDate) : null;
+  return midnight ? Math.max(1, midnight.getTime() - now.getTime()) : 60_000;
+}
+
 export function formatDateLabel(
   value: LocalDateString,
   options: Intl.DateTimeFormatOptions = {

@@ -1,15 +1,11 @@
+import { useAppToday } from '@/services/time/use-app-today';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { KeyboardAvoidingView, Platform, RefreshControl, StyleSheet, View } from 'react-native';
 import { useEffect, useState } from 'react';
 
 import { InlineNotice, Screen } from '@/components/ui';
 import { getGuestMergeNoticeMessage } from '@/features/auth';
-import {
-  QuickCapture,
-  TodayCaptureDock,
-  TodayOverview,
-  useTodayOverview,
-} from '@/features/today';
+import { QuickCapture, TodayCaptureDock, TodayOverview, useTodayOverview } from '@/features/today';
 import { spacing, useAppTheme } from '@/theme';
 import { toApiLocalDate } from '@/utils';
 
@@ -24,8 +20,7 @@ export default function TodayScreen() {
     planned?: string;
   }>();
   const theme = useAppTheme();
-  const now = new Date();
-  const today = toApiLocalDate(now);
+  const today = useAppToday();
   const overview = useTodayOverview(today);
   const [isQuickCaptureExpanded, setIsQuickCaptureExpanded] = useState(false);
   const [linkedNoticeMessage] = useState(() =>
@@ -73,7 +68,7 @@ export default function TodayScreen() {
             message="먼저 할 일을 확인했어요. 이제 한 가지씩 시작해 보세요."
           />
         ) : null}
-        <TodayOverview date={today} overview={overview} />
+        <TodayOverview key={today} date={today} overview={overview} />
       </Screen>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -91,7 +86,10 @@ export default function TodayScreen() {
               router.push({ pathname: '/tasks/new', params: { type: 'IDEA', quickCapture: '1' } })
             }
             onCreateSchedule={() =>
-              router.push({ pathname: '/tasks/new', params: { date: today, type: 'SCHEDULE' } })
+              router.push({
+                pathname: '/tasks/new',
+                params: { date: toApiLocalDate(), type: 'SCHEDULE' },
+              })
             }
             onCreateTask={() => setIsQuickCaptureExpanded(true)}
           />

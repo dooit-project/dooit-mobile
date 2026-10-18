@@ -12,10 +12,12 @@ import {
   ListSkeleton,
   Screen,
 } from '@/components/ui';
+import { getWeekDates } from '@/features/calendar/calendar-date';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from '@/features/dday';
 import { getUserFacingApiErrorMessage } from '@/services/api';
+import { useAppToday } from '@/services/time/use-app-today';
 import { radii, spacing, useAppTheme } from '@/theme';
-import { formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
+import { formatDateLabel, shiftLocalDate } from '@/utils';
 
 import { type CompletedEvidenceGroup, getCompletedEvidence } from './completed-evidence';
 import { useCompletedWeek } from './use-completed-week';
@@ -25,8 +27,9 @@ const RECORD_BATCH_SIZE = 20;
 export function WeeklyEvidenceOverview() {
   const router = useRouter();
   const theme = useAppTheme();
-  const today = toApiLocalDate();
-  const [selectedDate, setSelectedDate] = useState(today);
+  const today = useAppToday();
+  const [browsedDate, setBrowsedDate] = useState<string | null>(null);
+  const selectedDate = browsedDate ?? today;
   const week = useCompletedWeek(selectedDate);
   const start = week.days[0]?.date ?? selectedDate;
   const end = week.days.at(-1)?.date ?? selectedDate;
@@ -37,7 +40,10 @@ export function WeeklyEvidenceOverview() {
   );
   const moveWeek = (offset: number) => {
     const next = shiftLocalDate(selectedDate, offset);
-    if (next) setSelectedDate(next);
+    if (next) {
+      const nextWeek = getWeekDates(next);
+      setBrowsedDate(nextWeek.includes(today) ? null : next);
+    }
   };
   const rangeOptions: Intl.DateTimeFormatOptions = {
     ...(start.slice(0, 4) !== today.slice(0, 4) || end.slice(0, 4) !== today.slice(0, 4)
@@ -88,7 +94,7 @@ export function WeeklyEvidenceOverview() {
           variant="ghost"
           size="compact"
           disabled={isCurrentWeek}
-          onPress={() => setSelectedDate(today)}
+          onPress={() => setBrowsedDate(null)}
           style={styles.currentWeek}
         >
           이번 주

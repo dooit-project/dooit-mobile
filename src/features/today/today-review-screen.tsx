@@ -18,22 +18,28 @@ import {
 import { useDailyPlan, useReplaceDailyPlan } from '@/features/daily-plan';
 import { TaskCard, useMoveTaskToToday } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
+import { useAppToday } from '@/services/time/use-app-today';
 import { radii, spacing, useAppTheme } from '@/theme';
-import { getScreenBackAction, toApiLocalDate } from '@/utils';
+import type { LocalDateString } from '@/types';
+import { getScreenBackAction } from '@/utils';
 
 import { useTodayOverview } from './use-today-overview';
 import { getDailyPlanFocusTasks } from './today-review-items';
 import { getTodayReviewFocusPresentation, parseTodayReviewFocus } from './today-review-focus';
 
 export function TodayReviewScreen() {
+  const today = useAppToday();
+  return <TodayReviewForDate key={today} today={today} />;
+}
+
+function TodayReviewForDate({ today }: { today: LocalDateString }) {
   const router = useRouter();
   const params = useLocalSearchParams<{ focus?: string | string[] }>();
   const theme = useAppTheme();
-  const today = toApiLocalDate();
   const overview = useTodayOverview(today);
   const dailyPlan = useDailyPlan(today);
   const replaceDailyPlan = useReplaceDailyPlan(today);
-  const moveToToday = useMoveTaskToToday(today);
+  const moveToToday = useMoveTaskToToday();
   const [feedback, setFeedback] = useState<string | null>(null);
   const focus = parseTodayReviewFocus(params.focus);
   const presentation = getTodayReviewFocusPresentation(focus);

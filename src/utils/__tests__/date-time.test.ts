@@ -1,4 +1,5 @@
 import {
+  getMillisecondsUntilNextAppDate,
   isLocalDateString,
   isLocalDateTimeString,
   parseApiLocalDateTime,
@@ -7,6 +8,16 @@ import {
 } from '@/utils/date-time';
 
 describe('API 날짜·시간 변환', () => {
+  test('서울 자정 직전과 직후의 다음 날짜 갱신 시점을 계산한다', () => {
+    expect(getMillisecondsUntilNextAppDate(new Date('2026-10-18T14:59:59.900Z'))).toBe(100);
+    expect(getMillisecondsUntilNextAppDate(new Date('2026-10-18T15:00:00.000Z'))).toBe(86_400_000);
+  });
+
+  test('연말과 윤년의 날짜 경계도 서울 자정을 기준으로 계산한다', () => {
+    expect(getMillisecondsUntilNextAppDate(new Date('2026-12-31T14:00:00Z'))).toBe(3_600_000);
+    expect(getMillisecondsUntilNextAppDate(new Date('2024-02-28T14:59:59Z'))).toBe(1_000);
+  });
+
   test('UTC 시각을 서울 wall-clock 문자열로 변환한다', () => {
     const date = new Date('2026-06-23T06:30:45.000Z');
 

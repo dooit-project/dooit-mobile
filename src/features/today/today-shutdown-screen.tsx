@@ -17,9 +17,10 @@ import {
 import { useDailyPlanSummary } from '@/features/daily-plan';
 import { useChangeTaskDate } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
+import { useAppToday } from '@/services/time/use-app-today';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
 import type { DailyPlanSummaryResponse, LocalDateString, TaskResponse } from '@/types';
-import { getScreenBackAction, shiftLocalDate, toApiLocalDate } from '@/utils';
+import { getScreenBackAction, shiftLocalDate } from '@/utils';
 
 import {
   getDailyPlanSummaryAccessibilityLabel,
@@ -33,9 +34,13 @@ import { useTodayOverview } from './use-today-overview';
 type ShutdownDestination = 'tomorrow' | 'inbox';
 
 export function TodayShutdownScreen() {
+  const today = useAppToday();
+  return <TodayShutdownForDate key={today} today={today} />;
+}
+
+function TodayShutdownForDate({ today }: { today: LocalDateString }) {
   const router = useRouter();
   const theme = useAppTheme();
-  const today = toApiLocalDate();
   const tomorrow = shiftLocalDate(today, 1) ?? today;
   const overview = useTodayOverview(today);
   const dailyPlanSummary = useDailyPlanSummary(today);

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Card, InlineNotice, SectionHeader } from '@/components/ui';
+import { useAppToday } from '@/services/time/use-app-today';
 import { spacing, useMobileLayout } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 import { formatDateLabel, shiftLocalDate, toApiLocalDate } from '@/utils';
@@ -16,14 +17,17 @@ export function TaskDateQuickActions({ task }: TaskDateQuickActionsProps) {
   const { isCompact } = useMobileLayout();
   const changeTaskDate = useChangeTaskDate();
   const [feedback, setFeedback] = useState<string | null>(null);
-  const today = toApiLocalDate();
+  const today = useAppToday();
   const tomorrow = shiftLocalDate(today, 1);
   const nextWeek = shiftLocalDate(today, 7);
   const dateActions = [
-    { label: '오늘', date: today },
-    { label: '내일', date: tomorrow },
-    { label: '7일 후', date: nextWeek },
-  ].filter((action): action is { label: string; date: LocalDateString } => action.date !== null);
+    { label: '오늘', date: today, offset: 0 },
+    { label: '내일', date: tomorrow, offset: 1 },
+    { label: '7일 후', date: nextWeek, offset: 7 },
+  ].filter(
+    (action): action is { label: string; date: LocalDateString; offset: number } =>
+      action.date !== null,
+  );
 
   if (task.status === 'DONE') {
     return null;
@@ -65,7 +69,10 @@ export function TaskDateQuickActions({ task }: TaskDateQuickActionsProps) {
               key={action.date}
               loading={loading}
               variant={selected ? 'secondary' : 'ghost'}
-              onPress={() => changeDate(action.date)}
+              onPress={() => {
+                const targetDate = shiftLocalDate(toApiLocalDate(), action.offset);
+                if (targetDate) changeDate(targetDate);
+              }}
               style={isCompact ? styles.compactActionButton : styles.actionButton}
             >
               {action.label}

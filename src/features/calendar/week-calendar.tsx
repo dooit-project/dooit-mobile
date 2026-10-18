@@ -7,9 +7,10 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { ContextualFeatureTip } from '@/features/onboarding';
 import { getUserFacingApiErrorMessage } from '@/services/api';
+import { useAppToday } from '@/services/time/use-app-today';
 import { radii, spacing, useAppTheme, useMobileLayout } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
-import { formatDateLabel, isLocalDateString, shiftLocalDate, toApiLocalDate } from '@/utils';
+import { formatDateLabel, isLocalDateString, shiftLocalDate } from '@/utils';
 
 import { CalendarDayTasks } from './calendar-day-tasks';
 import { getThreeWeekCalendarDates } from './calendar-date';
@@ -23,10 +24,12 @@ export function WeekCalendar() {
   const router = useRouter();
   const params = useLocalSearchParams<{ date?: string }>();
   const theme = useAppTheme();
-  const today = toApiLocalDate();
-  const [selectedDate, setSelectedDate] = useState<LocalDateString>(
-    params.date && isLocalDateString(params.date) ? params.date : today,
+  const today = useAppToday();
+  const [browsedDate, setBrowsedDate] = useState<LocalDateString | null>(
+    params.date && isLocalDateString(params.date) ? params.date : null,
   );
+  const selectedDate = browsedDate ?? today;
+  const setSelectedDate = (date: LocalDateString) => setBrowsedDate(date === today ? null : date);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [pickerYear, setPickerYear] = useState(() => Number(selectedDate.slice(0, 4)));
   const calendarDates = useMemo(() => getThreeWeekCalendarDates(selectedDate), [selectedDate]);
