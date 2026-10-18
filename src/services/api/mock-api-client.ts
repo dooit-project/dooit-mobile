@@ -1,5 +1,6 @@
 import { ApiClientError } from './api-error';
 import { getAccessToken } from './auth-token-store';
+import { createMockGoalStore } from './mock-goal-store';
 
 import type {
   AuthenticatedUserResponse,
@@ -60,6 +61,7 @@ const AUTH_PATH = '/api/v1/auth';
 const TASKS_PATH = '/api/v1/tasks';
 const TASK_TEMPLATES_PATH = '/api/v1/task-templates';
 const DDAYS_PATH = '/api/v1/dday-goals';
+const goalStore = createMockGoalStore();
 const WORKSPACES_PATH = '/api/v1/workspaces';
 const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 const recommendedTaskIds = new Set([6]);
@@ -500,6 +502,7 @@ function rememberGoal(goalId: number) {
 }
 
 function transferOwnership(sourceUserId: number, targetUserId: number) {
+  goalStore.transferOwnership(sourceUserId, targetUserId);
   const transferIds = (store: Map<number, Set<number>>) => {
     const sourceIds = store.get(sourceUserId);
     if (!sourceIds || sourceIds.size === 0) {
@@ -1234,6 +1237,13 @@ export const mockApiClient = {
   async get<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    if (goalStore.handles('GET', path)) {
+      return goalStore.request('GET', path, undefined, {
+        ownerId: getMockActor().id,
+        visibleDdayIds: getVisibleGoals().map((goal) => goal.id),
+      }) as T;
+    }
+
     if (path === `${AUTH_PATH}/me`) {
       const user = currentUser ?? restoreGuestUserFromAccessToken(getAccessToken()) ?? users[0];
       currentUser = user;
@@ -1516,6 +1526,13 @@ export const mockApiClient = {
 
   async post<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalStore.handles('POST', path)) {
+      return goalStore.request('POST', path, body, {
+        ownerId: getMockActor().id,
+        visibleDdayIds: getVisibleGoals().map((goal) => goal.id),
+      }) as T;
+    }
 
     if (path === `${AUTH_PATH}/guest`) {
       return createTokenResponse(createGuestUser()) as T;
@@ -1953,6 +1970,13 @@ export const mockApiClient = {
   async patch<T>(path: string, _body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    if (goalStore.handles('PATCH', path)) {
+      return goalStore.request('PATCH', path, _body, {
+        ownerId: getMockActor().id,
+        visibleDdayIds: getVisibleGoals().map((goal) => goal.id),
+      }) as T;
+    }
+
     const checklistPath = getChecklistPath(path);
     if (checklistPath?.itemId && checklistPath.done) {
       const item = getChecklistItem(checklistPath.taskId, checklistPath.itemId, true);
@@ -2060,6 +2084,13 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalStore.handles('DELETE', path)) {
+      return goalStore.request('DELETE', path, undefined, {
+        ownerId: getMockActor().id,
+        visibleDdayIds: getVisibleGoals().map((goal) => goal.id),
+      }) as T;
+    }
 
     const checklistPath = getChecklistPath(path);
     if (checklistPath?.itemId) {

@@ -6,6 +6,8 @@
 
 2026-10-18 백엔드 회신은 [회신 대조와 후속 작업](./integration/BACKEND_HANDOFF_2026-10-18.md)에 반영했다. Goal API는 운영 배포/목표 smoke 완료 보고·모바일 미연동, requestedType은 로컬 구현·운영 미배포다. [최신 연동 현황](./integration/FRONTEND_BACKEND_STATUS.md)과 [로드맵](./product/ROADMAP.md)의 다음 순서를 우선한다.
 
+후속 [Goal 클라이언트 기반 F1a](./integration/GOAL_CLIENT_FOUNDATION_2026-10-18.md)는 DTO/API/query key·계정별 mock 코드를 추가한 단계다(미커밋·미검증). 기존 화면의 새 Goal 전환과 Plan/회차·여정 연결은 다음 작업이다.
+
 1. [`product/PRD.md`](./product/PRD.md): 현재 제품 범위·구현 상태·제한
 2. [`product/ROADMAP.md`](./product/ROADMAP.md): 남은 연동·출시 검증 우선순위
 3. [`integration/FRONTEND_BACKEND_STATUS.md`](./integration/FRONTEND_BACKEND_STATUS.md): 현재 API 계약, 프론트 실행 항목과 백엔드 요청

@@ -21,6 +21,16 @@ export type {
 } from './dday';
 export { ddayGoalLimits } from './dday';
 export type {
+  GoalCreateRequest,
+  GoalFuturePlanPolicy,
+  GoalFuturePlanPolicyRequest,
+  GoalResponse,
+  GoalStatus,
+  GoalStatusRequest,
+  GoalUpdateRequest,
+} from './goal';
+export { goalLimits } from './goal';
+export type {
   DailyPlanRequest,
   DailyPlanResponse,
   DailyPlanStatus,
