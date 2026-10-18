@@ -1,6 +1,8 @@
 # 반복 계획·회차 클라이언트 기반 — F1b-1
 
-2026-10-18 · 코드 반영, 미커밋·미검증
+2026-10-18 · `c3d17cc` 커밋, 미검증
+
+후속 [F1b-2 회차와 Task 동기화](./GOAL_OCCURRENCE_MOCK_2026-10-18.md)에서 회차 mock·version 이력·Task/체크리스트/focus 동기화를 추가했다. 아래 미구현 설명은 F1b-1 당시 범위이며 native 알림·hook·화면 연결은 여전히 후속이다.
 
 [F1a 목표 기반](./GOAL_CLIENT_FOUNDATION_2026-10-18.md)은 `0359caf`로 커밋했다. 이번에는 백엔드 GoalPlan/Occurrence controller·요청/응답 DTO·Plan/Occurrence/PracticeResult/TaskLink service와 domain을 읽고 통신 계약 및 계획 관리 mock을 추가했다. 새 화면이나 정보 구조는 변경하지 않았으며 Android/iOS/Web 공통 코드다. 새 의존성은 없다.
 

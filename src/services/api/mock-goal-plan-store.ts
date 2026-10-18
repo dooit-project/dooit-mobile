@@ -6,7 +6,7 @@ import type {
   GoalScheduleDay,
 } from '@/types';
 import { goalPlanLimits } from '@/types';
-import { parseApiLocalDate, toApiLocalDateTime } from '@/utils';
+import { parseApiLocalDate, toApiLocalDate, toApiLocalDateTime } from '@/utils';
 
 import { ApiClientError } from './api-error';
 
@@ -100,10 +100,15 @@ function copy(plan: GoalPlanResponse): GoalPlanResponse {
   };
 }
 
-/** Plan CRUD only: occurrence materialization and linked Task synchronization are not simulated. */
-export function createMockGoalPlanStore(requireGoal: (goalId: number, ownerId: number) => unknown) {
+export type MockGoalPlanVersion = { effectiveFromDate: string; plan: GoalPlanResponse };
+
+export function createMockGoalPlanStore(
+  requireGoal: (goalId: number, ownerId: number) => unknown,
+  suspendFutureTasks?: (planId: number, ownerId: number) => void,
+) {
   let nextId = 1;
   const records = new Map<number, { ownerId: number; plan: GoalPlanResponse }>();
+  const versions = new Map<number, MockGoalPlanVersion[]>();
 
   function content(body: unknown, ownerId: number, pathGoalId?: number) {
     const request = object(body);
@@ -135,6 +140,21 @@ export function createMockGoalPlanStore(requireGoal: (goalId: number, ownerId: n
     return record.plan;
   }
   return {
+    forMaterialization(ownerId: number) {
+      return [...records.values()]
+        .filter((record) => record.ownerId === ownerId)
+        .sort((a, b) => a.plan.id - b.plan.id)
+        .map(({ plan }) => ({
+          plan: copy(plan),
+          versions: versions.get(plan.id)!.map((entry) => ({
+            effectiveFromDate: entry.effectiveFromDate,
+            plan: copy(entry.plan),
+          })),
+        }));
+    },
+    get(planId: number, ownerId: number) {
+      return copy(find(planId, ownerId));
+    },
     transferOwnership(sourceUserId: number, targetUserId: number) {
       records.forEach((record) => {
         if (record.ownerId === sourceUserId) record.ownerId = targetUserId;
@@ -145,6 +165,7 @@ export function createMockGoalPlanStore(requireGoal: (goalId: number, ownerId: n
         if (recordOwner === ownerId && plan.goalId === goalId && plan.status !== 'ARCHIVED') {
           plan.status = 'PAUSED';
           plan.updatedAt = toApiLocalDateTime(new Date());
+          suspendFutureTasks?.(plan.id, ownerId);
         }
       });
     },
@@ -191,6 +212,7 @@ export function createMockGoalPlanStore(requireGoal: (goalId: number, ownerId: n
           updatedAt: null,
         };
         records.set(plan.id, { ownerId, plan });
+        versions.set(plan.id, [{ effectiveFromDate: plan.schedule.startDate, plan: copy(plan) }]);
         return copy(plan);
       }
       const plan = find(Number(path.split('/')[4]), ownerId);
@@ -209,8 +231,15 @@ export function createMockGoalPlanStore(requireGoal: (goalId: number, ownerId: n
         if (request.effectiveFromDate != null) date(request.effectiveFromDate);
         Object.assign(plan, fields);
         plan.currentVersion += 1;
+        versions.get(plan.id)!.push({
+          effectiveFromDate:
+            (request.effectiveFromDate as string | null | undefined) ?? toApiLocalDate(),
+          plan: copy(plan),
+        });
       }
       plan.updatedAt = now;
+      if (path.endsWith('/status') && plan.status !== 'ACTIVE')
+        suspendFutureTasks?.(plan.id, ownerId);
       return copy(plan);
     },
   };

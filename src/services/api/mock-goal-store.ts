@@ -1,6 +1,6 @@
 import type { GoalResponse, GoalStatus } from '@/types';
 import { goalLimits } from '@/types';
-import { parseApiLocalDate, toApiLocalDateTime } from '@/utils';
+import { parseApiLocalDate, toApiLocalDate, toApiLocalDateTime } from '@/utils';
 
 import { ApiClientError } from './api-error';
 
@@ -71,6 +71,7 @@ export function createMockGoalStore(
 ) {
   let nextId = 1;
   const records = new Map<number, { ownerId: number; goal: GoalResponse }>();
+  const versions = new Map<number, { effectiveFromDate: string; goal: GoalResponse }[]>();
 
   function find(goalId: number, ownerId: number) {
     const record = records.get(goalId);
@@ -85,6 +86,13 @@ export function createMockGoalStore(
   }
 
   return {
+    snapshotAt(goalId: number, ownerId: number, date: string) {
+      find(goalId, ownerId);
+      const history = versions.get(goalId)!;
+      const selected =
+        history.filter((entry) => entry.effectiveFromDate <= date).at(-1) ?? history[0];
+      return { ...selected.goal };
+    },
     transferOwnership(sourceUserId: number, targetUserId: number) {
       records.forEach((record) => {
         if (record.ownerId === sourceUserId) record.ownerId = targetUserId;
@@ -121,6 +129,7 @@ export function createMockGoalStore(
           updatedAt: null,
         };
         records.set(goal.id, { ownerId: context.ownerId, goal });
+        versions.set(goal.id, [{ effectiveFromDate: toApiLocalDate(), goal: { ...goal } }]);
         return { ...goal };
       }
 
@@ -133,6 +142,11 @@ export function createMockGoalStore(
         optionalDate(request.effectiveFromDate);
         Object.assign(goal, fields);
         goal.currentVersion += 1;
+        versions.get(goal.id)!.push({
+          effectiveFromDate:
+            (request.effectiveFromDate as string | null | undefined) ?? toApiLocalDate(),
+          goal: { ...goal },
+        });
       } else if (method === 'DELETE') {
         if (goal.status === 'ACHIEVED') {
           goal.status = 'ACTIVE';

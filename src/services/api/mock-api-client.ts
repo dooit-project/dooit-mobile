@@ -2,6 +2,8 @@ import { ApiClientError } from './api-error';
 import { getAccessToken } from './auth-token-store';
 import { createMockGoalStore } from './mock-goal-store';
 import { createMockGoalPlanStore } from './mock-goal-plan-store';
+import { createMockGoalOccurrenceStore } from './mock-goal-occurrence-store';
+import type { MockGoalTaskAction } from './mock-goal-occurrence-store';
 
 import type {
   AuthenticatedUserResponse,
@@ -14,6 +16,7 @@ import type {
   DeferReason,
   LoginRequest,
   LocalDateString,
+  GoalPlanOccurrenceResponse,
   RegisterRequest,
   TaskRecommendationResponse,
   TaskCategorySummaryResponse,
@@ -47,7 +50,12 @@ import type {
   WorkspaceResponse,
 } from '@/types';
 import { deferReasonLabels } from '@/types';
-import { doesScheduleOverlapDate, shiftLocalDate, toApiLocalDate } from '@/utils';
+import {
+  doesScheduleOverlapDate,
+  shiftLocalDate,
+  toApiLocalDate,
+  toApiLocalDateTime,
+} from '@/utils';
 
 type MockQueryValue = string | number | boolean | null | undefined;
 type MockQueryParams = Record<string, MockQueryValue>;
@@ -68,9 +76,20 @@ function pauseGoalPlans(goalId: number, ownerId: number): void {
 const goalStore = createMockGoalStore({
   pauseFuturePlans: pauseGoalPlans,
 });
-const goalPlanStore = createMockGoalPlanStore((goalId, ownerId) =>
-  goalStore.request('GET', `/api/v1/goals/${goalId}`, undefined, { ownerId, visibleDdayIds: [] }),
+function suspendGoalPlanTasks(planId: number, ownerId: number): void {
+  goalOccurrenceStore.suspendPlan(planId, ownerId);
+}
+const goalPlanStore = createMockGoalPlanStore(
+  (goalId, ownerId) =>
+    goalStore.request('GET', `/api/v1/goals/${goalId}`, undefined, { ownerId, visibleDdayIds: [] }),
+  suspendGoalPlanTasks,
 );
+const goalOccurrenceStore = createMockGoalOccurrenceStore({
+  plans: (ownerId) => goalPlanStore.forMaterialization(ownerId),
+  plan: (planId, ownerId) => goalPlanStore.get(planId, ownerId),
+  goal: (goalId, ownerId, date) => goalStore.snapshotAt(goalId, ownerId, date),
+  syncTask: syncGoalOccurrenceTask,
+});
 const WORKSPACES_PATH = '/api/v1/workspaces';
 const WORKSPACE_INVITATIONS_PATH = '/api/v1/workspace-invitations';
 const recommendedTaskIds = new Set([6]);
@@ -558,7 +577,11 @@ function getOwnedIds(store: Map<number, Set<number>>) {
 
 function getVisibleTasks() {
   const ownedIds = getOwnedIds(taskIdsByUser);
-  return ownedIds ? tasks.filter((task) => ownedIds.has(task.id)) : tasks;
+  return tasks.filter(
+    (task) =>
+      (!ownedIds || ownedIds.has(task.id)) &&
+      goalOccurrenceStore.canAccessTask(task.id, getMockActor().id),
+  );
 }
 
 function getVisibleGoals() {
@@ -577,6 +600,7 @@ function rememberGoal(goalId: number) {
 function transferOwnership(sourceUserId: number, targetUserId: number) {
   goalStore.transferOwnership(sourceUserId, targetUserId);
   goalPlanStore.transferOwnership(sourceUserId, targetUserId);
+  goalOccurrenceStore.transferOwnership(sourceUserId, targetUserId);
   const transferIds = (store: Map<number, Set<number>>) => {
     const sourceIds = store.get(sourceUserId);
     if (!sourceIds || sourceIds.size === 0) {
@@ -813,6 +837,83 @@ function setTaskStatus(task: TaskResponse, status: TaskStatus, date?: LocalDateS
   task.updatedAt = now;
 
   return cloneTask(task);
+}
+
+function removeTaskFromFocus(taskId: number) {
+  dailyPlans.forEach((plan) => {
+    plan.focusTaskIds = plan.focusTaskIds.filter((id) => id !== taskId);
+  });
+}
+
+function syncGoalOccurrenceTask(
+  occurrence: GoalPlanOccurrenceResponse,
+  action: MockGoalTaskAction,
+  ownerId: number,
+  completedAt?: string,
+): number | null {
+  let task =
+    occurrence.linkedTaskId === null
+      ? undefined
+      : tasks.find((item) => item.id === occurrence.linkedTaskId);
+  if (action === 'schedule') {
+    if (!task) {
+      task = createTask({
+        id: nextTaskId++,
+        title: '',
+        status: 'TODAY',
+        plannedDate: occurrence.serviceDate,
+        targetDate: occurrence.serviceDate,
+        notificationEnabled: false,
+      });
+      tasks.push(task);
+      const owned = taskIdsByUser.get(ownerId) ?? new Set<number>();
+      owned.add(task.id);
+      taskIdsByUser.set(ownerId, owned);
+    }
+    task.title = (occurrence.snapshotNextAction ?? occurrence.snapshotMinimumActionText).slice(
+      0,
+      255,
+    );
+    task.description =
+      `기본: ${occurrence.snapshotStandardActionText}\n최소: ${occurrence.snapshotMinimumActionText}`.slice(
+        0,
+        255,
+      );
+    task.type = 'TODO';
+    task.startAt = null;
+    task.endAt = null;
+    task.allDay = false;
+    task.category = '목표 계획';
+    task.notificationEnabled = false;
+    task.notifyAt = null;
+    task.status = 'TODAY';
+    task.completedAt = null;
+    task.unscheduled = true;
+    task.plannedDate = occurrence.serviceDate;
+    task.targetDate = occurrence.serviceDate;
+  } else if (task && (action === 'rest' || action === 'suspend')) {
+    setTaskStatus(task, 'INBOX');
+    task.targetDate = null;
+    removeTaskFromFocus(task.id);
+  } else if (task && action === 'reset') {
+    setTaskStatus(task, 'TODAY', occurrence.serviceDate);
+    task.targetDate = occurrence.serviceDate;
+    task.unscheduled = true;
+  } else if (task && action === 'complete') {
+    task.status = 'DONE';
+    task.completedAt = completedAt!;
+    task.todayOrder = null;
+    removeTaskFromFocus(task.id);
+    getChecklist(task.id).forEach((item) => {
+      if (!item.done) {
+        item.done = true;
+        item.completedAt = completedAt!;
+        item.updatedAt = completedAt!;
+      }
+    });
+  }
+  if (task) task.updatedAt = now;
+  return task?.id ?? null;
 }
 
 function getNextTodayOrder(date: LocalDateString) {
@@ -1310,6 +1411,16 @@ function getWorkspaceDdayGoal(workspaceId: number, goalId: number) {
 export const mockApiClient = {
   async get<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalOccurrenceStore.handles('GET', path)) {
+      return goalOccurrenceStore.request(
+        'GET',
+        path,
+        undefined,
+        getMockActor().id,
+        options.query,
+      ) as T;
+    }
 
     if (goalPlanStore.handles('GET', path)) {
       return goalPlanStore.request('GET', path, undefined, {
@@ -1969,6 +2080,10 @@ export const mockApiClient = {
   async put<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    if (goalOccurrenceStore.handles('PUT', path)) {
+      return goalOccurrenceStore.request('PUT', path, body, getMockActor().id, options.query) as T;
+    }
+
     const dailyPlanPath = getDailyPlanPath(path);
     if (dailyPlanPath && !dailyPlanPath.summary) {
       const request = body as DailyPlanRequest;
@@ -2148,6 +2263,15 @@ export const mockApiClient = {
     const date = getDate(options.query);
 
     if (path === `${TASKS_PATH}/${taskId}/done`) {
+      const occurrence = goalOccurrenceStore.forTask(taskId, getMockActor().id);
+      if (occurrence) {
+        goalOccurrenceStore.taskCompleted(
+          taskId,
+          getMockActor().id,
+          toApiLocalDateTime(new Date()),
+        );
+        return cloneTask(task) as T;
+      }
       const completedTask = setTaskStatus(task, 'DONE', date);
       getChecklist(taskId).forEach((item) => {
         if (!item.done) {
@@ -2189,6 +2313,19 @@ export const mockApiClient = {
     }
 
     if (path === `${TASKS_PATH}/${taskId}/done/cancel`) {
+      const occurrence = goalOccurrenceStore.forTask(taskId, getMockActor().id);
+      if (occurrence) {
+        // Validate/rest conflict before mutating the Task, so failure leaves both originals intact.
+        goalOccurrenceStore.taskReopened(taskId, getMockActor().id);
+        const wasPracticed = occurrence.status === 'PRACTICED';
+        const inactive =
+          goalPlanStore.get(occurrence.planId, getMockActor().id).status !== 'ACTIVE';
+        if (wasPracticed && inactive) return cloneTask(task) as T;
+        setTaskStatus(task, 'TODAY', date);
+        task.targetDate = date;
+        task.unscheduled = !task.startAt && !task.endAt;
+        return cloneTask(task) as T;
+      }
       return setTaskStatus(task, 'TODAY', date) as T;
     }
 
@@ -2199,6 +2336,16 @@ export const mockApiClient = {
 
   async delete<T>(path: string, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
+
+    if (goalOccurrenceStore.handles('DELETE', path)) {
+      return goalOccurrenceStore.request(
+        'DELETE',
+        path,
+        undefined,
+        getMockActor().id,
+        options.query,
+      ) as T;
+    }
 
     if (goalStore.handles('DELETE', path)) {
       return goalStore.request('DELETE', path, undefined, {
@@ -2288,6 +2435,16 @@ export const mockApiClient = {
     const taskId = getTaskId(path);
     if (taskId && path === `${TASKS_PATH}/${taskId}`) {
       getTask(taskId);
+      if (goalOccurrenceStore.forTask(taskId, getMockActor().id)) {
+        throw new ApiClientError(
+          '회차 연결 Task는 삭제 대신 휴식 또는 계획 보관을 사용해 주세요.',
+          {
+            kind: 'http',
+            status: 409,
+            code: 70004,
+          },
+        );
+      }
       const index = tasks.findIndex((task) => task.id === taskId);
 
       if (index >= 0) {
