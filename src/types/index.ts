@@ -67,6 +67,16 @@ export type {
 } from './goal-journey';
 export { goalDirectLogLimits } from './goal-journey';
 export type {
+  GoalDraftRequest,
+  GoalDraftResponse,
+  GoalPlanDraftRequest,
+  GoalPlanDraftResponse,
+  GoalAdjustmentDraftRequest,
+  GoalAdjustmentDraftResponse,
+  GoalJourneySummaryRequest,
+  GoalJourneySummaryResponse,
+} from './goal-ai';
+export type {
   DailyPlanRequest,
   DailyPlanResponse,
   DailyPlanStatus,

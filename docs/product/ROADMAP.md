@@ -9,16 +9,16 @@ Last updated: 2026-10-18
 [전달 원문·로컬 계약/DTO 대조 기록](../integration/BACKEND_HANDOFF_2026-10-18.md)을 반영했다. 운영 image `6cdc9e5`의 Goal/Plan/회차·최소 실천·직접 기록·여정·권한 확인과 migration/CORS 완료는 **백엔드 보고**다. 모바일 연결·실기기·실제 개인 데이터 이관 완료가 아니다. 이번에는 코드/문서를 읽었으며 테스트·운영 호출은 기존 사용자 요청대로 보류했다.
 
 - [x] 목표 중심 요청에 대한 회신을 접수하고 로컬 Goal 계약·DTO/controller와 빠른 기록 회신을 대조했다. 일반 목표 API 전체를 신규 구현 대기로 두지 않는다.
-- [ ] F1. Goal/Plan/회차/직접 기록/여정의 모바일 DTO·API·query key·mock 기반을 추가한다. 기존 D-Day ID/연결과 새 Goal/linkedGoalId를 구분하고 실패·409·비활성 AI 상태를 모델링한다.
+- [x] F1 코드 반영. Goal/Plan/회차/직접 기록/여정의 모바일 DTO·API·query key·mock 기반과 오류·비활성 AI 상태를 추가했다. 화면·실제 API 연동 검증 완료가 아니며 각 단계의 제한은 아래 문서에 둔다.
   - [x] F1a 코드 반영: Goal 생성·목록/상세·전체 내용 수정·상태·달성/취소 DTO/API, D-Day와 분리된 query key, 계정별 mock 저장·병합을 추가했다. 날짜 선택·nullable 응답·보관 상태·권한 경계를 모델링했다. [구현 범위](../integration/GOAL_CLIENT_FOUNDATION_2026-10-18.md). `0359caf`로 커밋했으며 미검증·화면 미연결이다.
   - [x] F1b 코드 반영: Plan/회차 DTO·API·query key·mock, 미래 계획 정책과 Task 동기화·충돌 버전·기본/최소/휴식 경계. 미검증이며 hook/화면·실제 알림은 F2/F3 잔여다.
     - [x] F1b-1 코드 반영: Plan/회차 DTO·API·query key, 계획 CRUD mock·계정 병합·목표 미래 정책 연결. [상세와 미구현 경계](../integration/GOAL_PLAN_CLIENT_FOUNDATION_2026-10-18.md). `c3d17cc`로 커밋했으며 미검증·화면 미연결이다.
     - [x] F1b-2 코드 반영: version 이력·기간 회차 mock·실천/휴식/409와 연결 Task·체크리스트·focus 동기화. 알림 후보 중복 억제·Task 완료/재개/삭제 경계를 포함한다. [구현과 제한](../integration/GOAL_OCCURRENCE_MOCK_2026-10-18.md). `39bc77e` 커밋·미검증. native 알림과 hook/화면은 F2/F3 잔여다.
-  - [ ] F1c 직접 기록·여정 DTO/API/mock, Idempotency-Key와 cursor 충돌·전체 집계를 연결한다. AI 비활성 오류와 일회성 Task의 새 Goal 연결도 이 단계까지 마무리한다.
+  - [x] F1c 코드 반영: 직접 기록·여정 DTO/API/mock, Idempotency-Key와 cursor 충돌·전체 집계, AI 비활성 오류·일회성 Task의 새 Goal 연결. 미검증·화면 미연결이다.
     - [x] F1c-1 코드 반영: 직접 기록 생성·수정/취소 API/mock·동일 요청 key replay·계정 병합, 여정 DTO/API/query key·409 식별. [범위와 제한](../integration/GOAL_DIRECT_LOG_FOUNDATION_2026-10-18.md). `8bf28c5` 커밋·미검증이며 화면은 미연결이다.
-    - [x] F1c-2 코드 반영: 일회성 Task의 새 Goal 연결과 여정 통합 mock·원본 중복 제거·전체 집계·cursor scope/version 충돌. [범위와 제한](../integration/GOAL_JOURNEY_MOCK_2026-10-18.md). 미커밋·미검증이며 hook/화면 연결은 F2/F4 잔여다.
-    - [ ] F1c-3 **다음 작업:** AI 비활성 503·사용 제한 상태를 수동 기능과 분리해 모델링한다. provider/보관 정책이 미확정인 AI 호출을 자동 활성화하지 않는다.
-- [ ] F2. 선택된 계획 UI에 Goal 목록·작성/수정·선택 목표일·상태를 연결한다. 기존 D-Day/Task는 보존하며 명시적인 ID 대응·이행 경로를 정한다. 실제 개인 시스템 일괄 이관은 하지 않는다.
+    - [x] F1c-2 코드 반영: 일회성 Task의 새 Goal 연결과 여정 통합 mock·원본 중복 제거·전체 집계·cursor scope/version 충돌. [범위와 제한](../integration/GOAL_JOURNEY_MOCK_2026-10-18.md). `f268a95` 커밋·미검증이며 hook/화면 연결은 F2/F4 잔여다.
+    - [x] F1c-3 코드 반영: AI DTO/API·비활성 503/사용 제한 429·Retry-After·원본 여정 변경·취소의 상태 모델과 기본 비활성 mock. [범위와 제한](../integration/GOAL_AI_FALLBACK_2026-10-18.md). 미커밋·미검증. AI 호출/저장은 자동 활성화하지 않았다. Web 헤더 노출은 별도 백엔드 확인이 남아 있다.
+- [ ] F2. **다음 작업:** 선택된 계획 UI에 Goal 목록·작성/수정·선택 목표일·상태를 연결한다. 기존 D-Day/Task는 보존하며 명시적인 ID 대응·이행 경로를 정한다. 실제 개인 시스템 일괄 이관은 하지 않는다.
 - [ ] F3. 목표 아래 여러 실행 계획과 날짜별 회차를 오늘에 연결한다. 기본/최소/휴식·다음 행동·결과 취소·Task 동기화와 알림 중복 억제를 반영한다. 기간 회차 조회는 1~31일이다.
 - [ ] F4. 이미 한 일 직접 기록·수정/취소와 목표별 통합 여정을 연결한다. 원본 중복 제거·전체 범위 summary·페이지·409/70008 시 cursor 초기화를 처리한다. 현재 완료 Task 주간 목록을 통합 여정으로 간주하지 않는다.
 - [ ] F5. 빠른 기록 requestedType의 회신 정책을 제품에 반영하고 DTO/mock을 준비한다. TODO+시각/지원 반복 400, 날짜 없는 TODO는 INBOX 정책을 명시한다. **운영 미배포이므로 배포 image/일정 확인 전 전송을 활성화하지 않는다.**

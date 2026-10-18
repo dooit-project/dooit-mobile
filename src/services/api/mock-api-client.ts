@@ -1805,6 +1805,30 @@ export const mockApiClient = {
   async post<T>(path: string, body?: unknown, options: MockApiOptions = {}) {
     requireNotAborted(options.signal);
 
+    const aiGoalMatch =
+      /^\/api\/v1\/goals\/(\d+)\/(plan-draft|adjustment-draft|journey-summary)$/.exec(path);
+    if (path === '/api/v1/goals/draft' || aiGoalMatch) {
+      if (aiGoalMatch) {
+        requirePersonalGoal(Number(aiGoalMatch[1]));
+        if (aiGoalMatch[2] === 'adjustment-draft') {
+          const planId = (body as { planId?: number } | undefined)?.planId;
+          const plan = goalPlanStore.get(planId as number, getMockActor().id);
+          if (plan.goalId !== Number(aiGoalMatch[1])) {
+            throw new ApiClientError('선택한 목표에 연결된 계획을 확인해 주세요.', {
+              kind: 'http',
+              status: 400,
+              code: 10001,
+            });
+          }
+        }
+      }
+      throw new ApiClientError('목표 AI 제안을 사용할 수 없습니다.', {
+        kind: 'http',
+        status: 503,
+        code: 70009,
+      });
+    }
+
     const goalTaskMatch = /^\/api\/v1\/goals\/(\d+)\/tasks$/.exec(path);
     if (goalTaskMatch) {
       const goalId = Number(goalTaskMatch[1]);

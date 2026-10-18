@@ -11,6 +11,7 @@ type ApiClientErrorOptions = {
   kind: ApiErrorKind;
   status?: number;
   code?: number;
+  retryAfterSeconds?: number;
   cause?: unknown;
 };
 
@@ -18,6 +19,7 @@ export class ApiClientError extends Error {
   readonly kind: ApiErrorKind;
   readonly status?: number;
   readonly code?: number;
+  readonly retryAt?: number;
 
   constructor(message: string, options: ApiClientErrorOptions) {
     super(message, { cause: options.cause });
@@ -25,7 +27,27 @@ export class ApiClientError extends Error {
     this.kind = options.kind;
     this.status = options.status;
     this.code = options.code;
+    if (options.retryAfterSeconds !== undefined) {
+      const retryAt = Date.now() + options.retryAfterSeconds * 1000;
+      if (Number.isSafeInteger(retryAt) && options.retryAfterSeconds >= 0) this.retryAt = retryAt;
+    }
   }
+}
+
+/** Missing, hidden or invalid headers stay unknown; no invented cooldown. */
+export function parseRetryAfterSeconds(value: string | null, now = Date.now()): number | undefined {
+  if (!value?.trim()) return undefined;
+  const normalized = value.trim();
+  if (/^\d+$/.test(normalized)) {
+    const seconds = Number(normalized);
+    return Number.isSafeInteger(seconds) && Number.isSafeInteger(now + seconds * 1000)
+      ? seconds
+      : undefined;
+  }
+  // Retry-After may also be an HTTP date. Exclude numeric/negative values Date.parse accepts loosely.
+  if (!/^[A-Za-z]{3}, /.test(normalized)) return undefined;
+  const timestamp = Date.parse(normalized);
+  return Number.isFinite(timestamp) ? Math.max(0, Math.ceil((timestamp - now) / 1000)) : undefined;
 }
 
 export function getUserFacingApiErrorMessage(error: unknown) {

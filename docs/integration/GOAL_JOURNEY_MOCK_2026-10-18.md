@@ -1,6 +1,8 @@
 # 목표 여정 집계와 일회성 Task 연결 — F1c-2
 
-2026-10-18 · 코드 반영, 미커밋·미검증
+2026-10-18 · `f268a95` 커밋, 미검증
+
+후속 [F1c-3 AI 비활성·사용 제한 상태](./GOAL_AI_FALLBACK_2026-10-18.md)에서 선택적 AI DTO/API와 오류 모델을 추가했다. 아래 AI 미구현 설명은 F1c-2 당시 범위이며 AI 활성화·화면 연결은 여전히 후속이다.
 
 [직접 기록·여정 조회 계약](./GOAL_DIRECT_LOG_FOUNDATION_2026-10-18.md)은 `8bf28c5`로 커밋했다. 이번에는 백엔드 GoalTaskLinkService·GoalJourneyService·TaskRepository 쿼리·controller/DTO를 대조해 일회성 Task 연결과 여정 mock을 추가했다. Android/iOS/Web 공통 통신 코드이며 새 의존성·화면 변경·실 API 호출은 없다.
 

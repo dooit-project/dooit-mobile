@@ -4,7 +4,7 @@ import { env, requireApiUrl } from '@/config';
 import type { TokenResponse } from '@/types';
 import { parseApiLocalDateTime } from '@/utils';
 
-import { ApiClientError } from './api-error';
+import { ApiClientError, parseRetryAfterSeconds } from './api-error';
 import { notifySessionExpired } from './auth-session';
 import {
   clearSessionCredential,
@@ -269,6 +269,7 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
           kind: 'http',
           status: response.status,
           code: envelope?.error?.code,
+          retryAfterSeconds: parseRetryAfterSeconds(response.headers?.get('Retry-After') ?? null),
         },
       );
     }
