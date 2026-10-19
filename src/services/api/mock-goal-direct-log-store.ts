@@ -37,11 +37,6 @@ function normalize(body: unknown): Normalized {
     invalid('시간대를 확인해 주세요.');
   }
   return {
-    forJourney(ownerId: number, goalId: number) {
-      return [...records.values()]
-        .filter((record) => record.ownerId === ownerId && record.log.goalId === goalId)
-        .map((record) => ({ ...record.log }));
-    },
     title,
     practicedDate: request.practicedDate,
     practicedTimeZone: zone,
@@ -68,6 +63,11 @@ export function createMockGoalDirectLogStore(
     return record;
   }
   return {
+    forJourney(ownerId: number, goalId: number) {
+      return [...records.values()]
+        .filter((record) => record.ownerId === ownerId && record.log.goalId === goalId)
+        .map((record) => ({ ...record.log }));
+    },
     transferOwnership(sourceUserId: number, targetUserId: number) {
       records.forEach((record) => {
         if (record.ownerId === sourceUserId) record.ownerId = targetUserId;

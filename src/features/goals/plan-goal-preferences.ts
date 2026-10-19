@@ -65,7 +65,7 @@ export async function readPlanGoalPreferences(scope: string): Promise<PlanGoalPr
     readDdayPlanSelection(scope),
   ]);
   return {
-    order: order.map((id) => `dday:${id}`),
+    order: order.map((id): PlanGoalKey => `dday:${id}`),
     selected: selected === null ? null : `dday:${selected}`,
     colors: {},
   };
