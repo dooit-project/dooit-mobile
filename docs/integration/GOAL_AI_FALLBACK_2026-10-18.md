@@ -1,6 +1,8 @@
 # AI 비활성·사용 제한 상태 — F1c-3
 
-2026-10-18 · 코드 반영, 미커밋·미검증
+2026-10-18 · `e54da65` 커밋, 미검증
+
+후속 [F2a 계획 탭의 새 Goal 연결](../design/GOAL_PLAN_CONNECTION_2026-10-19.md)에서 목표 목록·작성/상태 관리 화면을 연결했다. AI 자동 활성화·AI 화면/hook은 여전히 후속이다.
 
 [일회성 Task·여정 집계](./GOAL_JOURNEY_MOCK_2026-10-18.md)는 `f268a95`로 커밋했다. GoalDraft controller/DTO·AI service·공통 오류/CORS 설정을 읽고 선택적 AI 통신과 오류 상태를 준비했다. Android/iOS/Web 공통 코드이며 새 의존성·화면 변경·외부 제공자 연결은 없다.
 

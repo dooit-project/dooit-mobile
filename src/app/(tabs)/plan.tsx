@@ -1,5 +1,5 @@
-import { DdayOverview } from '@/features/dday';
+import { GoalOverview } from '@/features/goals/goal-overview';
 
 export default function PlanScreen() {
-  return <DdayOverview embedded />;
+  return <GoalOverview />;
 }

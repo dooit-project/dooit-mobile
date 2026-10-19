@@ -1,6 +1,6 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-10-18
+Last updated: 2026-10-19
 
 현재 단계는 기존 Task/D-Day 클라이언트를 유지하면서 새 Goal/Plan/실천 여정 API를 연결하는 단계다. 제품 범위는 [PRD](./PRD.md), API 배포 상태는 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md), 확인 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)에 둔다. 아래 최신 회신과 다음 구현 순서를 우선하며 이후 작업 이력의 `미확인/미전달/미커밋`은 당시 상태다.
 
@@ -17,8 +17,10 @@ Last updated: 2026-10-18
   - [x] F1c 코드 반영: 직접 기록·여정 DTO/API/mock, Idempotency-Key와 cursor 충돌·전체 집계, AI 비활성 오류·일회성 Task의 새 Goal 연결. 미검증·화면 미연결이다.
     - [x] F1c-1 코드 반영: 직접 기록 생성·수정/취소 API/mock·동일 요청 key replay·계정 병합, 여정 DTO/API/query key·409 식별. [범위와 제한](../integration/GOAL_DIRECT_LOG_FOUNDATION_2026-10-18.md). `8bf28c5` 커밋·미검증이며 화면은 미연결이다.
     - [x] F1c-2 코드 반영: 일회성 Task의 새 Goal 연결과 여정 통합 mock·원본 중복 제거·전체 집계·cursor scope/version 충돌. [범위와 제한](../integration/GOAL_JOURNEY_MOCK_2026-10-18.md). `f268a95` 커밋·미검증이며 hook/화면 연결은 F2/F4 잔여다.
-    - [x] F1c-3 코드 반영: AI DTO/API·비활성 503/사용 제한 429·Retry-After·원본 여정 변경·취소의 상태 모델과 기본 비활성 mock. [범위와 제한](../integration/GOAL_AI_FALLBACK_2026-10-18.md). 미커밋·미검증. AI 호출/저장은 자동 활성화하지 않았다. Web 헤더 노출은 별도 백엔드 확인이 남아 있다.
-- [ ] F2. **다음 작업:** 선택된 계획 UI에 Goal 목록·작성/수정·선택 목표일·상태를 연결한다. 기존 D-Day/Task는 보존하며 명시적인 ID 대응·이행 경로를 정한다. 실제 개인 시스템 일괄 이관은 하지 않는다.
+    - [x] F1c-3 코드 반영: AI DTO/API·비활성 503/사용 제한 429·Retry-After·원본 여정 변경·취소의 상태 모델과 기본 비활성 mock. [범위와 제한](../integration/GOAL_AI_FALLBACK_2026-10-18.md). `e54da65` 커밋·미검증. AI 호출/저장은 자동 활성화하지 않았다. Web 헤더 노출은 별도 백엔드 확인이 남아 있다.
+- [ ] F2. 선택된 계획 UI에 새 Goal을 연결한다. 기존 D-Day/Task는 보존하며 명시적인 ID 대응·이행 경로를 정한다. 실제 개인 시스템 일괄 이관은 하지 않는다.
+  - [x] F2a 코드 반영: 가로 목표 탭의 새 Goal/기존 D-Day 혼합 목록·생성/전체 수정·선택 목표일·상태 확인과 미래 계획 정책, 독립 ID/기기 preference와 기존 항목 경로 보존. [설계·범위·미확인](../design/GOAL_PLAN_CONNECTION_2026-10-19.md). 미커밋·미검증이며 새 Goal 아래 항목/실행 화면은 아직 미연결이다.
+  - [ ] F2b **다음 작업:** 새 Goal 아래 실행 계획·일회성 항목의 실제 목록과 작성/편집 경로를 연결한다. 새 linkedGoalId와 기존 작성 화면의 D-Day goalId를 구분하고 원본 종류별 안정적 키를 사용한다.
 - [ ] F3. 목표 아래 여러 실행 계획과 날짜별 회차를 오늘에 연결한다. 기본/최소/휴식·다음 행동·결과 취소·Task 동기화와 알림 중복 억제를 반영한다. 기간 회차 조회는 1~31일이다.
 - [ ] F4. 이미 한 일 직접 기록·수정/취소와 목표별 통합 여정을 연결한다. 원본 중복 제거·전체 범위 summary·페이지·409/70008 시 cursor 초기화를 처리한다. 현재 완료 Task 주간 목록을 통합 여정으로 간주하지 않는다.
 - [ ] F5. 빠른 기록 requestedType의 회신 정책을 제품에 반영하고 DTO/mock을 준비한다. TODO+시각/지원 반복 400, 날짜 없는 TODO는 INBOX 정책을 명시한다. **운영 미배포이므로 배포 image/일정 확인 전 전송을 활성화하지 않는다.**
