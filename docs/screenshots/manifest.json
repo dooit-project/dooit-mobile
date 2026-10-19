@@ -1,6 +1,6 @@
 {
-  "capturedAt": "2026-09-13",
-  "sourceCommit": "c133220",
+  "capturedAt": "2026-10-20",
+  "sourceCommit": "34ff4b3 + F2b-1 working tree",
   "environment": {
     "platform": "Expo Web",
     "apiMode": "mock",
@@ -14,7 +14,7 @@
     {
       "file": "today.png",
       "route": "/",
-      "state": "mock Task 1개, 오늘 완료 항목 0개로 완료 영역 숨김"
+      "state": "오늘 목록 빈 상태"
     },
     {
       "file": "quick-capture.png",
@@ -24,12 +24,12 @@
     {
       "file": "calendar.png",
       "route": "/calendar",
-      "state": "오늘 선택, 예정 항목 없는 상태"
+      "state": "오늘 선택, 일정 없는 상태와 첫 사용 안내"
     },
     {
       "file": "profile.png",
       "route": "/profile",
-      "state": "게스트 더보기 허브 상단"
+      "state": "게스트 계정 화면"
     },
     {
       "file": "settings.png",
@@ -54,7 +54,7 @@
     {
       "file": "task-detail.png",
       "route": "/tasks/[taskId]",
-      "state": "오늘로 이동한 mock Task 상세"
+      "state": "빠른 작성으로 만든 기록함 할 일 상세 상단"
     },
     {
       "file": "organize.png",
@@ -64,7 +64,7 @@
     {
       "file": "task-new.png",
       "route": "/tasks/new",
-      "state": "새 할 일 제목 입력"
+      "state": "새 할 일 입력 전"
     },
     {
       "file": "login.png",
