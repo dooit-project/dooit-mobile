@@ -1,10 +1,12 @@
 # Dooit Mobile Roadmap
 
-Last updated: 2026-10-19
+Last updated: 2026-10-20
 
 현재 단계는 기존 Task/D-Day 클라이언트를 유지하면서 새 Goal/Plan/실천 여정 API를 연결하는 단계다. 제품 범위는 [PRD](./PRD.md), API 배포 상태는 [연동 현황](../integration/FRONTEND_BACKEND_STATUS.md), 확인 결과는 [smoke log](../qa/SMOKE_TEST_LOG.md)에 둔다. 아래 최신 회신과 다음 구현 순서를 우선하며 이후 작업 이력의 `미확인/미전달/미커밋`은 당시 상태다.
 
 ## 2026-10-18 백엔드 회신 반영 — 다음 구현 우선순위
+
+2026-10-20 최신 AGENTS 지침으로 검증을 재개했다. 기존 타입 오류는 `34ff4b3`, 실제 대표 화면 14개 재촬영은 `fd0ad56`이다. `npm run validate` 전체 통과(111 suites / 574 tests, STG 1개 제외), 반복 계획의 생성·수정 진입·멈춤·재개는 [실제 mock Web 감사](../audits/goal-plan-2026-10-20/README.md)에서 확인했다. Android/iOS·운영 API·보조 기술은 미확인이며 아래 과거 보류 기록과 구분한다.
 
 [전달 원문·로컬 계약/DTO 대조 기록](../integration/BACKEND_HANDOFF_2026-10-18.md)을 반영했다. 운영 image `6cdc9e5`의 Goal/Plan/회차·최소 실천·직접 기록·여정·권한 확인과 migration/CORS 완료는 **백엔드 보고**다. 모바일 연결·실기기·실제 개인 데이터 이관 완료가 아니다. 이번에는 코드/문서를 읽었으며 테스트·운영 호출은 기존 사용자 요청대로 보류했다.
 
@@ -19,9 +21,12 @@ Last updated: 2026-10-19
     - [x] F1c-2 코드 반영: 일회성 Task의 새 Goal 연결과 여정 통합 mock·원본 중복 제거·전체 집계·cursor scope/version 충돌. [범위와 제한](../integration/GOAL_JOURNEY_MOCK_2026-10-18.md). `f268a95` 커밋·미검증이며 hook/화면 연결은 F2/F4 잔여다.
     - [x] F1c-3 코드 반영: AI DTO/API·비활성 503/사용 제한 429·Retry-After·원본 여정 변경·취소의 상태 모델과 기본 비활성 mock. [범위와 제한](../integration/GOAL_AI_FALLBACK_2026-10-18.md). `e54da65` 커밋·미검증. AI 호출/저장은 자동 활성화하지 않았다. Web 헤더 노출은 별도 백엔드 확인이 남아 있다.
 - [ ] F2. 선택된 계획 UI에 새 Goal을 연결한다. 기존 D-Day/Task는 보존하며 명시적인 ID 대응·이행 경로를 정한다. 실제 개인 시스템 일괄 이관은 하지 않는다.
-  - [x] F2a 코드 반영: 가로 목표 탭의 새 Goal/기존 D-Day 혼합 목록·생성/전체 수정·선택 목표일·상태 확인과 미래 계획 정책, 독립 ID/기기 preference와 기존 항목 경로 보존. [설계·범위·미확인](../design/GOAL_PLAN_CONNECTION_2026-10-19.md). 미커밋·미검증이며 새 Goal 아래 항목/실행 화면은 아직 미연결이다.
-  - [ ] F2b **다음 작업:** 새 Goal 아래 실행 계획·일회성 항목의 실제 목록과 작성/편집 경로를 연결한다. 새 linkedGoalId와 기존 작성 화면의 D-Day goalId를 구분하고 원본 종류별 안정적 키를 사용한다.
+  - [x] F2a 코드 반영: 가로 목표 탭의 새 Goal/기존 D-Day 혼합 목록·생성/전체 수정·선택 목표일·상태 확인과 미래 계획 정책, 독립 ID/기기 preference와 기존 항목 경로 보존. [설계·범위·미확인](../design/GOAL_PLAN_CONNECTION_2026-10-19.md). `7cea6ed` 커밋·미검증.
+  - [ ] F2b 새 Goal 아래 실행 계획·일회성 항목의 실제 목록과 작성/편집 경로를 연결한다. 새 linkedGoalId와 기존 작성 화면의 D-Day goalId를 구분하고 원본 종류별 안정적 키를 사용한다.
+    - [x] F2b-1 코드 반영: 반복 계획 정의 목록·생성/전체 수정·적용일·평소/최소 행동·멈춤/재개/보관과 조회 version 변화 시 입력 보존/저장 차단. [범위·설계](../design/GOAL_PLAN_EDITOR_2026-10-19.md). 10월 20일 자동 검증·mock Web 부분 감사 통과, 오늘 회차는 미연결이다.
+    - [ ] F2b-2 일회성 Task의 Goal별 목록/작성과 혼합 순서. 현재 확인한 TaskSearch에는 linkedGoalId 필터가 없어 [요청서 G-07](../api/API_GOAL_JOURNEY_CHANGE_REQUEST.md)에 추가했다(미전달·미합의). 회신/배포 확인 전 임의 필터나 일부 날짜를 전체 목록으로 사용하지 않는다.
 - [ ] F3. 목표 아래 여러 실행 계획과 날짜별 회차를 오늘에 연결한다. 기본/최소/휴식·다음 행동·결과 취소·Task 동기화와 알림 중복 억제를 반영한다. 기간 회차 조회는 1~31일이다.
+  - [ ] F3a **다음 작업:** 확정된 회차 API로 오늘 회차 조회·연결 Task 중복 제거·기본/최소/휴식과 결과 취소를 연결한다. F2b-2 필터 회신과 독립적으로 진행하며 실제 native 알림은 별도 단계다.
 - [ ] F4. 이미 한 일 직접 기록·수정/취소와 목표별 통합 여정을 연결한다. 원본 중복 제거·전체 범위 summary·페이지·409/70008 시 cursor 초기화를 처리한다. 현재 완료 Task 주간 목록을 통합 여정으로 간주하지 않는다.
 - [ ] F5. 빠른 기록 requestedType의 회신 정책을 제품에 반영하고 DTO/mock을 준비한다. TODO+시각/지원 반복 400, 날짜 없는 TODO는 INBOX 정책을 명시한다. **운영 미배포이므로 배포 image/일정 확인 전 전송을 활성화하지 않는다.**
 - [ ] F6. Goal colorKey·G-06 서버 순서/안정적 항목 ID/version 계약은 별도로 회신받는다. 사용자 timezone 설정·조회 경계와 현재 서울 고정 클라이언트의 일관성을 검토한다. AI provider·보관/삭제 정책은 별도 대기이며 수동 기능의 선행 조건으로 두지 않는다.

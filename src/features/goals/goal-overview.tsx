@@ -32,6 +32,7 @@ import { formatDateLabel } from '@/utils';
 
 import { GoalForm } from './goal-form';
 import { useGoals, useGoalStatus } from './use-goals';
+import { GoalPlanList } from './goal-plan-list';
 import {
   readPlanGoalPreferences,
   updatePlanGoalPreferences,
@@ -82,6 +83,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
   const [search, setSearch] = useState('');
   const [form, setForm] = useState<'create' | 'edit' | null>(null);
   const [menu, setMenu] = useState(false);
+  const [plansEditing, setPlansEditing] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<GoalStatus | null>(null);
   const [futurePolicy, setFuturePolicy] = useState<GoalFuturePlanPolicy>('PAUSE_FUTURE');
@@ -174,7 +176,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
     target.kind === 'dday'
       ? (legacyColors[String(target.value.id)] ?? getDdayGoalFallbackColor(target.value.id))
       : (preferences.colors[target.key] ?? getDdayGoalFallbackColor(target.value.id));
-  const locked = form !== null || status.isPending || itemOrder.editing || ordering;
+  const locked = form !== null || status.isPending || itemOrder.editing || ordering || plansEditing;
   const savePreferences = async (patch: Partial<PlanGoalPreferences>) => {
     const saved = await updatePlanGoalPreferences(scope, patch);
     setPreferences(saved);
@@ -466,7 +468,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                   <IconButton
                     accessibilityLabel={`${current.title} 관리 메뉴`}
                     expanded={menu}
-                    disabled={status.isPending}
+                    disabled={status.isPending || plansEditing}
                     onPress={() => setMenu(!menu)}
                   >
                     <MaterialCommunityIcons
@@ -616,6 +618,12 @@ function GoalWorkspace({ scope }: { scope: string }) {
                   {current.value.motivationText ? (
                     <AppText tone="secondary">{current.value.motivationText}</AppText>
                   ) : null}
+                  <GoalPlanList
+                    key={current.key}
+                    goal={current.value}
+                    disabled={Boolean(confirmation) || status.isPending || menu || all}
+                    onEditingChange={setPlansEditing}
+                  />
                 </>
               ) : (
                 <>

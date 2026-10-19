@@ -6,7 +6,7 @@
 
 2026-10-18 백엔드 회신은 [회신 대조와 후속 작업](./integration/BACKEND_HANDOFF_2026-10-18.md)에 반영했다. Goal API는 운영 배포/목표 smoke 완료 보고·모바일 미연동, requestedType은 로컬 구현·운영 미배포다. [최신 연동 현황](./integration/FRONTEND_BACKEND_STATUS.md)과 [로드맵](./product/ROADMAP.md)의 다음 순서를 우선한다.
 
-Goal API 기반 F1의 타입·통신·mock 코드를 반영했고 마지막 AI 상태 처리는 `e54da65`로 커밋했다(미검증). [계획 탭의 새 Goal 연결 F2a](./design/GOAL_PLAN_CONNECTION_2026-10-19.md)는 목록·생성/수정·선택 날짜·상태 관리 코드 반영 단계다(미커밋·미검증). 다음은 새 Goal 아래 계획/항목 목록·작성 연결이며 native 알림·여정 화면·AI 활성화는 별도 후속이다.
+Goal API 기반 F1과 [계획 탭의 Goal 관리 F2a](./design/GOAL_PLAN_CONNECTION_2026-10-19.md)는 코드 반영·커밋했다(미검증, 최신 `7cea6ed`). [반복 계획 관리 F2b-1](./design/GOAL_PLAN_EDITOR_2026-10-19.md)은 미커밋·미검증이다. 일회성 목록 필터는 백엔드 요청서 G-07에 기록했고(미전달), 다음은 독립 진행 가능한 오늘 회차 실행 연결이다. native 알림·여정 화면·AI 활성화는 별도 후속이다.
 
 1. [`product/PRD.md`](./product/PRD.md): 현재 제품 범위·구현 상태·제한
 2. [`product/ROADMAP.md`](./product/ROADMAP.md): 남은 연동·출시 검증 우선순위
