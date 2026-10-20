@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
@@ -148,7 +148,11 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
               id: item.key,
               title: item.task.title,
               subtitle: getPlanItemSubtitle(item),
-              icon: getPlanItemIcon(item),
+              icon: item.recurring
+                ? 'repeat'
+                : item.task.type === 'SCHEDULE'
+                  ? 'calendar-blank-outline'
+                  : 'file-document-outline',
             }))}
             disabled={saving}
             onMove={moveItem}
@@ -204,15 +208,11 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
                 { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
               ]}
             >
-              <MaterialCommunityIcons
-                name={getPlanItemIcon(item)}
-                size={22}
-                color={theme.colors.textSecondary}
-              />
+              <Feather name={getPlanItemIcon(item)} size={26} color={theme.colors.textSecondary} />
               <View style={styles.copy}>
                 <AppText>{item.task.title}</AppText>
                 {subtitle ? (
-                  <AppText variant="caption" tone="secondary">
+                  <AppText variant="label" tone="secondary">
                     {subtitle}
                   </AppText>
                 ) : null}
@@ -225,14 +225,8 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
   );
 });
 
-function getPlanItemIcon(
-  item: DdayPlanItem,
-): 'repeat' | 'calendar-blank-outline' | 'file-document-outline' {
-  return item.recurring
-    ? 'repeat'
-    : item.task.type === 'SCHEDULE'
-      ? 'calendar-blank-outline'
-      : 'file-document-outline';
+function getPlanItemIcon(item: DdayPlanItem): 'repeat' | 'calendar' | 'file-text' {
+  return item.recurring ? 'repeat' : item.task.type === 'SCHEDULE' ? 'calendar' : 'file-text';
 }
 
 function getPlanItemSubtitle({ task, recurring, onlyCompleted }: DdayPlanItem) {
@@ -265,8 +259,8 @@ const styles = StyleSheet.create({
   taskRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[3],
-    minHeight: 64,
+    gap: spacing[5],
+    minHeight: 72,
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[1],
   },

@@ -34,7 +34,7 @@ export function useMobileLayout() {
     isLandscape: width > height,
     isShortViewport,
     isTablet: widthClass === 'tablet',
-    screenPadding: widthClass === 'compact' ? spacing[3] : spacing[4],
+    screenPadding: widthClass === 'compact' ? spacing[4] : spacing[5],
     width,
     widthClass,
   };

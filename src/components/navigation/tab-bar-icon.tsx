@@ -1,13 +1,11 @@
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import type { SymbolViewProps } from 'expo-symbols';
 import { SymbolView } from 'expo-symbols';
-import { Platform, StyleSheet, View } from 'react-native';
-import type { ColorValue } from 'react-native';
+import { Platform, StyleSheet, View, type ColorValue } from 'react-native';
 
-import { radii, spacing } from '@/theme';
+import { sizes } from '@/theme';
 
 type PlatformSymbolNames = Exclude<SymbolViewProps['name'], string>;
-
 type TabBarIconProps = {
   color: ColorValue;
   focused?: boolean;
@@ -16,148 +14,35 @@ type TabBarIconProps = {
     | (Omit<PlatformSymbolNames, 'web'> & { web?: string });
   size: number;
 };
+const icons = {
+  today: 'sun',
+  calendar_month: 'calendar',
+  'format-list-bulleted': 'list',
+  history: 'clock',
+} as const;
 
-export function TabBarIcon({ color, name, size }: TabBarIconProps) {
+export function TabBarIcon({ color, name }: TabBarIconProps) {
   const webName = typeof name === 'object' && name ? name.web : undefined;
-
   return (
-    <View style={styles.container}>
-      {Platform.OS === 'web' ? (
-        <WebTabIcon color={color} name={webName} size={size} />
-      ) : (
+    <View style={styles.container} accessible={false}>
+      {Platform.OS === 'ios' ? (
         <SymbolView
           name={typeof name === 'object' ? { ios: name.ios, android: name.android } : name}
-          size={size}
+          size={sizes.navigationIcon}
           tintColor={color}
-          type="hierarchical"
-          weight="semibold"
+          type="monochrome"
+          weight="regular"
+        />
+      ) : (
+        <Feather
+          color={color as string}
+          name={icons[webName as keyof typeof icons] ?? 'list'}
+          size={sizes.navigationIcon}
         />
       )}
     </View>
   );
 }
-
-type WebTabIconProps = {
-  color: ColorValue;
-  name?: string;
-  size: number;
-};
-
-function WebTabIcon({ color, name, size }: WebTabIconProps) {
-  if (name === 'checklist') {
-    return <MaterialIcons color={color as string} name="checklist" size={size} />;
-  }
-  if (name === 'history' || name === 'format-list-bulleted') {
-    return <MaterialCommunityIcons color={color as string} name={name} size={size} />;
-  }
-
-  if (name === 'today') {
-    return (
-      <View accessible={false} style={[styles.webTodayIcon, { height: size, width: size }]}>
-        <View style={[styles.webTodaySun, { borderColor: color }]} />
-        <View style={[styles.webTodayRayTop, { backgroundColor: color }]} />
-        <View style={[styles.webTodayRayRight, { backgroundColor: color }]} />
-        <View style={[styles.webTodayRayBottom, { backgroundColor: color }]} />
-        <View style={[styles.webTodayRayLeft, { backgroundColor: color }]} />
-      </View>
-    );
-  }
-
-  if (name === 'more_horiz') {
-    return (
-      <View accessible={false} style={[styles.webMoreIcon, { height: size, width: size }]}>
-        <View style={[styles.webMoreDot, { backgroundColor: color }]} />
-        <View style={[styles.webMoreDot, { backgroundColor: color }]} />
-        <View style={[styles.webMoreDot, { backgroundColor: color }]} />
-      </View>
-    );
-  }
-
-  return (
-    <View
-      accessible={false}
-      style={[styles.webCalendarIcon, { borderColor: color, height: size, width: size }]}
-    >
-      <View style={[styles.webCalendarBar, { backgroundColor: color }]} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderRadius: radii.full,
-    justifyContent: 'center',
-    minHeight: 28,
-    minWidth: 44,
-    paddingHorizontal: spacing[2],
-    position: 'relative',
-  },
-  webCalendarIcon: {
-    borderRadius: radii.sm,
-    borderWidth: 2,
-    overflow: 'hidden',
-  },
-  webCalendarBar: {
-    height: 4,
-    width: '100%',
-  },
-  webTodayIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  webTodaySun: {
-    borderRadius: radii.full,
-    borderWidth: 2,
-    height: 11,
-    width: 11,
-  },
-  webTodayRayTop: {
-    borderRadius: radii.full,
-    height: 4,
-    left: '50%',
-    marginLeft: -1,
-    position: 'absolute',
-    top: 1,
-    width: 2,
-  },
-  webTodayRayRight: {
-    borderRadius: radii.full,
-    height: 2,
-    position: 'absolute',
-    right: 1,
-    top: '50%',
-    marginTop: -1,
-    width: 4,
-  },
-  webTodayRayBottom: {
-    borderRadius: radii.full,
-    bottom: 1,
-    height: 4,
-    left: '50%',
-    marginLeft: -1,
-    position: 'absolute',
-    width: 2,
-  },
-  webTodayRayLeft: {
-    borderRadius: radii.full,
-    height: 2,
-    left: 1,
-    marginTop: -1,
-    position: 'absolute',
-    top: '50%',
-    width: 4,
-  },
-  webMoreIcon: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 3,
-    justifyContent: 'center',
-  },
-  webMoreDot: {
-    borderRadius: radii.full,
-    height: 4,
-    width: 4,
-  },
+  container: { alignItems: 'center', justifyContent: 'center', minHeight: 32, minWidth: 44 },
 });

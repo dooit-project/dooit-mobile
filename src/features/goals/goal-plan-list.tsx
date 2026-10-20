@@ -1,10 +1,10 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Button, InlineNotice } from '@/components/ui';
+import { AddItemRow, AppText, Button, InlineNotice } from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
-import { spacing, useAppTheme } from '@/theme';
+import { sizes, spacing, useAppTheme } from '@/theme';
 import type { GoalResponse, GoalPlanResponse } from '@/types';
 
 import { GoalPlanForm } from './goal-plan-form';
@@ -99,10 +99,10 @@ export function GoalPlanList({
                 .join(' · ');
         const row = (
           <>
-            <MaterialCommunityIcons name="repeat" size={22} color={theme.colors.textSecondary} />
+            <Feather name="repeat" size={sizes.listIcon} color={theme.colors.textSecondary} />
             <View style={styles.copy}>
               <AppText>{plan.name}</AppText>
-              <AppText variant="caption" tone="secondary">
+              <AppText variant="label" tone="secondary">
                 {[
                   days,
                   plan.status === 'PAUSED'
@@ -152,29 +152,26 @@ export function GoalPlanList({
         </Button>
       ) : null}
       {!readonly ? (
-        <Button
-          variant="ghost"
+        <AddItemRow
           disabled={disabled || query.isPending}
-          leading={
-            <MaterialCommunityIcons name="plus" size={22} color={theme.colors.textSecondary} />
-          }
           onPress={() => {
             setSnapshot(undefined);
             setEditing('create');
           }}
         >
           반복 계획 추가
-        </Button>
+        </AddItemRow>
       ) : null}
     </View>
   );
 }
 const styles = StyleSheet.create({
-  section: { gap: spacing[2] },
+  section: { gap: 0 },
   row: {
-    minHeight: 64,
+    minHeight: 72,
     paddingVertical: spacing[3],
-    gap: spacing[3],
+    gap: spacing[5],
+    paddingHorizontal: spacing[1],
     flexDirection: 'row',
     alignItems: 'center',
   },

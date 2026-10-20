@@ -1,6 +1,20 @@
 # 상단 동기부여 문구와 출처
 
-작성: 2026-10-16 · 설정/영속 이력까지 `b1915a1`에 코드 반영, 미검증
+작성: 2026-10-16 · 최신 변경: 2026-10-21 (아래 이전 이력과 구분)
+
+## 최신 표시 기준 — 2026-10-21
+
+사용자 요청으로 헤더의 저자·의역 표시와 별도 교체 아이콘을 제거했다. 로고 옆에는 문장만 표시하고 누르면 교체한다. 영문 긴 문장은 최대 두 줄로 표시하며 전체 문장은 접근성 이름으로 제공한다. 기본 헤더 높이 52와 44 이상의 터치 영역은 유지한다. 노출 모드·최근 이력·새날/4시간 후 교체 정책은 유지한다.
+
+현재는 자체 문장 13개(영문 6개 포함)와 영문 원문 명언 4개다. 노자 문구는 순환에서 제외했으며 삭제된 ID의 저장 이력은 기존 정규화로 정리된다. 유명인 인용과 자체 문구를 구분하며 자체 영문에 인물 이름을 붙이지 않는다. 저자·원문·출처는 설정의 ‘명언과 출처 보기’에만 둔다.
+
+2026-10-20에 직접 확인한 원문:
+
+- [Franklin의 격언 수록 원문](https://www.gutenberg.org/files/36151/36151-h/36151-h.htm): Proverbs from Poor Richard’s Almanac, p. 201. `Well done is better than well said.`
+- [Emerson의 Essays](https://www.gutenberg.org/files/16643/16643-h/16643-h.htm): Self-Reliance의 `Trust thyself` 발췌(끝 구두점 정리)와 Circles 마지막 단락의 enthusiasm 문장.
+- [American Foundation for the Blind](https://www.afb.org/about-afb/history/helen-keller/quotes/helen-keller-quotes-optimism): 기존 Keller 인용을 다시 확인하고 한국어 의역 대신 영어 원문으로 표시한다.
+
+실제 표시와 한계는 [공통 UI 보정 감사](../audits/plan-visual-alignment-2026-10-20/README.md)에 기록한다. 아래 10월 16일의 ‘저자 줄 표시/명언 두 개’는 이전 구현 이력이다.
 
 ## 제품 기준
 

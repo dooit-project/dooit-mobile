@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -10,7 +10,15 @@ import {
   View,
 } from 'react-native';
 
-import { AppText, Button, EmptyState, IconButton, InlineNotice, Screen } from '@/components/ui';
+import {
+  AddItemRow,
+  AppText,
+  Button,
+  EmptyState,
+  IconButton,
+  InlineNotice,
+  Screen,
+} from '@/components/ui';
 import { env } from '@/config/env';
 import { useAuthState } from '@/features/auth';
 import { useDdayGoals } from '@/features/dday/use-dday-goals';
@@ -271,6 +279,8 @@ function GoalWorkspace({ scope }: { scope: string }) {
                   >
                     <View style={[styles.dot, { backgroundColor: color(target) }]} />
                     <AppText
+                      variant="bodyLarge"
+                      tone={currentKey === target.key ? 'default' : 'secondary'}
                       numberOfLines={1}
                       weight={currentKey === target.key ? 'bold' : 'regular'}
                       style={styles.tabTitle}
@@ -283,6 +293,9 @@ function GoalWorkspace({ scope }: { scope: string }) {
               <Button
                 size="compact"
                 variant="ghost"
+                labelVariant="bodyLarge"
+                accessibilityLabel="전체 목표"
+                leading={<Feather name="grid" size={22} color={theme.colors.textSecondary} />}
                 disabled={locked}
                 accessibilityState={{ expanded: all }}
                 onPress={() => setAll(!all)}
@@ -441,7 +454,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                     {current.title}
                   </AppText>
                   {current.targetDate ? (
-                    <AppText variant="label" tone="secondary">
+                    <AppText variant="body" tone="secondary">
                       목표일{' '}
                       {formatDateLabel(current.targetDate, {
                         year: 'numeric',
@@ -466,16 +479,13 @@ function GoalWorkspace({ scope }: { scope: string }) {
                   </Button>
                 ) : currentGoal?.status === 'ARCHIVED' ? null : (
                   <IconButton
+                    variant="plain"
                     accessibilityLabel={`${current.title} 관리 메뉴`}
                     expanded={menu}
                     disabled={status.isPending || plansEditing}
                     onPress={() => setMenu(!menu)}
                   >
-                    <MaterialCommunityIcons
-                      name="dots-horizontal"
-                      size={24}
-                      color={theme.colors.textSecondary}
-                    />
+                    <Feather name="more-horizontal" size={24} color={theme.colors.textSecondary} />
                   </IconButton>
                 )}
               </View>
@@ -637,8 +647,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                     onDragging={setDragging}
                   />
                   {!itemOrder.editing ? (
-                    <Button
-                      variant="ghost"
+                    <AddItemRow
                       onPress={() =>
                         router.push({
                           pathname: '/tasks/new',
@@ -647,7 +656,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                       }
                     >
                       항목 추가
-                    </Button>
+                    </AddItemRow>
                   ) : null}
                 </>
               )}
@@ -668,7 +677,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
   );
 }
 const styles = StyleSheet.create({
-  screen: { gap: spacing[4], paddingTop: 0 },
+  screen: { gap: spacing[5], paddingTop: 0 },
   navigation: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1 },
   tabs: { flex: 1 },
   tab: {
@@ -676,12 +685,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 48,
     gap: spacing[2],
-    paddingHorizontal: spacing[3],
+    paddingHorizontal: spacing[2],
     borderBottomWidth: 2,
   },
   tabTitle: { maxWidth: 172 },
-  dot: { width: 10, height: 10, borderRadius: 5 },
-  section: { gap: spacing[3] },
+  dot: { width: 13, height: 13, borderRadius: 7 },
+  section: { gap: spacing[5] },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[1] },
   title: { fontSize: 24, lineHeight: 32 },
   grow: { flex: 1, minWidth: 0 },

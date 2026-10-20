@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Href } from 'expo-router';
 import { useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { forwardRef, useEffect, useRef, useState } from 'react';
@@ -84,7 +84,7 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
             backgroundColor: theme.colors.background,
             borderBottomColor: theme.colors.border,
             paddingTop: insets.top,
-            minHeight: 52 + insets.top,
+            minHeight: sizes.plannerHeaderHeight + insets.top,
           },
         ]}
       >
@@ -100,9 +100,9 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
             { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
           ]}
         >
-          <MaterialCommunityIcons color={theme.colors.text} name="menu" size={26} />
+          <Feather color={theme.colors.textSecondary} name="menu" size={26} />
         </Pressable>
-        <AppText variant="title" weight="heavy">
+        <AppText weight="heavy" style={[styles.brand, { color: theme.colors.brand }]}>
           dooit
         </AppText>
         {line ? (
@@ -110,25 +110,17 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
             style={({ pressed }) => [styles.motivation, { opacity: pressed ? 0.65 : 1 }]}
             onPress={showNext}
             accessibilityRole="button"
-            accessibilityLabel={`${line.text}${line.kind === 'quote' ? `, ${line.author}, 한국어 의역` : ''}`}
+            accessibilityLabel={line.text}
             accessibilityHint="다른 문장을 보려면 누르세요."
           >
-            <View style={styles.motivationCopy}>
-              <AppText numberOfLines={1} tone="muted" variant="caption">
-                {line.text}
-              </AppText>
-              {line.kind === 'quote' ? (
-                <AppText
-                  numberOfLines={1}
-                  tone="muted"
-                  variant="caption"
-                  style={styles.quoteAuthor}
-                >
-                  {line.author} · 의역
-                </AppText>
-              ) : null}
-            </View>
-            <MaterialCommunityIcons name="refresh" size={13} color={theme.colors.textMuted} />
+            <AppText
+              numberOfLines={2}
+              tone="secondary"
+              variant="caption"
+              style={styles.motivationCopy}
+            >
+              {line.text}
+            </AppText>
           </Pressable>
         ) : null}
       </View>
@@ -562,7 +554,6 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: spacing[2],
     minHeight: 52,
@@ -585,5 +576,5 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   motivationCopy: { flex: 1, minWidth: 0 },
-  quoteAuthor: { fontSize: 10, lineHeight: 14 },
+  brand: { fontSize: 28, lineHeight: 36, letterSpacing: -1.2 },
 });

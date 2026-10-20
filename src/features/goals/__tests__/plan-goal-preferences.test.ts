@@ -51,4 +51,20 @@ describe('Mixed Goal and D-Day preferences', () => {
     );
     expect((await readPlanGoalPreferences('same')).selected).toBe('goal:1');
   });
+  it('keeps the selected blue identity when reading the previous palette without rewriting storage', async () => {
+    const serialized = JSON.stringify({
+      user: {
+        selected: 'goal:1',
+        order: ['goal:1'],
+        colors: { 'goal:1': '#738DA3', 'goal:2': '#78947B' },
+      },
+    });
+    storage['dooit.goalPlanPreferences.v1'] = serialized;
+    expect(await readPlanGoalPreferences('user')).toMatchObject({
+      selected: 'goal:1',
+      order: ['goal:1'],
+      colors: { 'goal:1': '#3B82F6', 'goal:2': '#78947B' },
+    });
+    expect(storage['dooit.goalPlanPreferences.v1']).toBe(serialized);
+  });
 });

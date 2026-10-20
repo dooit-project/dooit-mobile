@@ -10,9 +10,9 @@ export function TabBarLabel({ focused, label }: TabBarLabelProps) {
     <AppText
       accessible={false}
       numberOfLines={1}
-      tone={focused ? 'primary' : 'muted'}
-      variant="caption"
-      weight={focused ? 'bold' : 'medium'}
+      tone={focused ? 'primary' : 'secondary'}
+      variant="label"
+      weight={focused ? 'semibold' : 'regular'}
     >
       {label}
     </AppText>

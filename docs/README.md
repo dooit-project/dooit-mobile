@@ -4,9 +4,11 @@
 
 ## 현재 상태를 확인하는 순서
 
+2026-10-21 [선택 시안에 맞춘 공통 UI 보정](./design/VISUAL_SYSTEM_ALIGNMENT_2026-10-21.md)을 이번 UI 커밋에 반영했다. 계획·공통 헤더/탭·글자·아이콘과 영문 문구를 수정하고 실제 Web 캡처를 갱신했다. 아래 F3a-1 기반은 유지하며 실제 오늘 화면 연결은 아직 후속이다.
+
 2026-10-18 백엔드 회신은 [회신 대조와 후속 작업](./integration/BACKEND_HANDOFF_2026-10-18.md)에 반영했다. Goal API는 운영 배포/목표 smoke 완료 보고·모바일 미연동, requestedType은 로컬 구현·운영 미배포다. [최신 연동 현황](./integration/FRONTEND_BACKEND_STATUS.md)과 [로드맵](./product/ROADMAP.md)의 다음 순서를 우선한다.
 
-Goal API 기반 F1과 [계획 탭의 Goal 관리 F2a](./design/GOAL_PLAN_CONNECTION_2026-10-19.md)는 코드 반영·커밋했다(미검증, 최신 `7cea6ed`). [반복 계획 관리 F2b-1](./design/GOAL_PLAN_EDITOR_2026-10-19.md)은 미커밋·미검증이다. 일회성 목록 필터는 백엔드 요청서 G-07에 기록했고(미전달), 다음은 독립 진행 가능한 오늘 회차 실행 연결이다. native 알림·여정 화면·AI 활성화는 별도 후속이다.
+Goal API 기반 F1과 계획 탭 Goal 관리 F2a는 커밋했다. [반복 계획 관리 F2b-1](./design/GOAL_PLAN_EDITOR_2026-10-19.md)은 `e805059`로 커밋했고 10월 20일 자동 검증·부분 Web 감사를 마쳤다. [오늘 회차 실행 기반 F3a-1](./integration/GOAL_OCCURRENCE_EXECUTION_2026-10-20.md)은 `a246572` 커밋·자동 검증 완료이며 화면은 아직 연결하지 않았다. 다음은 F3a-2 오늘 화면의 목표 묶음·체크·최소 행동·휴식/취소 연결이다. 일회성 목록 필터 G-07은 미전달·미합의이며 native 알림·여정 화면·AI 활성화도 별도 후속이다.
 
 1. [`product/PRD.md`](./product/PRD.md): 현재 제품 범위·구현 상태·제한
 2. [`product/ROADMAP.md`](./product/ROADMAP.md): 남은 연동·출시 검증 우선순위

@@ -148,7 +148,7 @@ function ScopedMotivationSettingsCard({
               <View key={line.id} style={styles.source}>
                 <AppText>{line.text}</AppText>
                 <AppText variant="caption" tone="secondary">
-                  {line.author} · 한국어 의역
+                  {line.author} · 영문 원문
                 </AppText>
                 <AppText variant="caption" tone="secondary">
                   {line.source.title} · {line.source.locator}

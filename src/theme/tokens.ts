@@ -91,19 +91,19 @@ export const radii = {
 
 export const typography = {
   size: {
-    caption: 12,
-    label: 13,
-    body: 14,
+    caption: 13,
+    label: 14,
+    body: 16,
     bodyLarge: 16,
-    title: 20,
+    title: 22,
     display: 30,
   },
   lineHeight: {
-    caption: 16,
-    label: 18,
-    body: 20,
-    bodyLarge: 22,
-    title: 28,
+    caption: 18,
+    label: 20,
+    body: 24,
+    bodyLarge: 24,
+    title: 30,
     display: 38,
   },
   weight: {
@@ -123,8 +123,11 @@ export const typography = {
 export const sizes = {
   touchTarget: 44,
   contentMaxWidth: 720,
-  bottomTabHeight: 72,
-  screenPadding: 16,
+  bottomTabHeight: 80,
+  screenPadding: 20,
+  navigationIcon: 28,
+  listIcon: 26,
+  plannerHeaderHeight: 52,
   cardPadding: 16,
 } as const;
 

@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-import { ddayGoalColors, type DdayGoalColor } from '@/features/dday/dday-goal-colors';
+import { normalizeDdayGoalColor, type DdayGoalColor } from '@/features/dday/dday-goal-colors';
 import { readDdayGoalOrder } from '@/features/dday/dday-goal-order-store';
 import { readDdayPlanSelection } from '@/features/dday/dday-plan-selection-store';
 
@@ -32,8 +32,8 @@ function normalize(value: unknown): PlanGoalPreferences | null {
   const colors: Record<string, DdayGoalColor> = {};
   if (object.colors && typeof object.colors === 'object' && !Array.isArray(object.colors)) {
     for (const [key, color] of Object.entries(object.colors)) {
-      if (validKey(key) && ddayGoalColors.some((item) => item.value === color))
-        colors[key] = color as DdayGoalColor;
+      const normalized = normalizeDdayGoalColor(color);
+      if (validKey(key) && normalized) colors[key] = normalized;
     }
   }
   return {

@@ -104,7 +104,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
           {leading}
           <AppText
             variant={labelVariant}
-            weight="bold"
+            weight="semibold"
             style={[styles.label, { color: selected.textColor }]}
           >
             {children}

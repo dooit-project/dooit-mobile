@@ -6,7 +6,7 @@ const STORAGE_KEY = 'dooit.ddayGoalColors';
 
 export const ddayGoalColors = [
   { id: 'sage', label: '세이지', value: '#78947B' },
-  { id: 'blue', label: '블루', value: '#738DA3' },
+  { id: 'blue', label: '블루', value: '#3B82F6' },
   { id: 'amber', label: '앰버', value: '#B38A45' },
   { id: 'coral', label: '코랄', value: '#B8796F' },
   { id: 'violet', label: '바이올렛', value: '#887DA1' },
@@ -34,6 +34,11 @@ function isGoalColor(value: unknown): value is DdayGoalColor {
   return ddayGoalColors.some((color) => color.value === value);
 }
 
+export function normalizeDdayGoalColor(value: unknown): DdayGoalColor | null {
+  if (value === '#738DA3') return '#3B82F6';
+  return isGoalColor(value) ? value : null;
+}
+
 async function readGoalColors(): Promise<GoalColorMap> {
   if (memoryColors) return memoryColors;
 
@@ -46,11 +51,11 @@ async function readGoalColors(): Promise<GoalColorMap> {
 
   try {
     const parsed = JSON.parse(serialized) as Record<string, unknown>;
-    memoryColors = Object.fromEntries(
-      Object.entries(parsed).filter((entry): entry is [string, DdayGoalColor] =>
-        isGoalColor(entry[1]),
-      ),
-    );
+    memoryColors = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      const color = normalizeDdayGoalColor(value);
+      if (color) memoryColors[key] = color;
+    }
   } catch {
     memoryColors = {};
   }

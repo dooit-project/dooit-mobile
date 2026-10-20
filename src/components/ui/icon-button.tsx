@@ -8,6 +8,7 @@ type IconButtonProps = Omit<PressableProps, 'accessibilityLabel' | 'children' | 
   accessibilityLabel: string;
   children: ReactNode;
   selected?: boolean;
+  variant?: 'soft' | 'plain';
   expanded?: boolean;
   style?: ViewStyle;
 };
@@ -18,6 +19,7 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
       accessibilityLabel,
       children,
       selected = false,
+      variant = 'soft',
       expanded,
       disabled,
       onBlur,
@@ -54,7 +56,9 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
             backgroundColor:
               pressed || selected || expanded
                 ? theme.colors.primarySoft
-                : theme.colors.surfaceMuted,
+                : variant === 'plain'
+                  ? 'transparent'
+                  : theme.colors.surfaceMuted,
             borderColor: isFocused ? theme.colors.text : 'transparent',
             borderWidth: isFocused ? 2 : 1,
             opacity: isDisabled ? 0.45 : 1,

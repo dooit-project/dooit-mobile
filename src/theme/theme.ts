@@ -1,9 +1,10 @@
 import { palette } from './tokens';
 
 const sharedColors = {
-  primary: palette.powder[600],
-  primaryPressed: palette.powder[700],
-  primarySoft: palette.powder[100],
+  brand: '#0875F9',
+  primary: '#1769E0',
+  primaryPressed: '#1557BE',
+  primarySoft: palette.blue[50],
   success: '#3F6B4A',
   successSoft: palette.highlighter.sage,
   warning: '#845A16',
@@ -25,9 +26,9 @@ export const lightTheme = {
     border: palette.slate[200],
     borderStrong: palette.slate[300],
     rule: palette.slate[100],
-    text: palette.ink[900],
-    textSecondary: palette.ink[600],
-    textMuted: palette.ink[500],
+    text: palette.slate[900],
+    textSecondary: '#425E82',
+    textMuted: '#607088',
     textOnPrimary: palette.white,
     highlightSage: palette.highlighter.sage,
     highlightAmber: palette.highlighter.amber,
@@ -42,6 +43,7 @@ export const darkTheme = {
   colors: {
     ...sharedColors,
     primary: palette.powder[500],
+    brand: '#7AB0FF',
     primaryPressed: '#B5C8D5',
     primarySoft: '#303A3D',
     success: '#9BC3A3',

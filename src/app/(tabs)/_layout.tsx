@@ -19,7 +19,7 @@ export default function TabLayout() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
-  const labelExtraHeight = Math.ceil(typography.lineHeight.caption * Math.max(0, fontScale - 1));
+  const labelExtraHeight = Math.ceil(typography.lineHeight.label * Math.max(0, fontScale - 1));
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
   const closeMenu = useCallback(() => {
@@ -43,8 +43,8 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: theme.colors.primaryPressed,
-          tabBarInactiveTintColor: theme.colors.textMuted,
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.textSecondary,
           tabBarHideOnKeyboard: true,
           tabBarLabelPosition: 'below-icon',
           tabBarStyle: {
@@ -69,7 +69,7 @@ export default function TabLayout() {
                 focused={focused}
                 size={size}
                 name={{
-                  ios: focused ? 'sun.max.fill' : 'sun.max',
+                  ios: 'sun.max',
                   android: 'wb_sunny',
                   web: 'today',
                 }}
@@ -124,7 +124,7 @@ export default function TabLayout() {
                 color={color}
                 focused={focused}
                 size={size}
-                name={{ ios: 'clock.arrow.circlepath', android: 'history', web: 'history' }}
+                name={{ ios: 'clock', android: 'schedule', web: 'history' }}
               />
             ),
           }}
