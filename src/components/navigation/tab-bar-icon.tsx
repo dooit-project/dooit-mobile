@@ -44,5 +44,5 @@ export function TabBarIcon({ color, name }: TabBarIconProps) {
   );
 }
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', justifyContent: 'center', minHeight: 32, minWidth: 44 },
+  container: { alignItems: 'center', justifyContent: 'center', minHeight: 24, minWidth: 44 },
 });

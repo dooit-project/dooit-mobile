@@ -30,6 +30,8 @@ Last updated: 2026-10-15
 
 ### 참고 자료와 확인 수준
 
+- 추가 프론트엔드 검토는 [도입 판단과 적용 범위](../design/soft-goal-surfaces-2026-10-21/README.md)의 Anthropic frontend-design, Vercel React Native Skills, Web Interface Guidelines를 참고할 수 있다. 미감·native 구현·Web 접근성을 나눠 검토하며 플랫폼에 맞지 않는 규칙이나 새 의존성을 자동 적용하지 않는다. 원문 참고, 설치된 스킬 실행, 실제 화면 검증을 구분해 기록한다. 사용자 선택 시안과 제품 제약이 우선이다.
+
 - 공식 가이드 예: [Material의 목록 조작](https://m1.material.io/components/lists-controls.html), [메뉴](https://m1.material.io/components/menus.html), [탭](https://m1.material.io/components/tabs.html). 이 링크는 구버전 Material 자료이므로 최신 컴포넌트 사양을 주장하는 근거로 쓰지 않는다.
 - 운영 서비스 예: [Things 이동 기능](https://culturedcode.com/things/support/articles/9651894/), [Todoist 정렬·그룹](https://www.todoist.com/help/todoist/features/sort-or-group-tasks-in-todoist-WFWD0hrb). 기능 설명 자료를 읽은 것과 앱을 직접 조작한 것을 구분한다.
 - Figma는 아래 사용 기준을 따른다. 파일을 직접 열었다면 파일·프레임 링크와 확인 범위를 기록한다. Figma 미사용은 검토 누락을 뜻하지 않는다.

@@ -4,6 +4,10 @@
 
 ## 현재 상태를 확인하는 순서
 
+최신 결정은 **디자인(UI/UX) 최우선, 표시 순서 3번 시안**이다. [목표 묶음 디자인·전체 화면 수정안·스킬 교차 검토](./design/soft-goal-surfaces-2026-10-21/README.md)와 [첫 시각 보정의 실제 Web 확인](./audits/soft-goal-surfaces-2026-10-21/README.md)을 먼저 읽는다. 아래 기능 중심 순서는 이전 감사 시점의 기록이다.
+
+2026-10-21 `ddde85b`까지 푸시 후 [앱 전체 실제 UI/UX 감사](./audits/whole-app-2026-10-21/README.md)를 진행했다. [수정 목록과 실행 순서](./product/UI_UX_BACKLOG_2026-10-21.md)의 UX-01–13·QA-01을 다음 작업 기준으로 사용한다. 공통 시각 틀은 유지하고 계획→오늘→목표 기록 연결을 우선한다. 이번 감사 문서와 캡처는 아직 미커밋이다.
+
 2026-10-21 [선택 시안에 맞춘 공통 UI 보정](./design/VISUAL_SYSTEM_ALIGNMENT_2026-10-21.md)을 이번 UI 커밋에 반영했다. 계획·공통 헤더/탭·글자·아이콘과 영문 문구를 수정하고 실제 Web 캡처를 갱신했다. 아래 F3a-1 기반은 유지하며 실제 오늘 화면 연결은 아직 후속이다.
 
 2026-10-18 백엔드 회신은 [회신 대조와 후속 작업](./integration/BACKEND_HANDOFF_2026-10-18.md)에 반영했다. Goal API는 운영 배포/목표 smoke 완료 보고·모바일 미연동, requestedType은 로컬 구현·운영 미배포다. [최신 연동 현황](./integration/FRONTEND_BACKEND_STATUS.md)과 [로드맵](./product/ROADMAP.md)의 다음 순서를 우선한다.

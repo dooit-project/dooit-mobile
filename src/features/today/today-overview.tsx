@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
@@ -61,11 +61,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
       <EmptyState
         icon={
           <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
-            <MaterialCommunityIcons
-              color={theme.colors.primary}
-              name="checkbox-blank-circle-outline"
-              size={22}
-            />
+            <Feather color={theme.colors.primary} name="circle" size={22} />
           </View>
         }
         title="오늘 할 일을 가볍게 남겨보세요"
@@ -78,7 +74,10 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
     <View style={styles.container}>
       {groups.map((group) => {
         return (
-          <View key={`${group.kind}-${group.goalId ?? group.title}`} style={styles.group}>
+          <View
+            key={`${group.kind}-${group.goalId ?? group.title}`}
+            style={[styles.group, { backgroundColor: theme.colors.surface }]}
+          >
             <Pressable
               accessibilityHint={group.goalId === null ? undefined : '목표 화면을 엽니다.'}
               accessibilityLabel={group.goalId === null ? group.title : `${group.title} 목표 보기`}
@@ -107,11 +106,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                 {group.title}
               </AppText>
               {group.goalId !== null ? (
-                <MaterialCommunityIcons
-                  color={theme.colors.textMuted}
-                  name="chevron-right"
-                  size={20}
-                />
+                <Feather color={theme.colors.textMuted} name="chevron-right" size={20} />
               ) : null}
             </Pressable>
 
@@ -168,11 +163,7 @@ function TodayItemRow({
           importantForAccessibility="no-hide-descendants"
           style={styles.leadingControl}
         >
-          <MaterialCommunityIcons
-            color={theme.colors.textSecondary}
-            name="calendar-blank-outline"
-            size={20}
-          />
+          <Feather color={theme.colors.textSecondary} name="calendar" size={22} />
         </View>
       ) : (
         <Pressable
@@ -188,7 +179,7 @@ function TodayItemRow({
           {isCompleting ? (
             <ActivityIndicator color={theme.colors.primary} size="small" />
           ) : (
-            <View style={[styles.checkbox, { borderColor: theme.colors.borderStrong }]} />
+            <View style={[styles.checkbox, { borderColor: theme.colors.textMuted }]} />
           )}
         </Pressable>
       )}
@@ -203,13 +194,13 @@ function TodayItemRow({
           { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
         ]}
       >
-        <AppText numberOfLines={2} style={styles.itemTitle} variant="bodyLarge">
+        <AppText numberOfLines={2} style={styles.itemTitle} variant="bodyLarge" weight="medium">
           {task.title}
         </AppText>
         {trailingLabel ? (
           <View style={styles.metadata}>
             {!isSchedule ? (
-              <MaterialCommunityIcons color={theme.colors.textMuted} name="repeat" size={14} />
+              <Feather color={theme.colors.textMuted} name="repeat" size={13} />
             ) : null}
             <AppText tone="secondary" variant="caption" weight="medium">
               {trailingLabel}
@@ -279,16 +270,19 @@ function sortGroupTasks(tasks: TaskResponse[]) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[7],
+    gap: spacing[4],
   },
   group: {
+    borderRadius: 18,
+    borderCurve: 'continuous',
     gap: spacing[2],
+    padding: spacing[4],
   },
   groupHeader: {
     alignItems: 'center',
     borderRadius: radii.md,
     flexDirection: 'row',
-    gap: spacing[2],
+    gap: spacing[3],
     minHeight: 44,
     paddingHorizontal: spacing[1],
   },
@@ -296,12 +290,15 @@ const styles = StyleSheet.create({
     opacity: 0.62,
   },
   goalDot: {
-    borderRadius: radii.full,
-    height: 9,
-    width: 9,
+    borderRadius: 5,
+    borderCurve: 'continuous',
+    height: 16,
+    width: 16,
   },
   groupTitle: {
     flex: 1,
+    fontSize: 18,
+    lineHeight: 26,
   },
   items: {
     gap: spacing[1],
@@ -309,8 +306,7 @@ const styles = StyleSheet.create({
   itemRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    minHeight: 50,
-    paddingLeft: spacing[2],
+    minHeight: 64,
   },
   leadingControl: {
     alignItems: 'center',
@@ -321,21 +317,22 @@ const styles = StyleSheet.create({
   checkbox: {
     borderRadius: radii.full,
     borderWidth: 1.5,
-    height: 20,
-    width: 20,
+    height: 22,
+    width: 22,
   },
   itemContent: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderRadius: radii.md,
     flex: 1,
-    flexDirection: 'row',
-    gap: spacing[2],
-    minHeight: 48,
-    paddingHorizontal: spacing[2],
+    justifyContent: 'center',
+    gap: spacing[1],
+    minHeight: 64,
+    paddingLeft: spacing[3],
+    paddingRight: spacing[1],
     paddingVertical: spacing[2],
   },
   itemTitle: {
-    flex: 1,
+    alignSelf: 'stretch',
   },
   metadata: {
     alignItems: 'center',

@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     gap: spacing[2],
     paddingBottom: spacing[4],
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[5],
     width: '100%',
   },
   menu: {
@@ -119,14 +119,11 @@ const styles = StyleSheet.create({
   addButton: {
     alignItems: 'center',
     borderRadius: radii.full,
-    elevation: 4,
     flexDirection: 'row',
-    gap: spacing[1],
+    gap: spacing[2],
     justifyContent: 'center',
     minHeight: 48,
+    minWidth: 96,
     paddingHorizontal: spacing[5],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.14,
-    shadowRadius: 10,
   },
 });

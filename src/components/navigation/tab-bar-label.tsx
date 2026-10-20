@@ -12,6 +12,7 @@ export function TabBarLabel({ focused, label }: TabBarLabelProps) {
       numberOfLines={1}
       tone={focused ? 'primary' : 'secondary'}
       variant="label"
+      style={{ fontSize: 12, lineHeight: 18, flexShrink: 0 }}
       weight={focused ? 'semibold' : 'regular'}
     >
       {label}

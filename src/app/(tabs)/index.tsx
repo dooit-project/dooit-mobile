@@ -42,10 +42,12 @@ export default function TodayScreen() {
   return (
     <View style={styles.container}>
       <Screen
+        style={{ backgroundColor: theme.colors.groupedBackground }}
         safeAreaEdges={['left', 'right']}
         scroll
         contentContainerStyle={styles.screen}
         scrollViewProps={{
+          showsVerticalScrollIndicator: false,
           keyboardShouldPersistTaps: 'handled',
           refreshControl: (
             <RefreshControl

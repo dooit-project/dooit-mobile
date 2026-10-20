@@ -1,3 +1,22 @@
+# 최신 Design QA — 목표 묶음 3번
+
+2026-10-21 · `ddde85b` 이후 working tree. 현재 판정은 이 절을 우선하며 아래 과거 `passed`는 당시 변경에 대한 기록이다.
+
+- Source visual truth: [선택한 3번 생성 이미지](./docs/design/soft-goal-surfaces-2026-10-21/selected-today.png), 853×1844.
+- Implementation: [실제 오늘 화면](./docs/audits/soft-goal-surfaces-2026-10-21/15-today-final.png), 390×844, light/mock Web, density 1.
+- Full-view comparison: [동일 논리 폭 비교 보드](./docs/audits/soft-goal-surfaces-2026-10-21/16-reference-comparison.png). Source 폭 390, 비율 유지 높이 약 843. Browser board 850×940.
+- State: 선택 시안은 새 Goal 두 개와 완료 포함 5개 예시, 실제는 기존 mock D-Day/일정/일반 Task. 상태가 달라 전체 1:1 구현 완료 판정은 보류한다.
+- Focused evidence: [하단 초점 확대 없이 읽을 수 있는 390px 캡처](./docs/audits/soft-goal-surfaces-2026-10-21/14-tab-focus-fixed.png), [320px 긴 제목](./docs/audits/soft-goal-surfaces-2026-10-21/08-today-320.png). 같은 입력의 전체 비교와 원본 크기 캡처에서 글자/행/탭을 확인했으며 별도 crop은 만들지 않았다.
+- Fonts/layout/colors/assets/copy와 P1/P2 수정 이력: [상세 감사](./docs/audits/soft-goal-surfaces-2026-10-21/README.md).
+- Fixed: 탭 label 잘림, 사각형 선택 배경, focus outline clipping, 오늘 scrollbar에 의한 폭 축소.
+- Remaining P1: 새 Goal 회차와 완료 목록이 오늘에 연결되지 않아 선택 시안의 내용/상태 전체를 재현하지 못한다. 이번은 기존 목록의 시각 보정이며 이를 전체 선택안 구현 완료로 넘기지 않는다.
+- Primary interactions: 상세/복귀, 추가 메뉴, 네 탭 이동, Tab 초점. Console errors: 0. Native/실제 API/오류·복구 상태는 미검증.
+- Next: 디자인 우선으로 계획·상세·작성 구조를 보정하고, 새 Goal/완료 연결 후 동일 데이터 상태로 전체 시안을 다시 비교한다.
+
+final result: blocked
+
+---
+
 # Task Category Navigation Design QA
 
 ## 2026-09-17 재로그인 이메일 유지

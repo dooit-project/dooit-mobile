@@ -12,7 +12,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { PlannerDrawer, PlannerHeader, TabBarIcon, TabBarLabel } from '@/components/navigation';
+import {
+  PlannerDrawer,
+  PlannerHeader,
+  TabBarButton,
+  TabBarIcon,
+  TabBarLabel,
+} from '@/components/navigation';
 import { sizes, spacing, typography, useAppTheme } from '@/theme';
 
 export default function TabLayout() {
@@ -44,10 +50,21 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: theme.colors.primary,
+          tabBarActiveBackgroundColor: theme.colors.primarySoft,
           tabBarInactiveTintColor: theme.colors.textSecondary,
           tabBarHideOnKeyboard: true,
           tabBarLabelPosition: 'below-icon',
+          tabBarButton: (props) => <TabBarButton {...props} />,
+          tabBarIconStyle: { height: sizes.navigationIcon },
+          tabBarItemStyle: {
+            borderRadius: 18,
+            borderCurve: 'continuous',
+            marginHorizontal: spacing[3],
+          },
           tabBarStyle: {
+            alignSelf: 'center',
+            maxWidth: sizes.contentMaxWidth,
+            width: '100%',
             backgroundColor: theme.colors.surface,
             borderTopColor: theme.colors.border,
             // Custom height replaces the navigator default, including its safe-area height.
