@@ -1,4 +1,18 @@
-# 최신 국소 Design QA — 공통 헤더·Today 간격
+# 최신 국소 Design QA — 공통 보조 색상
+
+2026-10-22 · `a3943d2` 이후 working tree · 미커밋. [변경 범위·실제 전후·대비](./docs/audits/neutral-text-2026-10-22/README.md).
+
+- 원본 [흰 바탕·목표색 레일](./docs/design/goal-lanes-correction-2026-10-21/reference.png)과 승인된 VC-02 색 역할을 확인했다. light 보조 텍스트/아이콘만 공통 중립색으로 보정했다.
+- 같은 390×844·mock·문구·체크 상태의 오늘/계획/달력/돌아보기 전후, 320px 오늘을 실제 Chrome 확장에서 확인했다. 기존 주 텍스트·목표색·브랜드·선택 파랑·크기·구조 유지.
+- surface 대비 textSecondary 7.56:1, textMuted 5.01:1. 선택 label의 기존 파랑과 비활성 label의 새 중립색을 computed color로 확인했다.
+- 공통 아이콘·글자/행/버튼 규격과 전체 UX 미완료는 유지한다. native/dark/글자 확대/모든 보조 화면 상태는 이번 범위 밖이다.
+- `npm run validate` 114 suites / 591 tests 통과, STG 1개 제외. 기존 light/dark 대비 검사와 문서/정적 검사 포함. 최종 tab error 로그 0.
+
+final result: passed (공통 보조 색상, 실제 Web 범위)
+
+---
+
+# 이전 국소 Design QA — 공통 헤더·Today 간격
 
 2026-10-22 · `479ae87` 이후 working tree · 미커밋. [실제 캡처와 변경 범위](./docs/audits/header-alignment-2026-10-22/README.md).
 
