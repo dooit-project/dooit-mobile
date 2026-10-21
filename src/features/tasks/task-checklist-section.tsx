@@ -26,11 +26,16 @@ import {
 type TaskChecklistSectionProps = {
   taskId: number;
   canEdit?: boolean;
+  grouped?: boolean;
 };
 
 const checklistLimits = { items: 100, title: 30 } as const;
 
-export function TaskChecklistSection({ taskId, canEdit = true }: TaskChecklistSectionProps) {
+export function TaskChecklistSection({
+  taskId,
+  canEdit = true,
+  grouped = false,
+}: TaskChecklistSectionProps) {
   const theme = useAppTheme();
   const checklist = useTaskChecklist(taskId);
   const createItem = useCreateTaskChecklistItem(taskId);
@@ -97,7 +102,7 @@ export function TaskChecklistSection({ taskId, canEdit = true }: TaskChecklistSe
   };
 
   return (
-    <Card variant="outlined" style={styles.card}>
+    <Card variant={grouped ? 'grouped' : 'outlined'} style={styles.card}>
       {checklist.isPending ? (
         <ListSkeleton accessibilityLabel="체크리스트를 불러오는 중" count={3} />
       ) : checklist.error ? (
@@ -113,21 +118,27 @@ export function TaskChecklistSection({ taskId, canEdit = true }: TaskChecklistSe
         />
       ) : (
         <>
-          <View style={styles.heading}>
-            <ChecklistProgressRing completed={progress.completed} total={progress.total} />
-            <View style={styles.headingCopy}>
-              <AppText variant="bodyLarge" weight="bold">
-                체크리스트
-              </AppText>
-              <AppText tone="secondary" variant="label">
-                {progress.total === 0
-                  ? '아직 항목이 없어요'
-                  : progress.remaining === 0
-                    ? '모두 완료했어요'
-                    : `${progress.remaining}개 남음`}
-              </AppText>
+          {!grouped || progress.total > 0 || isAdding ? (
+            <View style={styles.heading}>
+              {!grouped ? (
+                <ChecklistProgressRing completed={progress.completed} total={progress.total} />
+              ) : null}
+              <View style={styles.headingCopy}>
+                <AppText variant="bodyLarge" weight="bold">
+                  체크리스트
+                </AppText>
+                <AppText tone="secondary" variant="label">
+                  {grouped && progress.total > 0
+                    ? `${progress.completed}/${progress.total} 완료`
+                    : progress.total === 0
+                      ? '아직 항목이 없어요'
+                      : progress.remaining === 0
+                        ? '모두 완료했어요'
+                        : `${progress.remaining}개 남음`}
+                </AppText>
+              </View>
             </View>
-          </View>
+          ) : null}
 
           {!canEdit ? (
             <View style={styles.readOnlyRow}>
@@ -156,10 +167,17 @@ export function TaskChecklistSection({ taskId, canEdit = true }: TaskChecklistSe
           ) : null}
 
           {items.length > 0 ? (
-            <View style={[styles.items, { borderTopColor: theme.colors.rule }]}>
+            <View
+              style={[
+                styles.items,
+                { borderTopColor: theme.colors.rule },
+                grouped && { borderTopWidth: 0 },
+              ]}
+            >
               {items.map((item, index) => (
                 <ChecklistItemRow
                   key={item.id}
+                  grouped={grouped}
                   active={activeItemId === item.id}
                   canEdit={canEdit}
                   disabled={isMutating}
@@ -244,9 +262,11 @@ export function TaskChecklistSection({ taskId, canEdit = true }: TaskChecklistSe
                 size="compact"
                 variant="ghost"
                 onPress={() => setIsAdding(true)}
-                style={{ borderColor: theme.colors.border }}
+                style={
+                  grouped ? { borderColor: 'transparent' } : { borderColor: theme.colors.border }
+                }
               >
-                + 항목 추가
+                {grouped && items.length === 0 ? '체크리스트 추가' : '+ 항목 추가'}
               </Button>
             )
           ) : canEdit ? (
@@ -306,6 +326,7 @@ function ChecklistProgressRing({ completed, total }: { completed: number; total:
 }
 
 type ChecklistItemRowProps = {
+  grouped: boolean;
   active: boolean;
   canEdit: boolean;
   disabled: boolean;
@@ -325,6 +346,7 @@ type ChecklistItemRowProps = {
 };
 
 function ChecklistItemRow({
+  grouped,
   active,
   canEdit,
   disabled,
@@ -345,7 +367,13 @@ function ChecklistItemRow({
   const theme = useAppTheme();
 
   return (
-    <View style={[styles.item, { borderBottomColor: theme.colors.rule }]}>
+    <View
+      style={[
+        styles.item,
+        { borderBottomColor: theme.colors.rule },
+        grouped && { borderBottomWidth: 0 },
+      ]}
+    >
       {editing ? (
         <View style={styles.itemEditor}>
           <TextInput
@@ -402,7 +430,7 @@ function ChecklistItemRow({
           <AppText
             numberOfLines={2}
             tone={item.done ? 'secondary' : 'default'}
-            variant="label"
+            variant={grouped ? 'body' : 'label'}
             style={styles.itemTitle}
           >
             {item.title}

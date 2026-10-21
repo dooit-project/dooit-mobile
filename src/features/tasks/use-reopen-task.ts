@@ -13,6 +13,7 @@ export function useReopenTask(date: LocalDateString) {
   return useMutation({
     mutationFn: (taskId: number) => taskApi.reopenToday(taskId, date),
     onSuccess: (reopenedTask) => {
+      queryClient.setQueryData(taskQueryKeys.detail(reopenedTask.id), reopenedTask);
       queryClient.setQueryData<TaskResponse[]>(taskQueryKeys.done(date), (tasks = []) =>
         tasks.filter((task) => task.id !== reopenedTask.id),
       );

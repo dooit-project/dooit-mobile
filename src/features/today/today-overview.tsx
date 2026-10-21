@@ -1,35 +1,39 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Button, EmptyState, InlineNotice, ListSkeleton } from '@/components/ui';
+import {
+  AppText,
+  Button,
+  EmptyState,
+  IconButton,
+  InlineNotice,
+  ListSkeleton,
+} from '@/components/ui';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from '@/features/dday';
-import { getRecurrenceLabel, useCompleteTask } from '@/features/tasks';
+import { getRecurrenceLabel, useCompleteTask, useReopenTask } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 import { formatTimeLabel } from '@/utils';
 
 import { useTodayOverview } from './use-today-overview';
+import { groupTodayTaskRecords } from './today-task-groups';
 
 type TodayOverviewProps = {
   date: LocalDateString;
   overview: ReturnType<typeof useTodayOverview>;
 };
 
-type TodayGroup = {
-  goalId: number | null;
-  title: string;
-  tasks: TaskResponse[];
-  kind: 'goal' | 'schedule' | 'task';
-};
-
 export function TodayOverview({ date, overview }: TodayOverviewProps) {
   const router = useRouter();
   const theme = useAppTheme();
-  const { todayTasks, isPending, error, refetch } = overview;
+  const { todayTasks, doneTasks, isPending, error, refetch } = overview;
   const completeTask = useCompleteTask(date);
-  const groups = groupTodayTasks(todayTasks.filter((task) => task.type !== 'IDEA'));
+  const reopenTask = useReopenTask(date);
+  const [menuGoalId, setMenuGoalId] = useState<number | null>(null);
+  const groups = groupTodayTaskRecords(todayTasks, doneTasks);
   const goalIds = groups.flatMap((group) => (group.goalId === null ? [] : [group.goalId]));
   const goalColors = useDdayGoalColors(goalIds);
 
@@ -73,31 +77,36 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
   return (
     <View style={styles.container}>
       {groups.map((group) => {
+        const goalColor =
+          group.goalId === null
+            ? theme.colors.textMuted
+            : (goalColors[String(group.goalId)] ?? getDdayGoalFallbackColor(group.goalId));
         return (
-          <View
-            key={`${group.kind}-${group.goalId ?? group.title}`}
-            style={[styles.group, { backgroundColor: theme.colors.surface }]}
-          >
-            <Pressable
-              accessibilityHint={group.goalId === null ? undefined : '목표 화면을 엽니다.'}
-              accessibilityLabel={group.goalId === null ? group.title : `${group.title} 목표 보기`}
-              accessibilityRole={group.goalId === null ? 'header' : 'button'}
-              disabled={group.goalId === null}
-              onPress={() => router.push('/plan')}
-              style={({ pressed }) => [styles.groupHeader, pressed && styles.groupHeaderPressed]}
-            >
+          <View key={`${group.kind}-${group.goalId ?? group.title}`} style={styles.group}>
+            {group.goalId !== null ? (
+              <View
+                accessible={false}
+                style={[
+                  styles.goalRail,
+                  {
+                    backgroundColor: goalColor,
+                  },
+                ]}
+              />
+            ) : null}
+            <View style={styles.groupHeader}>
               {group.goalId !== null ? (
                 <View
                   style={[
                     styles.goalDot,
                     {
-                      backgroundColor:
-                        goalColors[String(group.goalId)] ?? getDdayGoalFallbackColor(group.goalId),
+                      backgroundColor: goalColor,
                     },
                   ]}
                 />
               ) : null}
               <AppText
+                accessibilityRole="header"
                 numberOfLines={2}
                 style={styles.groupTitle}
                 variant="bodyLarge"
@@ -106,18 +115,50 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                 {group.title}
               </AppText>
               {group.goalId !== null ? (
-                <Feather color={theme.colors.textMuted} name="chevron-right" size={20} />
+                <IconButton
+                  variant="plain"
+                  accessibilityLabel={`${group.title} 메뉴`}
+                  expanded={menuGoalId === group.goalId}
+                  onPress={() => setMenuGoalId(menuGoalId === group.goalId ? null : group.goalId)}
+                >
+                  <Feather color={theme.colors.textMuted} name="more-horizontal" size={22} />
+                </IconButton>
               ) : null}
-            </Pressable>
+            </View>
+            {group.goalId !== null && menuGoalId === group.goalId ? (
+              <View style={styles.menu}>
+                <Button
+                  size="compact"
+                  variant="secondary"
+                  onPress={() => {
+                    setMenuGoalId(null);
+                    router.push('/plan');
+                  }}
+                >
+                  계획으로 이동
+                </Button>
+                <Button size="compact" variant="ghost" onPress={() => setMenuGoalId(null)}>
+                  닫기
+                </Button>
+              </View>
+            ) : null}
 
             <View style={styles.items}>
               {group.tasks.map((task) => (
                 <TodayItemRow
                   key={task.id}
                   task={task}
-                  completionDisabled={completeTask.isPending}
-                  isCompleting={completeTask.isPending && completeTask.variables === task.id}
-                  onComplete={() => completeTask.mutate(task.id)}
+                  doneColor={goalColor}
+                  completionDisabled={completeTask.isPending || reopenTask.isPending}
+                  isCompleting={
+                    (completeTask.isPending && completeTask.variables === task.id) ||
+                    (reopenTask.isPending && reopenTask.variables === task.id)
+                  }
+                  onComplete={() =>
+                    task.status === 'DONE'
+                      ? reopenTask.mutate(task.id)
+                      : completeTask.mutate(task.id)
+                  }
                   onOpen={() => openTask(task.id)}
                 />
               ))}
@@ -129,18 +170,21 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
       {completeTask.error ? (
         <InlineNotice message={completeTask.error.message} tone="danger" />
       ) : null}
+      {reopenTask.error ? <InlineNotice message={reopenTask.error.message} tone="danger" /> : null}
     </View>
   );
 }
 
 function TodayItemRow({
   task,
+  doneColor,
   completionDisabled,
   isCompleting,
   onComplete,
   onOpen,
 }: {
   task: TaskResponse;
+  doneColor: string;
   completionDisabled: boolean;
   isCompleting: boolean;
   onComplete: () => void;
@@ -148,41 +192,50 @@ function TodayItemRow({
 }) {
   const theme = useAppTheme();
   const isSchedule = task.type === 'SCHEDULE';
+  const done = task.status === 'DONE';
   const recurrenceLabel = getRecurrenceLabel(task);
-  const trailingLabel = isSchedule
-    ? task.allDay || !task.startAt
-      ? '종일'
-      : formatTimeLabel(task.startAt)
-    : recurrenceLabel;
+  const trailingLabel = done
+    ? '완료'
+    : isSchedule
+      ? task.allDay || !task.startAt
+        ? '종일'
+        : formatTimeLabel(task.startAt, { hour12: true })
+      : [
+          recurrenceLabel?.startsWith('매주 ')
+            ? recurrenceLabel.slice(3).replaceAll('·', ' · ')
+            : recurrenceLabel,
+          task.description?.split('\n')[0],
+        ]
+          .filter(Boolean)
+          .join(' · ');
 
   return (
     <View style={styles.itemRow}>
-      {isSchedule ? (
-        <View
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-          style={styles.leadingControl}
-        >
-          <Feather color={theme.colors.textSecondary} name="calendar" size={22} />
-        </View>
-      ) : (
-        <Pressable
-          accessibilityHint="이 할 일을 완료합니다."
-          accessibilityLabel={`${task.title} 완료하기`}
-          accessibilityRole="checkbox"
-          accessibilityState={{ checked: false, busy: isCompleting, disabled: completionDisabled }}
-          disabled={completionDisabled}
-          hitSlop={4}
-          onPress={onComplete}
-          style={({ pressed }) => [styles.leadingControl, pressed && { opacity: 0.55 }]}
-        >
-          {isCompleting ? (
-            <ActivityIndicator color={theme.colors.primary} size="small" />
-          ) : (
-            <View style={[styles.checkbox, { borderColor: theme.colors.textMuted }]} />
-          )}
-        </Pressable>
-      )}
+      <Pressable
+        accessibilityHint={
+          done ? '완료를 취소하고 오늘 목록으로 되돌립니다.' : '이 항목을 완료합니다.'
+        }
+        accessibilityLabel={`${task.title} ${done ? '완료 취소' : '완료하기'}`}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: done, busy: isCompleting, disabled: completionDisabled }}
+        aria-checked={done}
+        disabled={completionDisabled}
+        hitSlop={4}
+        onPress={onComplete}
+        style={({ pressed }) => [styles.leadingControl, pressed && { opacity: 0.55 }]}
+      >
+        {isCompleting ? (
+          <ActivityIndicator color={theme.colors.primary} size="small" />
+        ) : done ? (
+          <MaterialCommunityIcons name="checkbox-marked-circle" color={doneColor} size={24} />
+        ) : (
+          <MaterialCommunityIcons
+            name="checkbox-blank-circle-outline"
+            color={theme.isDark ? theme.colors.textSecondary : '#8793A3'}
+            size={24}
+          />
+        )}
+      </Pressable>
 
       <Pressable
         accessibilityHint="상세 화면을 엽니다."
@@ -194,15 +247,22 @@ function TodayItemRow({
           { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
         ]}
       >
-        <AppText numberOfLines={2} style={styles.itemTitle} variant="bodyLarge" weight="medium">
+        <AppText
+          numberOfLines={2}
+          style={[
+            styles.itemTitle,
+            done && { textDecorationLine: 'line-through', color: theme.colors.textMuted },
+          ]}
+          variant="bodyLarge"
+        >
           {task.title}
         </AppText>
         {trailingLabel ? (
           <View style={styles.metadata}>
-            {!isSchedule ? (
-              <Feather color={theme.colors.textMuted} name="repeat" size={13} />
+            {isSchedule && !done ? (
+              <Feather color={theme.colors.textMuted} name="calendar" size={14} />
             ) : null}
-            <AppText tone="secondary" variant="caption" weight="medium">
+            <AppText numberOfLines={2} tone="secondary" variant="caption">
               {trailingLabel}
             </AppText>
           </View>
@@ -212,71 +272,22 @@ function TodayItemRow({
   );
 }
 
-function groupTodayTasks(tasks: TaskResponse[]): TodayGroup[] {
-  const goalGroups = new Map<number, TodayGroup>();
-  const unlinkedSchedules: TaskResponse[] = [];
-  const unlinkedTasks: TaskResponse[] = [];
-
-  tasks.forEach((task) => {
-    if (task.ddayGoalId !== null) {
-      const current = goalGroups.get(task.ddayGoalId) ?? {
-        goalId: task.ddayGoalId,
-        title: task.ddayGoalTitle ?? '목표',
-        tasks: [],
-        kind: 'goal' as const,
-      };
-      current.tasks.push(task);
-      goalGroups.set(task.ddayGoalId, current);
-    } else if (task.type === 'SCHEDULE') {
-      unlinkedSchedules.push(task);
-    } else {
-      unlinkedTasks.push(task);
-    }
-  });
-
-  const groups = [...goalGroups.values()].map((group) => ({
-    ...group,
-    tasks: sortGroupTasks(group.tasks),
-  }));
-
-  if (unlinkedSchedules.length > 0) {
-    groups.push({
-      goalId: null,
-      title: '일정',
-      tasks: sortGroupTasks(unlinkedSchedules),
-      kind: 'schedule',
-    });
-  }
-  if (unlinkedTasks.length > 0) {
-    groups.push({
-      goalId: null,
-      title: '할 일',
-      tasks: sortGroupTasks(unlinkedTasks),
-      kind: 'task',
-    });
-  }
-
-  return groups;
-}
-
-function sortGroupTasks(tasks: TaskResponse[]) {
-  return [...tasks].sort((left, right) => {
-    if (left.type === 'SCHEDULE' && right.type !== 'SCHEDULE') return -1;
-    if (left.type !== 'SCHEDULE' && right.type === 'SCHEDULE') return 1;
-    if (left.startAt && right.startAt) return left.startAt.localeCompare(right.startAt);
-    return (left.todayOrder ?? left.id) - (right.todayOrder ?? right.id);
-  });
-}
-
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[4],
+    gap: spacing[8],
   },
   group: {
-    borderRadius: 18,
-    borderCurve: 'continuous',
-    gap: spacing[2],
-    padding: spacing[4],
+    gap: 0,
+    paddingLeft: spacing[4],
+  },
+  goalRail: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    borderRadius: radii.full,
+    opacity: 0.5,
   },
   groupHeader: {
     alignItems: 'center',
@@ -286,14 +297,11 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: spacing[1],
   },
-  groupHeaderPressed: {
-    opacity: 0.62,
-  },
+  menu: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   goalDot: {
-    borderRadius: 5,
-    borderCurve: 'continuous',
-    height: 16,
-    width: 16,
+    borderRadius: radii.full,
+    height: 13,
+    width: 13,
   },
   groupTitle: {
     flex: 1,
@@ -301,7 +309,8 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   items: {
-    gap: spacing[1],
+    gap: 0,
+    marginLeft: -spacing[2],
   },
   itemRow: {
     alignItems: 'center',
@@ -313,12 +322,6 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     width: 44,
-  },
-  checkbox: {
-    borderRadius: radii.full,
-    borderWidth: 1.5,
-    height: 22,
-    width: 22,
   },
   itemContent: {
     alignItems: 'flex-start',
@@ -333,6 +336,8 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     alignSelf: 'stretch',
+    fontSize: 16,
+    lineHeight: 24,
   },
   metadata: {
     alignItems: 'center',

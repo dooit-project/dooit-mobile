@@ -6,6 +6,7 @@ import { createMockGoalOccurrenceStore } from './mock-goal-occurrence-store';
 import type { MockGoalTaskAction } from './mock-goal-occurrence-store';
 import { createMockGoalDirectLogStore } from './mock-goal-direct-log-store';
 import { createMockGoalJourneyStore } from './mock-goal-journey-store';
+import { applyGoalLanesDesignFixture } from './mock-goal-lanes-design-fixture';
 
 import type {
   AuthenticatedUserResponse,
@@ -273,6 +274,10 @@ const tasks: TaskResponse[] = [
     completedAt: `${today}T11:10:00`,
   }),
 ];
+
+if (__DEV__ && process.env.EXPO_PUBLIC_DESIGN_FIXTURE === 'goal-lanes') {
+  applyGoalLanesDesignFixture(ddayGoals, tasks, today);
+}
 
 function createTask(
   overrides: Partial<TaskResponse> & { id: number; title: string },

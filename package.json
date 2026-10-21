@@ -52,6 +52,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "web:mock": "EXPO_PUBLIC_API_MODE_OVERRIDE=mock expo start --web",
+    "web:design": "EXPO_PUBLIC_API_MODE_OVERRIDE=mock EXPO_PUBLIC_DESIGN_FIXTURE=goal-lanes expo start --web",
     "web:stg": "EXPO_PUBLIC_API_MODE_OVERRIDE=real EXPO_PUBLIC_API_URL_OVERRIDE=http://localhost:18080 expo start --web --localhost --port 8090",
     "web:real": "EXPO_PUBLIC_API_MODE_OVERRIDE=real EXPO_PUBLIC_API_URL_OVERRIDE=http://localhost:8080 expo start --web --localhost",
     "web:export:production": "npm run check:web-production-config && expo export --platform web",

@@ -219,10 +219,11 @@ function GoalWorkspace({ scope }: { scope: string }) {
   }
   return (
     <Screen
+      style={{ backgroundColor: theme.colors.groupedBackground }}
       scroll
       safeAreaEdges={['left', 'right']}
       contentContainerStyle={styles.screen}
-      scrollViewProps={{ scrollEnabled: !dragging }}
+      scrollViewProps={{ scrollEnabled: !dragging, showsVerticalScrollIndicator: false }}
     >
       {!ready || ((goals.isPending || legacy.isPending) && !ordered.length) ? (
         <ActivityIndicator accessibilityLabel="목표를 불러오는 중" color={theme.colors.primary} />
@@ -249,7 +250,12 @@ function GoalWorkspace({ scope }: { scope: string }) {
             ) : null,
           )}
           {ordered.length ? (
-            <View style={[styles.navigation, { borderBottomColor: theme.colors.border }]}>
+            <View
+              style={[
+                styles.navigation,
+                { borderBottomColor: theme.colors.border, backgroundColor: theme.colors.surface },
+              ]}
+            >
               <ScrollView
                 horizontal
                 ref={tabs}
@@ -447,7 +453,14 @@ function GoalWorkspace({ scope }: { scope: string }) {
               }}
             />
           ) : !ordering && current ? (
-            <View key={current.key} style={styles.section}>
+            <View
+              key={current.key}
+              style={[
+                styles.section,
+                styles.goalSurface,
+                { backgroundColor: theme.colors.surface },
+              ]}
+            >
               <View style={styles.header}>
                 <View style={styles.grow}>
                   <AppText style={styles.title} weight="bold">
@@ -691,8 +704,9 @@ const styles = StyleSheet.create({
   tabTitle: { maxWidth: 172 },
   dot: { width: 13, height: 13, borderRadius: 7 },
   section: { gap: spacing[5] },
+  goalSurface: { padding: 0 },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[1] },
-  title: { fontSize: 24, lineHeight: 32 },
+  title: { fontSize: 22, lineHeight: 30 },
   grow: { flex: 1, minWidth: 0 },
   option: { flexDirection: 'row', alignItems: 'center', minHeight: 48, gap: spacing[3] },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },

@@ -161,7 +161,7 @@ export function formatDateLabel(
   }).format(date);
 }
 
-export function formatTimeLabel(value: LocalDateTimeString) {
+export function formatTimeLabel(value: LocalDateTimeString, options: { hour12?: boolean } = {}) {
   const date = parseApiLocalDateTime(value);
 
   if (!date) {
@@ -169,9 +169,10 @@ export function formatTimeLabel(value: LocalDateTimeString) {
   }
 
   return new Intl.DateTimeFormat('ko-KR', {
-    hour: '2-digit',
+    hour: options.hour12 ? 'numeric' : '2-digit',
     minute: '2-digit',
     hourCycle: 'h23',
+    ...options,
     timeZone: APP_TIME_ZONE,
   }).format(date);
 }

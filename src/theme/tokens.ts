@@ -123,9 +123,9 @@ export const typography = {
 export const sizes = {
   touchTarget: 44,
   contentMaxWidth: 720,
-  bottomTabHeight: 72,
+  bottomTabHeight: 80,
   screenPadding: 20,
-  navigationIcon: 24,
+  navigationIcon: 28,
   listIcon: 26,
   plannerHeaderHeight: 52,
   cardPadding: 16,

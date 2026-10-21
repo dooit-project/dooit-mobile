@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import type { SymbolViewProps } from 'expo-symbols';
 import { SymbolView } from 'expo-symbols';
 import { Platform, StyleSheet, View, type ColorValue } from 'react-native';
@@ -21,18 +21,26 @@ const icons = {
   history: 'clock',
 } as const;
 
-export function TabBarIcon({ color, name }: TabBarIconProps) {
+export function TabBarIcon({ color, name, focused }: TabBarIconProps) {
   const webName = typeof name === 'object' && name ? name.web : undefined;
   return (
     <View style={styles.container} accessible={false}>
       {Platform.OS === 'ios' ? (
         <SymbolView
-          name={typeof name === 'object' ? { ios: name.ios, android: name.android } : name}
+          name={
+            focused && webName === 'today'
+              ? { ios: 'sun.max.fill' }
+              : typeof name === 'object'
+                ? { ios: name.ios, android: name.android }
+                : name
+          }
           size={sizes.navigationIcon}
           tintColor={color}
           type="monochrome"
           weight="regular"
         />
+      ) : focused && webName === 'today' ? (
+        <Ionicons color={color as string} name="sunny" size={sizes.navigationIcon} />
       ) : (
         <Feather
           color={color as string}

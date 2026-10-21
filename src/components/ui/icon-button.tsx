@@ -40,6 +40,7 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
         accessibilityState={{ disabled: isDisabled, expanded, selected }}
+        aria-expanded={expanded}
         disabled={isDisabled}
         hitSlop={4}
         onBlur={(event) => {

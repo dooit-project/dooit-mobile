@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { radii, sizes, useAppTheme } from '@/theme';
 
-type CardVariant = 'default' | 'muted' | 'outlined' | 'sheet';
+type CardVariant = 'default' | 'muted' | 'outlined' | 'sheet' | 'grouped';
 
 type CardProps = PropsWithChildren<
   ViewProps & {
@@ -24,6 +24,13 @@ export function Card({
 }: CardProps) {
   const theme = useAppTheme();
   const variants = {
+    grouped: {
+      backgroundColor: theme.colors.surface,
+      borderColor: 'transparent',
+      borderWidth: 0,
+      borderRadius: 0,
+      borderCurve: 'continuous' as const,
+    },
     default: {
       backgroundColor: theme.colors.surface,
       borderColor: theme.colors.border,

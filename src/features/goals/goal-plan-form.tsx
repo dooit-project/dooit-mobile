@@ -73,7 +73,7 @@ export function GoalPlanForm({ goalId, plan, onDone, blocked = false }: Props) {
     }
   }
   return (
-    <Card style={styles.form}>
+    <Card variant="grouped" padded={false} style={styles.form}>
       <AppText variant="bodyLarge" weight="bold">
         {plan ? '반복 계획 수정' : '반복 계획 만들기'}
       </AppText>

@@ -14,6 +14,7 @@ import {
   SectionHeader,
 } from '@/components/ui';
 import { useDdayGoals } from '@/features/dday';
+import { useAppToday } from '@/services/time/use-app-today';
 import {
   TaskDateQuickActions,
   TaskChecklistSection,
@@ -91,7 +92,12 @@ export default function TaskDetailScreen() {
   };
 
   return (
-    <Screen scroll contentContainerStyle={styles.screen}>
+    <Screen
+      scroll
+      style={{ backgroundColor: theme.colors.groupedBackground }}
+      contentContainerStyle={styles.screen}
+      scrollViewProps={{ showsVerticalScrollIndicator: false }}
+    >
       <PageHeader
         title={isEditing ? '할 일 수정' : '할 일 상세'}
         leading={
@@ -221,14 +227,23 @@ function TaskDetail({
   const theme = useAppTheme();
   const ddayGoals = useDdayGoals();
   const [isDdayExpanded, setIsDdayExpanded] = useState(false);
-  const status = statusLabels[task.status];
+  const [isHistoryExpanded, setIsHistoryExpanded] = useState(false);
+  const today = useAppToday();
+  const status =
+    task.status === 'TODAY' && task.plannedDate && task.plannedDate !== today
+      ? formatDateLabel(task.plannedDate)
+      : statusLabels[task.status];
   const scheduleLabel = getScheduleLabel(task);
   const recurrenceLabel = getRecurrenceLabel(task);
   const hasManagementHistory = Boolean(task.deferReasonLabel) || task.carryOverCount > 0;
+  const hasScheduleDetails =
+    scheduleLabel !== '없음' ||
+    Boolean(recurrenceLabel || task.targetDate || task.estimatedDurationMinutes || task.category) ||
+    (task.status === 'DONE' && Boolean(task.plannedDate));
 
   return (
     <View style={styles.detail}>
-      <Card variant="outlined" style={styles.heroCard}>
+      <Card variant="grouped" style={styles.heroCard}>
         <View style={styles.statusRow}>
           <View
             style={[
@@ -253,61 +268,55 @@ function TaskDetail({
         </View>
 
         <View style={styles.titleBlock}>
-          <AppText variant="title" weight="heavy">
+          <AppText variant="title" weight="semibold">
             {task.title}
           </AppText>
           {task.description ? (
             <AppText tone="secondary" variant="body">
               {task.description}
             </AppText>
-          ) : (
-            <AppText tone="muted" variant="label">
-              아직 설명이 없어요.
-            </AppText>
-          )}
+          ) : null}
         </View>
       </Card>
 
-      <TaskChecklistSection taskId={task.id} />
+      <TaskChecklistSection taskId={task.id} grouped />
 
-      <TaskDateQuickActions task={task} />
+      <TaskDateQuickActions task={task} grouped />
 
-      <Card variant="outlined" style={styles.section}>
-        <SectionHeader title="일정 정보" />
-        <InfoRow label="일정" value={scheduleLabel} />
-        <InfoRow label="반복" value={recurrenceLabel ?? '없음'} />
-        <InfoRow
-          label="계획일"
-          value={task.plannedDate ? formatDateLabel(task.plannedDate) : '없음'}
-        />
-        <InfoRow
-          label="목표일"
-          value={task.targetDate ? formatDateLabel(task.targetDate) : '없음'}
-        />
-        <InfoRow label="종일" value={task.allDay ? '예' : '아니오'} />
-        <InfoRow
-          label="예상 시간"
-          value={
-            task.estimatedDurationMinutes
-              ? formatEstimatedDuration(task.estimatedDurationMinutes)
-              : '없음'
-          }
-        />
-        <InfoRow label="카테고리" value={task.category ?? '없음'} />
-      </Card>
+      {hasScheduleDetails ? (
+        <Card variant="grouped" style={styles.section}>
+          <SectionHeader title="일정 정보" />
+          {scheduleLabel !== '없음' ? <InfoRow label="일정" value={scheduleLabel} /> : null}
+          {recurrenceLabel ? <InfoRow label="반복" value={recurrenceLabel} /> : null}
+          {task.status === 'DONE' && task.plannedDate ? (
+            <InfoRow label="계획일" value={formatDateLabel(task.plannedDate)} />
+          ) : null}
+          {task.targetDate ? (
+            <InfoRow label="목표일" value={formatDateLabel(task.targetDate)} />
+          ) : null}
+          {task.estimatedDurationMinutes ? (
+            <InfoRow
+              label="예상 시간"
+              value={formatEstimatedDuration(task.estimatedDurationMinutes)}
+            />
+          ) : null}
+          {task.category ? <InfoRow label="카테고리" value={task.category} /> : null}
+        </Card>
+      ) : null}
 
       <Button
         accessibilityState={{ expanded: isDdayExpanded }}
+        aria-expanded={isDdayExpanded}
         size="compact"
         variant="ghost"
         onPress={() => setIsDdayExpanded((current) => !current)}
         style={styles.ddayToggle}
       >
-        {isDdayExpanded ? 'D-Day 목표 관리 접기' : `D-Day 목표 · ${getDdayLabel(task)}`}
+        {isDdayExpanded ? '기존 목표 연결 접기' : `기존 목표 · ${getDdayLabel(task)}`}
       </Button>
 
       {isDdayExpanded ? (
-        <Card variant="outlined" style={styles.section}>
+        <Card variant="grouped" style={styles.section}>
           <View style={styles.stateCopy}>
             <AppText variant="bodyLarge" weight="bold">
               D-Day 목표
@@ -387,7 +396,7 @@ function TaskDetail({
             </View>
           ) : (
             <AppText tone="muted" variant="label">
-              연결할 D-Day 목표가 없어요. D-Day 탭에서 먼저 목표를 만들어 주세요.
+              연결할 기존 목표가 없어요.
             </AppText>
           )}
 
@@ -397,26 +406,37 @@ function TaskDetail({
         </Card>
       ) : null}
 
-      {hasManagementHistory ? (
-        <Card variant="outlined" style={styles.section}>
-          <SectionHeader title="관리 기록" />
-          {task.deferReasonLabel ? (
-            <InfoRow label="미룬 이유" value={task.deferReasonLabel} />
+      <Button
+        accessibilityState={{ expanded: isHistoryExpanded }}
+        aria-expanded={isHistoryExpanded}
+        size="compact"
+        variant="ghost"
+        onPress={() => setIsHistoryExpanded((current) => !current)}
+        style={styles.ddayToggle}
+      >
+        {isHistoryExpanded ? '기록 정보 접기' : '기록 정보'}
+      </Button>
+      {isHistoryExpanded ? (
+        <Card variant="grouped" style={styles.footerCard}>
+          <InfoRow label="생성" value={getDateTimeLabel(task.createdAt)} />
+          {task.updatedAt ? (
+            <InfoRow label="수정" value={getDateTimeLabel(task.updatedAt)} />
           ) : null}
-          {task.carryOverCount > 0 ? (
-            <InfoRow label="이월 횟수" value={`${task.carryOverCount}회`} />
+          {task.completedAt ? (
+            <InfoRow label="완료" value={getDateTimeLabel(task.completedAt)} />
+          ) : null}
+          {hasManagementHistory ? (
+            <>
+              {task.deferReasonLabel ? (
+                <InfoRow label="미룬 이유" value={task.deferReasonLabel} />
+              ) : null}
+              {task.carryOverCount > 0 ? (
+                <InfoRow label="이월 횟수" value={`${task.carryOverCount}회`} />
+              ) : null}
+            </>
           ) : null}
         </Card>
       ) : null}
-
-      <Card variant="outlined" style={styles.footerCard}>
-        <InfoRow label="생성" value={getDateTimeLabel(task.createdAt)} />
-        <InfoRow label="수정" value={task.updatedAt ? getDateTimeLabel(task.updatedAt) : '없음'} />
-        <InfoRow
-          label="완료"
-          value={task.completedAt ? getDateTimeLabel(task.completedAt) : '없음'}
-        />
-      </Card>
 
       {isConfirmingDelete ? (
         <Card
@@ -512,10 +532,8 @@ function RecurrenceScopePicker({
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
-  const theme = useAppTheme();
-
   return (
-    <View style={[styles.infoRow, { borderBottomColor: theme.colors.rule }]}>
+    <View style={styles.infoRow}>
       <AppText tone="secondary" variant="label" weight="semibold">
         {label}
       </AppText>
@@ -561,7 +579,7 @@ function getDateTimeLabel(value: TaskResponse['createdAt']) {
 
 function getDdayLabel(task: TaskResponse) {
   if (!task.ddayGoalTitle) {
-    return '없음';
+    return '선택하기';
   }
 
   if (task.ddayDaysLeft === null) {
@@ -690,7 +708,6 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     alignItems: 'flex-start',
-    borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: spacing[3],
     justifyContent: 'space-between',

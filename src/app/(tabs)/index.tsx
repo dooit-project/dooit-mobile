@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   screen: {
     gap: spacing[5],
     paddingBottom: 112,
-    paddingTop: spacing[5],
+    paddingTop: spacing[8],
   },
   quickCaptureLayer: {
     bottom: 0,

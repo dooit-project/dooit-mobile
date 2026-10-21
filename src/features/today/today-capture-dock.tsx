@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -69,21 +69,21 @@ export function TodayCaptureDock({
 
       <Pressable
         accessibilityHint="일정, 할 일 또는 아이디어 추가 메뉴를 엽니다."
-        accessibilityLabel={menuOpen ? '추가 메뉴 닫기' : '추가'}
+        accessibilityLabel={menuOpen ? '추가 메뉴 닫기' : '할 일 추가'}
         accessibilityRole="button"
         accessibilityState={{ expanded: menuOpen }}
+        aria-expanded={menuOpen}
         onPress={() => setMenuOpen((current) => !current)}
         style={({ pressed }) => [
           styles.addButton,
           {
-            backgroundColor: pressed ? theme.colors.primaryPressed : theme.colors.primary,
-            shadowColor: theme.colors.shadow,
+            backgroundColor: pressed ? theme.colors.highlightBlue : theme.colors.primarySoft,
           },
         ]}
       >
-        <MaterialCommunityIcons color={theme.colors.textOnPrimary} name="plus" size={20} />
-        <AppText style={{ color: theme.colors.textOnPrimary }} weight="bold">
-          추가
+        <Feather color={theme.colors.primary} name="plus" size={24} />
+        <AppText tone="primary" weight="semibold" style={{ fontSize: 16, lineHeight: 24 }}>
+          할 일 추가
         </AppText>
       </Pressable>
     </View>
@@ -93,9 +93,11 @@ export function TodayCaptureDock({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-end',
+    alignSelf: 'center',
+    maxWidth: 720,
     gap: spacing[2],
-    paddingBottom: spacing[4],
-    paddingHorizontal: spacing[5],
+    paddingBottom: spacing[5],
+    paddingHorizontal: spacing[4],
     width: '100%',
   },
   menu: {
@@ -118,12 +120,12 @@ const styles = StyleSheet.create({
   },
   addButton: {
     alignItems: 'center',
-    borderRadius: radii.full,
+    borderRadius: radii.md,
     flexDirection: 'row',
-    gap: spacing[2],
-    justifyContent: 'center',
-    minHeight: 48,
-    minWidth: 96,
+    gap: spacing[4],
+    justifyContent: 'flex-start',
+    minHeight: 50,
+    width: '100%',
     paddingHorizontal: spacing[5],
   },
 });

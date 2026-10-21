@@ -2,7 +2,7 @@
 
 2026-10-21 · `ddde85b` 커밋·origin/main 푸시 완료 · Android/iOS/Web 공통
 
-이 문서는 해당 커밋 당시의 기준이다. 이후 사용자가 선택한 [3번 목표 묶음](./soft-goal-surfaces-2026-10-21/README.md)이 오늘 surface·보조 글자 색·하단 탭 크기의 최신 기준을 대체한다.
+이 문서는 해당 커밋 당시의 기준이다. 현재는 [사용자 첨부 원본에 맞춘 색상 레일 보정](./goal-lanes-correction-2026-10-21/README.md)이 우선한다. 중간 카드형 기준 연결은 참조 오류로 정정했다.
 
 자동 검증: `npm run validate` 통과(112 suites / 584 tests, STG integration 1개 제외). Web의 실제 캡처와 시각 판단은 아래 감사 범위를 따르며 자동 검사 통과와 구분한다.
 

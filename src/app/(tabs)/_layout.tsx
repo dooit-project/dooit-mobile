@@ -50,16 +50,14 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: theme.colors.primary,
-          tabBarActiveBackgroundColor: theme.colors.primarySoft,
+          tabBarActiveBackgroundColor: 'transparent',
           tabBarInactiveTintColor: theme.colors.textSecondary,
           tabBarHideOnKeyboard: true,
           tabBarLabelPosition: 'below-icon',
           tabBarButton: (props) => <TabBarButton {...props} />,
           tabBarIconStyle: { height: sizes.navigationIcon },
           tabBarItemStyle: {
-            borderRadius: 18,
-            borderCurve: 'continuous',
-            marginHorizontal: spacing[3],
+            marginHorizontal: spacing[1],
           },
           tabBarStyle: {
             alignSelf: 'center',
@@ -69,8 +67,8 @@ export default function TabLayout() {
             borderTopColor: theme.colors.border,
             // Custom height replaces the navigator default, including its safe-area height.
             height: sizes.bottomTabHeight + labelExtraHeight + insets.bottom,
-            paddingBottom: spacing[2] + insets.bottom,
-            paddingTop: spacing[2],
+            paddingBottom: spacing[4] + insets.bottom,
+            paddingTop: spacing[1],
           },
         }}
       >

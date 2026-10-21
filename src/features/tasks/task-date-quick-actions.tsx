@@ -11,9 +11,10 @@ import { useChangeTaskDate } from './use-change-task-date';
 
 type TaskDateQuickActionsProps = {
   task: TaskResponse;
+  grouped?: boolean;
 };
 
-export function TaskDateQuickActions({ task }: TaskDateQuickActionsProps) {
+export function TaskDateQuickActions({ task, grouped = false }: TaskDateQuickActionsProps) {
   const { isCompact } = useMobileLayout();
   const changeTaskDate = useChangeTaskDate();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -50,7 +51,7 @@ export function TaskDateQuickActions({ task }: TaskDateQuickActionsProps) {
   };
 
   return (
-    <Card variant="outlined" style={styles.card}>
+    <Card variant={grouped ? 'grouped' : 'outlined'} style={styles.card}>
       <SectionHeader
         title="날짜 빠른 변경"
         description={`현재 ${task.plannedDate ? formatDateLabel(task.plannedDate) : '날짜 없음'}`}
@@ -73,7 +74,16 @@ export function TaskDateQuickActions({ task }: TaskDateQuickActionsProps) {
                 const targetDate = shiftLocalDate(toApiLocalDate(), action.offset);
                 if (targetDate) changeDate(targetDate);
               }}
-              style={isCompact ? styles.compactActionButton : styles.actionButton}
+              size={grouped ? 'compact' : 'medium'}
+              style={
+                grouped
+                  ? isCompact
+                    ? styles.groupedCompactButton
+                    : styles.groupedButton
+                  : isCompact
+                    ? styles.compactActionButton
+                    : styles.actionButton
+              }
             >
               {action.label}
             </Button>
@@ -84,7 +94,16 @@ export function TaskDateQuickActions({ task }: TaskDateQuickActionsProps) {
           loading={changeTaskDate.isPending && changeTaskDate.variables?.targetDate === null}
           variant={task.status === 'INBOX' ? 'secondary' : 'ghost'}
           onPress={() => changeDate(null)}
-          style={isCompact ? styles.compactActionButton : styles.actionButton}
+          size={grouped ? 'compact' : 'medium'}
+          style={
+            grouped
+              ? isCompact
+                ? styles.groupedCompactButton
+                : styles.groupedButton
+              : isCompact
+                ? styles.compactActionButton
+                : styles.actionButton
+          }
         >
           기록함
         </Button>
@@ -108,6 +127,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing[2],
   },
+  groupedButton: { flexGrow: 1, flexBasis: '20%', minWidth: 64 },
+  groupedCompactButton: { flexGrow: 1, flexBasis: '45%', minWidth: 88 },
   actionButton: {
     flexGrow: 1,
     minWidth: 88,

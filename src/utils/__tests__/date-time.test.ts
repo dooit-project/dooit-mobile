@@ -1,4 +1,5 @@
 import {
+  formatTimeLabel,
   getMillisecondsUntilNextAppDate,
   isLocalDateString,
   isLocalDateTimeString,
@@ -8,6 +9,10 @@ import {
 } from '@/utils/date-time';
 
 describe('API 날짜·시간 변환', () => {
+  test('기본 24시간 표시는 보존하고 오늘의 오전·오후 표시를 선택할 수 있다', () => {
+    expect(formatTimeLabel('2026-10-21T14:00:00')).toBe('14:00');
+    expect(formatTimeLabel('2026-10-21T14:00:00', { hour12: true })).toBe('오후 2:00');
+  });
   test('서울 자정 직전과 직후의 다음 날짜 갱신 시점을 계산한다', () => {
     expect(getMillisecondsUntilNextAppDate(new Date('2026-10-18T14:59:59.900Z'))).toBe(100);
     expect(getMillisecondsUntilNextAppDate(new Date('2026-10-18T15:00:00.000Z'))).toBe(86_400_000);
