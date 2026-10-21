@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { AppState } from 'react-native';
 
-import { motivationalLines } from './motivational-lines';
+import { headerMotivationalLines } from './motivational-lines';
 import { refreshStoredMotivation } from './motivation-preferences-store';
 import { useMotivationPreferences } from './use-motivation-preferences';
 
@@ -27,8 +27,9 @@ export function useMotivationalLine(visitKey: string) {
 
   const line =
     state.ready && !state.loadError && state.value.mode !== 'hidden'
-      ? (motivationalLines.find((candidate) => candidate.id === state.value.rotation?.lineId) ??
-        null)
+      ? (headerMotivationalLines.find(
+          (candidate) => candidate.id === state.value.rotation?.lineId,
+        ) ?? null)
       : null;
   return { line, showNext: () => refresh(true) };
 }

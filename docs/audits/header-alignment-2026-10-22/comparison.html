@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dooit 헤더 · 원본과 실제 화면 비교</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #f2f4f7;
+        color: #182337;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 22px;
+      }
+      .intro {
+        margin: 0 0 18px;
+        font-size: 13px;
+        color: #536174;
+      }
+      main {
+        display: flex;
+        gap: 20px;
+      }
+      figure {
+        width: 390px;
+        flex: none;
+        margin: 0;
+      }
+      figcaption {
+        margin-bottom: 10px;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      img {
+        display: block;
+        width: 390px;
+        height: auto;
+      }
+      footer {
+        margin-top: 14px;
+        font-size: 12px;
+        color: #536174;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>시안과 같은 내용을 놓고 확인한 첫 보정</h1>
+    <p class="intro">
+      같은 목표·항목·체크 상태·문구 · 폭 390 기준 · 큰 틀 유지 / 공통 헤더와 시작 간격 조정
+    </p>
+    <main>
+      <figure>
+        <figcaption>사용자 첨부 원본 시안</figcaption>
+        <img
+          src="../../design/goal-lanes-correction-2026-10-21/reference.png"
+          alt="사용자가 선택한 목표 레일 시안"
+        />
+      </figure>
+      <figure>
+        <figcaption>직전 실제 화면 · 10월 21일</figcaption>
+        <img
+          src="../goal-lanes-correction-2026-10-21/12-today-final-390.png"
+          alt="헤더와 간격 보정 전 실제 오늘 화면"
+        />
+      </figure>
+      <figure>
+        <figcaption>이번 수정 후 실제 화면 · 10월 22일</figcaption>
+        <img
+          src="05-today-final-390.jpg"
+          alt="공통 헤더와 Today 시작 간격을 보정한 실제 오늘 화면"
+        />
+      </figure>
+    </main>
+    <footer>
+      원본은 비율을 유지해 390px로 표시했습니다. 생성 시안의 큰 상단 공백은 사용자 결정에 따라
+      복제하지 않았습니다. 앱 전체 개편 완료를 뜻하지 않습니다.
+    </footer>
+  </body>
+</html>

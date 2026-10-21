@@ -1,4 +1,60 @@
+# 최신 국소 Design QA — 공통 헤더·Today 간격
+
+2026-10-22 · `479ae87` 이후 working tree · 미커밋. [실제 캡처와 변경 범위](./docs/audits/header-alignment-2026-10-22/README.md).
+
+- 원본: [사용자 첨부 시안](./docs/design/goal-lanes-correction-2026-10-21/reference.png), [같은 문구/내용의 이전 실제](./docs/audits/goal-lanes-correction-2026-10-21/12-today-final-390.png), [최종 실제 390](./docs/audits/header-alignment-2026-10-22/05-today-final-390.jpg).
+- 헤더/Drawer wordmark 공통화, 헤더 56 + inset·720 최대 폭·메뉴 24/터치 44, Today 위 간격 16. 기존 목표 레일/원형 체크/네 탭 유지.
+- 320/390/430/1024px 실제 Chrome 확장 캡처, 문구 수동 순환·숨김/기본 복원·메뉴 Escape 초점 복귀 확인. 긴 명언 잘림은 헤더용 문구 선별로 수정하고 설정 원문/출처 유지.
+- 같은 상태 비교에서 원본의 큰 상단 공백은 기존 사용자 결정에 따라 복제하지 않은 차이다. 글꼴 완전 일치는 아니다.
+- 남은 공통 UI·전체 디자인 과제는 아래 전체 감사와 로드맵에서 추적한다. native/dark/글자 확대/실제 API 미확인. 이번 국소 판정을 전체 앱의 완성도 승인으로 사용하지 않는다.
+- 최종 소스의 [390px 실제 화면](./docs/audits/header-alignment-2026-10-22/15-final-today.jpg), `npm run validate` 114 suites / 591 tests 통과, STG 1개 제외. 같은 tab error 로그 0.
+
+final result: passed (헤더·Today 간격·헤더용 문구, Web 범위)
+
+---
+
+# 전체 디자인 판정 — 후속 개선 필요
+
+2026-10-22 · `479ae87` 이후 동일 working tree. [실제 Web 재감사](./docs/audits/visual-cohesion-2026-10-22/README.md)에서 새 캡처 23장으로 주요 흐름을 재검토했다. 헤더의 글자/아이콘 비율과 최대 폭, 선택 목표 노출, 반복 오류 복귀, 상세 정보 축·달력 공간 배분을 개선해야 한다. 아래 10월 21일 `passed`는 선택 시안의 국소 정합성 결과이며 전체 앱의 전문적인 완성도 승인으로 사용하지 않는다.
+
+- 사용자 승인 fallback: IAB/Chrome 확장 복구 실패 후 로컬 Playwright 1.55.0 / 임시 Chrome 155.0.8059.85.
+- 실제 환경: localhost:8082 mock/개발 fixture, 390×844, 오늘 320×844·1024×844. 기존 사용자 profile과 운영 API는 사용하지 않음.
+- 이번 작업: 감사·문서만 추가. 앱 소스 변경·커밋·푸시 없음. 발견 사항 VC-01–08은 [개선 기준](./docs/design/VISUAL_COHESION_REVIEW_2026-10-22.md)과 [로드맵](./docs/product/ROADMAP.md)에서 추적한다.
+- 한계: native/dark/font scale/보조 기술/실제 API 전체 검증 미완료. 일부 보조 화면 내부는 이번 run 범위 밖이다.
+
+---
+
+# 10월 21일 Design QA — 첨부 원본의 흰 배경·목표 색상 레일
+
+2026-10-21 · `479ae87` 이후 working tree · 아래 판정은 **기존 Task Today의 시각 보정과 공통 탐색** 범위다. 새 Goal 회차/Task 연결/주간 여정 전체 구현 판정과 구분한다. 이전 카드형 시안 연결은 참조 오류로 정정했고 아래 과거 판정은 당시 기록으로 보존한다.
+
+- Source visual truth: [사용자가 첨부한 원본](./docs/design/goal-lanes-correction-2026-10-21/reference.png), 853×1844. 번호 대신 파일 자체를 고정했다.
+- Implementation: [최종 실제 오늘](./docs/audits/goal-lanes-correction-2026-10-21/12-today-final-390.png), 390×844 light/mock Web, density 1.
+- State: 두 목표·다섯 항목·완료 상태·영문 문구가 동일. 기존 D-Day/Task의 opt-in 개발 fixture이며 운영/새 Goal API 완료의 증거가 아니다.
+- Full-view comparison: [최종 비교 보드](./docs/audits/goal-lanes-correction-2026-10-21/16-reference-comparison-final.png), 850×940. 원본을 비율 유지 논리 폭 390/높이 약 843으로 정규화하고 실제는 390×844로 비교했다.
+- Focused evidence: [320px 수정 후](./docs/audits/goal-lanes-correction-2026-10-21/11-today-320-fixed.png), [430px](./docs/audits/goal-lanes-correction-2026-10-21/10-today-430.png), [탭 키보드 초점](./docs/audits/goal-lanes-correction-2026-10-21/13-keyboard-tab-focus.png). 원본 크기로 읽혀 별도 crop은 필요하지 않았다.
+- Fonts: 목표 18/26, 항목 16/24, 메타 13/18, 탭 14/20. 원본 폰트 파일은 미확인, 기존 플랫폼 sans-serif 사용. 글자 획의 완전 일치는 아니다.
+- Layout/colors: 카드/회색 바탕 제거, 흰 배경·4px 목표색 레일·원형 마커·넓은 추가 버튼·탭 밑줄. 기존 목표색을 보존해 sage가 원본보다 차분하며 체크 테두리는 대비를 높였다. 헤더는 기존 52 + native safe area를 유지하고 생성 이미지의 큰 상단 공백은 복제하지 않았다.
+- Assets/copy: 기존 Feather/MCI/Ionicons/iOS SF Symbols 사용, 새 이미지/폰트 의존성 없음. 목표/항목/메타/‘할 일 추가’/네 탭 문구를 일치시켰다.
+- Comparison history: 첫 비교의 큰 18px 본문을 16으로 줄이고 여분 행 간격 제거. 320px ‘돌아보기’ 잘림을 탭 여백 축소로 수정하고 재캡처했다.
+- Primary interactions: 완료 유지/취소/재완료, 추가 메뉴→빠른 입력→닫기, 목표 메뉴 펼침/닫기, 계획→상세 왕복, Tab 초점 확인. 해당 최종 responsive tab의 console errors 0.
+- Browser: 내장 surface 미제공으로 기존 Chrome 확장을 이어 사용. evaluate는 DOM 실측만 했으며 상태/데이터를 주입하지 않았다.
+- Validation: `npm run validate` 113 suites / 589 tests passed, STG 1개 제외.
+- Actionable P0/P1/P2 in this visual correction: none. 미완료 제품 흐름은 아래 별도 경계를 따른다.
+- Remaining/limits: native safe area·font scale 1.5·dark·보조 기술·운영 API/실패·긴 목록 미검증. 폰트/아이콘 획 차이는 P3 시각 후속이다. 새 Goal 회차/연결/여정·오늘 작성 목적지·목표 메뉴의 특정 목표 자동 선택은 기존 로드맵의 미완료 기능이며 이번 판정에 포함하지 않는다.
+- Detailed evidence: [구현 결정](./docs/design/goal-lanes-correction-2026-10-21/README.md), [실제 감사](./docs/audits/goal-lanes-correction-2026-10-21/README.md).
+
+final result: passed
+
+---
+
+# 과거 Design QA — 잘못 연결한 카드형 시안
+
+아래 원본 연결과 판정은 위 첨부 원본 기준으로 대체됐다. 현재 구현 기준으로 사용하지 않는다.
+
 # 최신 Design QA — 목표 묶음 3번
+
+`479ae87`로 첫 보정을 커밋한 뒤 [계획·상세의 디자인 확장과 실제 흐름](./docs/audits/plan-detail-surfaces-2026-10-21/README.md)을 추가 확인했다. 계획 320/390/430, 상세 320/390에서 빈 정보 축소·체크리스트 저장/취소·기록 펼침·날짜 변경과 상태 표시를 검토했고 `npm run validate` 584개 테스트가 통과했다. 이 국소 확장은 미커밋이다. 아래의 새 Goal 회차/완료 연결에 대한 전체 선택 시안 판정은 여전히 별도 미완료다.
 
 2026-10-21 · `ddde85b` 이후 working tree. 현재 판정은 이 절을 우선하며 아래 과거 `passed`는 당시 변경에 대한 기록이다.
 

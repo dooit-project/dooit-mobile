@@ -14,6 +14,7 @@
 - 플랫폼별 코드를 수정하면 영향받는 Android, iOS, Web 환경을 명시한다.
 - 새 의존성은 Expo SDK 56 및 React Native 0.85 호환성을 확인한 뒤 추가한다.
 - 화면 수정이나 신규 사용자 기능은 [`docs/qa/PRODUCT_DESIGN_REVIEW_POLICY.md`](./docs/qa/PRODUCT_DESIGN_REVIEW_POLICY.md)에 따라 구현 전 Product Design 검토와 구현 후 실제 화면 감사를 진행한다.
+- UI 구현은 먼저 [`docs/design/DESIGN_IMPLEMENTATION_GUIDE.md`](./docs/design/DESIGN_IMPLEMENTATION_GUIDE.md)의 정확한 기준 이미지·고정 요소·작업 범위를 확인한다. 시안 번호로 원본을 추정하지 않으며, 기존 선택안 보정과 새로운 정보 구조 변경을 구분한다.
 - UI/UX 제안·시안 수정에도 위 정책의 기본 검토를 적용한다. 화면의 필요성과 위치, 행동 위계·발견 가능성, 시각 일관성, 접근성을 확인하고 공식 디자인 가이드·유사 서비스의 관련 패턴과 비교한다. 사용 도구·출처와 시안 검토/자료 참고/실제 앱 검증의 범위를 구분해 기록한다.
 - 로컬 Web 화면 캡처·조작은 ChatGPT 앱의 내장 브라우저를 기본으로 사용한다. 기존 Chrome tab·로그인 session·일반 browser profile이나 Chrome 전용 동작을 확인해야 할 때는 Chrome 확장을 사용한다.
 - 선택한 브라우저로 로컬 앱에 접근할 수 없으면 같은 브라우저의 연결·주소·서버 상태를 먼저 복구한다. 다른 browser surface나 local Playwright로 바꿀 때는 audit에 사유와 실제 검증 환경을 기록한다.

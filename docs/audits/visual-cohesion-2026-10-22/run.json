@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-22",
+  "browser": "155.0.8059.85",
+  "automation": "Playwright 1.55.0, user-approved fallback",
+  "viewports": ["390x844", "320x844", "1024x844"],
+  "apiMode": "mock",
+  "fixture": "goal-lanes",
+  "origin": "http://localhost:8082",
+  "pageErrors": [],
+  "native": false,
+  "production": false
+}

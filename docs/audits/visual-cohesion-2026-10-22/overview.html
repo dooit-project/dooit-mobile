@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dooit 실제 화면 검토 · 2026-10-22</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px;
+        background: #f2f4f7;
+        color: #182337;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 23px;
+      }
+      .intro {
+        margin: 0 0 24px;
+        font-size: 14px;
+        color: #536174;
+      }
+      main {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+      }
+      figure {
+        margin: 0;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: 17px;
+      }
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid #e1e6ed;
+      }
+      figcaption {
+        margin-top: 12px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #536174;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>같은 앱인데 화면마다 달라지는 규칙</h1>
+    <p class="intro">
+      2026-10-22 실제 Expo Web 캡처 · 개발 mock · 개선 전 현재 화면 · TO-BE 시안이 아닙니다.
+    </p>
+    <main>
+      <figure>
+        <h2>오늘</h2>
+        <img src="06-today-resting.png" alt="목표별 색상 레일을 사용한 오늘 화면" />
+        <figcaption>목표 레일은 유지.<br />헤더 비율·본문과의 간격 보정.</figcaption>
+      </figure>
+      <figure>
+        <h2>계획</h2>
+        <img src="11-plan.png" alt="목표 탭과 반복 및 일정 목록이 있는 계획 화면" />
+        <figcaption>제목·메타·아이콘 규칙 통일.<br />선택 목표가 항상 보이도록.</figcaption>
+      </figure>
+      <figure>
+        <h2>달력</h2>
+        <img src="13-calendar-resting.png" alt="3주 그리드 아래 선택일 목록이 있는 달력 화면" />
+        <figcaption>날짜 영역을 더 간결하게.<br />목록과 체크를 오늘과 통일.</figcaption>
+      </figure>
+      <figure>
+        <h2>상세</h2>
+        <img src="09-task-detail.png" alt="날짜 변경과 일정 정보가 흩어진 상세 화면" />
+        <figcaption>정보와 행동의 좌측 축 정렬.<br />큰 빈 간격·떠 있는 버튼 정리.</figcaption>
+      </figure>
+    </main>
+    <footer>
+      임시 Chrome / Playwright · 원본 390×844 · 원본 화면을 편집하지 않고 비율을 유지해
+      배치했습니다.
+    </footer>
+  </body>
+</html>

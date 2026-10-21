@@ -8,6 +8,8 @@ type QuoteSource = {
 export type MotivationalLine = {
   id: string;
   text: string;
+  /** Longer originals remain available with their sources in settings. */
+  headerEligible?: boolean;
 } & ({ kind: 'original' } | { kind: 'quote'; author: string; source: QuoteSource });
 
 export const motivationalLines: readonly MotivationalLine[] = [
@@ -46,6 +48,7 @@ export const motivationalLines: readonly MotivationalLine[] = [
   {
     id: 'keller-optimism',
     text: 'Optimism is the faith that leads to achievement.',
+    headerEligible: false,
     kind: 'quote',
     author: '헬렌 켈러',
     source: {
@@ -64,6 +67,7 @@ export const motivationalLines: readonly MotivationalLine[] = [
   {
     id: 'emerson-enthusiasm',
     text: 'Nothing great was ever achieved without enthusiasm.',
+    headerEligible: false,
     kind: 'quote',
     author: 'Ralph Waldo Emerson',
     source: {
@@ -77,3 +81,7 @@ export const motivationalLines: readonly MotivationalLine[] = [
   { id: 'quiet-dream', text: 'Make room for your dream.', kind: 'original' },
   { id: 'one-step', text: '원하는 방향으로 한 걸음씩', kind: 'original' },
 ];
+
+export const headerMotivationalLines = motivationalLines.filter(
+  (line) => line.headerEligible !== false,
+);

@@ -16,10 +16,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText } from '@/components/ui';
+import { AppText, BrandWordmark } from '@/components/ui';
 import { useTaskCategories } from '@/features/tasks';
 import { useMotivationalLine } from '@/features/motivation/use-motivational-line';
-import { radii, sizes, spacing, useAppTheme } from '@/theme';
+import { radii, sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
 
 import {
   getPlannerCategoryNavigationItems,
@@ -64,6 +64,7 @@ export const plannerDrawerGroups: DrawerItem[][] = [
 ];
 
 const drawerGroupTitles = [null, '기록 정리', '도구', '내 계정'] as const;
+const menuIconSize = 24;
 
 type PlannerHeaderProps = {
   onMenuPress: () => void;
@@ -73,6 +74,7 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
   function PlannerHeader({ onMenuPress }, ref) {
     const theme = useAppTheme();
     const insets = useSafeAreaInsets();
+    const { fontScale, screenPadding } = useMobileLayout();
     const pathname = usePathname();
     const { line, showNext } = useMotivationalLine(pathname);
 
@@ -82,47 +84,45 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
           styles.header,
           {
             backgroundColor: theme.colors.background,
-            borderBottomColor: theme.colors.border,
             paddingTop: insets.top,
-            minHeight: sizes.plannerHeaderHeight + insets.top,
           },
         ]}
       >
-        <Pressable
-          ref={ref}
-          accessibilityHint="기록 정리와 도구, 계정 메뉴를 엽니다."
-          accessibilityLabel="나의 플래너 메뉴 열기"
-          accessibilityRole="button"
-          hitSlop={8}
-          onPress={onMenuPress}
-          style={({ pressed }) => [
-            styles.headerButton,
-            { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-          ]}
-        >
-          <Feather color={theme.colors.textSecondary} name="menu" size={26} />
-        </Pressable>
-        <AppText weight="heavy" style={[styles.brand, { color: theme.colors.brand }]}>
-          dooit
-        </AppText>
-        {line ? (
+        <View style={[styles.headerContent, { paddingHorizontal: screenPadding }]}>
           <Pressable
-            style={({ pressed }) => [styles.motivation, { opacity: pressed ? 0.65 : 1 }]}
-            onPress={showNext}
+            ref={ref}
+            accessibilityHint="기록 정리와 도구, 계정 메뉴를 엽니다."
+            accessibilityLabel="나의 플래너 메뉴 열기"
             accessibilityRole="button"
-            accessibilityLabel={line.text}
-            accessibilityHint="다른 문장을 보려면 누르세요."
+            hitSlop={8}
+            onPress={onMenuPress}
+            style={({ pressed }) => [
+              styles.headerButton,
+              { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+            ]}
           >
-            <AppText
-              numberOfLines={2}
-              tone="secondary"
-              variant="caption"
-              style={styles.motivationCopy}
-            >
-              {line.text}
-            </AppText>
+            <Feather color={theme.colors.textSecondary} name="menu" size={menuIconSize} />
           </Pressable>
-        ) : null}
+          <BrandWordmark />
+          {line ? (
+            <Pressable
+              style={({ pressed }) => [styles.motivation, { opacity: pressed ? 0.65 : 1 }]}
+              onPress={showNext}
+              accessibilityRole="button"
+              accessibilityLabel={line.text}
+              accessibilityHint="다른 문장을 보려면 누르세요."
+            >
+              <AppText
+                numberOfLines={fontScale > 1 ? undefined : 2}
+                tone="muted"
+                variant="caption"
+                style={styles.motivationCopy}
+              >
+                {line.text}
+              </AppText>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
     );
   },
@@ -262,13 +262,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
           ]}
         >
           <View style={styles.brandRow}>
-            <AppText
-              style={[styles.brandCopy, { color: theme.colors.primary }]}
-              variant="title"
-              weight="heavy"
-            >
-              dooit
-            </AppText>
+            <BrandWordmark style={styles.brandCopy} />
             <Pressable
               ref={closeButtonRef}
               accessibilityLabel="나의 플래너 메뉴 닫기"
@@ -491,7 +485,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: spacing[3],
-    minHeight: 52,
+    minHeight: sizes.plannerHeaderHeight,
     paddingHorizontal: spacing[5],
   },
   brandCopy: { flex: 1 },
@@ -554,10 +548,15 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
+  },
+  headerContent: {
+    alignItems: 'center',
     flexDirection: 'row',
-    gap: spacing[2],
-    minHeight: 52,
-    paddingHorizontal: spacing[3],
+    gap: spacing[3],
+    maxWidth: sizes.contentMaxWidth,
+    minHeight: sizes.plannerHeaderHeight,
+    paddingVertical: spacing[1],
+    width: '100%',
   },
   headerButton: {
     alignItems: 'center',
@@ -565,16 +564,14 @@ const styles = StyleSheet.create({
     height: sizes.touchTarget,
     justifyContent: 'center',
     width: sizes.touchTarget,
+    // Align the visible menu strokes with the content inset, while keeping a 44pt target.
+    marginLeft: -(sizes.touchTarget - menuIconSize) / 2,
   },
   motivation: {
     flex: 1,
-    marginLeft: spacing[1],
-    minHeight: 44,
+    minWidth: 0,
+    minHeight: sizes.touchTarget,
     justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[1],
   },
-  motivationCopy: { flex: 1, minWidth: 0 },
-  brand: { fontSize: 28, lineHeight: 36, letterSpacing: -1.2 },
+  motivationCopy: { minWidth: 0 },
 });

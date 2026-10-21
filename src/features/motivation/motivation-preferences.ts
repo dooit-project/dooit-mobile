@@ -1,6 +1,6 @@
 import { isLocalDateString, toApiLocalDate } from '@/utils';
 
-import { motivationalLines } from './motivational-lines';
+import { headerMotivationalLines } from './motivational-lines';
 
 export type MotivationMode = 'standard' | 'daily' | 'hidden';
 export type MotivationRotation = {
@@ -11,7 +11,7 @@ export type MotivationRotation = {
 };
 export type MotivationPreferences = { mode: MotivationMode; rotation: MotivationRotation | null };
 
-const lineIds = new Set(motivationalLines.map((line) => line.id));
+const lineIds = new Set(headerMotivationalLines.map((line) => line.id));
 const REFRESH_AFTER_MS = 4 * 60 * 60 * 1000;
 
 export function normalizeMotivationPreferences(value: unknown): MotivationPreferences {
@@ -62,20 +62,20 @@ export function refreshMotivationPreferences(
   const dayNumber = Math.floor(
     Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86_400_000,
   );
-  let index = dayNumber % motivationalLines.length;
+  let index = dayNumber % headerMotivationalLines.length;
   if (previous) {
-    const currentIndex = motivationalLines.findIndex((line) => line.id === previous.lineId);
+    const currentIndex = headerMotivationalLines.findIndex((line) => line.id === previous.lineId);
     const recent = new Set([...previous.recentIds, previous.lineId]);
-    index = (currentIndex + 1) % motivationalLines.length;
-    for (let offset = 1; offset <= motivationalLines.length; offset += 1) {
-      const candidate = (currentIndex + offset) % motivationalLines.length;
-      if (!recent.has(motivationalLines[candidate].id)) {
+    index = (currentIndex + 1) % headerMotivationalLines.length;
+    for (let offset = 1; offset <= headerMotivationalLines.length; offset += 1) {
+      const candidate = (currentIndex + offset) % headerMotivationalLines.length;
+      if (!recent.has(headerMotivationalLines[candidate].id)) {
         index = candidate;
         break;
       }
     }
   }
-  const lineId = motivationalLines[index].id;
+  const lineId = headerMotivationalLines[index].id;
   return {
     ...current,
     rotation: {

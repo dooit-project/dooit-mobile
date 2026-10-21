@@ -1,6 +1,7 @@
 export { AppText } from './app-text';
 export { AddItemRow } from './add-item-row';
 export { Button } from './button';
+export { BrandWordmark } from './brand-wordmark';
 export { Card } from './card';
 export { EmptyState } from './empty-state';
 export { FadeInView } from './fade-in-view';

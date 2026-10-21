@@ -127,7 +127,7 @@ export const sizes = {
   screenPadding: 20,
   navigationIcon: 28,
   listIcon: 26,
-  plannerHeaderHeight: 52,
+  plannerHeaderHeight: 56,
   cardPadding: 16,
 } as const;
 
