@@ -130,7 +130,9 @@ export const sizes = {
   bottomTabHeight: 80,
   screenPadding: 20,
   navigationIcon: 28,
-  listIcon: 26,
+  listIcon: 24,
+  actionIcon: 22,
+  metaIcon: 14,
   plannerHeaderHeight: 56,
   cardPadding: 16,
 } as const;

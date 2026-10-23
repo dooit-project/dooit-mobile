@@ -1,9 +1,10 @@
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import {
+  AppIcon,
   AppText,
   Button,
   EmptyState,
@@ -65,7 +66,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
       <EmptyState
         icon={
           <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
-            <Feather color={theme.colors.primary} name="circle" size={22} />
+            <AppIcon color={theme.colors.primary} name="circle" />
           </View>
         }
         title="오늘 할 일을 가볍게 남겨보세요"
@@ -121,7 +122,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                   expanded={menuGoalId === group.goalId}
                   onPress={() => setMenuGoalId(menuGoalId === group.goalId ? null : group.goalId)}
                 >
-                  <Feather color={theme.colors.textMuted} name="more-horizontal" size={22} />
+                  <AppIcon color={theme.colors.textMuted} name="more-horizontal" />
                 </IconButton>
               ) : null}
             </View>
@@ -260,7 +261,7 @@ function TodayItemRow({
         {trailingLabel ? (
           <View style={styles.metadata}>
             {isSchedule && !done ? (
-              <Feather color={theme.colors.textMuted} name="calendar" size={14} />
+              <AppIcon color={theme.colors.textMuted} name="calendar" size="meta" />
             ) : null}
             <AppText numberOfLines={2} tone="secondary" variant="caption">
               {trailingLabel}

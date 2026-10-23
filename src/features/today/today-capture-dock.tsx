@@ -1,8 +1,7 @@
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText } from '@/components/ui';
+import { AppIcon, AppText } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 
 type TodayCaptureDockProps = {
@@ -12,9 +11,9 @@ type TodayCaptureDockProps = {
 };
 
 const createActions = [
-  { key: 'schedule', label: '일정', icon: 'calendar-blank-outline' },
-  { key: 'task', label: '할 일', icon: 'checkbox-blank-circle-outline' },
-  { key: 'idea', label: '아이디어', icon: 'lightbulb-outline' },
+  { key: 'schedule', label: '일정', icon: 'calendar' },
+  { key: 'task', label: '할 일', icon: 'circle' },
+  { key: 'idea', label: '아이디어', icon: 'idea' },
 ] as const;
 
 export function TodayCaptureDock({
@@ -54,11 +53,7 @@ export function TodayCaptureDock({
                 { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
               ]}
             >
-              <MaterialCommunityIcons
-                color={theme.colors.textSecondary}
-                name={action.icon}
-                size={20}
-              />
+              <AppIcon color={theme.colors.textSecondary} name={action.icon} />
               <AppText numberOfLines={1} weight="medium">
                 {action.label}
               </AppText>
@@ -81,7 +76,7 @@ export function TodayCaptureDock({
           },
         ]}
       >
-        <Feather color={theme.colors.primary} name="plus" size={24} />
+        <AppIcon color={theme.colors.primary} name="plus" size="list" />
         <AppText tone="primary" weight="semibold" style={{ fontSize: 16, lineHeight: 24 }}>
           할 일 추가
         </AppText>

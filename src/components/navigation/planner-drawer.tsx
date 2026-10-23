@@ -1,4 +1,3 @@
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Href } from 'expo-router';
 import { useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { forwardRef, useEffect, useRef, useState } from 'react';
@@ -16,7 +15,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, BrandWordmark } from '@/components/ui';
+import { AppIcon, AppText, BrandWordmark, type AppIconName } from '@/components/ui';
 import { useTaskCategories } from '@/features/tasks';
 import { useMotivationalLine } from '@/features/motivation/use-motivational-line';
 import { radii, sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
@@ -28,43 +27,43 @@ import {
 
 type DrawerItem = {
   href: Href;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  icon: AppIconName;
   label: string;
   match?: string;
   focus?: 'inbox' | 'stale';
 };
 
 export const plannerDrawerGroups: DrawerItem[][] = [
-  [{ href: '/search', icon: 'magnify', label: '검색' }],
+  [{ href: '/search', icon: 'search', label: '검색' }],
   [
     {
       href: { pathname: '/today/review', params: { focus: 'inbox' } },
-      icon: 'inbox-outline',
+      icon: 'inbox',
       label: '기록함',
       match: '/today/review',
       focus: 'inbox',
     },
     {
       href: { pathname: '/today/review', params: { focus: 'stale' } },
-      icon: 'history',
+      icon: 'rotate-ccw',
       label: '오래 미룬 일',
       match: '/today/review',
       focus: 'stale',
     },
-    { href: '/completed', icon: 'checkbox-marked-circle-outline', label: '날짜별 완료 기록' },
+    { href: '/completed', icon: 'check-circle', label: '날짜별 완료 기록' },
   ],
   [
-    { href: '/templates', icon: 'checkbox-multiple-marked-outline', label: '할 일 템플릿' },
-    { href: '/workspaces', icon: 'account-multiple-outline', label: '공유 공간' },
+    { href: '/templates', icon: 'copy', label: '할 일 템플릿' },
+    { href: '/workspaces', icon: 'users', label: '공유 공간' },
   ],
   [
-    { href: '/profile', icon: 'account-circle-outline', label: '계정' },
-    { href: '/settings', icon: 'tune-variant', label: '설정' },
+    { href: '/profile', icon: 'user', label: '계정' },
+    { href: '/settings', icon: 'sliders', label: '설정' },
   ],
 ];
 
 const drawerGroupTitles = [null, '기록 정리', '도구', '내 계정'] as const;
-const menuIconSize = 24;
+const menuIconSize = sizes.listIcon;
 
 type PlannerHeaderProps = {
   onMenuPress: () => void;
@@ -101,7 +100,7 @@ export const PlannerHeader = forwardRef<ComponentRef<typeof Pressable>, PlannerH
               { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
             ]}
           >
-            <Feather color={theme.colors.textSecondary} name="menu" size={menuIconSize} />
+            <AppIcon color={theme.colors.textSecondary} name="menu" size="list" />
           </Pressable>
           <BrandWordmark />
           {line ? (
@@ -222,10 +221,9 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
         ]}
       >
         <View style={styles.iconBox}>
-          <MaterialCommunityIcons
+          <AppIcon
             color={active ? theme.colors.primary : theme.colors.textSecondary}
             name={item.icon}
-            size={20}
           />
         </View>
         <AppText style={styles.menuLabel} variant="bodyLarge" weight={active ? 'bold' : 'medium'}>
@@ -279,7 +277,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                 },
               ]}
             >
-              <MaterialCommunityIcons color={theme.colors.text} name="close" size={28} />
+              <AppIcon color={theme.colors.text} name="x" />
             </Pressable>
           </View>
 
@@ -326,12 +324,11 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                       ]}
                     >
                       <View style={styles.iconBox}>
-                        <MaterialCommunityIcons
+                        <AppIcon
                           color={
                             categoryBrowseActive ? theme.colors.primary : theme.colors.textSecondary
                           }
-                          name="folder-outline"
-                          size={20}
+                          name="folder"
                         />
                       </View>
                       <View style={styles.categoryHeadingCopy}>
@@ -349,10 +346,9 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                               : `전체 ${totalTaskCount}`}
                         </AppText>
                       </View>
-                      <MaterialCommunityIcons
+                      <AppIcon
                         color={theme.colors.textMuted}
                         name={categoriesExpanded ? 'chevron-up' : 'chevron-down'}
-                        size={22}
                       />
                     </Pressable>
 

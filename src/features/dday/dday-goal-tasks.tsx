@@ -1,9 +1,8 @@
-import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Button, EmptyState, InlineNotice } from '@/components/ui';
+import { AppIcon, AppText, Button, EmptyState, InlineNotice } from '@/components/ui';
 import { spacing, useAppTheme } from '@/theme';
 import { formatDateLabel, toApiLocalDate } from '@/utils';
 
@@ -208,7 +207,11 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
                 { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
               ]}
             >
-              <Feather name={getPlanItemIcon(item)} size={26} color={theme.colors.textSecondary} />
+              <AppIcon
+                name={getPlanItemIcon(item)}
+                size="list"
+                color={theme.colors.textSecondary}
+              />
               <View style={styles.copy}>
                 <AppText>{item.task.title}</AppText>
                 {subtitle ? (

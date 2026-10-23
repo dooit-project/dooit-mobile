@@ -1,4 +1,18 @@
-# 최신 국소 Design QA — 공통 보조 색상
+# 최신 국소 Design QA — 공통 아이콘
+
+2026-10-22 · `20b9211` 이후 working tree · 미커밋. [범위·실제 전후·조작·남은 차이](./docs/audits/common-icons-2026-10-22/README.md).
+
+- 원본 [목표 레일 시안](./docs/design/goal-lanes-correction-2026-10-21/reference.png)을 확인하고 기존 구성 안의 아이콘만 보정. `AppIcon`의 list 24/action 22/meta 14/navigation 28로 연결했다.
+- 같은 390px·mock·문구·체크 상태의 계획/Drawer/상세/추가 메뉴/달력/돌아보기 전후, 320px 오늘/계획을 실제 Chrome 확장으로 확인했다. 선택된 해·목표색·원형 체크·탭 순서·본문 간격 유지.
+- 닫기 두 버튼 44×44, 메뉴 Escape 초점 복귀, 주/연도 이동 복귀, 개인 상세 편집/취소/복귀, 빠른 작성 닫기 확인. 버튼·탭 접근성 이름/상태 유지, 장식 glyph 숨김.
+- native에서는 탭/조작 그림이 공통 폰트 glyph로 바뀐다. 실제 Android/iOS·font scale 1.5·dark·VoiceOver/TalkBack·전체 실패 상태는 미확인이다. legacy 아이콘/체크리스트·제목/행/버튼·달력 구조 등은 후속 범위다.
+- `npm run validate` 114 suites / 591 tests 통과, STG 1개 제외. 초기 빠른 작성 테스트의 UI mock 누락을 보완하고 전체 재실행했다. `git diff --check` 통과, 최종 tab error 로그 0.
+
+final result: passed (이번 공통 아이콘 범위, 실제 Web)
+
+---
+
+# 이전 국소 Design QA — 공통 보조 색상
 
 2026-10-22 · `a3943d2` 이후 working tree · 미커밋. [변경 범위·실제 전후·대비](./docs/audits/neutral-text-2026-10-22/README.md).
 

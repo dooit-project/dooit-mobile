@@ -1,52 +1,37 @@
-import { Feather, Ionicons } from '@expo/vector-icons';
-import type { SymbolViewProps } from 'expo-symbols';
-import { SymbolView } from 'expo-symbols';
-import { Platform, StyleSheet, View, type ColorValue } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, type ColorValue } from 'react-native';
 
+import { AppIcon } from '@/components/ui';
 import { sizes } from '@/theme';
 
-type PlatformSymbolNames = Exclude<SymbolViewProps['name'], string>;
 type TabBarIconProps = {
   color: ColorValue;
   focused?: boolean;
-  name:
-    | Exclude<SymbolViewProps['name'], PlatformSymbolNames>
-    | (Omit<PlatformSymbolNames, 'web'> & { web?: string });
-  size: number;
+  name: 'today' | 'calendar' | 'plan' | 'review';
 };
 const icons = {
   today: 'sun',
-  calendar_month: 'calendar',
-  'format-list-bulleted': 'list',
-  history: 'clock',
+  calendar: 'calendar',
+  plan: 'list',
+  review: 'clock',
 } as const;
 
 export function TabBarIcon({ color, name, focused }: TabBarIconProps) {
-  const webName = typeof name === 'object' && name ? name.web : undefined;
   return (
     <View style={styles.container} accessible={false}>
-      {Platform.OS === 'ios' ? (
-        <SymbolView
-          name={
-            focused && webName === 'today'
-              ? { ios: 'sun.max.fill' }
-              : typeof name === 'object'
-                ? { ios: name.ios, android: name.android }
-                : name
-          }
-          size={sizes.navigationIcon}
-          tintColor={color}
-          type="monochrome"
-          weight="regular"
-        />
-      ) : focused && webName === 'today' ? (
-        <Ionicons color={color as string} name="sunny" size={sizes.navigationIcon} />
-      ) : (
-        <Feather
+      {focused && name === 'today' ? (
+        <Ionicons
+          allowFontScaling={false}
+          accessible={false}
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+          aria-hidden
           color={color as string}
-          name={icons[webName as keyof typeof icons] ?? 'list'}
+          name="sunny"
           size={sizes.navigationIcon}
         />
+      ) : (
+        <AppIcon color={color as string} name={icons[name]} size="navigation" />
       )}
     </View>
   );

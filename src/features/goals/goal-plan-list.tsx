@@ -1,10 +1,9 @@
-import { Feather } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AddItemRow, AppText, Button, InlineNotice } from '@/components/ui';
+import { AddItemRow, AppIcon, AppText, Button, InlineNotice } from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
-import { sizes, spacing, useAppTheme } from '@/theme';
+import { spacing, useAppTheme } from '@/theme';
 import type { GoalResponse, GoalPlanResponse } from '@/types';
 
 import { GoalPlanForm } from './goal-plan-form';
@@ -99,7 +98,7 @@ export function GoalPlanList({
                 .join(' · ');
         const row = (
           <>
-            <Feather name="repeat" size={sizes.listIcon} color={theme.colors.textSecondary} />
+            <AppIcon name="repeat" size="list" color={theme.colors.textSecondary} />
             <View style={styles.copy}>
               <AppText>{plan.name}</AppText>
               <AppText variant="label" tone="secondary">

@@ -1,9 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import {
+  AppIcon,
   AppText,
   Button,
   Card,
@@ -102,11 +102,7 @@ export default function TaskDetailScreen() {
         title={isEditing ? '할 일 수정' : '할 일 상세'}
         leading={
           <IconButton {...getScreenBackAction(router)} style={styles.headerButton}>
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-              size={20}
-              tintColor={theme.colors.text}
-            />
+            <AppIcon name="arrow-left" color={theme.colors.text} />
           </IconButton>
         }
         action={
@@ -114,13 +110,7 @@ export default function TaskDetailScreen() {
             <Button
               accessibilityLabel="할 일 수정"
               disabled={deleteTask.isPending || isConfirmingDelete}
-              leading={
-                <SymbolView
-                  name={{ ios: 'square.and.pencil', android: 'edit', web: 'edit' }}
-                  size={16}
-                  tintColor={theme.colors.primary}
-                />
-              }
+              leading={<AppIcon name="edit-2" size="meta" color={theme.colors.primary} />}
               size="compact"
               variant="secondary"
               onPress={startEditing}

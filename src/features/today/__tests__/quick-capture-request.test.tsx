@@ -22,6 +22,7 @@ jest.mock('@/theme', () => ({
   useAppTheme: () => ({ colors: {} }),
 }));
 jest.mock('@/components/ui', () => ({
+  AppIcon: 'AppIcon',
   AppText: 'AppText',
   Button: 'Button',
   Card: 'Card',

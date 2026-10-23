@@ -78,17 +78,8 @@ export default function TabLayout() {
             title: '오늘',
             tabBarAccessibilityLabel: '오늘',
             tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="오늘" />,
-            tabBarIcon: ({ color, focused, size }) => (
-              <TabBarIcon
-                color={color}
-                focused={focused}
-                size={size}
-                name={{
-                  ios: 'sun.max',
-                  android: 'wb_sunny',
-                  web: 'today',
-                }}
-              />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon color={color} focused={focused} name="today" />
             ),
           }}
         />
@@ -98,13 +89,8 @@ export default function TabLayout() {
             title: '달력',
             tabBarAccessibilityLabel: '달력',
             tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="달력" />,
-            tabBarIcon: ({ color, focused, size }) => (
-              <TabBarIcon
-                color={color}
-                focused={focused}
-                size={size}
-                name={{ ios: 'calendar', android: 'calendar_month', web: 'calendar_month' }}
-              />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon color={color} focused={focused} name="calendar" />
             ),
           }}
         />
@@ -114,17 +100,8 @@ export default function TabLayout() {
             title: '계획',
             tabBarAccessibilityLabel: '계획',
             tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="계획" />,
-            tabBarIcon: ({ color, focused, size }) => (
-              <TabBarIcon
-                color={color}
-                focused={focused}
-                size={size}
-                name={{
-                  ios: 'list.bullet',
-                  android: 'format_list_bulleted',
-                  web: 'format-list-bulleted',
-                }}
-              />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon color={color} focused={focused} name="plan" />
             ),
           }}
         />
@@ -134,13 +111,8 @@ export default function TabLayout() {
             title: '돌아보기',
             tabBarAccessibilityLabel: '돌아보기',
             tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} label="돌아보기" />,
-            tabBarIcon: ({ color, focused, size }) => (
-              <TabBarIcon
-                color={color}
-                focused={focused}
-                size={size}
-                name={{ ios: 'clock', android: 'schedule', web: 'history' }}
-              />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon color={color} focused={focused} name="review" />
             ),
           }}
         />

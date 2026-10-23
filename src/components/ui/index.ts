@@ -1,4 +1,5 @@
 export { AppText } from './app-text';
+export { AppIcon, type AppIconName } from './app-icon';
 export { AddItemRow } from './add-item-row';
 export { Button } from './button';
 export { BrandWordmark } from './brand-wordmark';

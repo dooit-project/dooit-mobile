@@ -1,4 +1,3 @@
-import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -12,6 +11,7 @@ import {
 
 import {
   AddItemRow,
+  AppIcon,
   AppText,
   Button,
   EmptyState,
@@ -301,7 +301,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                 variant="ghost"
                 labelVariant="bodyLarge"
                 accessibilityLabel="전체 목표"
-                leading={<Feather name="grid" size={22} color={theme.colors.textSecondary} />}
+                leading={<AppIcon name="grid" color={theme.colors.textSecondary} />}
                 disabled={locked}
                 accessibilityState={{ expanded: all }}
                 onPress={() => setAll(!all)}
@@ -498,7 +498,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                     disabled={status.isPending || plansEditing}
                     onPress={() => setMenu(!menu)}
                   >
-                    <Feather name="more-horizontal" size={24} color={theme.colors.textSecondary} />
+                    <AppIcon name="more-horizontal" color={theme.colors.textSecondary} />
                   </IconButton>
                 )}
               </View>

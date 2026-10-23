@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { AppIcon, AppText, Button, InlineNotice, Screen } from '@/components/ui';
 import { ContextualFeatureTip } from '@/features/onboarding';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { useAppToday } from '@/services/time/use-app-today';
@@ -84,11 +83,7 @@ export function WeekCalendar() {
               { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
             ]}
           >
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' }}
-              size={18}
-              tintColor={theme.colors.textSecondary}
-            />
+            <AppIcon name="chevron-left" color={theme.colors.textSecondary} />
           </Pressable>
           <Pressable
             accessibilityLabel={`${formatDateLabel(selectedDate, {
@@ -121,11 +116,7 @@ export function WeekCalendar() {
               { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
             ]}
           >
-            <SymbolView
-              name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
-              size={18}
-              tintColor={theme.colors.textSecondary}
-            />
+            <AppIcon name="chevron-right" color={theme.colors.textSecondary} />
           </Pressable>
         </View>
 
@@ -200,11 +191,7 @@ function MonthPicker({ pickerYear, selectedDate, onMoveYear, onSelectMonth }: Mo
             { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
           ]}
         >
-          <SymbolView
-            name={{ ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' }}
-            size={14}
-            tintColor={theme.colors.textSecondary}
-          />
+          <AppIcon name="chevron-left" color={theme.colors.textSecondary} />
         </Pressable>
         <AppText align="center" tone="secondary" variant="label" weight="semibold">
           {pickerYear}년
@@ -219,11 +206,7 @@ function MonthPicker({ pickerYear, selectedDate, onMoveYear, onSelectMonth }: Mo
             { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
           ]}
         >
-          <SymbolView
-            name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
-            size={14}
-            tintColor={theme.colors.textSecondary}
-          />
+          <AppIcon name="chevron-right" color={theme.colors.textSecondary} />
         </Pressable>
       </View>
       <View style={styles.monthPickerGrid}>

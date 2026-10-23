@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
+  AppIcon,
   AppText,
   Button,
   EmptyState,
@@ -62,11 +62,7 @@ export function WeeklyEvidenceOverview() {
             onPress={() => moveWeek(-7)}
             style={styles.arrow}
           >
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' }}
-              size={18}
-              tintColor={theme.colors.textSecondary}
-            />
+            <AppIcon name="chevron-left" color={theme.colors.textSecondary} />
           </IconButton>
           <AppText
             accessibilityLabel={`${formatDateLabel(start, { dateStyle: 'full' })}부터 ${formatDateLabel(end, { dateStyle: 'full' })}까지`}
@@ -83,11 +79,7 @@ export function WeeklyEvidenceOverview() {
             onPress={() => moveWeek(7)}
             style={styles.arrow}
           >
-            <SymbolView
-              name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
-              size={18}
-              tintColor={theme.colors.textSecondary}
-            />
+            <AppIcon name="chevron-right" color={theme.colors.textSecondary} />
           </IconButton>
         </View>
         <Button

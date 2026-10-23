@@ -1,0 +1,39 @@
+import { Feather, Ionicons } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
+
+import { sizes } from '@/theme';
+
+export type AppIconName = ComponentProps<typeof Feather>['name'] | 'idea';
+type AppIconSize = 'navigation' | 'list' | 'action' | 'meta';
+
+const iconSizes: Record<AppIconSize, number> = {
+  navigation: sizes.navigationIcon,
+  list: sizes.listIcon,
+  action: sizes.actionIcon,
+  meta: sizes.metaIcon,
+};
+
+/** Decorative glyphs; the owning button/tab supplies its accessible name and state. */
+export function AppIcon({
+  name,
+  color,
+  size = 'action',
+}: {
+  name: AppIconName;
+  color: string;
+  size?: AppIconSize;
+}) {
+  const decorativeProps = {
+    allowFontScaling: false,
+    accessible: false,
+    accessibilityElementsHidden: true,
+    importantForAccessibility: 'no' as const,
+    'aria-hidden': true,
+  };
+
+  return name === 'idea' ? (
+    <Ionicons {...decorativeProps} name="bulb-outline" color={color} size={iconSizes[size]} />
+  ) : (
+    <Feather {...decorativeProps} name={name} color={color} size={iconSizes[size]} />
+  );
+}

@@ -1,10 +1,10 @@
-import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { sizes, spacing, useAppTheme } from '@/theme';
+import { spacing, useAppTheme } from '@/theme';
 
 import { AppText } from './app-text';
+import { AppIcon } from './app-icon';
 
 export function AddItemRow({
   children,
@@ -35,7 +35,7 @@ export function AddItemRow({
         },
       ]}
     >
-      <Feather name="plus" size={sizes.listIcon} color={theme.colors.textSecondary} />
+      <AppIcon name="plus" size="list" color={theme.colors.textSecondary} />
       <AppText tone="secondary" weight="semibold" style={styles.label}>
         {children}
       </AppText>

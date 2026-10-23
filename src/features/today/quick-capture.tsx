@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, Button, Card, IconButton, InlineNotice } from '@/components/ui';
+import { AppIcon, AppText, Button, Card, IconButton, InlineNotice } from '@/components/ui';
 import {
   getQuickCaptureResultMessage,
   useMoveTaskToToday,
@@ -154,9 +154,7 @@ export function QuickCapture({
               onPress={closeComposer}
               style={styles.closeButton}
             >
-              <AppText tone="secondary" variant="bodyLarge">
-                ×
-              </AppText>
+              <AppIcon name="x" color={theme.colors.textSecondary} />
             </IconButton>
             <TextInput
               ref={inputRef}
