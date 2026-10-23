@@ -204,7 +204,7 @@ export function GoalForm({ goal, color, onCancel, onSaved }: Props) {
       <Button loading={busy} onPress={() => void submit()}>
         {goal ? '수정 저장' : '목표 만들기'}
       </Button>
-      <Button variant="secondary" disabled={busy} onPress={onCancel}>
+      <Button variant="ghost" disabled={busy} onPress={onCancel}>
         취소
       </Button>
     </Card>

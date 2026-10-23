@@ -1,4 +1,18 @@
-# 최신 국소 Design QA — 목표 제목과 항목 글자/행
+# 최신 국소 Design QA — 공통 버튼 위계와 상태
+
+2026-10-23 · `1192c38` 이후 working tree · 미커밋. [원본/범위/실제 전후/한계](./docs/audits/button-hierarchy-2026-10-23/README.md).
+
+- Button의 일반 16/24·compact 14/20 역할을 정리하고 목표/반복 계획 취소는 ghost로 낮췄다. 오늘 추가·목표 레일·원형 체크·계획 아이콘 중앙·버튼 목적지/위치는 유지한다.
+- 테두리 2 공간 고정과 로딩 중 내용 공간/문자열 접근성 이름 유지. loading의 busy/disabled·선택·이름 복구 회귀 테스트를 추가했다. 실제 로딩 폭을 브라우저에서 실측한 것은 아니다.
+- 같은 390 목표 작성 전후를 직접 열었다. 저장 전후 316×44, 날짜 작은 버튼 초점 전후 66.6875×44다. Web 320/430·키보드·빈 입력 안내·취소·개인 상세/편집 복귀 확인. 최종 tab error 로그 0.
+- 공통 Android/iOS/Web 영향. 실제 확인은 Web light의 명시 화면이며 native/fontScale1.5/dark/스크린리더/반복 계획 폼/실제 로딩과 실패는 미확인이다.
+- `npm run validate` 115 suites / 592 tests 통과, STG 1개 제외.
+
+final result: passed (이번 공통 Button, 실제 Web 확인 범위)
+
+---
+
+# 이전 국소 Design QA — 목표 제목과 항목 글자/행
 
 사용자 추가 지적 후 계획의 아이콘 정렬은 [두 줄 전체 중앙](./docs/audits/item-optical-alignment-2026-10-23/README.md)으로 재보정했다. 아래 초기 ‘유형 그림 첫 줄’ 결정은 대체한다. 390 텍스트와 icon slot 중앙 모두 y=225, 같은 상태 전후·다른 목표 320/430·상세/복귀 확인. 오늘 체크와 글자 역할은 유지한다. native/확대는 미확인이다.
 

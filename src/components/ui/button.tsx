@@ -28,8 +28,9 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
     loading = false,
     fullWidth = false,
     leading,
-    labelVariant = 'label',
+    labelVariant,
     disabled,
+    accessibilityLabel,
     accessibilityState,
     onBlur,
     onFocus,
@@ -68,12 +69,16 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
     },
   };
   const selected = variants[variant];
+  const resolvedLabelVariant = labelVariant ?? (size === 'compact' ? 'label' : 'body');
 
   return (
     <Pressable
       {...props}
       ref={ref}
       accessibilityRole="button"
+      accessibilityLabel={
+        accessibilityLabel ?? (typeof children === 'string' ? children : undefined)
+      }
       accessibilityState={{ ...accessibilityState, disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       onBlur={(event) => {
@@ -90,27 +95,33 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
         {
           backgroundColor: pressed ? selected.pressedColor : selected.backgroundColor,
           borderColor: isFocused ? theme.colors.text : selected.borderColor,
-          borderWidth: isFocused ? 2 : 1,
           opacity: isDisabled ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,
         },
         style,
       ]}
     >
+      <View style={[styles.content, loading && styles.hiddenContent]}>
+        {leading}
+        <AppText
+          variant={resolvedLabelVariant}
+          weight="semibold"
+          style={[styles.label, { color: selected.textColor }]}
+        >
+          {children}
+        </AppText>
+      </View>
       {loading ? (
-        <ActivityIndicator color={selected.textColor} size="small" />
-      ) : (
-        <View style={styles.content}>
-          {leading}
-          <AppText
-            variant={labelVariant}
-            weight="semibold"
-            style={[styles.label, { color: selected.textColor }]}
-          >
-            {children}
-          </AppText>
+        <View pointerEvents="none" style={styles.loadingOverlay}>
+          <ActivityIndicator
+            accessible={false}
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+            color={selected.textColor}
+            size="small"
+          />
         </View>
-      )}
+      ) : null}
     </Pressable>
   );
 });
@@ -120,7 +131,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.md,
-    borderWidth: 1,
+    borderWidth: 2,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[2],
   },
@@ -140,6 +151,17 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     justifyContent: 'center',
     minWidth: 0,
+    maxWidth: '100%',
+  },
+  hiddenContent: { opacity: 0 },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   label: {
     flexShrink: 1,

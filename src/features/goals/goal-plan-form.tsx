@@ -277,7 +277,7 @@ export function GoalPlanForm({ goalId, plan, onDone, blocked = false }: Props) {
           <Button loading={busy} disabled={blocked} onPress={() => void save()}>
             계획 저장
           </Button>
-          <Button variant="secondary" disabled={busy} onPress={onDone}>
+          <Button variant="ghost" disabled={busy} onPress={onDone}>
             취소
           </Button>
           {plan ? (
