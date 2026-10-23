@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon, AppText, BrandWordmark, type AppIconName } from '@/components/ui';
 import { useTaskCategories } from '@/features/tasks';
 import { useMotivationalLine } from '@/features/motivation/use-motivational-line';
-import { radii, sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
+import { radii, sizes, spacing, typography, useAppTheme, useMobileLayout } from '@/theme';
 
 import {
   getPlannerCategoryNavigationItems,
@@ -134,6 +134,8 @@ type PlannerDrawerProps = {
 
 export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
   const theme = useAppTheme();
+  const { fontScale } = useMobileLayout();
+  const categoryTitleHeight = typography.lineHeight.bodyLarge * fontScale;
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const router = useRouter();
@@ -224,6 +226,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
           <AppIcon
             color={active ? theme.colors.primary : theme.colors.textSecondary}
             name={item.icon}
+            size="menu"
           />
         </View>
         <AppText style={styles.menuLabel} variant="bodyLarge" weight={active ? 'bold' : 'medium'}>
@@ -303,6 +306,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                   <>
                     {group.slice(0, 1).map((item) => renderItem(item, groupIndex))}
                     <Pressable
+                      aria-expanded={categoriesExpanded}
                       accessibilityHint="개인 할 일 카테고리 목록을 펼치거나 접습니다."
                       accessibilityLabel="카테고리"
                       accessibilityRole="button"
@@ -315,6 +319,7 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                       onPress={() => setCategoriesExpanded((current) => !current)}
                       style={({ pressed }) => [
                         styles.menuRow,
+                        styles.categoryHeadingRow,
                         {
                           borderColor:
                             focusedRow === 'categories' ? theme.colors.primary : 'transparent',
@@ -323,12 +328,13 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                         pressed && { backgroundColor: theme.colors.surfaceMuted },
                       ]}
                     >
-                      <View style={styles.iconBox}>
+                      <View style={[styles.iconBox, { height: categoryTitleHeight }]}>
                         <AppIcon
                           color={
                             categoryBrowseActive ? theme.colors.primary : theme.colors.textSecondary
                           }
                           name="folder"
+                          size="menu"
                         />
                       </View>
                       <View style={styles.categoryHeadingCopy}>
@@ -346,10 +352,13 @@ export function PlannerDrawer({ onClose, visible }: PlannerDrawerProps) {
                               : `전체 ${totalTaskCount}`}
                         </AppText>
                       </View>
-                      <AppIcon
-                        color={theme.colors.textMuted}
-                        name={categoriesExpanded ? 'chevron-up' : 'chevron-down'}
-                      />
+                      <View style={[styles.iconBox, { height: categoryTitleHeight }]}>
+                        <AppIcon
+                          color={theme.colors.textMuted}
+                          name={categoriesExpanded ? 'chevron-up' : 'chevron-down'}
+                          size="menu"
+                        />
+                      </View>
                     </Pressable>
 
                     {categoriesExpanded ? (
@@ -514,6 +523,7 @@ const styles = StyleSheet.create({
     width: 24,
   },
   menuLabel: { flex: 1 },
+  categoryHeadingRow: { alignItems: 'flex-start' },
   categoryHeadingCopy: { flex: 1, gap: 2 },
   categoryList: {
     marginBottom: spacing[2],

@@ -132,6 +132,7 @@ export const sizes = {
   navigationIcon: 28,
   listIcon: 24,
   actionIcon: 22,
+  menuItemIcon: 20,
   metaIcon: 14,
   plannerHeaderHeight: 56,
   cardPadding: 16,

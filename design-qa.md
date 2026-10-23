@@ -1,4 +1,19 @@
-# 최신 국소 Design QA — 공통 아이콘
+# 최신 국소 Design QA — Drawer 아이콘/글자 균형
+
+2026-10-23 · `0702a28` 이후 working tree · 미커밋. [범위·측정·실제 전후](./docs/audits/drawer-icon-alignment-2026-10-23/README.md).
+
+- 공통 `AppIcon`에 메뉴 20px/명시적 줄 높이 역할을 추가하고 Drawer 목록에만 적용했다. 다른 화면·헤더·닫기·탭의 아이콘 크기와 메뉴 글자/행 간격은 유지한다.
+- 한 줄 메뉴의 박스와 실제 획 범위 중앙은 기존에도 일치했다. 전역 상하 이동 대신 아이콘/16px 글자의 크기 균형을 보정했고, 두 줄 카테고리는 제목 줄에 폴더와 화살표를 맞췄다.
+- 같은 390×844·light·mock·메뉴 상태로 실제 전후를 캡처했다. 320×844에서 label 유지·가로 overflow 없음, 카테고리 펼침/접힘, Web aria-expanded false/true, Escape 후 열기 버튼 초점 복귀, 닫기 44×44 확인. 최종 tab error 로그 0.
+- 최초 탭은 종료된 서버의 과거 화면이어서 실제 변경 후 근거로 쓰지 않았다. Expo 서버 복구 후 기준 커밋/변경 코드를 순서대로 같은 데이터로 렌더링해 새 전후를 저장했다. 320 첫 capture는 resize 직후 320×693으로 찍혀 폐기하고 320×844로 재촬영했다.
+- 영향 플랫폼 Android/iOS/Web. 실제 확인은 Web 기본 글자 크기이며 native·fontScale 1.5·dark·VoiceOver/TalkBack은 미확인이다. 카테고리 제목 줄 높이는 fontScale을 사용하지만 실제 확대 검증을 대신하지 않는다.
+- `npm run validate`: 114 suites / 591 tests 통과, STG 1개 제외. 스타일 수치를 복제하는 새 테스트는 추가하지 않았다.
+
+final result: passed (이번 메뉴 균형 보정, 실제 Web 범위)
+
+---
+
+# 이전 국소 Design QA — 공통 아이콘
 
 2026-10-22 · `20b9211` 이후 working tree · 미커밋. [범위·실제 전후·조작·남은 차이](./docs/audits/common-icons-2026-10-22/README.md).
 

@@ -4,12 +4,13 @@ import type { ComponentProps } from 'react';
 import { sizes } from '@/theme';
 
 export type AppIconName = ComponentProps<typeof Feather>['name'] | 'idea';
-type AppIconSize = 'navigation' | 'list' | 'action' | 'meta';
+type AppIconSize = 'navigation' | 'list' | 'action' | 'menu' | 'meta';
 
 const iconSizes: Record<AppIconSize, number> = {
   navigation: sizes.navigationIcon,
   list: sizes.listIcon,
   action: sizes.actionIcon,
+  menu: sizes.menuItemIcon,
   meta: sizes.metaIcon,
 };
 
@@ -30,10 +31,25 @@ export function AppIcon({
     importantForAccessibility: 'no' as const,
     'aria-hidden': true,
   };
+  // Menu glyphs share a square line box instead of the icon font's implicit leading.
+  const menuStyle =
+    size === 'menu' ? { lineHeight: iconSizes.menu, includeFontPadding: false } : undefined;
 
   return name === 'idea' ? (
-    <Ionicons {...decorativeProps} name="bulb-outline" color={color} size={iconSizes[size]} />
+    <Ionicons
+      {...decorativeProps}
+      name="bulb-outline"
+      color={color}
+      size={iconSizes[size]}
+      style={menuStyle}
+    />
   ) : (
-    <Feather {...decorativeProps} name={name} color={color} size={iconSizes[size]} />
+    <Feather
+      {...decorativeProps}
+      name={name}
+      color={color}
+      size={iconSizes[size]}
+      style={menuStyle}
+    />
   );
 }
