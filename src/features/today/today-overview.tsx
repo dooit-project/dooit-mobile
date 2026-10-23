@@ -10,12 +10,13 @@ import {
   EmptyState,
   IconButton,
   InlineNotice,
+  ItemCopy,
   ListSkeleton,
 } from '@/components/ui';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from '@/features/dday';
 import { getRecurrenceLabel, useCompleteTask, useReopenTask } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
-import { radii, spacing, useAppTheme } from '@/theme';
+import { radii, sizes, spacing, typography, useAppTheme, useMobileLayout } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
 import { formatTimeLabel } from '@/utils';
 
@@ -110,8 +111,8 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                 accessibilityRole="header"
                 numberOfLines={2}
                 style={styles.groupTitle}
-                variant="bodyLarge"
-                weight="semibold"
+                variant="sectionTitle"
+                weight="bold"
               >
                 {group.title}
               </AppText>
@@ -192,6 +193,9 @@ function TodayItemRow({
   onOpen: () => void;
 }) {
   const theme = useAppTheme();
+  const { fontScale } = useMobileLayout();
+  const titleLineHeight = typography.lineHeight.bodyLarge * fontScale;
+  const leadingHeight = Math.max(sizes.touchTarget, titleLineHeight);
   const isSchedule = task.type === 'SCHEDULE';
   const done = task.status === 'DONE';
   const recurrenceLabel = getRecurrenceLabel(task);
@@ -223,7 +227,11 @@ function TodayItemRow({
         disabled={completionDisabled}
         hitSlop={4}
         onPress={onComplete}
-        style={({ pressed }) => [styles.leadingControl, pressed && { opacity: 0.55 }]}
+        style={({ pressed }) => [
+          styles.leadingControl,
+          { height: leadingHeight },
+          pressed && { opacity: 0.55 },
+        ]}
       >
         {isCompleting ? (
           <ActivityIndicator color={theme.colors.primary} size="small" />
@@ -245,29 +253,21 @@ function TodayItemRow({
         onPress={onOpen}
         style={({ pressed }) => [
           styles.itemContent,
+          { paddingTop: (leadingHeight - titleLineHeight) / 2 },
           { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
         ]}
       >
-        <AppText
-          numberOfLines={2}
-          style={[
-            styles.itemTitle,
-            done && { textDecorationLine: 'line-through', color: theme.colors.textMuted },
-          ]}
-          variant="bodyLarge"
-        >
-          {task.title}
-        </AppText>
-        {trailingLabel ? (
-          <View style={styles.metadata}>
-            {isSchedule && !done ? (
+        <ItemCopy
+          title={task.title}
+          metadata={trailingLabel}
+          completed={done}
+          numberOfLines={fontScale > 1 ? undefined : 2}
+          metadataLeading={
+            isSchedule && !done ? (
               <AppIcon color={theme.colors.textMuted} name="calendar" size="meta" />
-            ) : null}
-            <AppText numberOfLines={2} tone="secondary" variant="caption">
-              {trailingLabel}
-            </AppText>
-          </View>
-        ) : null}
+            ) : undefined
+          }
+        />
       </Pressable>
     </View>
   );
@@ -306,45 +306,30 @@ const styles = StyleSheet.create({
   },
   groupTitle: {
     flex: 1,
-    fontSize: 18,
-    lineHeight: 26,
   },
   items: {
     gap: 0,
     marginLeft: -spacing[2],
   },
   itemRow: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
     minHeight: 64,
   },
   leadingControl: {
     alignItems: 'center',
-    height: 44,
     justifyContent: 'center',
-    width: 44,
+    width: sizes.touchTarget,
   },
   itemContent: {
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     borderRadius: radii.md,
     flex: 1,
-    justifyContent: 'center',
-    gap: spacing[1],
+    justifyContent: 'flex-start',
     minHeight: 64,
     paddingLeft: spacing[3],
     paddingRight: spacing[1],
-    paddingVertical: spacing[2],
-  },
-  itemTitle: {
-    alignSelf: 'stretch',
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  metadata: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexShrink: 0,
-    gap: spacing[1],
+    paddingBottom: spacing[2],
   },
   emptyIcon: {
     alignItems: 'center',

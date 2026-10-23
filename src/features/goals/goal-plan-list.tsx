@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AddItemRow, AppIcon, AppText, Button, InlineNotice } from '@/components/ui';
+import { AddItemRow, AppIcon, Button, InlineNotice, ItemCopy, ItemLeading } from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { spacing, useAppTheme } from '@/theme';
 import type { GoalResponse, GoalPlanResponse } from '@/types';
@@ -98,11 +98,13 @@ export function GoalPlanList({
                 .join(' · ');
         const row = (
           <>
-            <AppIcon name="repeat" size="list" color={theme.colors.textSecondary} />
+            <ItemLeading>
+              <AppIcon name="repeat" size="list" color={theme.colors.textSecondary} />
+            </ItemLeading>
             <View style={styles.copy}>
-              <AppText>{plan.name}</AppText>
-              <AppText variant="label" tone="secondary">
-                {[
+              <ItemCopy
+                title={plan.name}
+                metadata={[
                   days,
                   plan.status === 'PAUSED'
                     ? '잠시 멈춤'
@@ -112,7 +114,7 @@ export function GoalPlanList({
                 ]
                   .filter(Boolean)
                   .join(' · ')}
-              </AppText>
+              />
             </View>
           </>
         );
@@ -167,12 +169,12 @@ export function GoalPlanList({
 const styles = StyleSheet.create({
   section: { gap: 0 },
   row: {
-    minHeight: 72,
-    paddingVertical: spacing[3],
+    minHeight: 64,
+    paddingVertical: spacing[2],
     gap: spacing[5],
     paddingHorizontal: spacing[1],
     flexDirection: 'row',
     alignItems: 'center',
   },
-  copy: { flex: 1, minWidth: 0, gap: spacing[1] },
+  copy: { flex: 1, minWidth: 0 },
 });

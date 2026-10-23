@@ -2,7 +2,15 @@ import { useRouter } from 'expo-router';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AppIcon, AppText, Button, EmptyState, InlineNotice } from '@/components/ui';
+import {
+  AppIcon,
+  AppText,
+  Button,
+  EmptyState,
+  InlineNotice,
+  ItemCopy,
+  ItemLeading,
+} from '@/components/ui';
 import { spacing, useAppTheme } from '@/theme';
 import { formatDateLabel, toApiLocalDate } from '@/utils';
 
@@ -207,18 +215,15 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
                 { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
               ]}
             >
-              <AppIcon
-                name={getPlanItemIcon(item)}
-                size="list"
-                color={theme.colors.textSecondary}
-              />
+              <ItemLeading>
+                <AppIcon
+                  name={getPlanItemIcon(item)}
+                  size="list"
+                  color={theme.colors.textSecondary}
+                />
+              </ItemLeading>
               <View style={styles.copy}>
-                <AppText>{item.task.title}</AppText>
-                {subtitle ? (
-                  <AppText variant="label" tone="secondary">
-                    {subtitle}
-                  </AppText>
-                ) : null}
+                <ItemCopy title={item.task.title} metadata={subtitle} />
               </View>
             </Pressable>
           );
@@ -263,11 +268,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[5],
-    minHeight: 72,
-    paddingVertical: spacing[3],
+    minHeight: 64,
+    paddingVertical: spacing[2],
     paddingHorizontal: spacing[1],
   },
-  copy: { flex: 1, minWidth: 0, gap: spacing[1] },
+  copy: { flex: 1, minWidth: 0 },
   stateRow: {
     alignItems: 'center',
     flexDirection: 'row',

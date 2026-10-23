@@ -3,7 +3,14 @@ import { StyleSheet, Text } from 'react-native';
 
 import { typography, useAppTheme } from '@/theme';
 
-type TextVariant = 'display' | 'title' | 'bodyLarge' | 'body' | 'label' | 'caption';
+type TextVariant =
+  | 'display'
+  | 'title'
+  | 'sectionTitle'
+  | 'bodyLarge'
+  | 'body'
+  | 'label'
+  | 'caption';
 type TextTone = 'default' | 'secondary' | 'muted' | 'primary' | 'success' | 'warning' | 'danger';
 type TextWeight = keyof typeof typography.weight;
 
@@ -24,6 +31,10 @@ const variantStyles = StyleSheet.create({
     fontSize: typography.size.title,
     lineHeight: typography.lineHeight.title,
     letterSpacing: typography.letterSpacing.tight,
+  },
+  sectionTitle: {
+    fontSize: typography.size.sectionTitle,
+    lineHeight: typography.lineHeight.sectionTitle,
   },
   bodyLarge: {
     fontSize: typography.size.bodyLarge,

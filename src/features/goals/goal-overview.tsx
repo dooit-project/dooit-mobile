@@ -463,11 +463,11 @@ function GoalWorkspace({ scope }: { scope: string }) {
             >
               <View style={styles.header}>
                 <View style={styles.grow}>
-                  <AppText style={styles.title} weight="bold">
+                  <AppText variant="sectionTitle" weight="bold" accessibilityRole="header">
                     {current.title}
                   </AppText>
                   {current.targetDate ? (
-                    <AppText variant="body" tone="secondary">
+                    <AppText variant="caption" tone="secondary">
                       목표일{' '}
                       {formatDateLabel(current.targetDate, {
                         year: 'numeric',
@@ -706,7 +706,6 @@ const styles = StyleSheet.create({
   section: { gap: spacing[5] },
   goalSurface: { padding: 0 },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[1] },
-  title: { fontSize: 22, lineHeight: 30 },
   grow: { flex: 1, minWidth: 0 },
   option: { flexDirection: 'row', alignItems: 'center', minHeight: 48, gap: spacing[3] },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },

@@ -1,4 +1,21 @@
-# 최신 국소 Design QA — Drawer 아이콘/글자 균형
+# 최신 국소 Design QA — 목표 제목과 항목 글자/행
+
+사용자 추가 지적 후 계획의 아이콘 정렬은 [두 줄 전체 중앙](./docs/audits/item-optical-alignment-2026-10-23/README.md)으로 재보정했다. 아래 초기 ‘유형 그림 첫 줄’ 결정은 대체한다. 390 텍스트와 icon slot 중앙 모두 y=225, 같은 상태 전후·다른 목표 320/430·상세/복귀 확인. 오늘 체크와 글자 역할은 유지한다. native/확대는 미확인이다.
+
+2026-10-23 · `f1f07be` 이후 working tree · 미커밋. [원본·범위·실제 전후·남은 차이](./docs/audits/goal-item-typography-2026-10-23/README.md).
+
+- 오늘/계획의 목표 제목 18/26, 본문 16/24·보조 13/18을 공통 AppText/ItemCopy로 공유한다. 유형 그림은 ItemLeading으로 첫 줄에 맞추고, 오늘 체크는 44 이상 터치 영역과 첫 줄 중앙을 함께 유지한다.
+- 흰 바탕·레일·체크·4탭·작은 헤더·추가 버튼 유지. 같은 390px 실제 전후를 직접 열어 비교했다. 계획 행 최소 72→64, 제목/목표일/보조 크기를 역할에 맞게 정리했다.
+- Web 320px 긴 제목/설명과 기본 계획, 430px 기본 오늘 확인. 완료/취소·상세 이동·기존 수정 UI 저장/원문 복원 확인. 오늘 첫 체크 중앙과 제목 첫 줄 중앙은 모두 y=138이었다.
+- 긴 문구 검증은 로컬 mock 일회성 항목을 임시 수정한 뒤 원문과 fixture 상태로 복구했다. 계획 목록에 편집 전 제목이 남는 별도 캐시 경계는 UX-14로 기록했고 해결됐다고 표현하지 않는다.
+- Android/iOS/Web 영향. 실제 확인은 Web light이며 native·fontScale 1.5·dark·스크린리더·운영 API·실패 상태는 미확인이다. 새 Goal 반복 목록의 실데이터 편집 상태와 다른 화면/버튼 위계는 후속이다.
+- `npm run validate` 114 suites / 591 tests 통과, STG 1개 제외. 최종 tab error 로그 0. source/시각 수치를 복제하는 새 테스트는 추가하지 않았다.
+
+final result: passed (이번 오늘/계획 글자·행 정렬, 실제 Web 범위)
+
+---
+
+# 이전 국소 Design QA — Drawer 아이콘/글자 균형
 
 2026-10-23 · `0702a28` 이후 working tree · 미커밋. [범위·측정·실제 전후](./docs/audits/drawer-icon-alignment-2026-10-23/README.md).
 
