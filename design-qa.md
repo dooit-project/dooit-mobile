@@ -1,4 +1,19 @@
-# 최신 국소 Design QA — 공통 버튼 위계와 상태
+# 최신 국소 Design QA — 계획 선택 목표 탭
+
+2026-10-23 · `3cd3254` 이후 working tree · 미커밋. [범위/원본/실제 전후/한계](./docs/audits/goal-tab-visibility-2026-10-23/README.md).
+
+- 가로 목표 탭·전체 목표·색상/밑줄/높이·저장 계약을 유지하며 GoalTabs로 측정/노출을 묶었다. 생성 직후/늦은 layout/내용/화면 폭 변경 후 선택 탭을 드러내고 긴 이름은 한 줄 말줄임한다.
+- 같은 320px 긴 목표 전후를 직접 비교했다. 새 목표 생성/전체 목록 선택·390/430 변경·기존 목표 마지막 선택 복원을 실제 확인했다. 선택 1개·Tab 진입점 1개·본문 연결을 DOM/AX로 확인했다.
+- Web 화살표/Home/End는 초점만 이동, Enter/Space 선택, Tab으로 전체 목표 이동 확인. Space 기본 동작 누락은 보완 후 재검증했다. 편집 중 탭 disabled/tabindex-1 유지.
+- 임시 목표는 로컬 mock 메모리만 사용하고 reload로 기본 데이터에 복귀했다. 원래 토익 목표와 기본 viewport로 돌렸다. 최종 tab error 로그 0.
+- Android/iOS/Web 영향. native/fontScale1.5/dark/스크린리더/실제 API/오류/계정 전환과 실제 순서 편집 후 재노출은 미확인이다.
+- `npm run validate`: 116 suites / 597 tests 통과, STG 1개 제외. 동작 경계 테스트 5개 추가.
+
+final result: passed (계획 목표 탭 노출/상태, 실제 Web 범위)
+
+---
+
+# 이전 국소 Design QA — 공통 버튼 위계와 상태
 
 2026-10-23 · `1192c38` 이후 working tree · 미커밋. [원본/범위/실제 전후/한계](./docs/audits/button-hierarchy-2026-10-23/README.md).
 

@@ -1,13 +1,6 @@
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { useEffect, useId, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import {
   AddItemRow,
@@ -41,6 +34,7 @@ import { formatDateLabel } from '@/utils';
 import { GoalForm } from './goal-form';
 import { useGoals, useGoalStatus } from './use-goals';
 import { GoalPlanList } from './goal-plan-list';
+import { GoalTabs } from './goal-tabs';
 import {
   readPlanGoalPreferences,
   updatePlanGoalPreferences,
@@ -78,6 +72,7 @@ export function GoalOverview() {
 }
 
 function GoalWorkspace({ scope }: { scope: string }) {
+  const panelId = useId();
   const router = useRouter();
   const theme = useAppTheme();
   const goals = useGoals();
@@ -106,8 +101,6 @@ function GoalWorkspace({ scope }: { scope: string }) {
     canEdit: false,
   });
   const itemRef = useRef<DdayGoalTasksHandle>(null);
-  const tabs = useRef<ScrollView>(null);
-  const positions = useRef<Record<string, number>>({});
   useEffect(() => {
     let active = true;
     void readPlanGoalPreferences(scope)
@@ -166,20 +159,6 @@ function GoalWorkspace({ scope }: { scope: string }) {
       .toLocaleLowerCase()
       .includes(search.trim().normalize('NFKC').toLocaleLowerCase()),
   );
-  const revealTab = () => {
-    if (currentKey && positions.current[currentKey] !== undefined)
-      tabs.current?.scrollTo({
-        x: Math.max(0, positions.current[currentKey] - 8),
-        animated: false,
-      });
-  };
-  useEffect(() => {
-    if (currentKey && positions.current[currentKey] !== undefined)
-      tabs.current?.scrollTo({
-        x: Math.max(0, positions.current[currentKey] - 8),
-        animated: false,
-      });
-  }, [currentKey]);
   const color = (target: Target): DdayGoalColor =>
     target.kind === 'dday'
       ? (legacyColors[String(target.value.id)] ?? getDdayGoalFallbackColor(target.value.id))
@@ -256,46 +235,18 @@ function GoalWorkspace({ scope }: { scope: string }) {
                 { borderBottomColor: theme.colors.border, backgroundColor: theme.colors.surface },
               ]}
             >
-              <ScrollView
-                horizontal
-                ref={tabs}
-                showsHorizontalScrollIndicator={false}
-                style={styles.tabs}
-                onLayout={revealTab}
-                onContentSizeChange={revealTab}
-              >
-                {ordered.map((target) => (
-                  <Pressable
-                    key={target.key}
-                    accessibilityRole="tab"
-                    accessibilityLabel={`${target.title}${target.kind === 'dday' ? ', 기존 목표' : ''}`}
-                    accessibilityState={{ selected: currentKey === target.key, disabled: locked }}
-                    disabled={locked}
-                    onPress={() => choose(target.key)}
-                    onLayout={(event) => {
-                      positions.current[target.key] = event.nativeEvent.layout.x;
-                    }}
-                    style={[
-                      styles.tab,
-                      {
-                        borderBottomColor:
-                          currentKey === target.key ? theme.colors.primary : 'transparent',
-                      },
-                    ]}
-                  >
-                    <View style={[styles.dot, { backgroundColor: color(target) }]} />
-                    <AppText
-                      variant="bodyLarge"
-                      tone={currentKey === target.key ? 'default' : 'secondary'}
-                      numberOfLines={1}
-                      weight={currentKey === target.key ? 'bold' : 'regular'}
-                      style={styles.tabTitle}
-                    >
-                      {target.title}
-                    </AppText>
-                  </Pressable>
-                ))}
-              </ScrollView>
+              <GoalTabs
+                items={ordered.map((target) => ({
+                  key: target.key,
+                  title: target.title,
+                  color: color(target),
+                  accessibilityLabel: `${target.title}${target.kind === 'dday' ? ', 기존 목표' : ''}`,
+                }))}
+                selectedKey={currentKey}
+                disabled={locked}
+                panelId={panelId}
+                onSelect={choose}
+              />
               <Button
                 size="compact"
                 variant="ghost"
@@ -304,6 +255,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                 leading={<AppIcon name="grid" color={theme.colors.textSecondary} />}
                 disabled={locked}
                 accessibilityState={{ expanded: all }}
+                aria-expanded={all}
                 onPress={() => setAll(!all)}
               >
                 전체 목표
@@ -455,6 +407,9 @@ function GoalWorkspace({ scope }: { scope: string }) {
           ) : !ordering && current ? (
             <View
               key={current.key}
+              nativeID={panelId}
+              role="tabpanel"
+              aria-labelledby={`${panelId}-tab-${current.key}`}
               style={[
                 styles.section,
                 styles.goalSurface,
@@ -692,16 +647,6 @@ function GoalWorkspace({ scope }: { scope: string }) {
 const styles = StyleSheet.create({
   screen: { gap: spacing[5], paddingTop: 0 },
   navigation: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1 },
-  tabs: { flex: 1 },
-  tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 48,
-    gap: spacing[2],
-    paddingHorizontal: spacing[2],
-    borderBottomWidth: 2,
-  },
-  tabTitle: { maxWidth: 172 },
   dot: { width: 13, height: 13, borderRadius: 7 },
   section: { gap: spacing[5] },
   goalSurface: { padding: 0 },
