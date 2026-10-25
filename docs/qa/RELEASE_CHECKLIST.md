@@ -1,5 +1,7 @@
 # Release Checklist
 
+**2026-10-25 보안 후속:** 개인 Task 소유권/legacy 차단은 [로컬 STG 검증](./task-authorization-2026-10-25/README.md) 범위에서 통과했다. 운영 legacy 차단 수정은 백엔드 보고상 미반영이며, 운영 반영 SHA/image 및 전용 계정 회귀 확인 전 보안 항목을 완료 처리하지 않는다. [요청서](../api/API_TASK_AUTHORIZATION_VERIFICATION_REQUEST.md).
+
 Dooit Mobile을 실제 사용 또는 배포 후보로 올리기 전에 확인하는 최종 체크리스트다. 상세 기준은 각 전문 문서에 두고, 이 문서는 배포 직전 빠뜨리기 쉬운 결정과 검증 상태를 한곳에서 확인한다.
 
 ## 1. 릴리즈 범위

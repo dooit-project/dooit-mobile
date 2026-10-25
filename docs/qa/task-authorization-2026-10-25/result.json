@@ -1,0 +1,217 @@
+{
+  "target": "http://127.0.0.1:18080",
+  "metadata": {
+    "commitSha": "b9495f031dcd041fec46ef6085a07fcf9252fd8d",
+    "imageTag": "stg-b9495f0-20261025163438"
+  },
+  "checks": [
+    {
+      "label": "owner Task update",
+      "status": 200
+    },
+    {
+      "label": "owner Task complete",
+      "status": 200
+    },
+    {
+      "label": "owner Task reopen",
+      "status": 200
+    },
+    {
+      "label": "owner checklist read",
+      "status": 200
+    },
+    {
+      "label": "owner checklist update",
+      "status": 200
+    },
+    {
+      "label": "owner checklist complete",
+      "status": 200
+    },
+    {
+      "label": "owner checklist reopen",
+      "status": 200
+    },
+    {
+      "label": "owner checklist reorder",
+      "status": 200
+    },
+    {
+      "label": "owner reads own Task and checklist",
+      "status": 200
+    },
+    {
+      "label": "anonymous Task read",
+      "status": 401
+    },
+    {
+      "label": "other user Task read",
+      "status": 404
+    },
+    {
+      "label": "anonymous Task update",
+      "status": 401
+    },
+    {
+      "label": "other user Task update",
+      "status": 404
+    },
+    {
+      "label": "anonymous Task complete",
+      "status": 401
+    },
+    {
+      "label": "other user Task complete",
+      "status": 404
+    },
+    {
+      "label": "anonymous Task reopen",
+      "status": 401
+    },
+    {
+      "label": "other user Task reopen",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist read",
+      "status": 401
+    },
+    {
+      "label": "other user checklist read",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist create",
+      "status": 401
+    },
+    {
+      "label": "other user checklist create",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist update",
+      "status": 401
+    },
+    {
+      "label": "other user checklist update",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist complete",
+      "status": 401
+    },
+    {
+      "label": "other user checklist complete",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist reopen",
+      "status": 401
+    },
+    {
+      "label": "other user checklist reopen",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist reorder",
+      "status": 401
+    },
+    {
+      "label": "other user checklist reorder",
+      "status": 404
+    },
+    {
+      "label": "anonymous checklist delete",
+      "status": 401
+    },
+    {
+      "label": "other user checklist delete",
+      "status": 404
+    },
+    {
+      "label": "anonymous Task delete",
+      "status": 401
+    },
+    {
+      "label": "other user Task delete",
+      "status": 404
+    },
+    {
+      "label": "invalid token Task read",
+      "status": 401
+    },
+    {
+      "label": "anonymous legacy bypass",
+      "status": 401
+    },
+    {
+      "label": "authenticated legacy bypass",
+      "status": 403
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "checklist child cannot cross parent",
+      "status": 404
+    },
+    {
+      "label": "owner checklist delete",
+      "status": 200
+    },
+    {
+      "label": "denied requests preserve owner data and list isolation",
+      "status": 200
+    }
+  ],
+  "failures": [],
+  "cleanup": [
+    {
+      "label": "test Task 1",
+      "passed": true
+    },
+    {
+      "label": "test Task 2",
+      "passed": true
+    },
+    {
+      "label": "test Task 3",
+      "passed": true
+    },
+    {
+      "label": "test session 1",
+      "passed": true
+    },
+    {
+      "label": "test session 2",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

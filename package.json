@@ -85,7 +85,8 @@
     "smoke:recurrence-actions:real": "node scripts/smoke-recurrence-actions-real.js",
     "test": "jest --runInBand",
     "test:stg": "DOOIT_STG_INTEGRATION=1 jest --runInBand --runTestsByPath src/features/tasks/__tests__/task-api-stg.integration.test.ts",
-    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run docs:check && npm run check:release-static && npm test"
+    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run docs:check && npm run check:release-static && npm test",
+    "smoke:task-authorization:real": "node scripts/smoke-task-authorization-real.js"
   },
   "jest": {
     "preset": "jest-expo",

@@ -1,8 +1,16 @@
 # Smoke Test Log
 
-Last updated: 2026-09-14
+Last updated: 2026-10-25
 
 이 문서는 현재 유효한 검증 기준선과 미검증 범위만 기록한다. 개별 실행 명령과 판정 기준은 [`SMOKE_TEST_CHECKLIST.md`](./SMOKE_TEST_CHECKLIST.md), 배포 후보 확인은 [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md)를 따른다.
+
+## 2026-10-25 개인 Task 소유권 STG
+
+- 모바일 `5fc024d` 이후 working tree / 로컬 STG `b9495f0`, image `stg-b9495f0-20261025163438`.
+- `npm run smoke:task-authorization:real`의 실제 실행:46개 확인 중 거부35건, 원본 보존·목록 격리·Task3개 삭제/404와 logout2개 통과. [원본 결과와 범위](./task-authorization-2026-10-25/README.md).
+- 자동 검증: `npm run validate`120 suites /637 tests 통과, opt-in STG1개 제외. 실제 권한 smoke는 별도 명시 실행이다.
+- 두 게스트 계정의 새 합성 Task ID만 사용, 운영 호출/기존 고객 데이터/서버 변경 없음. guest/idempotency row는 기존 수명 주기 대상, access token 즉시 폐기는 미검증.
+- 운영 legacy 차단은 백엔드 보고상 미반영. 운영/회원 계정 조합/Workspace 전체/UI는 통과로 기록하지 않는다. [백엔드 요청서](../api/API_TASK_AUTHORIZATION_VERIFICATION_REQUEST.md).
 
 ## 자동 검증 기준선
 
