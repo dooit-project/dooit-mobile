@@ -42,6 +42,7 @@ export function DetailSheet({
   onClose,
   expanded = false,
   returnFocusLabel,
+  modalActive = false,
 }: {
   children: ReactNode;
   header: ReactNode;
@@ -51,17 +52,20 @@ export function DetailSheet({
   onClose: () => void;
   expanded?: boolean;
   returnFocusLabel?: string;
+  modalActive?: boolean;
 }) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const { screenPadding } = useMobileLayout();
   const dialogRef = useRef<ComponentRef<typeof View>>(null);
   const closeRef = useRef(onClose);
+  const modalActiveRef = useRef(modalActive);
   const returnLabelRef = useRef(returnFocusLabel);
   useLayoutEffect(() => {
     closeRef.current = onClose;
+    modalActiveRef.current = modalActive;
     returnLabelRef.current = returnFocusLabel;
-  }, [onClose, returnFocusLabel]);
+  }, [onClose, returnFocusLabel, modalActive]);
 
   useEffect(() => {
     if (Platform.OS !== 'web') return;
@@ -98,7 +102,8 @@ export function DetailSheet({
     const frame = requestAnimationFrame(focusFirst);
     const onKeyDown = (event: KeyboardEvent) => {
       // An active menu owns its first Escape and keyboard navigation.
-      if (event.defaultPrevented || dialog.querySelector('[role="menu"]')) return;
+      if (modalActiveRef.current || event.defaultPrevented || dialog.querySelector('[role="menu"]'))
+        return;
       if (event.key === 'Escape') {
         event.preventDefault();
         closeRef.current();
@@ -118,7 +123,8 @@ export function DetailSheet({
       }
     };
     const containFocus = (event: FocusEvent) => {
-      if (event.target instanceof Node && !dialog.contains(event.target)) focusFirst();
+      if (!modalActiveRef.current && event.target instanceof Node && !dialog.contains(event.target))
+        focusFirst();
     };
     // RN Web TextInput stops key bubbling; capture also covers Escape/Tab while typing.
     document.addEventListener('keydown', onKeyDown, true);

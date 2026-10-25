@@ -1,0 +1,237 @@
+{
+  "capturedAt": "2026-10-25T15:15:29.874Z",
+  "documentWidth": 390,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 205.7734375,
+        "x": 20,
+        "y": 155.046875
+      },
+      "icons": [
+        {
+          "height": 10,
+          "width": 10,
+          "x": 20,
+          "y": 172.046875
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 140.2265625,
+          "y": 169.046875
+        }
+      ],
+      "name": "task-goal-path:0",
+      "text": {
+        "height": 20,
+        "width": 94.2265625,
+        "x": 38,
+        "y": 167.046875
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "title-line",
+      "bounds": {
+        "height": 44,
+        "width": 360,
+        "x": 10,
+        "y": 207.046875
+      },
+      "icons": [
+        {
+          "height": 44,
+          "width": 44,
+          "x": 10,
+          "y": 207.046875
+        }
+      ],
+      "name": "detail-title:1",
+      "text": null,
+      "titleLine": {
+        "height": 30,
+        "width": 308,
+        "x": 62,
+        "y": 214.046875
+      }
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 48,
+        "width": 350,
+        "x": 20,
+        "y": 275.046875
+      },
+      "icons": [
+        {
+          "height": 26.5,
+          "width": 24,
+          "x": 20,
+          "y": 285.796875
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 356,
+          "y": 291.046875
+        }
+      ],
+      "name": "detail-field:2",
+      "text": {
+        "height": 46,
+        "width": 272,
+        "x": 64,
+        "y": 276.046875
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 48,
+        "width": 350,
+        "x": 20,
+        "y": 339.046875
+      },
+      "icons": [
+        {
+          "height": 26.5,
+          "width": 24,
+          "x": 20,
+          "y": 349.796875
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 356,
+          "y": 355.046875
+        }
+      ],
+      "name": "detail-field:3",
+      "text": {
+        "height": 46,
+        "width": 272,
+        "x": 64,
+        "y": 340.046875
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44.5,
+        "width": 350,
+        "x": 20,
+        "y": 427.046875
+      },
+      "icons": [
+        {
+          "height": 26.5,
+          "width": 24,
+          "x": 21,
+          "y": 436.046875
+        }
+      ],
+      "name": "add-item:4",
+      "text": {
+        "height": 24,
+        "width": 100.8203125,
+        "x": 65,
+        "y": 437.296875
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 205.7734375,
+        "x": 20,
+        "y": 155.046875
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44.2265625,
+        "x": 229.7734375,
+        "y": 155.046875
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 278,
+        "y": 155.046875
+      },
+      "minimum": 44,
+      "name": "control:2"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 326,
+        "y": 155.046875
+      },
+      "minimum": 44,
+      "name": "control:3"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 10,
+        "y": 207.046875
+      },
+      "minimum": 44,
+      "name": "control:4"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 350,
+        "x": 20,
+        "y": 275.046875
+      },
+      "minimum": 44,
+      "name": "control:5"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 350,
+        "x": 20,
+        "y": 339.046875
+      },
+      "minimum": 44,
+      "name": "control:6"
+    },
+    {
+      "bounds": {
+        "height": 44.5,
+        "width": 350,
+        "x": 20,
+        "y": 427.046875
+      },
+      "minimum": 44,
+      "name": "control:7"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

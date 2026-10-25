@@ -1,3 +1,4 @@
+export { ConfirmDialog } from './confirm-dialog';
 export { useActionMenu } from './use-action-menu';
 export { focusControl } from './focus-control';
 export { AppText } from './app-text';

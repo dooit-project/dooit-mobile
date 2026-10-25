@@ -30,6 +30,8 @@
 | 최신 완성도 개선      | [10월 22일 개선 기준](./VISUAL_COHESION_REVIEW_2026-10-22.md)                                                                     | 기존 구조를 유지하는 헤더/공통 규칙 보정. 표의 제안 수치를 구현 완료로 간주하지 않음           |
 | 실제 현황/미완료      | [로드맵](../product/ROADMAP.md), [실제 Web 감사](../audits/visual-cohesion-2026-10-22/README.md)                                  | 디자인 작업 순서와 기능 연결의 경계                                                            |
 
+변경 내용을 버리는 확인은 2026-10-26 사용자가 첨부/선택한 [중앙 확인 원본01](./discard-confirmation-2026-10-25/01-centered-decision.png)과 [선택 범위](./discard-confirmation-2026-10-25/README.md)를 따른다. 흰 작은 면·가로 두 버튼·얇은 중립 경계의 빨간 버리기·파란 계속 작성을 유지한다. 이전 경계 없는 보조 행동 권고와 달리 최신 사용자 선택의 경계를 보존한다. 배경 폼 전체를 승인한 것이 아니다.
+
 ## 고정할 큰 틀
 
 개인 할 일 상세의 최신 권장 기준은 [목록 위 상세 패널 정리](./task-detail-options-2026-10-24/RECOMMENDED_DIRECTION.md)와 [05 정렬 보정 이미지](./task-detail-options-2026-10-24/05-context-panel-aligned.png)다. 사용자가 첨부한 원본은 같은 폴더의03 패널이며, 이전 별도 페이지 추천/큰 원을 그대로 재사용하지 않는다. 05는04의 아이콘/정보 행 정렬을 보정한 버전이며 새 구조 선택안이 아니다. [개인 Task 패널 연결과 실제 Web 감사](../audits/task-detail-panel-2026-10-24/README.md)를 진행했다. 직접 URL은 같은 내용의 일반 상세다. native/확대/운영 API/미지원 Web traversal은 감사의 한계로 남긴다. 기본 탭/오늘 시안은 유지한다.

@@ -7,7 +7,7 @@ import { radii, sizes, spacing, useAppTheme } from '@/theme';
 import { AppText } from './app-text';
 import { uiAuditProps } from './ui-audit-props';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerOutline';
 type ButtonSize = 'compact' | 'medium' | 'large';
 
 type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
@@ -19,6 +19,7 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   leading?: ReactNode;
   labelVariant?: 'bodyLarge' | 'body' | 'label';
   contentAlignment?: 'center' | 'start';
+  focusAppearance?: 'border' | 'ring';
   style?: ViewStyle;
 };
 
@@ -32,6 +33,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
     leading,
     labelVariant,
     contentAlignment = 'center',
+    focusAppearance = 'border',
     disabled,
     accessibilityLabel,
     accessibilityState,
@@ -44,6 +46,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
 ) {
   const theme = useAppTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const [isFocusVisible, setIsFocusVisible] = useState(false);
   const isDisabled = disabled || loading;
   const variants = {
     primary: {
@@ -62,6 +65,12 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
       backgroundColor: 'transparent',
       borderColor: 'transparent',
       textColor: theme.colors.textSecondary,
+      pressedColor: theme.colors.surfaceMuted,
+    },
+    dangerOutline: {
+      backgroundColor: theme.colors.surfaceElevated,
+      borderColor: theme.colors.border,
+      textColor: theme.colors.danger,
       pressedColor: theme.colors.surfaceMuted,
     },
     danger: {
@@ -87,10 +96,13 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
       disabled={isDisabled}
       onBlur={(event) => {
         setIsFocused(false);
+        setIsFocusVisible(false);
         onBlur?.(event);
       }}
       onFocus={(event) => {
         setIsFocused(true);
+        const target = event.target as unknown as { matches?: (selector: string) => boolean };
+        setIsFocusVisible(target.matches?.(':focus-visible') ?? true);
         onFocus?.(event);
       }}
       style={({ pressed }) => [
@@ -99,11 +111,21 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
         contentAlignment === 'start' && styles.start,
         {
           backgroundColor: pressed ? selected.pressedColor : selected.backgroundColor,
-          borderColor: isFocused ? theme.colors.text : selected.borderColor,
+          borderColor:
+            isFocused && focusAppearance === 'border' ? theme.colors.text : selected.borderColor,
+          borderWidth: variant === 'dangerOutline' ? 1 : 2,
           opacity: isDisabled ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,
         },
         style,
+        focusAppearance === 'ring' && isFocused && isFocusVisible
+          ? {
+              outlineColor: theme.colors.primary,
+              outlineWidth: 2,
+              outlineOffset: 2,
+              outlineStyle: 'solid',
+            }
+          : undefined,
       ]}
     >
       <View

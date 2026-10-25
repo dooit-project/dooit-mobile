@@ -1,0 +1,55 @@
+{
+  "backgroundInputsInert": true,
+  "controls": [
+    {
+      "borderColor": "rgb(226, 232, 240)",
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 137,
+        "x": 73,
+        "y": 485
+      },
+      "fontSize": "14px",
+      "label": "변경 내용 버리기",
+      "outline": "3px"
+    },
+    {
+      "borderColor": "rgb(23, 105, 224)",
+      "borderWidth": "2px",
+      "bounds": {
+        "height": 44,
+        "width": 139,
+        "x": 218,
+        "y": 485
+      },
+      "fontSize": "14px",
+      "label": "계속 작성",
+      "outline": "3px"
+    }
+  ],
+  "dialog": {
+    "height": 158,
+    "width": 316,
+    "x": 57,
+    "y": 387
+  },
+  "documentWidth": 430,
+  "focus": "계속 작성",
+  "message": {
+    "height": 20,
+    "width": 284,
+    "x": 73,
+    "y": 441
+  },
+  "title": {
+    "height": 26,
+    "width": 284,
+    "x": 73,
+    "y": 407
+  },
+  "viewport": {
+    "height": 932,
+    "width": 430
+  }
+}

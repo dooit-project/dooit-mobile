@@ -9,6 +9,7 @@ import {
   AppText,
   Button,
   Card,
+  ConfirmDialog,
   DetailSheet,
   IconButton,
   InlineNotice,
@@ -124,6 +125,10 @@ export default function TaskDetailScreen() {
       return;
     }
     if (busy) return;
+    if (isConfirmingClose) {
+      setIsConfirmingClose(false);
+      return;
+    }
     if (hasDraft) {
       setCloseTarget('detail');
       pendingAction.current = null;
@@ -132,9 +137,13 @@ export default function TaskDetailScreen() {
       return;
     }
     getScreenBackAction(router).onPress();
-  }, [busy, hasDraft, router, menuOpen, dismissMenu]);
+  }, [busy, hasDraft, router, menuOpen, dismissMenu, isConfirmingClose]);
   usePreventRemove(hasDraft || (busy && !deleteTask.isSuccess), ({ data }) => {
     if (busy) return;
+    if (isConfirmingClose) {
+      setIsConfirmingClose(false);
+      return;
+    }
     setCloseTarget('detail');
     pendingBrowserNavigation.current = null;
     pendingAction.current = data.action;
@@ -155,6 +164,10 @@ export default function TaskDetailScreen() {
       if (traversal.navigationType !== 'traverse' || !traversal.cancelable) return;
       traversal.preventDefault();
       if (busy) return;
+      if (isConfirmingClose) {
+        setIsConfirmingClose(false);
+        return;
+      }
       setCloseTarget('detail');
       pendingAction.current = null;
       pendingBrowserNavigation.current = () =>
@@ -163,14 +176,7 @@ export default function TaskDetailScreen() {
     };
     browserNavigation.addEventListener('navigate', protectTraversal);
     return () => browserNavigation.removeEventListener('navigate', protectTraversal);
-  }, [hasDraft, busy]);
-  useEffect(() => {
-    if (Platform.OS !== 'web' || !isConfirmingClose) return;
-    const frame = requestAnimationFrame(() =>
-      document.querySelector<HTMLElement>('[aria-label="계속 작성"]')?.focus(),
-    );
-    return () => cancelAnimationFrame(frame);
-  }, [isConfirmingClose]);
+  }, [hasDraft, busy, isConfirmingClose]);
   const stopEditing = (restoreFocus = true) => {
     setIsEditing(false);
     setHasFormDraft(false);
@@ -272,25 +278,17 @@ export default function TaskDetailScreen() {
       </IconButton>
     </View>
   );
-  const confirmation =
-    isConfirmingClose && hasDraft ? (
-      <InlineNotice
-        tone="warning"
-        actionPosition="bottom"
-        title="입력 중인 내용을 버릴까요?"
-        message="저장하지 않은 내용이 있어요."
-        action={
-          <View style={panelStyles.confirmActions}>
-            <Button size="compact" variant="ghost" onPress={() => setIsConfirmingClose(false)}>
-              계속 작성
-            </Button>
-            <Button size="compact" variant="danger" onPress={discardAndClose}>
-              {closeTarget === 'editor' ? '수정 취소' : '버리고 닫기'}
-            </Button>
-          </View>
-        }
-      />
-    ) : null;
+  const confirmationOpen = isConfirmingClose && hasDraft;
+  const confirmation = confirmationOpen ? (
+    <ConfirmDialog
+      title="변경 내용을 버릴까요?"
+      message="저장하지 않은 변경 내용이 사라져요."
+      confirmLabel="변경 내용 버리기"
+      cancelLabel="계속 작성"
+      onConfirm={discardAndClose}
+      onCancel={() => setIsConfirmingClose(false)}
+    />
+  ) : null;
   const content = (
     <View
       style={panelStyles.content}
@@ -400,24 +398,28 @@ export default function TaskDetailScreen() {
       ) : null}
     </View>
   );
-  return isPanel ? (
-    <DetailSheet
-      header={header}
-      notice={confirmation}
-      overlay={actionMenu.overlay}
-      label="할 일 상세"
-      returnFocusLabel={task?.title}
-      expanded={isEditing}
-      onClose={requestClose}
-    >
-      {content}
-    </DetailSheet>
-  ) : (
-    <Screen scroll contentContainerStyle={styles.screen} overlay={actionMenu.overlay}>
-      {header}
+  return (
+    <>
+      {isPanel ? (
+        <DetailSheet
+          header={header}
+          modalActive={confirmationOpen}
+          overlay={actionMenu.overlay}
+          label="할 일 상세"
+          returnFocusLabel={task?.title}
+          expanded={isEditing}
+          onClose={requestClose}
+        >
+          {content}
+        </DetailSheet>
+      ) : (
+        <Screen scroll contentContainerStyle={styles.screen} overlay={actionMenu.overlay}>
+          {header}
+          {content}
+        </Screen>
+      )}
       {confirmation}
-      {content}
-    </Screen>
+    </>
   );
 }
 
@@ -1031,7 +1033,6 @@ const panelStyles = StyleSheet.create({
   },
   editButton: { paddingHorizontal: spacing[2] },
   content: { gap: spacing[6] },
-  confirmActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[2], marginLeft: -10 },
   checkTarget: { width: sizes.touchTarget, alignItems: 'center', justifyContent: 'center' },
   fields: { gap: spacing[4] },

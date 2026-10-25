@@ -1,0 +1,85 @@
+{
+  "capturedAt": "2026-10-25T15:19:09.376Z",
+  "documentWidth": 430,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 342,
+        "x": 20,
+        "y": 57.28125
+      },
+      "icons": [
+        {
+          "height": 10,
+          "width": 10,
+          "x": 20,
+          "y": 74.28125
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 140.2265625,
+          "y": 71.28125
+        }
+      ],
+      "name": "task-goal-path:0",
+      "text": {
+        "height": 20,
+        "width": 94.2265625,
+        "x": 38,
+        "y": 69.28125
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 342,
+        "x": 20,
+        "y": 57.28125
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 366,
+        "y": 57.28125
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 390,
+        "x": 20,
+        "y": 634.28125
+      },
+      "minimum": 44,
+      "name": "control:2"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 390,
+        "x": 20,
+        "y": 686.28125
+      },
+      "minimum": 44,
+      "name": "control:3"
+    }
+  ],
+  "viewport": {
+    "height": 932,
+    "width": 430
+  }
+}
