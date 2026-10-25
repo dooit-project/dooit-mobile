@@ -1,0 +1,184 @@
+{
+  "capturedAt": "2026-10-25T07:07:34.224Z",
+  "documentWidth": 390,
+  "route": "/plan",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 24.5,
+        "width": 89.3046875,
+        "x": 270.6953125,
+        "y": 67.75
+      },
+      "icons": [
+        {
+          "height": 24.5,
+          "width": 22,
+          "x": 270.6953125,
+          "y": 67.75
+        }
+      ],
+      "name": "button:0",
+      "text": {
+        "height": 24,
+        "width": 59.3046875,
+        "x": 300.6953125,
+        "y": 68
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 64,
+        "width": 350,
+        "x": 20,
+        "y": 193
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 213
+        }
+      ],
+      "name": "plan-item:1",
+      "text": {
+        "height": 46,
+        "width": 298,
+        "x": 68,
+        "y": 202
+      },
+      "titleLine": {
+        "height": 24,
+        "width": 298,
+        "x": 68,
+        "y": 202
+      }
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 64,
+        "width": 350,
+        "x": 20,
+        "y": 261
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 281
+        }
+      ],
+      "name": "plan-item:2",
+      "text": {
+        "height": 46,
+        "width": 298,
+        "x": 68,
+        "y": 270
+      },
+      "titleLine": {
+        "height": 24,
+        "width": 298,
+        "x": 68,
+        "y": 270
+      }
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 64,
+        "width": 350,
+        "x": 20,
+        "y": 329
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 349
+        }
+      ],
+      "name": "plan-item:3",
+      "text": {
+        "height": 46,
+        "width": 298,
+        "x": 68,
+        "y": 338
+      },
+      "titleLine": {
+        "height": 24,
+        "width": 298,
+        "x": 68,
+        "y": 338
+      }
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 56,
+        "width": 350,
+        "x": 20,
+        "y": 413
+      },
+      "icons": [
+        {
+          "height": 26.5,
+          "width": 24,
+          "x": 25,
+          "y": 427.75
+        }
+      ],
+      "name": "add-item:4",
+      "text": {
+        "height": 24,
+        "width": 59.3046875,
+        "x": 69,
+        "y": 429
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44.5,
+        "width": 109.3046875,
+        "x": 260.6953125,
+        "y": 57.75
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 326,
+        "y": 129
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 56,
+        "width": 350,
+        "x": 20,
+        "y": 413
+      },
+      "minimum": 44,
+      "name": "control:2"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

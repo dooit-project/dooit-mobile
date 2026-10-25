@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import {
@@ -32,6 +32,7 @@ import type { DdayGoalResponse, GoalResponse, GoalStatus, GoalFuturePlanPolicy }
 import { formatDateLabel } from '@/utils';
 
 import { GoalForm } from './goal-form';
+import { parsePlanGoalKey, resolvePlanGoalNavigation } from './plan-goal-navigation';
 import { useGoals, useGoalStatus } from './use-goals';
 import { GoalPlanList } from './goal-plan-list';
 import { GoalTabs } from './goal-tabs';
@@ -73,6 +74,8 @@ export function GoalOverview() {
 
 function GoalWorkspace({ scope }: { scope: string }) {
   const panelId = useId();
+  const { goal: requestedGoal } = useLocalSearchParams<{ goal?: string | string[] }>();
+  const handledGoal = useRef<string | null>(null);
   const router = useRouter();
   const theme = useAppTheme();
   const goals = useGoals();
@@ -83,6 +86,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
   const [ready, setReady] = useState(false);
   const [selected, setSelected] = useState<PlanGoalKey | null>(null);
   const [all, setAll] = useState(false);
+  const [navigationFailed, setNavigationFailed] = useState(false);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState<'create' | 'edit' | null>(null);
   const [menu, setMenu] = useState(false);
@@ -151,7 +155,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
   const ordered = arranged(preferences.order);
   const current =
     ordered.find((goal) => goal.key === (selected ?? preferences.selected)) ?? ordered[0];
-  const currentKey = current?.key;
+  const currentKey = navigationFailed ? undefined : current?.key;
   const currentGoal = current?.kind === 'goal' ? current.value : null;
   const matches = ordered.filter((target) =>
     target.title
@@ -164,25 +168,64 @@ function GoalWorkspace({ scope }: { scope: string }) {
       ? (legacyColors[String(target.value.id)] ?? getDdayGoalFallbackColor(target.value.id))
       : (preferences.colors[target.key] ?? getDdayGoalFallbackColor(target.value.id));
   const locked = form !== null || status.isPending || itemOrder.editing || ordering || plansEditing;
-  const savePreferences = async (patch: Partial<PlanGoalPreferences>) => {
-    const saved = await updatePlanGoalPreferences(scope, patch);
-    setPreferences(saved);
-  };
-  const choose = (key: PlanGoalKey) => {
-    setSelected(key);
-    setAll(false);
-    setMenu(false);
-    setConfirmation(null);
-    setSearch('');
-    status.reset();
-    void savePreferences({ selected: key }).catch(() =>
-      setNotice('선택한 목표를 이 기기에 기억하지 못했어요. 현재 선택은 유지돼요.'),
-    );
-  };
+  const savePreferences = useCallback(
+    async (patch: Partial<PlanGoalPreferences>) => {
+      const saved = await updatePlanGoalPreferences(scope, patch);
+      setPreferences(saved);
+    },
+    [scope],
+  );
+  const resetStatus = status.reset;
+  const choose = useCallback(
+    (key: PlanGoalKey) => {
+      setSelected(key);
+      setNavigationFailed(false);
+      setNotice(null);
+      setAll(false);
+      setMenu(false);
+      setConfirmation(null);
+      setSearch('');
+      resetStatus();
+      void savePreferences({ selected: key }).catch(() =>
+        setNotice('선택한 목표를 이 기기에 기억하지 못했어요. 현재 선택은 유지돼요.'),
+      );
+    },
+    [resetStatus, savePreferences],
+  );
   const retrySource = (kind: 'goal' | 'dday') => {
     if (kind === 'goal') void goals.refetch();
     else void legacy.refetch();
   };
+  const requestedKey = parsePlanGoalKey(requestedGoal);
+  const navigationState = requestedKey
+    ? resolvePlanGoalNavigation(requestedKey, {
+        goal: { ids: (goals.data ?? []).map((goal) => goal.id), status: goals.status },
+        dday: { ids: (legacy.data ?? []).map((goal) => goal.id), status: legacy.status },
+      })
+    : null;
+  const requestToken = requestedGoal === undefined ? null : JSON.stringify(requestedGoal);
+  useFocusEffect(
+    useCallback(() => {
+      if (requestToken === null) {
+        handledGoal.current = null;
+        return;
+      }
+      if (!ready || locked || handledGoal.current === requestToken || navigationState === 'waiting')
+        return;
+      handledGoal.current = requestToken;
+      if (requestedKey && navigationState === 'found') {
+        choose(requestedKey);
+      } else {
+        setNotice('연결된 목표를 찾을 수 없어요. 전체 목표에서 확인해 주세요.');
+        setNavigationFailed(true);
+        setAll(true);
+        setSearch('');
+        setMenu(false);
+      }
+      // Consume the intent once so later manual tab selections remain untouched.
+      router.setParams({ goal: undefined });
+    }, [requestToken, requestedKey, navigationState, ready, locked, choose, router]),
+  );
   async function setGoalStatus() {
     if (current?.kind !== 'goal' || !confirmation || status.isPending) return;
     try {
@@ -196,6 +239,29 @@ function GoalWorkspace({ scope }: { scope: string }) {
       /* Mutation retains the error and confirmation for retry. */
     }
   }
+  if (ready && !locked && navigationState === 'waiting' && requestedKey) {
+    const source = requestedKey.startsWith('goal:') ? goals : legacy;
+    return (
+      <Screen safeAreaEdges={['left', 'right']}>
+        {source.isError ? (
+          <InlineNotice
+            tone="danger"
+            message="연결된 목표를 불러오지 못했어요. 다시 시도해 주세요."
+            action={
+              <Button variant="ghost" size="compact" onPress={() => void source.refetch()}>
+                다시 시도
+              </Button>
+            }
+          />
+        ) : (
+          <ActivityIndicator
+            accessibilityLabel="연결된 목표를 불러오는 중"
+            color={theme.colors.primary}
+          />
+        )}
+      </Screen>
+    );
+  }
   return (
     <Screen
       style={{ backgroundColor: theme.colors.groupedBackground }}
@@ -208,7 +274,12 @@ function GoalWorkspace({ scope }: { scope: string }) {
         <ActivityIndicator accessibilityLabel="목표를 불러오는 중" color={theme.colors.primary} />
       ) : (
         <>
-          {notice ? <InlineNotice message={notice} tone="warning" /> : null}
+          {locked && requestedGoal !== undefined ? (
+            <InlineNotice message="목표로 이동하려면 현재 편집을 마치거나 취소해 주세요." />
+          ) : null}
+          {notice && !(locked && requestedGoal !== undefined) ? (
+            <InlineNotice message={notice} tone="warning" />
+          ) : null}
           {(
             [
               ['goal', goals.error],
@@ -256,7 +327,10 @@ function GoalWorkspace({ scope }: { scope: string }) {
                 disabled={locked}
                 accessibilityState={{ expanded: all }}
                 aria-expanded={all}
-                onPress={() => setAll(!all)}
+                onPress={() => {
+                  setNavigationFailed(false);
+                  setAll(!all);
+                }}
               >
                 전체 목표
               </Button>
@@ -394,6 +468,8 @@ function GoalWorkspace({ scope }: { scope: string }) {
               onSaved={async (saved, selectedColor) => {
                 const key: PlanGoalKey = `goal:${saved.id}`;
                 setSelected(key);
+                setNavigationFailed(false);
+                setNotice(null);
                 setForm(null);
                 setAll(false);
                 setMenu(false);
@@ -404,7 +480,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                 }
               }}
             />
-          ) : !ordering && current ? (
+          ) : !ordering && !navigationFailed && current ? (
             <View
               key={current.key}
               nativeID={panelId}
@@ -629,7 +705,7 @@ function GoalWorkspace({ scope }: { scope: string }) {
                 </>
               )}
             </View>
-          ) : !form && !ordering && !goals.error && !legacy.error ? (
+          ) : !form && !ordering && !ordered.length && !goals.error && !legacy.error ? (
             <EmptyState
               title="원하는 방향부터 정해볼까요?"
               description="잘할 자신이 없어도 괜찮아요. 해보고 싶은 일을 적어보세요."

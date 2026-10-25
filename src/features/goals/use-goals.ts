@@ -24,6 +24,14 @@ export function useGoals() {
   });
 }
 
+export function useGoalDetail(goalId: number | null) {
+  return useQuery({
+    queryKey: goalQueryKeys.detail(goalId ?? 0),
+    queryFn: ({ signal }) => goalApi.get(goalId!, signal),
+    enabled: goalId !== null && (Platform.OS !== 'web' || typeof window !== 'undefined'),
+  });
+}
+
 export function useSaveGoal() {
   const client = useQueryClient();
   return useMutation({

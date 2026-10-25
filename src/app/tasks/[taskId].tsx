@@ -15,7 +15,8 @@ import {
   Screen,
   uiAuditProps,
 } from '@/components/ui';
-import { getDdayGoalFallbackColor, useDdayGoalColors, useDdayGoals } from '@/features/dday';
+import { useDdayGoals } from '@/features/dday';
+import { TaskGoalPath } from '@/features/tasks/task-goal-path';
 import { useAppToday } from '@/services/time/use-app-today';
 import {
   TaskDateQuickActions,
@@ -173,22 +174,7 @@ export default function TaskDetailScreen() {
   const task = taskQuery.data;
   const header = (
     <View style={panelStyles.header}>
-      <Pressable
-        {...uiAuditProps({ uiTouch: '44' })}
-        accessibilityRole="button"
-        accessibilityLabel={
-          task?.ddayGoalTitle ? `${task.ddayGoalTitle}, 목표 연결 관리` : '목표 연결 관리'
-        }
-        disabled={!task || busy || hasDraft}
-        onPress={() => selectManagement('goal')}
-        style={panelStyles.goalPath}
-      >
-        {task?.ddayGoalTitle ? <GoalDot task={task} /> : null}
-        <AppText variant="label" numberOfLines={2} style={panelStyles.goalTitle}>
-          {task?.ddayGoalTitle ?? '목표 연결'}
-        </AppText>
-        <AppIcon name="chevron-right" size="meta" color={theme.colors.textSecondary} />
-      </Pressable>
+      <TaskGoalPath task={task} disabled={!task || busy || hasDraft} />
       {!isEditing ? (
         <Button
           accessibilityLabel="할 일 수정"
@@ -392,13 +378,6 @@ export default function TaskDetailScreen() {
       {content}
     </Screen>
   );
-}
-
-function GoalDot({ task }: { task: TaskResponse }) {
-  const colors = useDdayGoalColors(task.ddayGoalId === null ? [] : [task.ddayGoalId]);
-  if (task.ddayGoalId === null) return null;
-  const color = colors[String(task.ddayGoalId)] ?? getDdayGoalFallbackColor(task.ddayGoalId);
-  return <View style={[panelStyles.dot, { backgroundColor: color }]} />;
 }
 
 function TaskContent({
@@ -1009,16 +988,6 @@ const panelStyles = StyleSheet.create({
     gap: spacing[1],
     minHeight: sizes.touchTarget,
   },
-  goalPath: {
-    flex: 1,
-    minWidth: 0,
-    minHeight: sizes.touchTarget,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2],
-  },
-  goalTitle: { flexShrink: 1 },
-  dot: { width: 10, height: 10, borderRadius: radii.full },
   editButton: { paddingHorizontal: spacing[2] },
   content: { gap: spacing[6] },
   menu: { alignSelf: 'flex-end', gap: spacing[1] },
