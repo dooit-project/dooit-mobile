@@ -19,6 +19,7 @@ import {
 } from '@/components/ui';
 import { useDdayGoals } from '@/features/dday';
 import { TaskGoalPath } from '@/features/tasks/task-goal-path';
+import { useTaskUnloadProtection } from '@/features/tasks/use-task-unload-protection';
 import { useAppToday } from '@/services/time/use-app-today';
 import {
   TaskDateQuickActions,
@@ -60,14 +61,17 @@ export default function TaskDetailScreen() {
   const [isConfirmingClose, setIsConfirmingClose] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [management, setManagement] = useState<ManagementSection>(null);
+  const [hasFormDraft, setHasFormDraft] = useState(false);
   const [hasChecklistDraft, setHasChecklistDraft] = useState(false);
   const [checklistBusy, setChecklistBusy] = useState(false);
   const [dateBusy, setDateBusy] = useState(false);
   const [editScope, setEditScope] = useState<RecurrenceEditScope>('THIS');
   const [deleteScope, setDeleteScope] = useState<RecurrenceEditScope>('THIS');
   const managementBackRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const editTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
   const pendingAction = useRef<NavigationAction | null>(null);
   const pendingBrowserNavigation = useRef<(() => void) | null>(null);
+  const [closeTarget, setCloseTarget] = useState<'detail' | 'editor'>('detail');
   const busy =
     updateTask.isPending ||
     deleteTask.isPending ||
@@ -76,7 +80,15 @@ export default function TaskDetailScreen() {
     taskDdayGoal.isPending ||
     checklistBusy ||
     dateBusy;
-  const hasDraft = isEditing || hasChecklistDraft;
+  const hasDraft = (isEditing && hasFormDraft) || hasChecklistDraft;
+  const reportFormDraft = useCallback((dirty: boolean) => {
+    setHasFormDraft(dirty);
+    if (!dirty) setIsConfirmingClose(false);
+  }, []);
+  const reportChecklistDraft = useCallback((dirty: boolean) => {
+    setHasChecklistDraft(dirty);
+    if (!dirty) setIsConfirmingClose(false);
+  }, []);
   const actionMenu = useActionMenu({
     open: menuOpen,
     onOpenChange: setMenuOpen,
@@ -113,6 +125,7 @@ export default function TaskDetailScreen() {
     }
     if (busy) return;
     if (hasDraft) {
+      setCloseTarget('detail');
       pendingAction.current = null;
       pendingBrowserNavigation.current = null;
       setIsConfirmingClose(true);
@@ -122,21 +135,15 @@ export default function TaskDetailScreen() {
   }, [busy, hasDraft, router, menuOpen, dismissMenu]);
   usePreventRemove(hasDraft || (busy && !deleteTask.isSuccess), ({ data }) => {
     if (busy) return;
+    setCloseTarget('detail');
+    pendingBrowserNavigation.current = null;
     pendingAction.current = data.action;
     setIsConfirmingClose(true);
   });
   useEffect(() => {
     if (deleteTask.isSuccess) getScreenBackAction(router).onPress();
   }, [deleteTask.isSuccess, router]);
-  useEffect(() => {
-    if (Platform.OS !== 'web' || !hasDraft) return;
-    const protectDraft = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = '';
-    };
-    window.addEventListener('beforeunload', protectDraft);
-    return () => window.removeEventListener('beforeunload', protectDraft);
-  }, [hasDraft]);
+  useTaskUnloadProtection(hasDraft || busy);
   useEffect(() => {
     if (Platform.OS !== 'web' || (!hasDraft && !busy)) return;
     // SDK 56's native removal hook does not cover browser Back/Forward.
@@ -148,6 +155,7 @@ export default function TaskDetailScreen() {
       if (traversal.navigationType !== 'traverse' || !traversal.cancelable) return;
       traversal.preventDefault();
       if (busy) return;
+      setCloseTarget('detail');
       pendingAction.current = null;
       pendingBrowserNavigation.current = () =>
         browserNavigation.traverseTo(traversal.destination.key);
@@ -163,12 +171,21 @@ export default function TaskDetailScreen() {
     );
     return () => cancelAnimationFrame(frame);
   }, [isConfirmingClose]);
+  const stopEditing = (restoreFocus = true) => {
+    setIsEditing(false);
+    setHasFormDraft(false);
+    if (restoreFocus) requestAnimationFrame(() => focusControl(editTriggerRef.current));
+  };
   const discardAndClose = () => {
     const action = pendingAction.current;
     const browserAction = pendingBrowserNavigation.current;
-    setIsEditing(false);
+    stopEditing(closeTarget === 'editor');
     setHasChecklistDraft(false);
     setIsConfirmingClose(false);
+    if (closeTarget === 'editor') {
+      updateTask.reset();
+      return;
+    }
     requestAnimationFrame(() => {
       if (browserAction) browserAction();
       else if (action) navigation.dispatch(action);
@@ -179,7 +196,20 @@ export default function TaskDetailScreen() {
     setMenuOpen(false);
     setManagement(null);
     setEditScope('THIS');
+    setHasFormDraft(false);
     setIsEditing(true);
+  };
+  const cancelEditing = () => {
+    if (busy) return;
+    if (hasFormDraft) {
+      setCloseTarget('editor');
+      pendingAction.current = null;
+      pendingBrowserNavigation.current = null;
+      setIsConfirmingClose(true);
+      return;
+    }
+    updateTask.reset();
+    stopEditing();
   };
   const handleSubmit = (request: TaskUpsertRequest) => {
     if (parsedTaskId === null) return;
@@ -189,7 +219,7 @@ export default function TaskDetailScreen() {
         request,
         recurrenceScope: taskQuery.data && isRecurringTask(taskQuery.data) ? editScope : undefined,
       },
-      { onSuccess: () => setIsEditing(false) },
+      { onSuccess: () => stopEditing() },
     );
   };
   const handleDelete = () => {
@@ -215,9 +245,10 @@ export default function TaskDetailScreen() {
       accessibilityElementsHidden={menuOpen}
       importantForAccessibility={menuOpen ? 'no-hide-descendants' : 'auto'}
     >
-      <TaskGoalPath task={task} disabled={!task || busy || hasDraft} />
+      <TaskGoalPath task={task} disabled={!task || busy || isEditing || hasChecklistDraft} />
       {!isEditing ? (
         <Button
+          ref={editTriggerRef}
           accessibilityLabel="할 일 수정"
           disabled={!task || busy || hasChecklistDraft}
           size="compact"
@@ -241,24 +272,25 @@ export default function TaskDetailScreen() {
       </IconButton>
     </View>
   );
-  const confirmation = isConfirmingClose ? (
-    <InlineNotice
-      tone="warning"
-      actionPosition="bottom"
-      title="입력 중인 내용을 버릴까요?"
-      message="저장하지 않은 내용이 있어요."
-      action={
-        <View style={panelStyles.confirmActions}>
-          <Button size="compact" variant="ghost" onPress={() => setIsConfirmingClose(false)}>
-            계속 작성
-          </Button>
-          <Button size="compact" variant="danger" onPress={discardAndClose}>
-            버리고 닫기
-          </Button>
-        </View>
-      }
-    />
-  ) : null;
+  const confirmation =
+    isConfirmingClose && hasDraft ? (
+      <InlineNotice
+        tone="warning"
+        actionPosition="bottom"
+        title="입력 중인 내용을 버릴까요?"
+        message="저장하지 않은 내용이 있어요."
+        action={
+          <View style={panelStyles.confirmActions}>
+            <Button size="compact" variant="ghost" onPress={() => setIsConfirmingClose(false)}>
+              계속 작성
+            </Button>
+            <Button size="compact" variant="danger" onPress={discardAndClose}>
+              {closeTarget === 'editor' ? '수정 취소' : '버리고 닫기'}
+            </Button>
+          </View>
+        }
+      />
+    ) : null;
   const content = (
     <View
       style={panelStyles.content}
@@ -306,10 +338,8 @@ export default function TaskDetailScreen() {
             errorMessage={updateTask.error?.message}
             isSubmitting={updateTask.isPending}
             submitLabel="수정 완료"
-            onCancel={() => {
-              updateTask.reset();
-              setIsEditing(false);
-            }}
+            onDraftChange={reportFormDraft}
+            onCancel={cancelEditing}
             onSubmit={handleSubmit}
           />
         </View>
@@ -363,7 +393,7 @@ export default function TaskDetailScreen() {
             else completeTask.mutate(task.id);
           }}
           onEdit={startEditing}
-          onChecklistDraftChange={setHasChecklistDraft}
+          onChecklistDraftChange={reportChecklistDraft}
           onChecklistBusyChange={setChecklistBusy}
           onDateBusyChange={setDateBusy}
         />

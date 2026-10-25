@@ -29,6 +29,7 @@ import {
   type TaskNotificationTiming,
 } from './task-notification-timing';
 import { parseEstimatedDurationMinutes } from './task-duration';
+import { useTaskDraftChange } from './use-task-draft-change';
 
 type TaskFormValues = {
   title: string;
@@ -64,6 +65,7 @@ type TaskFormProps = {
   submitLabel: string;
   isSubmitting?: boolean;
   errorMessage?: string | null;
+  onDraftChange?: (dirty: boolean) => void;
   onCancel?: () => void;
   onSubmit: (request: TaskUpsertRequest) => void;
 };
@@ -88,11 +90,13 @@ export function TaskForm({
   submitLabel,
   isSubmitting = false,
   errorMessage,
+  onDraftChange,
   onCancel,
   onSubmit,
 }: TaskFormProps) {
   const theme = useAppTheme();
-  const [values, setValues] = useState<TaskFormValues>(() => {
+  // Freeze the baseline for this editing session, including across query refreshes.
+  const [initialValues] = useState<TaskFormValues>(() => {
     const recurrence = getInitialRecurrenceValues(initialTask);
 
     return {
@@ -118,6 +122,11 @@ export function TaskForm({
       notificationTiming: getInitialTaskNotificationTiming(initialTask),
     };
   });
+  const [values, setValues] = useState(initialValues);
+  const dirty = (Object.keys(initialValues) as (keyof TaskFormValues)[]).some(
+    (key) => values[key] !== initialValues[key],
+  );
+  useTaskDraftChange(dirty, onDraftChange);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<TaskFormField | null>(null);
   const [focusedType, setFocusedType] = useState<TaskType | null>(null);

@@ -14,6 +14,7 @@ import {
   uiAuditProps,
 } from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
+import { useTaskDraftChange } from './use-task-draft-change';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
 import type { TaskChecklistItemResponse } from '@/types';
 
@@ -64,6 +65,7 @@ export function TaskChecklistSection({
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [editingInitialTitle, setEditingInitialTitle] = useState('');
   const items = useMemo(
     () => [...(checklist.data ?? [])].sort((left, right) => left.sortOrder - right.sortOrder),
     [checklist.data],
@@ -86,12 +88,8 @@ export function TaskChecklistSection({
 
   const dirty =
     (isAdding && newTitle.trim().length > 0) ||
-    (editingItemId !== null &&
-      editingTitle !== items.find((item) => item.id === editingItemId)?.title);
-  useEffect(() => {
-    onDraftChange?.(dirty);
-    return () => onDraftChange?.(false);
-  }, [dirty, onDraftChange]);
+    (editingItemId !== null && editingTitle !== editingInitialTitle);
+  useTaskDraftChange(dirty, onDraftChange);
   useEffect(() => {
     onBusyChange?.(isMutating);
     return () => onBusyChange?.(false);
@@ -229,6 +227,7 @@ export function TaskChecklistSection({
                   onSave={() => saveItem(item.id)}
                   onStartEdit={() => {
                     setEditingTitle(item.title);
+                    setEditingInitialTitle(item.title);
                     setEditingItemId(item.id);
                   }}
                   onToggle={() =>

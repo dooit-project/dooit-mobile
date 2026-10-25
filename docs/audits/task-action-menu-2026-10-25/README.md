@@ -2,6 +2,8 @@
 
 2026-10-25 · `c5a2362` 이후 미커밋 변경 · Android/iOS/Web 공통 코드
 
+후속 상태: 사용자 확인 후 `2606db3`으로 커밋했다. 아래 미커밋 표시는 감사 당시 상태다. 이어 [R3 실제 dirty 판단](../task-edit-dirty-2026-10-25/README.md)을 진행했다.
+
 ## 구현 전 검토와 고정 범위
 
 Product Design audit와 저장소 기본 시각 검사/구현 가이드를 적용했다. user-context preflight는 저장 context 없음이었다. 정확한 기준은 [선택05](../../design/task-detail-options-2026-10-24/05-context-panel-aligned.png)이며 원본을 직접 확인했다. [이전 외부 패턴 감사 R2](../task-detail-external-review-2026-10-25/README.md)의 작은 고정 메뉴 권고를 구현한다. 새 페이지/정보 구조 선택이 아니라 기존 세 관리 행동의 배치·닫기 보정이다.
