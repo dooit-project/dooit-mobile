@@ -1,0 +1,165 @@
+{
+  "documentWidth": 390,
+  "fields": [
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 327,
+        "x": 24,
+        "y": -291.234375
+      },
+      "fontSize": "16px",
+      "label": "Task 제목",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 327,
+        "x": 24,
+        "y": -107.234375
+      },
+      "fontSize": "16px",
+      "label": "일정 날짜",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 159.5,
+        "x": 24,
+        "y": 30.765625
+      },
+      "fontSize": "16px",
+      "label": "일정 시작 시간",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 159.5,
+        "x": 191.5,
+        "y": 30.765625
+      },
+      "fontSize": "16px",
+      "label": "일정 종료 시간",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 88,
+        "x": 24,
+        "y": 448.765625
+      },
+      "fontSize": "16px",
+      "label": "반복 간격",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 88,
+        "width": 327,
+        "x": 24,
+        "y": 536.765625
+      },
+      "fontSize": "16px",
+      "label": "Task 설명",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 120,
+        "x": 24,
+        "y": 668.765625
+      },
+      "fontSize": "16px",
+      "label": "예상 소요 시간(분)",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 327,
+        "x": 24,
+        "y": 756.765625
+      },
+      "fontSize": "16px",
+      "label": "Task 카테고리",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    }
+  ],
+  "focus": null,
+  "types": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 103.6640625,
+        "x": 28,
+        "y": -199.234375
+      },
+      "checked": "false",
+      "label": "할 일 유형 선택",
+      "tabIndex": "-1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 103.671875,
+        "x": 135.6640625,
+        "y": -199.234375
+      },
+      "checked": "true",
+      "label": "일정 유형 선택",
+      "tabIndex": "0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 103.6640625,
+        "x": 243.3359375,
+        "y": -199.234375
+      },
+      "checked": "false",
+      "label": "아이디어 유형 선택",
+      "tabIndex": "-1"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

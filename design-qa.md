@@ -1,4 +1,19 @@
-# 최신 Design QA — 선택01 중앙 버리기 확인 구현
+# 최신 Design QA — Task 작성·편집 입력과 유형 정돈
+
+2026-10-26 · `e049f0f` 이후 working tree · [동일390 전후·실제 흐름·검사·한계](./docs/audits/task-form-controls-2026-10-26/README.md)
+
+- 이전 중앙 확인은 사용자 승인으로 `e049f0f`에 커밋했다. 새 작업은 기존 TaskForm의 필드/세 유형/위치를 유지하는 표현 보정이며 새 정보 구조가 아니다. Product Design audit/design-qa와 저장소 정책, WAI-ARIA Radio/Focus Visible 및 RN0.85 outline 문서를 적용했다. 저장 context/Figma/새 이미지 자산/의존성은 없다.
+- 실제 수정 전후390을 한 비교판에서 함께 직접 확인했다. 고정된 목표 경로/제목/필드 폭·순서/문구/중앙 확인은 유지했다. 유형 그룹 안쪽4px씩 때문에 그룹 높이44→52와 아래8px 이동은 의도한 보정이다. 폰트/간격/색·token/이미지 품질/문구를 구분해 확인했고, 필드 초점의 글 시작 x37·크기/좌표는 전후 동일하다.
+- 공통 TextField로8개 입력의16/24 글자·고정 border1/초점 outline·invalid/disabled를 정리했다. 기존 세 유형은 한 SegmentedControl로 checked·Web 방향키/Space/한 Tab 진입점을 연결했다. Web의 기존 aria-checked 누락을 수정했다. 저장/취소는 선택적 파란 keyboard ring이다.
+- 새 실제320/390/430·새 작성·종일/시간 보존·직접 반복·예상 시간 invalid/복구·유형 복원·중앙 확인/편집 취소·390×568 키보드 접근을 확인했다. 처음 offscreen fill이 반영되지 않은 시도는 통과로 쓰지 않고 화면에 표시/값 반영을 확인한 뒤 재검증했다.
+- 새 좌표 검사는 기본 세 폭 각1행/11target, 부가320/390은1행/7·9target, 짧은390은1행/11target, 일반 상세는5행/8target 통과다. 별도 단일 checked/Tab·44px 필드·가로 넘침·초점 위치 검사도 통과했다. 실제 캡처의 광학적 정렬/시각 위계도 확인했다.
+- 전체 `npm run validate` 통과:126 suites /671 tests, opt-in STG1개 제외. 실제 native/확대1.5/보조 기술/dark·운영 API/실패·느린 저장은 미확인이다. 기존 알림/반복 pill과 상태/키보드·첫 오류 복귀·전역 IconButton/다른 Button 초점, 새로고침/미지원 traversal·R4는 후속이다.
+
+final result: passed (명시한 TaskForm 표현/실제 Web·회귀 범위). 새 폼 작업은 미커밋/미푸시다.
+
+---
+
+# 이전 Design QA — 선택01 중앙 버리기 확인 구현
 
 2026-10-26 · 기준 `1d42148` 이후 working tree · [선택 원본/실제 비교·측정·동작·한계](./docs/audits/discard-confirmation-2026-10-26/README.md)
 

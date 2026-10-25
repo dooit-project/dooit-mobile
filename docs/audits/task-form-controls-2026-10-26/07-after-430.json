@@ -1,0 +1,105 @@
+{
+  "documentWidth": 430,
+  "fields": [
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 382,
+        "x": 24,
+        "y": 191.28125
+      },
+      "fontSize": "16px",
+      "label": "Task 제목",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "1px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 382,
+        "x": 24,
+        "y": 375.28125
+      },
+      "fontSize": "16px",
+      "label": "일정 날짜",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 187,
+        "x": 24,
+        "y": 513.28125
+      },
+      "fontSize": "16px",
+      "label": "일정 시작 시간",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 187,
+        "x": 219,
+        "y": 513.28125
+      },
+      "fontSize": "16px",
+      "label": "일정 종료 시간",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    }
+  ],
+  "focus": "Task 제목",
+  "types": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 122,
+        "x": 28,
+        "y": 283.28125
+      },
+      "checked": "false",
+      "label": "할 일 유형 선택",
+      "tabIndex": "-1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 122,
+        "x": 154,
+        "y": 283.28125
+      },
+      "checked": "true",
+      "label": "일정 유형 선택",
+      "tabIndex": "0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 122,
+        "x": 280,
+        "y": 283.28125
+      },
+      "checked": "false",
+      "label": "아이디어 유형 선택",
+      "tabIndex": "-1"
+    }
+  ],
+  "viewport": {
+    "height": 932,
+    "width": 430
+  }
+}

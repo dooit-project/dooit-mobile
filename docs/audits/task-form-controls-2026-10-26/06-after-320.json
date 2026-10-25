@@ -1,0 +1,105 @@
+{
+  "documentWidth": 320,
+  "fields": [
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 280,
+        "x": 20,
+        "y": 187.765625
+      },
+      "fontSize": "16px",
+      "label": "Task 제목",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "1px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 280,
+        "x": 20,
+        "y": 371.765625
+      },
+      "fontSize": "16px",
+      "label": "일정 날짜",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 136,
+        "x": 20,
+        "y": 509.765625
+      },
+      "fontSize": "16px",
+      "label": "일정 시작 시간",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    },
+    {
+      "borderWidth": "1px",
+      "bounds": {
+        "height": 44,
+        "width": 136,
+        "x": 164,
+        "y": 509.765625
+      },
+      "fontSize": "16px",
+      "label": "일정 종료 시간",
+      "lineHeight": "24px",
+      "outlineStyle": "solid",
+      "outlineWidth": "0px",
+      "paddingLeft": "12px"
+    }
+  ],
+  "focus": "Task 제목",
+  "types": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 88,
+        "x": 24,
+        "y": 279.765625
+      },
+      "checked": "false",
+      "label": "할 일 유형 선택",
+      "tabIndex": "-1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 88,
+        "x": 116,
+        "y": 279.765625
+      },
+      "checked": "true",
+      "label": "일정 유형 선택",
+      "tabIndex": "0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 88,
+        "x": 208,
+        "y": 279.765625
+      },
+      "checked": "false",
+      "label": "아이디어 유형 선택",
+      "tabIndex": "-1"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 320
+  }
+}

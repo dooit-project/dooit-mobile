@@ -142,3 +142,36 @@ test('폼을 닫으면 부모의 초안 상태를 해제한다', () => {
   act(() => screen.unmount());
   expect(report).toHaveBeenLastCalledWith(false);
 });
+
+test('유형 선택 후 저장 계약과 일정으로 되돌렸을 때의 날짜·시간을 유지한다', () => {
+  const submit = jest.fn();
+  act(() => {
+    screen = create(<TaskForm initialTask={task} submitLabel="수정 완료" onSubmit={submit} />);
+  });
+  const press = (label: string) => {
+    const control = screen.root
+      .findAllByProps({ accessibilityLabel: label })
+      .find((node) => node.props.onPress)!;
+    act(() => control.props.onPress());
+  };
+  press('아이디어 유형 선택');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      title: task.title,
+      type: 'IDEA',
+      startAt: null,
+      endAt: null,
+    }),
+  );
+  press('일정 유형 선택');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      title: task.title,
+      type: 'SCHEDULE',
+      startAt: task.startAt,
+      endAt: task.endAt,
+    }),
+  );
+});

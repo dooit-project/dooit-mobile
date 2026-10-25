@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Switch, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
-import { AppText, Button, Card, InlineNotice } from '@/components/ui';
+import { AppText, Button, Card, InlineNotice, SegmentedControl, TextField } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type {
   LocalDateString,
@@ -46,16 +46,6 @@ type TaskFormValues = {
   recurrenceInterval: string;
   notificationTiming: TaskNotificationTiming;
 };
-
-type TaskFormField =
-  | 'title'
-  | 'description'
-  | 'category'
-  | 'estimatedDurationMinutes'
-  | 'scheduleDate'
-  | 'startTime'
-  | 'endTime'
-  | 'recurrenceInterval';
 
 type TaskFormProps = {
   autoFocusTitle?: boolean;
@@ -128,8 +118,6 @@ export function TaskForm({
   );
   useTaskDraftChange(dirty, onDraftChange);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
-  const [focusedField, setFocusedField] = useState<TaskFormField | null>(null);
-  const [focusedType, setFocusedType] = useState<TaskType | null>(null);
   const [focusedRecurrenceMode, setFocusedRecurrenceMode] = useState<string | null>(null);
   const [focusedRecurrenceFrequency, setFocusedRecurrenceFrequency] = useState<string | null>(null);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(
@@ -239,7 +227,7 @@ export function TaskForm({
       <Card variant="sheet" style={styles.formCard}>
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <AppText variant="label" weight="bold">
+            <AppText variant="label" weight="semibold">
               제목
             </AppText>
             <AppText
@@ -249,80 +237,43 @@ export function TaskForm({
               {values.title.length}/{taskLimits.title}
             </AppText>
           </View>
-          <TextInput
+          <TextField
             accessibilityLabel="Task 제목"
             autoFocus={autoFocusTitle}
             editable={!isSubmitting}
             maxLength={taskLimits.title}
-            onBlur={() => setFocusedField(null)}
             onChangeText={(value) => updateField('title', value)}
-            onFocus={() => setFocusedField('title')}
             placeholder={titlePlaceholders[values.type]}
             placeholderTextColor={theme.colors.textMuted}
             returnKeyType="next"
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.colors.surface,
-                borderColor: hasTitleValidationError
-                  ? theme.colors.danger
-                  : focusedField === 'title'
-                    ? theme.colors.primary
-                    : theme.colors.border,
-                borderWidth: focusedField === 'title' ? 2 : 1,
-                color: theme.colors.text,
-              },
-            ]}
+            invalid={hasTitleValidationError}
             value={values.title}
           />
         </View>
 
         <View style={styles.field}>
-          <AppText variant="label" weight="bold">
+          <AppText variant="label" weight="semibold">
             유형
           </AppText>
-          <View style={styles.typeGrid}>
-            {taskTypes.map((type) => {
-              const selected = type.value === values.type;
-
-              return (
-                <Pressable
-                  accessibilityLabel={`${type.label} 유형 선택`}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: selected, disabled: isSubmitting }}
-                  disabled={isSubmitting}
-                  key={type.value}
-                  onBlur={() => setFocusedType(null)}
-                  onFocus={() => setFocusedType(type.value)}
-                  onPress={() => updateField('type', type.value)}
-                  style={[
-                    styles.typeOption,
-                    {
-                      backgroundColor: selected ? theme.colors.highlightBlue : 'transparent',
-                      borderColor:
-                        focusedType === type.value || selected
-                          ? theme.colors.primary
-                          : theme.colors.border,
-                      borderWidth: focusedType === type.value ? 2 : 1,
-                    },
-                  ]}
-                >
-                  <AppText tone={selected ? 'primary' : 'default'} variant="label" weight="bold">
-                    {type.label}
-                  </AppText>
-                </Pressable>
-              );
-            })}
-          </View>
+          <SegmentedControl
+            accessibilityLabel="유형"
+            options={taskTypes.map((type) => ({
+              ...type,
+              accessibilityLabel: `${type.label} 유형 선택`,
+            }))}
+            value={values.type}
+            disabled={isSubmitting}
+            onValueChange={(type) => updateField('type', type)}
+          />
         </View>
 
         {isSchedule ? (
           <View style={styles.scheduleFields}>
             <View style={styles.field}>
-              <AppText variant="label" weight="bold">
+              <AppText variant="label" weight="semibold">
                 일정 날짜
               </AppText>
-              <TextInput
+              <TextField
                 accessibilityHint="YYYY-MM-DD 형식으로 입력해 주세요."
                 accessibilityLabel="일정 날짜"
                 autoCapitalize="none"
@@ -330,29 +281,17 @@ export function TaskForm({
                 editable={!isSubmitting}
                 keyboardType="numbers-and-punctuation"
                 maxLength={10}
-                onBlur={() => setFocusedField(null)}
                 onChangeText={(value) => updateField('scheduleDate', value)}
-                onFocus={() => setFocusedField('scheduleDate')}
                 placeholder="2026-07-27"
                 placeholderTextColor={theme.colors.textMuted}
                 returnKeyType="next"
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor:
-                      focusedField === 'scheduleDate' ? theme.colors.primary : theme.colors.border,
-                    borderWidth: focusedField === 'scheduleDate' ? 2 : 1,
-                    color: theme.colors.text,
-                  },
-                ]}
                 value={values.scheduleDate}
               />
             </View>
 
             <View style={styles.switchRow}>
               <View style={styles.switchCopy}>
-                <AppText variant="label" weight="bold">
+                <AppText variant="label" weight="semibold">
                   종일 일정
                 </AppText>
                 <AppText tone="secondary" variant="caption">
@@ -377,10 +316,10 @@ export function TaskForm({
             {!values.allDay ? (
               <View style={styles.timeRow}>
                 <View style={[styles.field, styles.timeField]}>
-                  <AppText variant="label" weight="bold">
+                  <AppText variant="label" weight="semibold">
                     시작
                   </AppText>
-                  <TextInput
+                  <TextField
                     accessibilityHint="HH:mm 형식으로 입력해 주세요."
                     accessibilityLabel="일정 시작 시간"
                     autoCapitalize="none"
@@ -388,36 +327,24 @@ export function TaskForm({
                     editable={!isSubmitting}
                     keyboardType="numbers-and-punctuation"
                     maxLength={5}
-                    onBlur={() => setFocusedField(null)}
                     onChangeText={(value) => updateField('startTime', value)}
-                    onFocus={() => setFocusedField('startTime')}
                     placeholder="09:00"
                     placeholderTextColor={theme.colors.textMuted}
                     returnKeyType="next"
-                    style={[
-                      styles.input,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        borderColor:
-                          focusedField === 'startTime' ? theme.colors.primary : theme.colors.border,
-                        borderWidth: focusedField === 'startTime' ? 2 : 1,
-                        color: theme.colors.text,
-                      },
-                    ]}
                     value={values.startTime}
                   />
                 </View>
 
                 <View style={[styles.field, styles.timeField]}>
                   <View style={styles.labelRow}>
-                    <AppText variant="label" weight="bold">
+                    <AppText variant="label" weight="semibold">
                       종료
                     </AppText>
                     <AppText tone="muted" variant="caption">
                       선택
                     </AppText>
                   </View>
-                  <TextInput
+                  <TextField
                     accessibilityHint="비워두면 시작 시간만 있는 일정으로 저장됩니다."
                     accessibilityLabel="일정 종료 시간"
                     autoCapitalize="none"
@@ -425,22 +352,10 @@ export function TaskForm({
                     editable={!isSubmitting}
                     keyboardType="numbers-and-punctuation"
                     maxLength={5}
-                    onBlur={() => setFocusedField(null)}
                     onChangeText={(value) => updateField('endTime', value)}
-                    onFocus={() => setFocusedField('endTime')}
                     placeholder="10:00"
                     placeholderTextColor={theme.colors.textMuted}
                     returnKeyType="done"
-                    style={[
-                      styles.input,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        borderColor:
-                          focusedField === 'endTime' ? theme.colors.primary : theme.colors.border,
-                        borderWidth: focusedField === 'endTime' ? 2 : 1,
-                        color: theme.colors.text,
-                      },
-                    ]}
                     value={values.endTime}
                   />
                 </View>
@@ -467,7 +382,7 @@ export function TaskForm({
         {isDetailsExpanded && isSchedule ? (
           <View style={styles.scheduleSettings}>
             <View style={styles.field}>
-              <AppText variant="label" weight="bold">
+              <AppText variant="label" weight="semibold">
                 알림
               </AppText>
               <AppText tone="secondary" variant="caption">
@@ -506,7 +421,7 @@ export function TaskForm({
                           align="center"
                           tone={selected ? 'primary' : 'default'}
                           variant="caption"
-                          weight="bold"
+                          weight="semibold"
                         >
                           {label}
                         </AppText>
@@ -518,7 +433,7 @@ export function TaskForm({
 
             <View style={styles.field}>
               <View style={styles.labelRow}>
-                <AppText variant="label" weight="bold">
+                <AppText variant="label" weight="semibold">
                   반복
                 </AppText>
                 <AppText tone="muted" variant="caption">
@@ -555,7 +470,7 @@ export function TaskForm({
                         align="center"
                         tone={selected ? 'primary' : 'default'}
                         variant="caption"
-                        weight="bold"
+                        weight="semibold"
                       >
                         {option.label}
                       </AppText>
@@ -598,7 +513,7 @@ export function TaskForm({
                             align="center"
                             tone={selected ? 'primary' : 'default'}
                             variant="caption"
-                            weight="bold"
+                            weight="semibold"
                           >
                             {option.label}
                           </AppText>
@@ -607,7 +522,7 @@ export function TaskForm({
                     })}
                   </View>
                   <View style={styles.intervalRow}>
-                    <TextInput
+                    <TextField
                       accessibilityHint="1부터 99 사이의 숫자로 입력해 주세요."
                       accessibilityLabel="반복 간격"
                       autoCapitalize="none"
@@ -615,25 +530,11 @@ export function TaskForm({
                       editable={!isSubmitting}
                       keyboardType="number-pad"
                       maxLength={2}
-                      onBlur={() => setFocusedField(null)}
                       onChangeText={(value) => updateField('recurrenceInterval', value)}
-                      onFocus={() => setFocusedField('recurrenceInterval')}
                       placeholder="2"
                       placeholderTextColor={theme.colors.textMuted}
                       returnKeyType="done"
-                      style={[
-                        styles.input,
-                        styles.intervalInput,
-                        {
-                          backgroundColor: theme.colors.surface,
-                          borderColor:
-                            focusedField === 'recurrenceInterval'
-                              ? theme.colors.primary
-                              : theme.colors.border,
-                          borderWidth: focusedField === 'recurrenceInterval' ? 2 : 1,
-                          color: theme.colors.text,
-                        },
-                      ]}
+                      style={styles.intervalInput}
                       value={values.recurrenceInterval}
                     />
                     <AppText tone="secondary" variant="label">
@@ -649,34 +550,22 @@ export function TaskForm({
         {isDetailsExpanded ? (
           <View style={styles.field}>
             <View style={styles.labelRow}>
-              <AppText variant="label" weight="bold">
+              <AppText variant="label" weight="semibold">
                 설명
               </AppText>
               <AppText tone="muted" variant="caption">
                 선택
               </AppText>
             </View>
-            <TextInput
+            <TextField
               accessibilityLabel="Task 설명"
               editable={!isSubmitting}
               maxLength={taskLimits.description}
               multiline
-              onBlur={() => setFocusedField(null)}
               onChangeText={(value) => updateField('description', value)}
-              onFocus={() => setFocusedField('description')}
               placeholder="필요한 맥락이나 다음 행동"
               placeholderTextColor={theme.colors.textMuted}
-              style={[
-                styles.input,
-                styles.textArea,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor:
-                    focusedField === 'description' ? theme.colors.primary : theme.colors.border,
-                  borderWidth: focusedField === 'description' ? 2 : 1,
-                  color: theme.colors.text,
-                },
-              ]}
+              style={styles.textArea}
               textAlignVertical="top"
               value={values.description}
             />
@@ -686,7 +575,7 @@ export function TaskForm({
         {isDetailsExpanded ? (
           <View style={styles.field}>
             <View style={styles.labelRow}>
-              <AppText variant="label" weight="bold">
+              <AppText variant="label" weight="semibold">
                 예상 시간
               </AppText>
               <AppText tone="muted" variant="caption">
@@ -694,32 +583,18 @@ export function TaskForm({
               </AppText>
             </View>
             <View style={styles.durationRow}>
-              <TextInput
+              <TextField
                 accessibilityHint="5분부터 1440분 사이로 입력해 주세요."
                 accessibilityLabel="예상 소요 시간(분)"
                 editable={!isSubmitting}
                 keyboardType="number-pad"
                 maxLength={4}
-                onBlur={() => setFocusedField(null)}
                 onChangeText={(value) => updateField('estimatedDurationMinutes', value)}
-                onFocus={() => setFocusedField('estimatedDurationMinutes')}
                 placeholder="30"
                 placeholderTextColor={theme.colors.textMuted}
                 returnKeyType="done"
-                style={[
-                  styles.input,
-                  styles.durationInput,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: hasEstimatedDurationValidationError
-                      ? theme.colors.danger
-                      : focusedField === 'estimatedDurationMinutes'
-                        ? theme.colors.primary
-                        : theme.colors.border,
-                    borderWidth: focusedField === 'estimatedDurationMinutes' ? 2 : 1,
-                    color: theme.colors.text,
-                  },
-                ]}
+                style={styles.durationInput}
+                invalid={hasEstimatedDurationValidationError}
                 value={values.estimatedDurationMinutes}
               />
               <AppText tone="secondary" variant="label">
@@ -732,32 +607,20 @@ export function TaskForm({
         {isDetailsExpanded ? (
           <View style={styles.field}>
             <View style={styles.labelRow}>
-              <AppText variant="label" weight="bold">
+              <AppText variant="label" weight="semibold">
                 카테고리
               </AppText>
               <AppText tone="muted" variant="caption">
                 선택
               </AppText>
             </View>
-            <TextInput
+            <TextField
               accessibilityLabel="Task 카테고리"
               editable={!isSubmitting}
               maxLength={taskLimits.category}
-              onBlur={() => setFocusedField(null)}
               onChangeText={(value) => updateField('category', value)}
-              onFocus={() => setFocusedField('category')}
               placeholder="예: 업무, 집, 건강"
               placeholderTextColor={theme.colors.textMuted}
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor:
-                    focusedField === 'category' ? theme.colors.primary : theme.colors.border,
-                  borderWidth: focusedField === 'category' ? 2 : 1,
-                  color: theme.colors.text,
-                },
-              ]}
               value={values.category}
             />
           </View>
@@ -774,12 +637,19 @@ export function TaskForm({
 
       <View style={styles.actions}>
         {onCancel ? (
-          <Button disabled={isSubmitting} fullWidth variant="ghost" onPress={onCancel}>
+          <Button
+            disabled={isSubmitting}
+            fullWidth
+            variant="ghost"
+            focusAppearance="ring"
+            onPress={onCancel}
+          >
             취소
           </Button>
         ) : null}
         <Button
           disabled={!canSubmit}
+          focusAppearance="ring"
           fullWidth
           loading={isSubmitting}
           size="large"
@@ -830,29 +700,8 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     justifyContent: 'space-between',
   },
-  input: {
-    borderRadius: radii.md,
-    borderWidth: 1,
-    fontSize: 16,
-    minHeight: 44,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
-  },
   textArea: {
     minHeight: 88,
-  },
-  typeGrid: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  typeOption: {
-    alignItems: 'center',
-    borderRadius: radii.md,
-    borderWidth: 1,
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: spacing[2],
   },
   recurrenceGrid: {
     flexDirection: 'row',
@@ -901,6 +750,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   intervalInput: {
+    width: 88,
     minWidth: 72,
     textAlign: 'center',
   },

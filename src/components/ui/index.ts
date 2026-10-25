@@ -1,3 +1,5 @@
+export { TextField } from './text-field';
+export { SegmentedControl } from './segmented-control';
 export { ConfirmDialog } from './confirm-dialog';
 export { useActionMenu } from './use-action-menu';
 export { focusControl } from './focus-control';
