@@ -1,9 +1,18 @@
 import { SymbolView } from 'expo-symbols';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { AppText, Button, Card, InlineNotice, ListSkeleton } from '@/components/ui';
+import {
+  AddItemRow,
+  AppIcon,
+  AppText,
+  Button,
+  Card,
+  InlineNotice,
+  ListSkeleton,
+  uiAuditProps,
+} from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
 import type { TaskChecklistItemResponse } from '@/types';
@@ -27,6 +36,9 @@ type TaskChecklistSectionProps = {
   taskId: number;
   canEdit?: boolean;
   grouped?: boolean;
+  compact?: boolean;
+  onDraftChange?: (dirty: boolean) => void;
+  onBusyChange?: (busy: boolean) => void;
 };
 
 const checklistLimits = { items: 100, title: 30 } as const;
@@ -35,6 +47,9 @@ export function TaskChecklistSection({
   taskId,
   canEdit = true,
   grouped = false,
+  compact = false,
+  onDraftChange,
+  onBusyChange,
 }: TaskChecklistSectionProps) {
   const theme = useAppTheme();
   const checklist = useTaskChecklist(taskId);
@@ -69,6 +84,19 @@ export function TaskChecklistSection({
     deleteItem.error ??
     reorderItems.error;
 
+  const dirty =
+    (isAdding && newTitle.trim().length > 0) ||
+    (editingItemId !== null &&
+      editingTitle !== items.find((item) => item.id === editingItemId)?.title);
+  useEffect(() => {
+    onDraftChange?.(dirty);
+    return () => onDraftChange?.(false);
+  }, [dirty, onDraftChange]);
+  useEffect(() => {
+    onBusyChange?.(isMutating);
+    return () => onBusyChange?.(false);
+  }, [isMutating, onBusyChange]);
+
   const addItem = () => {
     const title = newTitle.trim();
     if (!title) return;
@@ -102,7 +130,11 @@ export function TaskChecklistSection({
   };
 
   return (
-    <Card variant={grouped ? 'grouped' : 'outlined'} style={styles.card}>
+    <Card
+      variant={grouped ? 'grouped' : 'outlined'}
+      padded={!grouped}
+      style={[styles.card, compact && { marginTop: spacing[4] }]}
+    >
       {checklist.isPending ? (
         <ListSkeleton accessibilityLabel="체크리스트를 불러오는 중" count={3} />
       ) : checklist.error ? (
@@ -127,15 +159,17 @@ export function TaskChecklistSection({
                 <AppText variant="bodyLarge" weight="bold">
                   체크리스트
                 </AppText>
-                <AppText tone="secondary" variant="label">
-                  {grouped && progress.total > 0
-                    ? `${progress.completed}/${progress.total} 완료`
-                    : progress.total === 0
-                      ? '아직 항목이 없어요'
-                      : progress.remaining === 0
-                        ? '모두 완료했어요'
-                        : `${progress.remaining}개 남음`}
-                </AppText>
+                {!compact ? (
+                  <AppText tone="secondary" variant="label">
+                    {grouped && progress.total > 0
+                      ? `${progress.completed}/${progress.total} 완료`
+                      : progress.total === 0
+                        ? '아직 항목이 없어요'
+                        : progress.remaining === 0
+                          ? '모두 완료했어요'
+                          : `${progress.remaining}개 남음`}
+                  </AppText>
+                ) : null}
               </View>
             </View>
           ) : null}
@@ -255,6 +289,15 @@ export function TaskChecklistSection({
                   </Button>
                 </View>
               </View>
+            ) : grouped ? (
+              <AddItemRow
+                compact={compact}
+                tone={compact ? 'primary' : 'secondary'}
+                disabled={isMutating}
+                onPress={() => setIsAdding(true)}
+              >
+                {items.length === 0 ? '체크리스트 추가' : '항목 추가'}
+              </AddItemRow>
             ) : (
               <Button
                 disabled={isMutating}
@@ -262,11 +305,9 @@ export function TaskChecklistSection({
                 size="compact"
                 variant="ghost"
                 onPress={() => setIsAdding(true)}
-                style={
-                  grouped ? { borderColor: 'transparent' } : { borderColor: theme.colors.border }
-                }
+                style={{ borderColor: theme.colors.border }}
               >
-                {grouped && items.length === 0 ? '체크리스트 추가' : '+ 항목 추가'}
+                + 항목 추가
               </Button>
             )
           ) : canEdit ? (
@@ -403,18 +444,23 @@ function ChecklistItemRow({
           </View>
         </View>
       ) : (
-        <View style={styles.itemMain}>
+        <View
+          {...(grouped ? uiAuditProps({ uiRow: 'checklist-item', uiAlign: 'text-block' }) : {})}
+          style={[styles.itemMain, grouped && { marginLeft: -10, gap: 10 }]}
+        >
           {canEdit ? (
             <Pressable
+              {...uiAuditProps({ uiIcon: 'control', uiTouch: '44' })}
               accessibilityLabel={`${item.title}, ${item.done ? '완료 취소' : '완료하기'}`}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: item.done, disabled }}
+              aria-checked={item.done}
               disabled={disabled}
               hitSlop={6}
               onPress={onToggle}
               style={styles.checkboxTarget}
             >
-              <ChecklistCheckbox done={item.done} />
+              <ChecklistCheckbox done={item.done} round={grouped} />
             </Pressable>
           ) : (
             <View
@@ -422,13 +468,15 @@ function ChecklistItemRow({
               accessibilityLabel={`${item.title}, ${item.done ? '완료' : '미완료'}`}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: item.done }}
+              aria-checked={item.done}
               style={styles.checkboxTarget}
             >
-              <ChecklistCheckbox done={item.done} />
+              <ChecklistCheckbox done={item.done} round={grouped} />
             </View>
           )}
           <AppText
-            numberOfLines={2}
+            {...uiAuditProps({ uiText: 'block' })}
+            numberOfLines={grouped ? undefined : 2}
             tone={item.done ? 'secondary' : 'default'}
             variant={grouped ? 'body' : 'label'}
             style={styles.itemTitle}
@@ -437,23 +485,33 @@ function ChecklistItemRow({
           </AppText>
           {canEdit ? (
             <Pressable
+              {...uiAuditProps({ uiTouch: '44' })}
               accessibilityLabel={`${item.title} 항목 행동 ${active ? '닫기' : '열기'}`}
               accessibilityRole="button"
               accessibilityState={{ expanded: active, disabled }}
+              aria-expanded={active}
               disabled={disabled}
               hitSlop={6}
               onPress={onToggleActions}
               style={styles.itemActionTrigger}
             >
-              <SymbolView
-                name={{
-                  ios: active ? 'chevron.up' : 'chevron.right',
-                  android: active ? 'expand_less' : 'chevron_right',
-                  web: active ? 'expand_less' : 'chevron_right',
-                }}
-                size={17}
-                tintColor={theme.colors.textSecondary}
-              />
+              {grouped ? (
+                <AppIcon
+                  name={active ? 'chevron-up' : 'more-horizontal'}
+                  size="meta"
+                  color={theme.colors.textSecondary}
+                />
+              ) : (
+                <SymbolView
+                  name={{
+                    ios: active ? 'chevron.up' : 'chevron.right',
+                    android: active ? 'expand_less' : 'chevron_right',
+                    web: active ? 'expand_less' : 'chevron_right',
+                  }}
+                  size={17}
+                  tintColor={theme.colors.textSecondary}
+                />
+              )}
             </Pressable>
           ) : null}
         </View>
@@ -489,16 +547,21 @@ function ChecklistItemRow({
   );
 }
 
-function ChecklistCheckbox({ done }: { done: boolean }) {
+function ChecklistCheckbox({ done, round = false }: { done: boolean; round?: boolean }) {
   const theme = useAppTheme();
 
   return (
     <View
       style={[
         styles.checkbox,
+        round && { borderRadius: radii.full, width: 24, height: 24 },
         {
           backgroundColor: done ? theme.colors.primary : theme.colors.surface,
-          borderColor: done ? theme.colors.primary : theme.colors.borderStrong,
+          borderColor: done
+            ? theme.colors.primary
+            : round && !theme.isDark
+              ? '#8793A3'
+              : theme.colors.borderStrong,
         },
       ]}
     >

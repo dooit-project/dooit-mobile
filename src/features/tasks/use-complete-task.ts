@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ddayQueryKeys } from '@/features/dday/dday-query-keys';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
 import { dailyPlanQueryKeys } from '@/features/daily-plan';
@@ -38,10 +39,11 @@ export function useCompleteTask(date: LocalDateString) {
       } else {
         void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
       }
-      void queryClient.invalidateQueries({ queryKey: taskQueryKeys.categories() });
+      void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
       void queryClient.invalidateQueries({ queryKey: taskQueryKeys.checklist(completedTask.id) });
       void queryClient.invalidateQueries({ queryKey: dailyPlanQueryKeys.summary(date) });
       requestTaskNotificationSync();
+      void queryClient.invalidateQueries({ queryKey: ddayQueryKeys.all });
     },
   });
 }

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ddayQueryKeys } from '@/features/dday/dday-query-keys';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
 import { dailyPlanQueryKeys } from '@/features/daily-plan';
@@ -26,6 +27,7 @@ export function useDeleteTask() {
       void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
       void queryClient.invalidateQueries({ queryKey: dailyPlanQueryKeys.all });
       requestTaskNotificationSync();
+      void queryClient.invalidateQueries({ queryKey: ddayQueryKeys.all });
     },
   });
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Card, InlineNotice, SectionHeader } from '@/components/ui';
@@ -12,15 +12,26 @@ import { useChangeTaskDate } from './use-change-task-date';
 type TaskDateQuickActionsProps = {
   task: TaskResponse;
   grouped?: boolean;
+  showHeading?: boolean;
+  onBusyChange?: (busy: boolean) => void;
 };
 
-export function TaskDateQuickActions({ task, grouped = false }: TaskDateQuickActionsProps) {
+export function TaskDateQuickActions({
+  task,
+  grouped = false,
+  showHeading = true,
+  onBusyChange,
+}: TaskDateQuickActionsProps) {
   const { isCompact } = useMobileLayout();
   const changeTaskDate = useChangeTaskDate();
   const [feedback, setFeedback] = useState<string | null>(null);
   const today = useAppToday();
   const tomorrow = shiftLocalDate(today, 1);
   const nextWeek = shiftLocalDate(today, 7);
+  useEffect(() => {
+    onBusyChange?.(changeTaskDate.isPending);
+    return () => onBusyChange?.(false);
+  }, [changeTaskDate.isPending, onBusyChange]);
   const dateActions = [
     { label: '오늘', date: today, offset: 0 },
     { label: '내일', date: tomorrow, offset: 1 },
@@ -51,11 +62,13 @@ export function TaskDateQuickActions({ task, grouped = false }: TaskDateQuickAct
   };
 
   return (
-    <Card variant={grouped ? 'grouped' : 'outlined'} style={styles.card}>
-      <SectionHeader
-        title="날짜 빠른 변경"
-        description={`현재 ${task.plannedDate ? formatDateLabel(task.plannedDate) : '날짜 없음'}`}
-      />
+    <Card variant={grouped ? 'grouped' : 'outlined'} padded={!grouped} style={styles.card}>
+      {showHeading ? (
+        <SectionHeader
+          title="날짜 빠른 변경"
+          description={`현재 ${task.plannedDate ? formatDateLabel(task.plannedDate) : '날짜 없음'}`}
+        />
+      ) : null}
 
       <View style={styles.actions}>
         {dateActions.map((action) => {

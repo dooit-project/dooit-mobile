@@ -1,4 +1,55 @@
-# 최신 국소 Design QA — 계획 선택 목표 탭
+# 최신 UX 재검토 — 상세 패널의 예상 동작과 실제 연결
+
+2026-10-25 · Product Design audit · [새 캡처/외부 공식 비교/우선순위](./docs/audits/task-detail-external-review-2026-10-25/README.md)
+
+실제390/320의 아이콘·행/조작 영역 검사와 키보드 복귀는 통과했다. 하지만 목표 경로 목적지, 더보기의 제목164px 이동, 무변경 버리기 확인, 일정 편집 범위, 작동하지 않는 손잡이의 P2 후속이 남았다. 이번은 감사/문서만이며 코드 수정은 하지 않았다. 아래 시안 일치/명시 기능 passed는 당시 한정된 범위의 결과다.
+
+final result: blocked
+
+이는 추가 UX 보완의 판정이다. 앱 접근/캡처가 막힌 상태는 아니다. 자세한 근거는 새 감사의 단계1–7을 따른다.
+
+---
+
+# 이전 Design QA — 선택05 개인 Task 상세 패널
+
+2026-10-24 · 미커밋 working tree · 실제 Chrome 확장 Web/mock/goal-lanes
+
+- Source truth: [05](./docs/design/task-detail-options-2026-10-24/05-context-panel-aligned.png), 853×1844. 동일 내용의 [최종 실제390](./docs/audits/task-detail-panel-2026-10-24/11-final-390.jpg)은390×844다. source를390×844 CSS로 정규화한 [전체/부분 비교 보드](./docs/audits/task-detail-panel-2026-10-24/14-source-comparison.jpg)를 직접 열고 비교했다. 보드 아래는 양쪽 y145부터280px 영역이다.
+- Viewport/state: 390×844, light, 토익 목표/일정/실행일/설명/미완료 하위 항목2개. 실제320/430·긴 제목·직접 URL도 확인했다. 최종 캡처의 viewport를 실측과 대조했다.
+- Findings/fixes: P2 시작 간격/정보 행 높이/추가 색/체크 축을 초기01→02→03→최종11에서 수정·재비교했다. 기능 검사에서 초점 복귀, Chrome Back 작성 보호, 입력란 Escape 전파를 수정하고 재검사했다. [이력·실제 증거](./docs/audits/task-detail-panel-2026-10-24/README.md).
+- Fonts/layout/colors/assets/copy: 공통22/30·16/24·13/18과 역할별 아이콘,84% 패널/카드 없는 배치/블록 중앙, 기존 토큰/파란 수정·추가/원형 체크를 확인했다. 신규 raster는 없고 실제 공통 glyph/wordmark다. 본문은 동일 데이터이며 배경 문구만 기존 영어 순환 기능의 다른 문장이다.
+- Intentional/P3: 승인된 작은 실제 헤더 유지, 체크리스트 더보기로 기존 편집/순서/삭제 보존, glyph/폰트 획·수px 간격·추가44px 조작 영역의 차이. 현재 확인 범위에 남은 P0/P1/P2는 없다.
+- Interactions: 오늘/계획/달력 열기/닫기/선택/정확한 초점 복귀, Tab/Shift+Tab, 완료/취소, 하위 항목 추가/체크/취소, 수정 저장/취소/입력 보호, 날짜 이동/일정 유지, 기록/목표 목록/삭제 취소, 직접/잘못된 URL. 최종 console error0. 영구 삭제는 하지 않았다.
+- Verification: 실제 좌표6개 통과, `npm run validate` 118 suites/606 tests 통과(STG1 제외). native/글자 확대/운영 API/오류 복구·실제 알림은 미확인. Navigation API 미지원/취소 불가 Web traversal에는 추가 Back 보호가 적용되지 않는다.
+
+final result: passed
+
+판정 범위는 위 개인 Task 패널의 실제 Web 확인 조건이다.
+
+---
+
+# 이전 국소 Design QA — 개인 상세 정보·행동 정렬
+
+**2026-10-24 후속 정렬 보정:** 패널 시안의 일정/실행일 아이콘을 전체 정보 블록 중앙으로 맞춘 [05 시안](./docs/design/task-detail-options-2026-10-24/05-context-panel-aligned.png)이 최신이다. 실제 패널은 아직 구현 전이다. 재발 방지를 위해 [필수 기본 시각 검사](./docs/qa/UI_VISUAL_ACCEPTANCE.md)와 공통 개발 Web 측정 표식/`check:ui-layout`을 추가했다. [새 실제 감사](./docs/audits/ui-alignment-regression-2026-10-24/README.md)에서 Chrome 확장 연결을 복구해 오늘320/390/430·계획390의 정렬/영역을 측정하고 캡처를 직접 확인했다. native/확대/새 패널은 미확인이다.
+
+**2026-10-24 추가 재평가:** 아래 passed는 정렬·명시 동작 범위다. [상세 디자인 재검토](./docs/audits/task-detail-design-review-2026-10-24/README.md)에서 정보 순서·관리 행동 비중·완료 진입을 재설계 대상으로 남겼다. 최종 디자인 확정은 보류하며 구조 3안을 비교한 뒤 선택한다.
+
+후속으로 세 시안을 비교하고 사용자 첨부/추천 위임을 반영해 [패널 권장안과04 보정](./docs/design/task-detail-options-2026-10-24/RECOMMENDED_DIRECTION.md)을 정리했다. 새 패널은 아직 구현/실제 감사 전이며 아래 정렬 검사와 구분한다.
+
+2026-10-24 · `5e6463f` 이후 working tree · 미커밋. [범위/실제 전후/전체 흐름/한계](./docs/audits/task-detail-alignment-2026-10-24/README.md).
+
+- 원본의 흰 배경·단순 정보 위계와 승인된 상세 구성을 유지했다. 개인 상세의 grouped 내부 padding을 제거하고 x20 본문 축, 왼쪽 정보 값·공통 추가 행·왼쪽 관리 버튼을 적용했다. 공통 Button 기본 정렬과 다른 outlined 사용처는 유지한다.
+- 같은 390px 일정 상세 전후를 직접 열어 비교했다. Web 320/430 긴 제목/체크리스트, 추가·완료·취소, 기록 Enter 접기, 기존 목표 펼침/접기, 삭제/편집 취소, 날짜 내일/오늘 복귀를 확인했다. 체크리스트의 실제 Web checked/expanded 누락도 보완했다.
+- 최종 기록 버튼 x20/폭350/높이44와 expanded=false 확인. 임시 제목/체크리스트는 mock reload로 제거하고 기본 데이터·viewport에 복귀했다. 수집한 최종 tab 로그 8개 중 error0이며 기존 deprecation 경고는 남는다.
+- 기존 Chrome 탭의 debugger 연결이 끊겨 inventory/troubleshooting 후 같은 Chrome 확장에 새 로컬 탭을 열어 복구했다. IAB/Playwright 전환은 없다.
+- `npm run validate`: 116 suites / 597 tests 통과, STG 1개 제외. 영향은 Android/iOS/Web이며 native·확대1.5·dark·보조 기술·실제 서버/실패·반복/DONE/INBOX/Workspace 실사용은 미확인이다.
+- 일반 TaskCard/ScheduleCard의 제목 두 줄 제한은 다음 단위다. 새 Goal 연결·UX-14 캐시/반복 폼 개선도 완료로 처리하지 않는다.
+
+final result: passed (개인 상세 정렬, 실제 Web 확인 범위)
+
+---
+
+# 이전 국소 Design QA — 계획 선택 목표 탭
 
 2026-10-23 · `3cd3254` 이후 working tree · 미커밋. [범위/원본/실제 전후/한계](./docs/audits/goal-tab-visibility-2026-10-23/README.md).
 

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ddayQueryKeys } from '@/features/dday/dday-query-keys';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
 import type { RecurrenceEditScope, TaskResponse, TaskUpsertRequest } from '@/types';
@@ -22,6 +23,7 @@ export function useUpdateTask() {
       queryClient.setQueryData<TaskResponse>(taskQueryKeys.detail(updatedTask.id), updatedTask);
       void queryClient.invalidateQueries({ queryKey: taskQueryKeys.all });
       requestTaskNotificationSync();
+      void queryClient.invalidateQueries({ queryKey: ddayQueryKeys.all });
     },
   });
 }

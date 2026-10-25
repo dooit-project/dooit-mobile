@@ -1,6 +1,12 @@
 # UX Review
 
-Last updated: 2026-10-23
+Last updated: 2026-10-25
+
+[10월25일 상세 UX 재감사](../audits/task-detail-external-review-2026-10-25/README.md)는 새 실제 캡처와 공식 서비스 안내를 비교했다. 정렬/기하 검사는 통과하나 목표 경로의 연결 관리 진입, 더보기로 제목164px 이동, 무변경 버리기 확인, 일정 편집의 전체 폼, 작동하지 않는 손잡이가 P2다. 초기 닫기 초점 비중은 P3다. 큰 틀 유지/후속 순서는 해당 감사와 로드맵을 따른다. 이전 국소 passed를 전체 UX 승인으로 사용하지 않는다.
+
+후속으로 [선택05 패널의 개인 Task 연결·실제 Web 감사](../audits/task-detail-panel-2026-10-24/README.md)를 완료했다. 오늘/계획/달력과 직접 URL, 완료/수정/실행일/하위 항목/관리 메뉴·입력 보호·초점 복귀를 확인했다. 바로 아래 ‘패널은 생성 시안 단계’는 이 구현으로 대체한다. native/확대/운영 API와 미지원 Web traversal은 별도 한계다.
+
+반복된 정렬 지적에 따라 [패널05 보정](./task-detail-options-2026-10-24/05-context-panel-aligned.png)과 [기본 시각 검사](../qa/UI_VISUAL_ACCEPTANCE.md)를 추가했다. 상세 정보 아이콘은 라벨+값 전체 중앙, 오늘/상세 제목 체크는 제목 첫 줄 중앙이다. [실제 Web 감사](../audits/ui-alignment-regression-2026-10-24/README.md)에서 오늘320/390/430·계획390의 좌표/캡처를 확인했다. 자동 검사기는 개발 Web 한정이며 실패 수정/재측정과 광학적 확인을 매 UI 작업에 적용한다. 패널은 생성 시안 단계, native/확대는 미확인이다.
 
 현재 제품 결정과 남은 위험의 요약이다. 최신 근거는 [10월 22일 실제 Web 재감사](../audits/visual-cohesion-2026-10-22/README.md)와 [완성도 개선 기준](./VISUAL_COHESION_REVIEW_2026-10-22.md)이다. 앞선 [전체 UI/UX 감사](../audits/whole-app-2026-10-21/README.md)의 기능 과제와 [후속 작업](../product/UI_UX_BACKLOG_2026-10-21.md)도 유지한다. 구현 순서는 [로드맵](../product/ROADMAP.md) 최신 절을 따른다. 이전 문서의 Today 주간 strip·더보기 탭·완료 최근 3개 노출을 현재 구현으로 보지 않는다.
 
@@ -19,6 +25,8 @@ Last updated: 2026-10-23
 공통 버튼 보정은 `3cd3254`로 커밋했다. 이어서 [GoalTabs의 선택/노출](../audits/goal-tab-visibility-2026-10-23/README.md)을 반영했다(미커밋). 늦은 탭 측정과 좁은 표시 폭의 경계를 처리하고 aria-selected/본문 연결, Web 화살표 초점·Enter/Space 선택을 제공한다. 실제 320/390/430·생성/전체 목록/선택 복원과 597 tests 확인. native/확대/실제 서버는 미확인이다.
 
 ## 유지할 구조
+
+2026-10-24 목표 탭 보정과 긴 이름 기준은 `5e6463f`로 커밋했다. [개인 상세 정보·행동 정렬](../audits/task-detail-alignment-2026-10-24/README.md)은 내부 padding을 제거하고 공통 추가 행/버튼을 재사용했다(미커밋). Web 390 전후·320/430 긴 문구·주요 취소/체크/날짜 이동을 확인했다. 일반 TaskCard/ScheduleCard 제목의 두 줄 제한과 native/확대는 후속이며 전체 제목 정리 완료로 표현하지 않는다.
 
 계획의 첫 줄 기준이 위로 떠 보인다는 추가 지적 후 [아이콘 재보정](../audits/item-optical-alignment-2026-10-23/README.md)을 적용했다. 측정상 제목 중앙은 맞았지만 두 줄 전체 블록보다 11px 위였다. 계획 유형 그림은 제목+보조 전체 중앙, 오늘 체크는 기준 이미지의 첫 줄 중앙으로 역할을 구분한다. 앞선 계획 첫 줄 정렬 결정은 대체하며 미커밋이다.
 
