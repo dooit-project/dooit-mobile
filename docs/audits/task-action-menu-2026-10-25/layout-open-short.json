@@ -1,0 +1,119 @@
+{
+  "capturedAt": "2026-10-25T12:39:07.358Z",
+  "documentWidth": 390,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 119,
+        "y": 163.8828125
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 133,
+          "y": 175.8828125
+        }
+      ],
+      "name": "action-menu-item:0",
+      "text": {
+        "height": 20,
+        "width": 138,
+        "x": 165,
+        "y": 175.8828125
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 119,
+        "y": 207.8828125
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 133,
+          "y": 219.8828125
+        }
+      ],
+      "name": "action-menu-item:1",
+      "text": {
+        "height": 20,
+        "width": 138,
+        "x": 165,
+        "y": 219.8828125
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 119,
+        "y": 251.8828125
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 133,
+          "y": 263.8828125
+        }
+      ],
+      "name": "action-menu-item:2",
+      "text": {
+        "height": 20,
+        "width": 138,
+        "x": 165,
+        "y": 263.8828125
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 119,
+        "y": 163.8828125
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 119,
+        "y": 207.8828125
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 119,
+        "y": 251.8828125
+      },
+      "minimum": 44,
+      "name": "control:2"
+    }
+  ],
+  "viewport": {
+    "height": 568,
+    "width": 390
+  }
+}

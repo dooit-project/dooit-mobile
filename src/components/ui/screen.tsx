@@ -1,4 +1,4 @@
-import type { ComponentProps, PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren, ReactNode } from 'react';
 import type { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import { sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
 
 type ScreenProps = PropsWithChildren<{
   scroll?: boolean;
+  overlay?: ReactNode;
   contentMaxWidth?: number;
   safeAreaEdges?: ComponentProps<typeof SafeAreaView>['edges'];
   style?: StyleProp<ViewStyle>;
@@ -16,6 +17,7 @@ type ScreenProps = PropsWithChildren<{
 
 export function Screen({
   children,
+  overlay,
   scroll = false,
   contentMaxWidth = sizes.contentMaxWidth,
   safeAreaEdges,
@@ -51,6 +53,7 @@ export function Screen({
             {children}
           </View>
         </ScrollView>
+        {overlay}
       </SafeAreaView>
     );
   }
@@ -63,6 +66,7 @@ export function Screen({
       <View style={[styles.content, styles.flex, responsiveContentStyle, contentContainerStyle]}>
         {children}
       </View>
+      {overlay}
     </SafeAreaView>
   );
 }

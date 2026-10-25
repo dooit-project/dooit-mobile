@@ -1,4 +1,18 @@
-# 최신 Design QA — 상세 목표 경로의 정확한 계획 이동
+# 최신 Design QA — 상세 더보기 메뉴의 본문 위치 유지
+
+2026-10-25 · `c5a2362` 이후 미커밋 · [범위·새 실제 캡처·좌표/한계](./docs/audits/task-action-menu-2026-10-25/README.md)
+
+- Product Design의 기존 R2 권고와 정확한 선택05를 확인했다. 작은 관리 팝오버만 공통 overlay로 분리하며 패널·제목 완료 체크·일정/실행일·목표 경로의 큰 틀은 유지한다.
+- 같은390 실제 제목 위치가 기존164px 이동에서0px로 유지된다.320/390/430·390×568·직접 URL의 작은/넓은 Web 캡처를 새로 확인했다. 닫힘5행/8조작 영역, 열림 각3행/3조작 영역 기하 검사를 통과했다.
+- Escape/바깥 메뉴 backdrop은 메뉴만 닫고 더보기로 복귀한다. 두 번째 Escape는 상세를 닫고 원래 목록 항목으로 복귀한다. Arrow/Home/End·Space/Enter·Tab/Shift+Tab과 기록/연결 관리/삭제 취소를 확인했다. 선택 후 관리의 돌아가기, 삭제 취소 후 더보기 초점도 확인했다. 영구 삭제는 하지 않았다.
+- Android/iOS 코드 영향은 있으나 실제 native Back·보조 기술·확대·운영 API는 미확인이다. 위쪽 반전/긴 메뉴의 스크롤은 경계 단위 검사 범위다. R3–R6은 남아 있고 다음은 실제 dirty 판단이다.
+- `npm run validate` 전체 통과:121 suites /643 tests, opt-in STG1개 제외. 새 경계 배치/키보드 회귀6개 포함.
+
+final result: passed (R2 명시 범위의 실제 Web 감사). 새 변경은 미커밋/미푸시다.
+
+---
+
+# 이전 Design QA — 상세 목표 경로의 정확한 계획 이동
 
 2026-10-25 · R1 커밋 `81d3d5d` · [범위·새 실제 캡처·좌표/한계](./docs/audits/task-goal-navigation-2026-10-25/README.md)
 

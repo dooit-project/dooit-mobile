@@ -1,3 +1,5 @@
+export { useActionMenu } from './use-action-menu';
+export { focusControl } from './focus-control';
 export { AppText } from './app-text';
 export { uiAuditProps } from './ui-audit-props';
 export { DetailSheet, useDetailSheetTriggerTracking } from './detail-sheet';

@@ -1,0 +1,119 @@
+{
+  "capturedAt": "2026-10-25T12:39:34.569Z",
+  "documentWidth": 1920,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 1049,
+        "y": 69
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 1063,
+          "y": 81
+        }
+      ],
+      "name": "action-menu-item:0",
+      "text": {
+        "height": 20,
+        "width": 138,
+        "x": 1095,
+        "y": 81
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 1049,
+        "y": 113
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 1063,
+          "y": 125
+        }
+      ],
+      "name": "action-menu-item:1",
+      "text": {
+        "height": 20,
+        "width": 138,
+        "x": 1095,
+        "y": 125
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 1049,
+        "y": 157
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 1063,
+          "y": 169
+        }
+      ],
+      "name": "action-menu-item:2",
+      "text": {
+        "height": 20,
+        "width": 138,
+        "x": 1095,
+        "y": 169
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 1049,
+        "y": 69
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 1049,
+        "y": 113
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 198,
+        "x": 1049,
+        "y": 157
+      },
+      "minimum": 44,
+      "name": "control:2"
+    }
+  ],
+  "viewport": {
+    "height": 907,
+    "width": 1920
+  }
+}

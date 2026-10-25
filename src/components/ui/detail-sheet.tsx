@@ -37,6 +37,7 @@ export function DetailSheet({
   children,
   header,
   notice,
+  overlay,
   label,
   onClose,
   expanded = false,
@@ -45,6 +46,7 @@ export function DetailSheet({
   children: ReactNode;
   header: ReactNode;
   notice?: ReactNode;
+  overlay?: ReactNode;
   label: string;
   onClose: () => void;
   expanded?: boolean;
@@ -95,6 +97,8 @@ export function DetailSheet({
     };
     const frame = requestAnimationFrame(focusFirst);
     const onKeyDown = (event: KeyboardEvent) => {
+      // An active menu owns its first Escape and keyboard navigation.
+      if (event.defaultPrevented || dialog.querySelector('[role="menu"]')) return;
       if (event.key === 'Escape') {
         event.preventDefault();
         closeRef.current();
@@ -198,6 +202,7 @@ export function DetailSheet({
         >
           {children}
         </ScrollView>
+        {overlay}
       </View>
     </KeyboardAvoidingView>
   );

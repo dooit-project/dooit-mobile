@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { usePreventRemove, type NavigationAction } from 'expo-router/react-navigation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ComponentRef } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import {
@@ -14,6 +14,8 @@ import {
   InlineNotice,
   Screen,
   uiAuditProps,
+  useActionMenu,
+  focusControl,
 } from '@/components/ui';
 import { useDdayGoals } from '@/features/dday';
 import { TaskGoalPath } from '@/features/tasks/task-goal-path';
@@ -63,6 +65,7 @@ export default function TaskDetailScreen() {
   const [dateBusy, setDateBusy] = useState(false);
   const [editScope, setEditScope] = useState<RecurrenceEditScope>('THIS');
   const [deleteScope, setDeleteScope] = useState<RecurrenceEditScope>('THIS');
+  const managementBackRef = useRef<ComponentRef<typeof Pressable>>(null);
   const pendingAction = useRef<NavigationAction | null>(null);
   const pendingBrowserNavigation = useRef<(() => void) | null>(null);
   const busy =
@@ -74,7 +77,40 @@ export default function TaskDetailScreen() {
     checklistBusy ||
     dateBusy;
   const hasDraft = isEditing || hasChecklistDraft;
+  const actionMenu = useActionMenu({
+    open: menuOpen,
+    onOpenChange: setMenuOpen,
+    disabled: !taskQuery.data || busy || hasDraft,
+    label: '할 일 관리',
+    triggerLabel: '할 일 더보기',
+    items: [
+      {
+        key: 'history',
+        label: '기록 정보',
+        icon: 'clock',
+        onPress: () => selectManagement('history'),
+      },
+      {
+        key: 'goal',
+        label: '목표 연결 관리',
+        icon: 'link',
+        onPress: () => selectManagement('goal'),
+      },
+      {
+        key: 'delete',
+        label: '할 일 삭제',
+        icon: 'trash-2',
+        destructive: true,
+        onPress: () => selectManagement('delete'),
+      },
+    ],
+  });
+  const dismissMenu = actionMenu.dismiss;
   const requestClose = useCallback(() => {
+    if (menuOpen) {
+      dismissMenu();
+      return;
+    }
     if (busy) return;
     if (hasDraft) {
       pendingAction.current = null;
@@ -83,7 +119,7 @@ export default function TaskDetailScreen() {
       return;
     }
     getScreenBackAction(router).onPress();
-  }, [busy, hasDraft, router]);
+  }, [busy, hasDraft, router, menuOpen, dismissMenu]);
   usePreventRemove(hasDraft || (busy && !deleteTask.isSuccess), ({ data }) => {
     if (busy) return;
     pendingAction.current = data.action;
@@ -166,6 +202,7 @@ export default function TaskDetailScreen() {
   const selectManagement = (section: ManagementSection) => {
     setMenuOpen(false);
     setManagement(section);
+    requestAnimationFrame(() => focusControl(managementBackRef.current));
     if (section === 'delete') {
       setDeleteScope('THIS');
       setIsConfirmingDelete(true);
@@ -173,7 +210,11 @@ export default function TaskDetailScreen() {
   };
   const task = taskQuery.data;
   const header = (
-    <View style={panelStyles.header}>
+    <View
+      style={panelStyles.header}
+      accessibilityElementsHidden={menuOpen}
+      importantForAccessibility={menuOpen ? 'no-hide-descendants' : 'auto'}
+    >
       <TaskGoalPath task={task} disabled={!task || busy || hasDraft} />
       {!isEditing ? (
         <Button
@@ -189,17 +230,7 @@ export default function TaskDetailScreen() {
           </AppText>
         </Button>
       ) : null}
-      {!isEditing ? (
-        <IconButton
-          accessibilityLabel="할 일 더보기"
-          expanded={menuOpen}
-          disabled={!task || busy || hasChecklistDraft}
-          variant="plain"
-          onPress={() => setMenuOpen((value) => !value)}
-        >
-          <AppIcon name="more-horizontal" color={theme.colors.textSecondary} />
-        </IconButton>
-      ) : null}
+      {!isEditing ? actionMenu.trigger : null}
       <IconButton
         accessibilityLabel="할 일 상세 닫기"
         disabled={busy}
@@ -229,35 +260,11 @@ export default function TaskDetailScreen() {
     />
   ) : null;
   const content = (
-    <View style={panelStyles.content}>
-      {menuOpen ? (
-        <View accessibilityLabel="할 일 관리" style={panelStyles.menu}>
-          <Button
-            contentAlignment="start"
-            disabled={busy}
-            variant="ghost"
-            onPress={() => selectManagement('history')}
-          >
-            기록 정보
-          </Button>
-          <Button
-            disabled={busy}
-            contentAlignment="start"
-            variant="ghost"
-            onPress={() => selectManagement('goal')}
-          >
-            목표 연결 관리
-          </Button>
-          <Button
-            contentAlignment="start"
-            disabled={busy}
-            variant="ghost"
-            onPress={() => selectManagement('delete')}
-          >
-            할 일 삭제
-          </Button>
-        </View>
-      ) : null}
+    <View
+      style={panelStyles.content}
+      accessibilityElementsHidden={menuOpen}
+      importantForAccessibility={menuOpen ? 'no-hide-descendants' : 'auto'}
+    >
       {parsedTaskId === null ? (
         <InlineNotice
           title="할 일을 찾을 수 없어요"
@@ -309,6 +316,7 @@ export default function TaskDetailScreen() {
       ) : task && management ? (
         <View style={panelStyles.content}>
           <Button
+            ref={managementBackRef}
             contentAlignment="start"
             disabled={busy}
             variant="ghost"
@@ -316,6 +324,7 @@ export default function TaskDetailScreen() {
               setManagement(null);
               setIsConfirmingDelete(false);
               deleteTask.reset();
+              dismissMenu();
             }}
             leading={<AppIcon name="arrow-left" size="meta" color={theme.colors.textSecondary} />}
           >
@@ -333,6 +342,7 @@ export default function TaskDetailScreen() {
               deleteTask.reset();
               setIsConfirmingDelete(false);
               setManagement(null);
+              dismissMenu();
             }}
             onConfirmDelete={handleDelete}
             onDeleteScopeChange={setDeleteScope}
@@ -364,6 +374,7 @@ export default function TaskDetailScreen() {
     <DetailSheet
       header={header}
       notice={confirmation}
+      overlay={actionMenu.overlay}
       label="할 일 상세"
       returnFocusLabel={task?.title}
       expanded={isEditing}
@@ -372,7 +383,7 @@ export default function TaskDetailScreen() {
       {content}
     </DetailSheet>
   ) : (
-    <Screen scroll contentContainerStyle={styles.screen}>
+    <Screen scroll contentContainerStyle={styles.screen} overlay={actionMenu.overlay}>
       {header}
       {confirmation}
       {content}
@@ -990,7 +1001,6 @@ const panelStyles = StyleSheet.create({
   },
   editButton: { paddingHorizontal: spacing[2] },
   content: { gap: spacing[6] },
-  menu: { alignSelf: 'flex-end', gap: spacing[1] },
   confirmActions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[2], marginLeft: -10 },
   checkTarget: { width: sizes.touchTarget, alignItems: 'center', justifyContent: 'center' },
