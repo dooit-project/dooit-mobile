@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { AddItemRow, AppIcon, Button, InlineNotice, ItemCopy, ItemLeading } from '@/components/ui';
+import {
+  AddItemRow,
+  AppIcon,
+  Button,
+  InlineNotice,
+  ItemCopy,
+  ItemLeading,
+  uiAuditProps,
+} from '@/components/ui';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { spacing, useAppTheme } from '@/theme';
 import type { GoalResponse, GoalPlanResponse } from '@/types';
@@ -119,12 +127,17 @@ export function GoalPlanList({
           </>
         );
         return readonly || plan.status === 'ARCHIVED' ? (
-          <View key={plan.id} style={styles.row}>
+          <View
+            key={plan.id}
+            {...uiAuditProps({ uiRow: 'plan-definition', uiAlign: 'text-block' })}
+            style={styles.row}
+          >
             {row}
           </View>
         ) : (
           <Pressable
             key={plan.id}
+            {...uiAuditProps({ uiRow: 'plan-definition', uiAlign: 'text-block' })}
             accessibilityRole="button"
             accessibilityLabel={`${plan.name}, ${days}, 수정`}
             disabled={disabled}

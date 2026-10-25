@@ -10,6 +10,7 @@ import {
   InlineNotice,
   ItemCopy,
   ItemLeading,
+  uiAuditProps,
 } from '@/components/ui';
 import { spacing, useAppTheme } from '@/theme';
 import { formatDateLabel, toApiLocalDate } from '@/utils';
@@ -197,6 +198,7 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
           return (
             <Pressable
               key={item.key}
+              {...uiAuditProps({ uiRow: 'plan-item', uiAlign: 'text-block' })}
               accessibilityRole="button"
               accessibilityLabel={`${item.task.title}${subtitle ? ', ' + subtitle : ''}, 상세 보기`}
               accessibilityHint={

@@ -61,6 +61,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "docs:check": "node scripts/check-doc-links.js && node scripts/check-screenshot-freshness.js",
+    "check:ui-layout": "node scripts/check-ui-layout.js",
     "check:release-static": "npm run check:release-assets && npm run check:android-apk && npm run check:web-route-fallback && npm run check:quick-capture-widget",
     "check:release-assets": "node scripts/check-release-assets-config.js",
     "check:android-apk": "node scripts/check-android-apk-config.js",

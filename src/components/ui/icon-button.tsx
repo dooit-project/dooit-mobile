@@ -3,6 +3,7 @@ import type { PressableProps, ViewStyle } from 'react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { radii, sizes, useAppTheme } from '@/theme';
+import { uiAuditProps } from './ui-audit-props';
 
 type IconButtonProps = Omit<PressableProps, 'accessibilityLabel' | 'children' | 'style'> & {
   accessibilityLabel: string;
@@ -36,6 +37,7 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
     return (
       <Pressable
         {...props}
+        {...uiAuditProps({ uiTouch: '44' })}
         ref={ref}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"

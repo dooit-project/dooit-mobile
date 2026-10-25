@@ -12,6 +12,7 @@ import {
   InlineNotice,
   ItemCopy,
   ListSkeleton,
+  uiAuditProps,
 } from '@/components/ui';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from '@/features/dday';
 import { getRecurrenceLabel, useCompleteTask, useReopenTask } from '@/features/tasks';
@@ -215,13 +216,14 @@ function TodayItemRow({
           .join(' · ');
 
   return (
-    <View style={styles.itemRow}>
+    <View {...uiAuditProps({ uiRow: 'today-item', uiAlign: 'title-line' })} style={styles.itemRow}>
       <Pressable
         accessibilityHint={
           done ? '완료를 취소하고 오늘 목록으로 되돌립니다.' : '이 항목을 완료합니다.'
         }
         accessibilityLabel={`${task.title} ${done ? '완료 취소' : '완료하기'}`}
         accessibilityRole="checkbox"
+        {...uiAuditProps({ uiIcon: 'control', uiTouch: '44' })}
         accessibilityState={{ checked: done, busy: isCompleting, disabled: completionDisabled }}
         aria-checked={done}
         disabled={completionDisabled}

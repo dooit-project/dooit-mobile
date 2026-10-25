@@ -5,20 +5,26 @@ import { spacing, useAppTheme } from '@/theme';
 
 import { AppText } from './app-text';
 import { AppIcon } from './app-icon';
+import { uiAuditProps } from './ui-audit-props';
 
 export function AddItemRow({
   children,
   disabled,
   onPress,
+  compact = false,
+  tone = 'secondary',
 }: {
   children: string;
   disabled?: boolean;
   onPress: () => void;
+  compact?: boolean;
+  tone?: 'primary' | 'secondary';
 }) {
   const theme = useAppTheme();
   const [focused, setFocused] = useState(false);
   return (
     <Pressable
+      {...uiAuditProps({ uiRow: 'add-item', uiAlign: 'text-block', uiTouch: '44' })}
       accessibilityRole="button"
       accessibilityLabel={children}
       accessibilityState={{ disabled: Boolean(disabled) }}
@@ -28,6 +34,7 @@ export function AddItemRow({
       onBlur={() => setFocused(false)}
       style={({ pressed }) => [
         styles.row,
+        compact && styles.compact,
         {
           backgroundColor: pressed ? theme.colors.primarySoft : 'transparent',
           borderColor: focused ? theme.colors.primary : 'transparent',
@@ -35,8 +42,17 @@ export function AddItemRow({
         },
       ]}
     >
-      <AppIcon name="plus" size="list" color={theme.colors.textSecondary} />
-      <AppText tone="secondary" weight="semibold" style={styles.label}>
+      <AppIcon
+        name="plus"
+        size="list"
+        color={tone === 'primary' ? theme.colors.primary : theme.colors.textSecondary}
+      />
+      <AppText
+        {...uiAuditProps({ uiText: 'block' })}
+        tone={tone}
+        weight="semibold"
+        style={styles.label}
+      >
         {children}
       </AppText>
     </Pressable>
@@ -54,4 +70,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   label: { flexShrink: 1 },
+  compact: { minHeight: 44, paddingVertical: spacing[2], paddingHorizontal: 0 },
 });

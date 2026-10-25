@@ -2,6 +2,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 
 import { sizes } from '@/theme';
+import { uiAuditProps } from './ui-audit-props';
 
 export type AppIconName = ComponentProps<typeof Feather>['name'] | 'idea';
 type AppIconSize = 'navigation' | 'list' | 'action' | 'menu' | 'meta';
@@ -25,6 +26,7 @@ export function AppIcon({
   size?: AppIconSize;
 }) {
   const decorativeProps = {
+    ...uiAuditProps({ uiIcon: 'glyph' }),
     allowFontScaling: false,
     accessible: false,
     accessibilityElementsHidden: true,

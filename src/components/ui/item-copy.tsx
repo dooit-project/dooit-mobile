@@ -5,12 +5,16 @@ import { StyleSheet, View } from 'react-native';
 import { sizes, spacing, typography, useMobileLayout } from '@/theme';
 
 import { AppText } from './app-text';
+import { uiAuditProps } from './ui-audit-props';
 
 /** Stable decorative icon slot; the owning row aligns it with its text block. */
 export function ItemLeading({ children }: { children: ReactNode }) {
   const { fontScale } = useMobileLayout();
   return (
-    <View style={[styles.leading, { height: typography.lineHeight.bodyLarge * fontScale }]}>
+    <View
+      {...uiAuditProps({ uiIcon: 'slot' })}
+      style={[styles.leading, { height: typography.lineHeight.bodyLarge * fontScale }]}
+    >
       {children}
     </View>
   );
@@ -33,8 +37,9 @@ export function ItemCopy({
   style?: StyleProp<ViewStyle>;
 }) {
   return (
-    <View style={[styles.copy, style]}>
+    <View {...uiAuditProps({ uiText: 'block' })} style={[styles.copy, style]}>
       <AppText
+        {...uiAuditProps({ uiText: 'title' })}
         numberOfLines={numberOfLines}
         variant="bodyLarge"
         tone={completed ? 'muted' : 'default'}
@@ -43,9 +48,13 @@ export function ItemCopy({
         {title}
       </AppText>
       {metadata ? (
-        <View style={styles.metadata}>
+        <View
+          {...(metadataLeading ? uiAuditProps({ uiRow: 'metadata', uiAlign: 'text-block' }) : {})}
+          style={styles.metadata}
+        >
           {metadataLeading}
           <AppText
+            {...uiAuditProps({ uiText: 'block' })}
             numberOfLines={numberOfLines}
             tone="secondary"
             variant="caption"

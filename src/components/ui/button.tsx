@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { radii, sizes, spacing, useAppTheme } from '@/theme';
 
 import { AppText } from './app-text';
+import { uiAuditProps } from './ui-audit-props';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'compact' | 'medium' | 'large';
@@ -17,6 +18,7 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   fullWidth?: boolean;
   leading?: ReactNode;
   labelVariant?: 'bodyLarge' | 'body' | 'label';
+  contentAlignment?: 'center' | 'start';
   style?: ViewStyle;
 };
 
@@ -29,6 +31,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
     fullWidth = false,
     leading,
     labelVariant,
+    contentAlignment = 'center',
     disabled,
     accessibilityLabel,
     accessibilityState,
@@ -74,6 +77,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
   return (
     <Pressable
       {...props}
+      {...uiAuditProps({ uiTouch: '44' })}
       ref={ref}
       accessibilityRole="button"
       accessibilityLabel={
@@ -92,6 +96,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
       style={({ pressed }) => [
         styles.base,
         size === 'large' ? styles.large : size === 'compact' ? styles.compact : styles.medium,
+        contentAlignment === 'start' && styles.start,
         {
           backgroundColor: pressed ? selected.pressedColor : selected.backgroundColor,
           borderColor: isFocused ? theme.colors.text : selected.borderColor,
@@ -101,12 +106,24 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
         style,
       ]}
     >
-      <View style={[styles.content, loading && styles.hiddenContent]}>
+      <View
+        {...(leading ? uiAuditProps({ uiRow: 'button', uiAlign: 'text-block' }) : {})}
+        style={[
+          styles.content,
+          contentAlignment === 'start' && styles.startContent,
+          loading && styles.hiddenContent,
+        ]}
+      >
         {leading}
         <AppText
+          {...uiAuditProps({ uiText: 'block' })}
           variant={resolvedLabelVariant}
           weight="semibold"
-          style={[styles.label, { color: selected.textColor }]}
+          style={[
+            styles.label,
+            contentAlignment === 'start' && styles.startLabel,
+            { color: selected.textColor },
+          ]}
         >
           {children}
         </AppText>
@@ -154,6 +171,9 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   hiddenContent: { opacity: 0 },
+  start: { alignItems: 'flex-start' },
+  startContent: { justifyContent: 'flex-start' },
+  startLabel: { textAlign: 'left' },
   loadingOverlay: {
     position: 'absolute',
     top: 0,

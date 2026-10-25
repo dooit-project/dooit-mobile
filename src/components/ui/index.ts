@@ -1,4 +1,6 @@
 export { AppText } from './app-text';
+export { uiAuditProps } from './ui-audit-props';
+export { DetailSheet, useDetailSheetTriggerTracking } from './detail-sheet';
 export { AppIcon, type AppIconName } from './app-icon';
 export { AddItemRow } from './add-item-row';
 export { Button } from './button';
