@@ -21,6 +21,7 @@ import {
 import { useDdayGoals } from '@/features/dday';
 import { TaskGoalPath } from '@/features/tasks/task-goal-path';
 import { useTaskUnloadProtection } from '@/features/tasks/use-task-unload-protection';
+import { useTaskFormSettingsNavigation } from '@/features/tasks/use-task-form-settings-navigation';
 import { useAppToday } from '@/services/time/use-app-today';
 import {
   TaskDateQuickActions,
@@ -58,6 +59,8 @@ export default function TaskDetailScreen() {
   const reopenTask = useReopenTask(today);
   const [isPanel] = useState(() => router.canGoBack());
   const [isEditing, setIsEditing] = useState(false);
+  const { formRef, scrollRef, settingsOpen, onScroll, onSettingsChange, closeSettings } =
+    useTaskFormSettingsNavigation();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isConfirmingClose, setIsConfirmingClose] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -120,6 +123,7 @@ export default function TaskDetailScreen() {
   });
   const dismissMenu = actionMenu.dismiss;
   const requestClose = useCallback(() => {
+    if (closeSettings()) return;
     if (menuOpen) {
       dismissMenu();
       return;
@@ -137,8 +141,9 @@ export default function TaskDetailScreen() {
       return;
     }
     getScreenBackAction(router).onPress();
-  }, [busy, hasDraft, router, menuOpen, dismissMenu, isConfirmingClose]);
-  usePreventRemove(hasDraft || (busy && !deleteTask.isSuccess), ({ data }) => {
+  }, [busy, hasDraft, router, menuOpen, dismissMenu, isConfirmingClose, closeSettings]);
+  usePreventRemove(settingsOpen || hasDraft || (busy && !deleteTask.isSuccess), ({ data }) => {
+    if (closeSettings()) return;
     if (busy) return;
     if (isConfirmingClose) {
       setIsConfirmingClose(false);
@@ -160,9 +165,11 @@ export default function TaskDetailScreen() {
     const browserNavigation = (window as unknown as { navigation?: BrowserNavigation }).navigation;
     if (!browserNavigation) return;
     const protectTraversal = (event: Event) => {
+      if (event.defaultPrevented) return;
       const traversal = event as BrowserTraverseEvent;
       if (traversal.navigationType !== 'traverse' || !traversal.cancelable) return;
       traversal.preventDefault();
+      if (closeSettings()) return;
       if (busy) return;
       if (isConfirmingClose) {
         setIsConfirmingClose(false);
@@ -176,7 +183,7 @@ export default function TaskDetailScreen() {
     };
     browserNavigation.addEventListener('navigate', protectTraversal);
     return () => browserNavigation.removeEventListener('navigate', protectTraversal);
-  }, [hasDraft, busy, isConfirmingClose]);
+  }, [hasDraft, busy, isConfirmingClose, closeSettings]);
   const stopEditing = (restoreFocus = true) => {
     setIsEditing(false);
     setHasFormDraft(false);
@@ -269,7 +276,7 @@ export default function TaskDetailScreen() {
       ) : null}
       {!isEditing ? actionMenu.trigger : null}
       <IconButton
-        accessibilityLabel="할 일 상세 닫기"
+        accessibilityLabel={settingsOpen ? '현재 설정 닫기' : '할 일 상세 닫기'}
         disabled={busy}
         variant="plain"
         onPress={requestClose}
@@ -319,10 +326,12 @@ export default function TaskDetailScreen() {
         />
       ) : task && isEditing ? (
         <View style={styles.editing}>
-          <AppText accessibilityRole="header" variant="title" weight="semibold">
-            할 일 수정
-          </AppText>
-          {isRecurringTask(task) ? (
+          {!settingsOpen ? (
+            <AppText accessibilityRole="header" variant="title" weight="semibold">
+              할 일 수정
+            </AppText>
+          ) : null}
+          {isRecurringTask(task) && !settingsOpen ? (
             <RecurrenceScopePicker
               title="반복 수정 범위"
               description="어느 반복 항목까지 수정할지 먼저 선택해 주세요."
@@ -331,6 +340,8 @@ export default function TaskDetailScreen() {
             />
           ) : null}
           <TaskForm
+            ref={formRef}
+            onSettingsChange={onSettingsChange}
             initialTask={task}
             autoFocusTitle
             errorMessage={updateTask.error?.message}
@@ -402,6 +413,8 @@ export default function TaskDetailScreen() {
     <>
       {isPanel ? (
         <DetailSheet
+          scrollRef={scrollRef}
+          onScroll={onScroll}
           header={header}
           modalActive={confirmationOpen}
           overlay={actionMenu.overlay}
@@ -413,7 +426,13 @@ export default function TaskDetailScreen() {
           {content}
         </DetailSheet>
       ) : (
-        <Screen scroll contentContainerStyle={styles.screen} overlay={actionMenu.overlay}>
+        <Screen
+          scroll
+          scrollRef={scrollRef}
+          scrollViewProps={{ onScroll: onScroll, scrollEventThrottle: 16 }}
+          contentContainerStyle={styles.screen}
+          overlay={actionMenu.overlay}
+        >
           {header}
           {content}
         </Screen>

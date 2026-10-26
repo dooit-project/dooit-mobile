@@ -1,0 +1,237 @@
+{
+  "capturedAt": "2026-10-26T12:31:39.598Z",
+  "documentWidth": 430,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 342,
+        "x": 20,
+        "y": 57.28125
+      },
+      "icons": [
+        {
+          "height": 10,
+          "width": 10,
+          "x": 20,
+          "y": 74.28125
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 140.2265625,
+          "y": 71.28125
+        }
+      ],
+      "name": "task-goal-path:0",
+      "text": {
+        "height": 20,
+        "width": 94.2265625,
+        "x": 38,
+        "y": 69.28125
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 56,
+        "width": 382,
+        "x": 24,
+        "y": 562.28125
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 578.28125
+        },
+        {
+          "height": 20,
+          "width": 20,
+          "x": 386,
+          "y": 580.28125
+        }
+      ],
+      "name": "task-form-property:1",
+      "text": {
+        "height": 24,
+        "width": 314,
+        "x": 60,
+        "y": 578.28125
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 56,
+        "width": 382,
+        "x": 24,
+        "y": 619.28125
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 635.28125
+        },
+        {
+          "height": 20,
+          "width": 20,
+          "x": 386,
+          "y": 637.28125
+        }
+      ],
+      "name": "task-form-property:2",
+      "text": {
+        "height": 24,
+        "width": 314,
+        "x": 60,
+        "y": 635.28125
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 342,
+        "x": 20,
+        "y": 57.28125
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 366,
+        "y": 57.28125
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 382,
+        "x": 24,
+        "y": 191.28125
+      },
+      "minimum": 44,
+      "name": "control:2"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 122,
+        "x": 28,
+        "y": 279.28125
+      },
+      "minimum": 44,
+      "name": "control:3"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 122,
+        "x": 154,
+        "y": 279.28125
+      },
+      "minimum": 44,
+      "name": "control:4"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 122,
+        "x": 280,
+        "y": 279.28125
+      },
+      "minimum": 44,
+      "name": "control:5"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 382,
+        "x": 24,
+        "y": 367.28125
+      },
+      "minimum": 44,
+      "name": "control:6"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 187,
+        "x": 24,
+        "y": 505.28125
+      },
+      "minimum": 44,
+      "name": "control:7"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 187,
+        "x": 219,
+        "y": 505.28125
+      },
+      "minimum": 44,
+      "name": "control:8"
+    },
+    {
+      "bounds": {
+        "height": 56,
+        "width": 382,
+        "x": 24,
+        "y": 562.28125
+      },
+      "minimum": 44,
+      "name": "control:9"
+    },
+    {
+      "bounds": {
+        "height": 56,
+        "width": 382,
+        "x": 24,
+        "y": 619.28125
+      },
+      "minimum": 44,
+      "name": "control:10"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 390,
+        "x": 20,
+        "y": 748.28125
+      },
+      "minimum": 44,
+      "name": "control:11"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 390,
+        "x": 20,
+        "y": 796.28125
+      },
+      "minimum": 44,
+      "name": "control:12"
+    }
+  ],
+  "viewport": {
+    "height": 932,
+    "width": 430
+  }
+}

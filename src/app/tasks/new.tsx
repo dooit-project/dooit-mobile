@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
+import { usePreventRemove } from 'expo-router/react-navigation';
 import { useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
@@ -17,6 +18,7 @@ import {
 import { TaskForm, useCreateTask, useTaskDdayGoal } from '@/features/tasks';
 import { leaveNewTaskScreen } from '@/features/tasks/new-task-navigation';
 import { isQuickCaptureEntry } from '@/features/tasks/quick-capture-entry';
+import { useTaskFormSettingsNavigation } from '@/features/tasks/use-task-form-settings-navigation';
 import {
   initializeAppPreferences,
   markNotificationPermissionPrompted,
@@ -27,6 +29,11 @@ import { isLocalDateString } from '@/utils';
 
 export default function NewTaskScreen() {
   const router = useRouter();
+  const { formRef, scrollRef, settingsOpen, onScroll, onSettingsChange, closeSettings } =
+    useTaskFormSettingsNavigation();
+  usePreventRemove(settingsOpen, () => {
+    closeSettings();
+  });
   const params = useLocalSearchParams<{
     date?: string;
     quickCapture?: string;
@@ -56,7 +63,9 @@ export default function NewTaskScreen() {
       ? params.type
       : undefined;
   const autoFocusTitle = isQuickCaptureEntry(params.quickCapture);
-  const leaveScreen = () => leaveNewTaskScreen(router);
+  const leaveScreen = () => {
+    if (!closeSettings()) leaveNewTaskScreen(router);
+  };
 
   const openTask = (task: TaskResponse) => {
     router.replace({ pathname: '/tasks/[taskId]', params: { taskId: String(task.id) } });
@@ -113,31 +122,38 @@ export default function NewTaskScreen() {
   };
 
   return (
-    <Screen scroll contentContainerStyle={styles.screen}>
-      <PageHeader
-        title={
-          hasGoalContext
-            ? '항목 추가'
-            : initialType === 'SCHEDULE'
-              ? '새 일정'
-              : initialType === 'IDEA'
-                ? '새 아이디어'
-                : '새 할 일'
-        }
-        leading={
-          <IconButton
-            accessibilityLabel="이전 화면으로 돌아가기"
-            onPress={leaveScreen}
-            style={styles.headerButton}
-          >
-            <SymbolView
-              name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
-              size={20}
-              tintColor={theme.colors.text}
-            />
-          </IconButton>
-        }
-      />
+    <Screen
+      scroll
+      scrollRef={scrollRef}
+      scrollViewProps={{ onScroll: onScroll, scrollEventThrottle: 16 }}
+      contentContainerStyle={styles.screen}
+    >
+      {!settingsOpen ? (
+        <PageHeader
+          title={
+            hasGoalContext
+              ? '항목 추가'
+              : initialType === 'SCHEDULE'
+                ? '새 일정'
+                : initialType === 'IDEA'
+                  ? '새 아이디어'
+                  : '새 할 일'
+          }
+          leading={
+            <IconButton
+              accessibilityLabel="이전 화면으로 돌아가기"
+              onPress={leaveScreen}
+              style={styles.headerButton}
+            >
+              <SymbolView
+                name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
+                size={20}
+                tintColor={theme.colors.text}
+              />
+            </IconButton>
+          }
+        />
+      ) : null}
 
       {hasGoalContext && goalId === null ? (
         <InlineNotice
@@ -188,6 +204,8 @@ export default function NewTaskScreen() {
             <AppText tone="secondary">“{goalQuery.data.title}”에 연결할 항목이에요.</AppText>
           ) : null}
           <TaskForm
+            ref={formRef}
+            onSettingsChange={onSettingsChange}
             autoFocusTitle={autoFocusTitle}
             errorMessage={createTask.error?.message}
             initialDate={initialDate}

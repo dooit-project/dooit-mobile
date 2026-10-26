@@ -1,0 +1,224 @@
+{
+  "documentWidth": 390,
+  "focus": "직접 설정 선택",
+  "groups": [
+    {
+      "bounds": {
+        "height": 52,
+        "width": 327,
+        "x": 24,
+        "y": 36.765625
+      },
+      "controls": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 103.6640625,
+            "x": 28,
+            "y": 40.765625
+          },
+          "checked": "false",
+          "label": "할 일 유형 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "rgb(203, 213, 225)",
+          "bounds": {
+            "height": 44,
+            "width": 103.671875,
+            "x": 135.6640625,
+            "y": 40.765625
+          },
+          "checked": "true",
+          "label": "일정 유형 선택",
+          "tabIndex": "0"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 103.6640625,
+            "x": 243.3359375,
+            "y": 40.765625
+          },
+          "checked": "false",
+          "label": "아이디어 유형 선택",
+          "tabIndex": "-1"
+        }
+      ],
+      "name": "유형"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 327,
+        "x": 24,
+        "y": 360.765625
+      },
+      "controls": [
+        {
+          "background": "rgb(248, 250, 252)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 70.125,
+            "x": 24,
+            "y": 360.765625
+          },
+          "checked": "false",
+          "label": "알림 끄기 알림 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(239, 246, 255)",
+          "border": "rgb(23, 105, 224)",
+          "bounds": {
+            "height": 44,
+            "width": 94.890625,
+            "x": 102.125,
+            "y": 360.765625
+          },
+          "checked": "true",
+          "label": "당일 오전 9시 알림 선택",
+          "tabIndex": "0"
+        }
+      ],
+      "name": "알림"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 327,
+        "x": 24,
+        "y": 448.765625
+      },
+      "controls": [
+        {
+          "background": "rgb(248, 250, 252)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 70.125,
+            "x": 24,
+            "y": 448.765625
+          },
+          "checked": "false",
+          "label": "반복 없음 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(248, 250, 252)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 44,
+            "x": 102.125,
+            "y": 448.765625
+          },
+          "checked": "false",
+          "label": "매일 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(248, 250, 252)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 44,
+            "x": 154.125,
+            "y": 448.765625
+          },
+          "checked": "false",
+          "label": "매주 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(248, 250, 252)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 44,
+            "x": 206.125,
+            "y": 448.765625
+          },
+          "checked": "false",
+          "label": "매월 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(239, 246, 255)",
+          "border": "rgb(23, 105, 224)",
+          "bounds": {
+            "height": 44,
+            "width": 70.015625,
+            "x": 258.125,
+            "y": 448.765625
+          },
+          "checked": "true",
+          "label": "직접 설정 선택",
+          "tabIndex": "0"
+        }
+      ],
+      "name": "반복"
+    },
+    {
+      "bounds": {
+        "height": 52,
+        "width": 327,
+        "x": 24,
+        "y": 500.765625
+      },
+      "controls": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 103.6640625,
+            "x": 28,
+            "y": 504.765625
+          },
+          "checked": "false",
+          "label": "일 단위 반복 선택",
+          "tabIndex": "-1"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "rgb(203, 213, 225)",
+          "bounds": {
+            "height": 44,
+            "width": 103.671875,
+            "x": 135.6640625,
+            "y": 504.765625
+          },
+          "checked": "true",
+          "label": "주 단위 반복 선택",
+          "tabIndex": "0"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(0, 0, 0, 0)",
+          "bounds": {
+            "height": 44,
+            "width": 103.6640625,
+            "x": 243.3359375,
+            "y": 504.765625
+          },
+          "checked": "false",
+          "label": "개월 단위 반복 선택",
+          "tabIndex": "-1"
+        }
+      ],
+      "name": "반복 단위"
+    }
+  ],
+  "scroll": [239],
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

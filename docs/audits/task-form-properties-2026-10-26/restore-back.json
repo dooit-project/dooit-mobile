@@ -1,0 +1,14 @@
+{
+  "before": {
+    "description": "접수 일정과 준비물 확인",
+    "scroll": [173],
+    "title": "토익 시험 접수 준비"
+  },
+  "after": {
+    "active": "반복, 반복 없음, 변경",
+    "description": "접수 일정과 준비물 확인",
+    "dialogs": 0,
+    "scroll": [173],
+    "title": "토익 시험 접수 준비"
+  }
+}

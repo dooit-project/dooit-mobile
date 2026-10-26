@@ -1,4 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, type ComponentRef, type ReactNode } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type ComponentRef,
+  type ReactNode,
+  type Ref,
+} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -6,6 +13,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  type ScrollViewProps,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -43,6 +51,8 @@ export function DetailSheet({
   expanded = false,
   returnFocusLabel,
   modalActive = false,
+  scrollRef,
+  onScroll,
 }: {
   children: ReactNode;
   header: ReactNode;
@@ -53,6 +63,8 @@ export function DetailSheet({
   expanded?: boolean;
   returnFocusLabel?: string;
   modalActive?: boolean;
+  scrollRef?: Ref<ScrollView>;
+  onScroll?: ScrollViewProps['onScroll'];
 }) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -197,6 +209,9 @@ export function DetailSheet({
           <View style={{ paddingHorizontal: screenPadding, paddingTop: spacing[2] }}>{notice}</View>
         ) : null}
         <ScrollView
+          ref={scrollRef}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
           automaticallyAdjustKeyboardInsets
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"

@@ -34,6 +34,8 @@
 
 ## 고정할 큰 틀
 
+Task 작성·편집의 알림·반복은 사용자가2026-10-26 비교 후 선택한 [속성 행 원본01](./task-form-density-2026-10-26/01-property-rows.png)과 [선택 범위](./task-form-density-2026-10-26/README.md)를 따른다. 기본 입력 아래 두 현재 값 행을 보이고 필요한 속성만 편집한다. 설명·예상 시간·카테고리는 별도 추가 정보다. 이전15개 inline 선택/ChoiceChips 표현 보정은 최종 기준이 아니다. [구현/실제 감사](../audits/task-form-properties-2026-10-26/README.md)에서 실제 환경·검증 한계를 확인한다. 기존 유형3분할·패널/중앙 버리기 확인·저장 계약을 유지하며 생성 이미지의 임의 경계/gradient를 전역 적용하지 않는다.
+
 개인 할 일 상세의 최신 권장 기준은 [목록 위 상세 패널 정리](./task-detail-options-2026-10-24/RECOMMENDED_DIRECTION.md)와 [05 정렬 보정 이미지](./task-detail-options-2026-10-24/05-context-panel-aligned.png)다. 사용자가 첨부한 원본은 같은 폴더의03 패널이며, 이전 별도 페이지 추천/큰 원을 그대로 재사용하지 않는다. 05는04의 아이콘/정보 행 정렬을 보정한 버전이며 새 구조 선택안이 아니다. [개인 Task 패널 연결과 실제 Web 감사](../audits/task-detail-panel-2026-10-24/README.md)를 진행했다. 직접 URL은 같은 내용의 일반 상세다. native/확대/운영 API/미지원 Web traversal은 감사의 한계로 남긴다. 기본 탭/오늘 시안은 유지한다.
 
 - 흰 배경, 목표색 레일과 마커, 간단한 원형 체크. Today 항목별 카드·가로 구분선을 다시 만들지 않는다.

@@ -1,7 +1,22 @@
-import { useState } from 'react';
+import {
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentRef,
+  type Ref,
+} from 'react';
 import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
-import { AppText, Button, Card, InlineNotice, SegmentedControl, TextField } from '@/components/ui';
+import {
+  AppText,
+  Button,
+  Card,
+  InlineNotice,
+  SegmentedControl,
+  TextField,
+  focusControl,
+} from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 import type {
   LocalDateString,
@@ -17,8 +32,6 @@ import {
   buildTaskRecurrenceRequest,
   getInitialRecurrenceValues,
   isValidRecurrenceInterval,
-  recurrenceFrequencyOptions,
-  recurrenceModeOptions,
   type RecurrenceMode,
 } from './task-form-recurrence';
 import { normalizeScheduleFormInput } from './task-form-schedule';
@@ -30,6 +43,12 @@ import {
 } from './task-notification-timing';
 import { parseEstimatedDurationMinutes } from './task-duration';
 import { useTaskDraftChange } from './use-task-draft-change';
+import { TaskFormPropertyRow } from './task-form-property-row';
+import {
+  TaskFormSettings,
+  getRecurrenceFormLabel,
+  type TaskFormSetting,
+} from './task-form-settings';
 
 type TaskFormValues = {
   title: string;
@@ -47,7 +66,11 @@ type TaskFormValues = {
   notificationTiming: TaskNotificationTiming;
 };
 
+export type TaskFormHandle = { closeSettings: () => boolean };
+
 type TaskFormProps = {
+  ref?: Ref<TaskFormHandle>;
+  onSettingsChange?: (open: boolean) => void;
   autoFocusTitle?: boolean;
   initialTask?: TaskResponse;
   initialDate?: LocalDateString;
@@ -73,6 +96,8 @@ const titlePlaceholders: Record<TaskType, string> = {
 };
 
 export function TaskForm({
+  ref,
+  onSettingsChange,
   autoFocusTitle = false,
   initialTask,
   initialDate,
@@ -116,19 +141,44 @@ export function TaskForm({
   const dirty = (Object.keys(initialValues) as (keyof TaskFormValues)[]).some(
     (key) => values[key] !== initialValues[key],
   );
-  useTaskDraftChange(dirty, onDraftChange);
+  const [setting, setSetting] = useState<TaskFormSetting | null>(null);
+  const [hasSettingsDraft, setHasSettingsDraft] = useState(false);
+  const settingsCloseRef = useRef<(() => void) | null>(null);
+  const notificationRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const recurrenceRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const returnFocusRef = useRef<ComponentRef<typeof Pressable> | null>(null);
+  useLayoutEffect(() => {
+    if (setting || !returnFocusRef.current) return;
+    const frame = requestAnimationFrame(() => {
+      focusControl(returnFocusRef.current, { preventScroll: true });
+      returnFocusRef.current = null;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [setting]);
+  useTaskDraftChange(dirty || hasSettingsDraft, onDraftChange);
+  useImperativeHandle(ref, () => ({
+    closeSettings: () => {
+      if (!setting) return false;
+      settingsCloseRef.current?.();
+      return true;
+    },
+  }));
+  const openSetting = (value: TaskFormSetting) => {
+    setSetting(value);
+    onSettingsChange?.(true);
+  };
+  const closeSetting = () => {
+    const control = setting === 'notification' ? notificationRef : recurrenceRef;
+    returnFocusRef.current = control.current;
+    setSetting(null);
+    setHasSettingsDraft(false);
+    onSettingsChange?.(false);
+  };
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
-  const [focusedRecurrenceMode, setFocusedRecurrenceMode] = useState<string | null>(null);
-  const [focusedRecurrenceFrequency, setFocusedRecurrenceFrequency] = useState<string | null>(null);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(
     initialTask
       ? Boolean(
-          initialTask.description ||
-          initialTask.category ||
-          initialTask.estimatedDurationMinutes ||
-          initialTask.notificationEnabled === false ||
-          initialTask.notifyAt ||
-          initialTask.recurrence,
+          initialTask.description || initialTask.category || initialTask.estimatedDurationMinutes,
         )
       : false,
   );
@@ -137,11 +187,17 @@ export function TaskForm({
   const hasEstimatedDurationValidationError = validationMessage?.startsWith('예상 시간은');
   const canSubmit = titleLength > 0 && !isSubmitting;
   const isSchedule = values.type === 'SCHEDULE';
-  const detailsToggleLabel = isDetailsExpanded
-    ? '추가 정보 접기'
-    : isSchedule
-      ? '알림·반복·추가 정보 보기'
-      : '설명·예상 시간·카테고리 추가';
+  const detailsToggleLabel = isDetailsExpanded ? '추가 정보 접기' : '설명·추가 정보 보기';
+  const notificationLabel =
+    values.allDay && values.notificationTiming === 'AT_START'
+      ? '당일 오전 9시'
+      : taskNotificationTimingOptions.find((option) => option.value === values.notificationTiming)!
+          .label;
+  const recurrenceValues = {
+    mode: values.recurrenceMode,
+    customFrequency: values.recurrenceFrequency,
+    customInterval: values.recurrenceInterval,
+  };
 
   const updateField = <Key extends keyof TaskFormValues>(key: Key, value: TaskFormValues[Key]) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -223,458 +279,342 @@ export function TaskForm({
   };
 
   return (
-    <View style={styles.container}>
-      <Card variant="sheet" style={styles.formCard}>
-        <View style={styles.field}>
-          <View style={styles.labelRow}>
+    <>
+      {setting ? (
+        <TaskFormSettings
+          setting={setting}
+          allDay={values.allDay}
+          notificationTiming={values.notificationTiming}
+          recurrence={recurrenceValues}
+          closeRef={settingsCloseRef}
+          onDraftChange={setHasSettingsDraft}
+          onBack={closeSetting}
+          onNotificationChange={(timing) => {
+            updateField('notificationTiming', timing);
+            closeSetting();
+          }}
+          onRecurrenceChange={(recurrence) => {
+            setValues((current) => ({
+              ...current,
+              recurrenceMode: recurrence.mode,
+              recurrenceFrequency: recurrence.customFrequency,
+              recurrenceInterval: recurrence.customInterval,
+            }));
+            setValidationMessage(null);
+            closeSetting();
+          }}
+        />
+      ) : null}
+      <View
+        style={[styles.container, setting ? styles.hidden : null]}
+        aria-hidden={setting ? true : undefined}
+        accessibilityElementsHidden={Boolean(setting)}
+        importantForAccessibility={setting ? 'no-hide-descendants' : 'auto'}
+      >
+        <Card variant="sheet" style={styles.formCard}>
+          <View style={styles.field}>
+            <View style={styles.labelRow}>
+              <AppText variant="label" weight="semibold">
+                제목
+              </AppText>
+              <AppText
+                tone={titleLength > taskLimits.title - 5 ? 'danger' : 'muted'}
+                variant="caption"
+              >
+                {values.title.length}/{taskLimits.title}
+              </AppText>
+            </View>
+            <TextField
+              accessibilityLabel="Task 제목"
+              autoFocus={autoFocusTitle}
+              editable={!isSubmitting}
+              maxLength={taskLimits.title}
+              onChangeText={(value) => updateField('title', value)}
+              placeholder={titlePlaceholders[values.type]}
+              placeholderTextColor={theme.colors.textMuted}
+              returnKeyType="next"
+              invalid={hasTitleValidationError}
+              value={values.title}
+            />
+          </View>
+
+          <View style={styles.field}>
             <AppText variant="label" weight="semibold">
-              제목
+              유형
             </AppText>
-            <AppText
-              tone={titleLength > taskLimits.title - 5 ? 'danger' : 'muted'}
-              variant="caption"
-            >
-              {values.title.length}/{taskLimits.title}
-            </AppText>
+            <SegmentedControl
+              accessibilityLabel="유형"
+              options={taskTypes.map((type) => ({
+                ...type,
+                accessibilityLabel: `${type.label} 유형 선택`,
+              }))}
+              value={values.type}
+              disabled={isSubmitting}
+              onValueChange={(type) => updateField('type', type)}
+            />
           </View>
-          <TextField
-            accessibilityLabel="Task 제목"
-            autoFocus={autoFocusTitle}
-            editable={!isSubmitting}
-            maxLength={taskLimits.title}
-            onChangeText={(value) => updateField('title', value)}
-            placeholder={titlePlaceholders[values.type]}
-            placeholderTextColor={theme.colors.textMuted}
-            returnKeyType="next"
-            invalid={hasTitleValidationError}
-            value={values.title}
-          />
-        </View>
 
-        <View style={styles.field}>
-          <AppText variant="label" weight="semibold">
-            유형
-          </AppText>
-          <SegmentedControl
-            accessibilityLabel="유형"
-            options={taskTypes.map((type) => ({
-              ...type,
-              accessibilityLabel: `${type.label} 유형 선택`,
-            }))}
-            value={values.type}
-            disabled={isSubmitting}
-            onValueChange={(type) => updateField('type', type)}
-          />
-        </View>
-
-        {isSchedule ? (
-          <View style={styles.scheduleFields}>
-            <View style={styles.field}>
-              <AppText variant="label" weight="semibold">
-                일정 날짜
-              </AppText>
-              <TextField
-                accessibilityHint="YYYY-MM-DD 형식으로 입력해 주세요."
-                accessibilityLabel="일정 날짜"
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!isSubmitting}
-                keyboardType="numbers-and-punctuation"
-                maxLength={10}
-                onChangeText={(value) => updateField('scheduleDate', value)}
-                placeholder="2026-07-27"
-                placeholderTextColor={theme.colors.textMuted}
-                returnKeyType="next"
-                value={values.scheduleDate}
-              />
-            </View>
-
-            <View style={styles.switchRow}>
-              <View style={styles.switchCopy}>
+          {isSchedule ? (
+            <View style={styles.scheduleFields}>
+              <View style={styles.field}>
                 <AppText variant="label" weight="semibold">
-                  종일 일정
+                  일정 날짜
                 </AppText>
-                <AppText tone="secondary" variant="caption">
-                  하루 전체를 차지하는 일정으로 저장해요.
-                </AppText>
+                <TextField
+                  accessibilityHint="YYYY-MM-DD 형식으로 입력해 주세요."
+                  accessibilityLabel="일정 날짜"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={!isSubmitting}
+                  keyboardType="numbers-and-punctuation"
+                  maxLength={10}
+                  onChangeText={(value) => updateField('scheduleDate', value)}
+                  placeholder="2026-07-27"
+                  placeholderTextColor={theme.colors.textMuted}
+                  returnKeyType="next"
+                  value={values.scheduleDate}
+                />
               </View>
-              <Switch
-                accessibilityLabel="종일 일정 여부"
+
+              <View style={styles.switchRow}>
+                <View style={styles.switchCopy}>
+                  <AppText variant="label" weight="semibold">
+                    종일 일정
+                  </AppText>
+                  <AppText tone="secondary" variant="caption">
+                    하루 전체를 차지하는 일정으로 저장해요.
+                  </AppText>
+                </View>
+                <Switch
+                  accessibilityLabel="종일 일정 여부"
+                  disabled={isSubmitting}
+                  onValueChange={(value) => {
+                    updateField('allDay', value);
+                    if (value && !['OFF', 'AT_START'].includes(values.notificationTiming)) {
+                      updateField('notificationTiming', 'AT_START');
+                    }
+                  }}
+                  thumbColor={values.allDay ? theme.colors.primary : theme.colors.surface}
+                  trackColor={{ false: theme.colors.borderStrong, true: theme.colors.primarySoft }}
+                  value={values.allDay}
+                />
+              </View>
+
+              {!values.allDay ? (
+                <View style={styles.timeRow}>
+                  <View style={[styles.field, styles.timeField]}>
+                    <AppText variant="label" weight="semibold">
+                      시작
+                    </AppText>
+                    <TextField
+                      accessibilityHint="HH:mm 형식으로 입력해 주세요."
+                      accessibilityLabel="일정 시작 시간"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      editable={!isSubmitting}
+                      keyboardType="numbers-and-punctuation"
+                      maxLength={5}
+                      onChangeText={(value) => updateField('startTime', value)}
+                      placeholder="09:00"
+                      placeholderTextColor={theme.colors.textMuted}
+                      returnKeyType="next"
+                      value={values.startTime}
+                    />
+                  </View>
+
+                  <View style={[styles.field, styles.timeField]}>
+                    <View style={styles.labelRow}>
+                      <AppText variant="label" weight="semibold">
+                        종료
+                      </AppText>
+                      <AppText tone="muted" variant="caption">
+                        선택
+                      </AppText>
+                    </View>
+                    <TextField
+                      accessibilityHint="비워두면 시작 시간만 있는 일정으로 저장됩니다."
+                      accessibilityLabel="일정 종료 시간"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      editable={!isSubmitting}
+                      keyboardType="numbers-and-punctuation"
+                      maxLength={5}
+                      onChangeText={(value) => updateField('endTime', value)}
+                      placeholder="10:00"
+                      placeholderTextColor={theme.colors.textMuted}
+                      returnKeyType="done"
+                      value={values.endTime}
+                    />
+                  </View>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+
+          {isSchedule ? (
+            <View style={[styles.properties, { borderColor: theme.colors.border }]}>
+              <TaskFormPropertyRow
+                ref={notificationRef}
+                icon="bell"
+                label="알림"
+                value={notificationLabel}
                 disabled={isSubmitting}
-                onValueChange={(value) => {
-                  updateField('allDay', value);
-                  if (value && !['OFF', 'AT_START'].includes(values.notificationTiming)) {
-                    updateField('notificationTiming', 'AT_START');
-                  }
+                onPress={() => openSetting('notification')}
+              />
+              <View
+                style={{
+                  borderTopWidth: StyleSheet.hairlineWidth,
+                  borderColor: theme.colors.border,
                 }}
-                thumbColor={values.allDay ? theme.colors.primary : theme.colors.surface}
-                trackColor={{ false: theme.colors.borderStrong, true: theme.colors.primarySoft }}
-                value={values.allDay}
+              />
+              <TaskFormPropertyRow
+                ref={recurrenceRef}
+                icon="repeat"
+                label="반복"
+                value={getRecurrenceFormLabel(recurrenceValues)}
+                disabled={isSubmitting}
+                onPress={() => openSetting('recurrence')}
               />
             </View>
+          ) : null}
 
-            {!values.allDay ? (
-              <View style={styles.timeRow}>
-                <View style={[styles.field, styles.timeField]}>
-                  <AppText variant="label" weight="semibold">
-                    시작
-                  </AppText>
-                  <TextField
-                    accessibilityHint="HH:mm 형식으로 입력해 주세요."
-                    accessibilityLabel="일정 시작 시간"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    editable={!isSubmitting}
-                    keyboardType="numbers-and-punctuation"
-                    maxLength={5}
-                    onChangeText={(value) => updateField('startTime', value)}
-                    placeholder="09:00"
-                    placeholderTextColor={theme.colors.textMuted}
-                    returnKeyType="next"
-                    value={values.startTime}
-                  />
-                </View>
+          <Pressable
+            accessibilityLabel={detailsToggleLabel}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: isDetailsExpanded }}
+            onPress={() => setIsDetailsExpanded((current) => !current)}
+            style={({ pressed }) => [
+              styles.detailsToggle,
+              { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+            ]}
+          >
+            <AppText tone="secondary" variant="label" weight="semibold">
+              {detailsToggleLabel} ›
+            </AppText>
+          </Pressable>
 
-                <View style={[styles.field, styles.timeField]}>
-                  <View style={styles.labelRow}>
-                    <AppText variant="label" weight="semibold">
-                      종료
-                    </AppText>
-                    <AppText tone="muted" variant="caption">
-                      선택
-                    </AppText>
-                  </View>
-                  <TextField
-                    accessibilityHint="비워두면 시작 시간만 있는 일정으로 저장됩니다."
-                    accessibilityLabel="일정 종료 시간"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    editable={!isSubmitting}
-                    keyboardType="numbers-and-punctuation"
-                    maxLength={5}
-                    onChangeText={(value) => updateField('endTime', value)}
-                    placeholder="10:00"
-                    placeholderTextColor={theme.colors.textMuted}
-                    returnKeyType="done"
-                    value={values.endTime}
-                  />
-                </View>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-
-        <Pressable
-          accessibilityLabel={detailsToggleLabel}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: isDetailsExpanded }}
-          onPress={() => setIsDetailsExpanded((current) => !current)}
-          style={({ pressed }) => [
-            styles.detailsToggle,
-            { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-          ]}
-        >
-          <AppText tone="secondary" variant="label" weight="semibold">
-            {detailsToggleLabel} ›
-          </AppText>
-        </Pressable>
-
-        {isDetailsExpanded && isSchedule ? (
-          <View style={styles.scheduleSettings}>
-            <View style={styles.field}>
-              <AppText variant="label" weight="semibold">
-                알림
-              </AppText>
-              <AppText tone="secondary" variant="caption">
-                {values.allDay
-                  ? '종일 일정은 당일 오전 9시에 알려드려요.'
-                  : '이 일정의 시작 시각을 기준으로 알려드려요.'}
-              </AppText>
-              <View style={styles.notificationGrid}>
-                {taskNotificationTimingOptions
-                  .filter(
-                    (option) =>
-                      !values.allDay || option.value === 'OFF' || option.value === 'AT_START',
-                  )
-                  .map((option) => {
-                    const selected = values.notificationTiming === option.value;
-                    const label =
-                      values.allDay && option.value === 'AT_START' ? '당일 오전 9시' : option.label;
-
-                    return (
-                      <Pressable
-                        accessibilityLabel={`${label} 알림 선택`}
-                        accessibilityRole="radio"
-                        accessibilityState={{ checked: selected, disabled: isSubmitting }}
-                        disabled={isSubmitting}
-                        key={option.value}
-                        onPress={() => updateField('notificationTiming', option.value)}
-                        style={[
-                          styles.notificationOption,
-                          {
-                            backgroundColor: selected ? theme.colors.highlightBlue : 'transparent',
-                            borderColor: selected ? theme.colors.primary : theme.colors.border,
-                          },
-                        ]}
-                      >
-                        <AppText
-                          align="center"
-                          tone={selected ? 'primary' : 'default'}
-                          variant="caption"
-                          weight="semibold"
-                        >
-                          {label}
-                        </AppText>
-                      </Pressable>
-                    );
-                  })}
-              </View>
-            </View>
-
+          {isDetailsExpanded ? (
             <View style={styles.field}>
               <View style={styles.labelRow}>
                 <AppText variant="label" weight="semibold">
-                  반복
+                  설명
                 </AppText>
                 <AppText tone="muted" variant="caption">
                   선택
                 </AppText>
               </View>
-              <View style={styles.recurrenceGrid}>
-                {recurrenceModeOptions.map((option) => {
-                  const selected = values.recurrenceMode === option.value;
-
-                  return (
-                    <Pressable
-                      accessibilityLabel={`${option.label} 선택`}
-                      accessibilityRole="radio"
-                      accessibilityState={{ checked: selected, disabled: isSubmitting }}
-                      disabled={isSubmitting}
-                      key={option.value}
-                      onBlur={() => setFocusedRecurrenceMode(null)}
-                      onFocus={() => setFocusedRecurrenceMode(option.value)}
-                      onPress={() => updateField('recurrenceMode', option.value)}
-                      style={[
-                        styles.recurrenceOption,
-                        {
-                          backgroundColor: selected ? theme.colors.highlightSage : 'transparent',
-                          borderColor:
-                            focusedRecurrenceMode === option.value || selected
-                              ? theme.colors.primary
-                              : theme.colors.border,
-                          borderWidth: focusedRecurrenceMode === option.value ? 2 : 1,
-                        },
-                      ]}
-                    >
-                      <AppText
-                        align="center"
-                        tone={selected ? 'primary' : 'default'}
-                        variant="caption"
-                        weight="semibold"
-                      >
-                        {option.label}
-                      </AppText>
-                    </Pressable>
-                  );
-                })}
-              </View>
-
-              {values.recurrenceMode === 'CUSTOM' ? (
-                <View style={styles.customRecurrence}>
-                  <View style={styles.recurrenceFrequencyGrid}>
-                    {recurrenceFrequencyOptions.map((option) => {
-                      const selected = values.recurrenceFrequency === option.value;
-
-                      return (
-                        <Pressable
-                          accessibilityLabel={`${option.label} 단위 반복 선택`}
-                          accessibilityRole="radio"
-                          accessibilityState={{ checked: selected, disabled: isSubmitting }}
-                          disabled={isSubmitting}
-                          key={option.value}
-                          onBlur={() => setFocusedRecurrenceFrequency(null)}
-                          onFocus={() => setFocusedRecurrenceFrequency(option.value)}
-                          onPress={() => updateField('recurrenceFrequency', option.value)}
-                          style={[
-                            styles.frequencyOption,
-                            {
-                              backgroundColor: selected
-                                ? theme.colors.highlightBlue
-                                : 'transparent',
-                              borderColor:
-                                focusedRecurrenceFrequency === option.value || selected
-                                  ? theme.colors.primary
-                                  : theme.colors.border,
-                              borderWidth: focusedRecurrenceFrequency === option.value ? 2 : 1,
-                            },
-                          ]}
-                        >
-                          <AppText
-                            align="center"
-                            tone={selected ? 'primary' : 'default'}
-                            variant="caption"
-                            weight="semibold"
-                          >
-                            {option.label}
-                          </AppText>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                  <View style={styles.intervalRow}>
-                    <TextField
-                      accessibilityHint="1부터 99 사이의 숫자로 입력해 주세요."
-                      accessibilityLabel="반복 간격"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      editable={!isSubmitting}
-                      keyboardType="number-pad"
-                      maxLength={2}
-                      onChangeText={(value) => updateField('recurrenceInterval', value)}
-                      placeholder="2"
-                      placeholderTextColor={theme.colors.textMuted}
-                      returnKeyType="done"
-                      style={styles.intervalInput}
-                      value={values.recurrenceInterval}
-                    />
-                    <AppText tone="secondary" variant="label">
-                      {getCustomRecurrenceUnitLabel(values.recurrenceFrequency)}마다 반복
-                    </AppText>
-                  </View>
-                </View>
-              ) : null}
-            </View>
-          </View>
-        ) : null}
-
-        {isDetailsExpanded ? (
-          <View style={styles.field}>
-            <View style={styles.labelRow}>
-              <AppText variant="label" weight="semibold">
-                설명
-              </AppText>
-              <AppText tone="muted" variant="caption">
-                선택
-              </AppText>
-            </View>
-            <TextField
-              accessibilityLabel="Task 설명"
-              editable={!isSubmitting}
-              maxLength={taskLimits.description}
-              multiline
-              onChangeText={(value) => updateField('description', value)}
-              placeholder="필요한 맥락이나 다음 행동"
-              placeholderTextColor={theme.colors.textMuted}
-              style={styles.textArea}
-              textAlignVertical="top"
-              value={values.description}
-            />
-          </View>
-        ) : null}
-
-        {isDetailsExpanded ? (
-          <View style={styles.field}>
-            <View style={styles.labelRow}>
-              <AppText variant="label" weight="semibold">
-                예상 시간
-              </AppText>
-              <AppText tone="muted" variant="caption">
-                선택
-              </AppText>
-            </View>
-            <View style={styles.durationRow}>
               <TextField
-                accessibilityHint="5분부터 1440분 사이로 입력해 주세요."
-                accessibilityLabel="예상 소요 시간(분)"
+                accessibilityLabel="Task 설명"
                 editable={!isSubmitting}
-                keyboardType="number-pad"
-                maxLength={4}
-                onChangeText={(value) => updateField('estimatedDurationMinutes', value)}
-                placeholder="30"
+                maxLength={taskLimits.description}
+                multiline
+                onChangeText={(value) => updateField('description', value)}
+                placeholder="필요한 맥락이나 다음 행동"
                 placeholderTextColor={theme.colors.textMuted}
-                returnKeyType="done"
-                style={styles.durationInput}
-                invalid={hasEstimatedDurationValidationError}
-                value={values.estimatedDurationMinutes}
+                style={styles.textArea}
+                textAlignVertical="top"
+                value={values.description}
               />
-              <AppText tone="secondary" variant="label">
-                분
-              </AppText>
             </View>
-          </View>
-        ) : null}
+          ) : null}
 
-        {isDetailsExpanded ? (
-          <View style={styles.field}>
-            <View style={styles.labelRow}>
-              <AppText variant="label" weight="semibold">
-                카테고리
-              </AppText>
-              <AppText tone="muted" variant="caption">
-                선택
-              </AppText>
+          {isDetailsExpanded ? (
+            <View style={styles.field}>
+              <View style={styles.labelRow}>
+                <AppText variant="label" weight="semibold">
+                  예상 시간
+                </AppText>
+                <AppText tone="muted" variant="caption">
+                  선택
+                </AppText>
+              </View>
+              <View style={styles.durationRow}>
+                <TextField
+                  accessibilityHint="5분부터 1440분 사이로 입력해 주세요."
+                  accessibilityLabel="예상 소요 시간(분)"
+                  editable={!isSubmitting}
+                  keyboardType="number-pad"
+                  maxLength={4}
+                  onChangeText={(value) => updateField('estimatedDurationMinutes', value)}
+                  placeholder="30"
+                  placeholderTextColor={theme.colors.textMuted}
+                  returnKeyType="done"
+                  style={styles.durationInput}
+                  invalid={hasEstimatedDurationValidationError}
+                  value={values.estimatedDurationMinutes}
+                />
+                <AppText tone="secondary" variant="label">
+                  분
+                </AppText>
+              </View>
             </View>
-            <TextField
-              accessibilityLabel="Task 카테고리"
-              editable={!isSubmitting}
-              maxLength={taskLimits.category}
-              onChangeText={(value) => updateField('category', value)}
-              placeholder="예: 업무, 집, 건강"
-              placeholderTextColor={theme.colors.textMuted}
-              value={values.category}
-            />
-          </View>
-        ) : null}
+          ) : null}
 
-        {validationMessage ? (
-          <AppText accessibilityLiveRegion="polite" tone="danger" variant="caption">
-            {validationMessage}
-          </AppText>
-        ) : null}
+          {isDetailsExpanded ? (
+            <View style={styles.field}>
+              <View style={styles.labelRow}>
+                <AppText variant="label" weight="semibold">
+                  카테고리
+                </AppText>
+                <AppText tone="muted" variant="caption">
+                  선택
+                </AppText>
+              </View>
+              <TextField
+                accessibilityLabel="Task 카테고리"
+                editable={!isSubmitting}
+                maxLength={taskLimits.category}
+                onChangeText={(value) => updateField('category', value)}
+                placeholder="예: 업무, 집, 건강"
+                placeholderTextColor={theme.colors.textMuted}
+                value={values.category}
+              />
+            </View>
+          ) : null}
 
-        {errorMessage ? <InlineNotice message={errorMessage} tone="danger" /> : null}
-      </Card>
+          {validationMessage ? (
+            <AppText accessibilityLiveRegion="polite" tone="danger" variant="caption">
+              {validationMessage}
+            </AppText>
+          ) : null}
 
-      <View style={styles.actions}>
-        {onCancel ? (
+          {errorMessage ? <InlineNotice message={errorMessage} tone="danger" /> : null}
+        </Card>
+
+        <View style={styles.actions}>
+          {onCancel ? (
+            <Button
+              disabled={isSubmitting}
+              fullWidth
+              variant="ghost"
+              focusAppearance="ring"
+              onPress={onCancel}
+            >
+              취소
+            </Button>
+          ) : null}
           <Button
-            disabled={isSubmitting}
-            fullWidth
-            variant="ghost"
+            disabled={!canSubmit}
             focusAppearance="ring"
-            onPress={onCancel}
+            fullWidth
+            loading={isSubmitting}
+            size="large"
+            onPress={handleSubmit}
           >
-            취소
+            {submitLabel}
           </Button>
-        ) : null}
-        <Button
-          disabled={!canSubmit}
-          focusAppearance="ring"
-          fullWidth
-          loading={isSubmitting}
-          size="large"
-          onPress={handleSubmit}
-        >
-          {submitLabel}
-        </Button>
+        </View>
       </View>
-    </View>
+    </>
   );
-}
-
-function getCustomRecurrenceUnitLabel(frequency: RecurrenceFrequency) {
-  if (frequency === 'DAILY') return '일';
-  if (frequency === 'MONTHLY') return '개월';
-
-  return '주';
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[4],
+    gap: spacing[2],
   },
   formCard: {
-    gap: spacing[4],
+    gap: spacing[3],
     paddingHorizontal: spacing[1],
     paddingVertical: spacing[2],
   },
@@ -684,9 +624,8 @@ const styles = StyleSheet.create({
   scheduleFields: {
     gap: spacing[3],
   },
-  scheduleSettings: {
-    gap: spacing[4],
-  },
+  hidden: { display: 'none' },
+  properties: { borderTopWidth: StyleSheet.hairlineWidth },
   timeRow: {
     flexDirection: 'row',
     gap: spacing[2],
@@ -702,57 +641,6 @@ const styles = StyleSheet.create({
   },
   textArea: {
     minHeight: 88,
-  },
-  recurrenceGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing[2],
-  },
-  recurrenceOption: {
-    alignItems: 'center',
-    borderRadius: radii.full,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: spacing[3],
-  },
-  notificationGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing[2],
-  },
-  notificationOption: {
-    alignItems: 'center',
-    borderRadius: radii.full,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: spacing[3],
-  },
-  customRecurrence: {
-    gap: spacing[2],
-  },
-  recurrenceFrequencyGrid: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  frequencyOption: {
-    alignItems: 'center',
-    borderRadius: radii.md,
-    borderWidth: 1,
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  intervalRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  intervalInput: {
-    width: 88,
-    minWidth: 72,
-    textAlign: 'center',
   },
   durationRow: {
     alignItems: 'center',
@@ -784,6 +672,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[1],
   },
   actions: {
-    gap: spacing[2],
+    gap: spacing[1],
   },
 });

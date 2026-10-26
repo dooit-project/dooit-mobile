@@ -24,19 +24,28 @@ const task = {
   notificationEnabled: true,
 } as TaskResponse;
 
+jest.mock('@/components/ui/app-icon', () => ({ AppIcon: () => null }));
+
+beforeEach(() => jest.useFakeTimers());
+
 let screen: ReactTestRenderer;
 afterEach(() => {
-  act(() => screen?.unmount());
+  act(() => {
+    screen?.unmount();
+    jest.runOnlyPendingTimers();
+  });
+  jest.useRealTimers();
 });
 
 function mount(initialTask = task) {
   const report = jest.fn();
+  const submit = jest.fn();
   const render = (value: TaskResponse) => (
     <TaskForm
       initialTask={value}
       onDraftChange={report}
       submitLabel="수정 완료"
-      onSubmit={jest.fn()}
+      onSubmit={submit}
     />
   );
   act(() => {
@@ -56,13 +65,13 @@ function mount(initialTask = task) {
     expect(control).toBeDefined();
     act(() => control!.props.onPress());
   };
-  return { report, render, changeText, press };
+  return { report, submit, render, changeText, press };
 }
 
 test('수정 진입·초점·추가 정보 펼침은 초안이 아니며 제목을 원문으로 복원하면 해제한다', () => {
   const { report, changeText, press } = mount();
   expect(report.mock.calls).toEqual([[false]]);
-  press('알림·반복·추가 정보 보기');
+  press('설명·추가 정보 보기');
   const title = screen.root
     .findAllByType(TextInput)
     .find((node) => node.props.accessibilityLabel === 'Task 제목')!;
@@ -85,7 +94,7 @@ test.each([
   ['예상 소요 시간(분)', '아직 미정', ''],
 ])('유효하지 않은 입력을 포함해 %s의 실제 변경과 복원을 보호한다', (label, value, original) => {
   const { report, changeText, press } = mount();
-  press('알림·반복·추가 정보 보기');
+  press('설명·추가 정보 보기');
   changeText(label, value);
   expect(report).toHaveBeenLastCalledWith(true);
   changeText(label, original);
@@ -98,13 +107,16 @@ test('유형·알림·반복 설정도 변경과 원상 복원을 감지한다',
   expect(report).toHaveBeenLastCalledWith(true);
   press('일정 유형 선택');
   expect(report).toHaveBeenLastCalledWith(false);
-  press('알림·반복·추가 정보 보기');
+  press('알림, 시작 시각, 변경');
   press('알림 끄기 알림 선택');
   expect(report).toHaveBeenLastCalledWith(true);
+  press('알림, 알림 끄기, 변경');
   press('시작 시각 알림 선택');
   expect(report).toHaveBeenLastCalledWith(false);
+  press('반복, 반복 없음, 변경');
   press('매일 선택');
   expect(report).toHaveBeenLastCalledWith(true);
+  press('반복, 매일, 변경');
   press('반복 없음 선택');
   expect(report).toHaveBeenLastCalledWith(false);
 });
@@ -127,11 +139,14 @@ test('종일 여부와 직접 반복 간격의 유효하지 않은 입력도 비
   expect(report).toHaveBeenLastCalledWith(true);
   act(() => screen.root.findByType(Switch).props.onValueChange(false));
   expect(report).toHaveBeenLastCalledWith(false);
+  press('반복, 2주마다, 변경');
+  press('직접 설정 선택');
   changeText('반복 간격', '잘못된 간격');
   expect(report).toHaveBeenLastCalledWith(true);
   changeText('반복 간격', '2');
   expect(report).toHaveBeenLastCalledWith(false);
-  press('추가 정보 접기');
+  press('반복으로 돌아가기');
+  press('작성 화면으로 돌아가기');
   expect(report).toHaveBeenLastCalledWith(false);
 });
 
@@ -172,6 +187,107 @@ test('유형 선택 후 저장 계약과 일정으로 되돌렸을 때의 날짜
       type: 'SCHEDULE',
       startAt: task.startAt,
       endAt: task.endAt,
+    }),
+  );
+});
+
+test('알림 선택의 저장 값과 종일 전환의 허용 선택·시간 복원을 유지한다', () => {
+  const { submit, press } = mount();
+  press('알림, 시작 시각, 변경');
+  press('15분 전 알림 선택');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      notificationEnabled: true,
+      notifyAt: '2026-10-25T13:45:00',
+    }),
+  );
+  act(() => screen.root.findByType(Switch).props.onValueChange(true));
+  press('알림, 당일 오전 9시, 변경');
+  expect(screen.root.findAllByProps({ accessibilityLabel: '15분 전 알림 선택' })).toHaveLength(0);
+  const allDayTiming = screen.root
+    .findAllByProps({ accessibilityLabel: '당일 오전 9시 알림 선택' })
+    .find((node) => node.props.accessibilityRole === 'button')!;
+  expect(allDayTiming.props.accessibilityHint).toBe('현재 선택된 값이에요.');
+  press('작성 화면으로 돌아가기');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      allDay: true,
+      notificationEnabled: true,
+      notifyAt: null,
+    }),
+  );
+  act(() => screen.root.findByType(Switch).props.onValueChange(false));
+  press('알림, 시작 시각, 변경');
+  press('알림 끄기 알림 선택');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      allDay: false,
+      startAt: task.startAt,
+      endAt: task.endAt,
+      notificationEnabled: false,
+      notifyAt: null,
+    }),
+  );
+});
+
+test('직접 반복의 단위·간격 선택을 저장하고 잘못된 간격은 저장하지 않는다', () => {
+  const { submit, press, changeText } = mount();
+  press('반복, 반복 없음, 변경');
+  press('직접 설정 선택');
+  press('단위, 주, 변경');
+  press('개월 단위 반복 선택');
+  changeText('반복 간격', '3');
+  press('적용');
+  expect(submit).not.toHaveBeenCalled();
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      recurrence: expect.objectContaining({ frequency: 'MONTHLY', interval: 3 }),
+    }),
+  );
+  submit.mockClear();
+  press('반복, 3개월마다, 변경');
+  press('직접 설정 선택');
+  changeText('반복 간격', '0');
+  press('적용');
+  expect(submit).not.toHaveBeenCalled();
+  press('반복으로 돌아가기');
+  press('작성 화면으로 돌아가기');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      recurrence: expect.objectContaining({ frequency: 'MONTHLY', interval: 3 }),
+    }),
+  );
+});
+
+test('기본 화면에는 현재 값만 보이고 설정 이동·취소가 다른 입력을 보존한다', () => {
+  const { press, report, changeText, submit } = mount();
+  expect(screen.root.findAllByProps({ accessibilityLabel: '15분 전 알림 선택' })).toHaveLength(0);
+  expect(screen.root.findAllByProps({ accessibilityLabel: '매일 선택' })).toHaveLength(0);
+  press('알림, 시작 시각, 변경');
+  expect(report).toHaveBeenLastCalledWith(false);
+  expect(screen.root.findAllByProps({ accessibilityLabel: '매일 선택' })).toHaveLength(0);
+  press('작성 화면으로 돌아가기');
+  expect(report).toHaveBeenLastCalledWith(false);
+  changeText('Task 제목', '접수 준비');
+  changeText('일정 시작 시간', '15:00');
+  changeText('일정 종료 시간', '15:30');
+  press('반복, 반복 없음, 변경');
+  press('직접 설정 선택');
+  changeText('반복 간격', '7');
+  press('반복으로 돌아가기');
+  press('작성 화면으로 돌아가기');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      title: '접수 준비',
+      startAt: '2026-10-25T15:00:00',
+      endAt: '2026-10-25T15:30:00',
+      recurrence: null,
     }),
   );
 });

@@ -1,4 +1,50 @@
-# 최신 Design QA — Task 작성·편집 입력과 유형 정돈
+# 최신 Design QA — 선택01 TaskForm 속성 행 구현
+
+2026-10-26 · `e54fdbb` 이후 working tree · [범위/실제 감사/검사와 한계](./docs/audits/task-form-properties-2026-10-26/README.md)
+
+- 시각 원본: 사용자가 첨부 비교 후 진행 승인한 [01-property-rows.png](./docs/design/task-form-density-2026-10-26/01-property-rows.png). 실제 구현: [390×844](./docs/audits/task-form-properties-2026-10-26/03-main-final-390.jpg), mock/light/토익 시험 접수/2026-10-26/14:00–14:30/시작 시각/2주마다. 원본853×1844는390폭으로 비율을 유지해 비교하며 실제 CSS/캡처는1:1이다.
+- [전체/알림·반복 부분 비교판](./docs/audits/task-form-properties-2026-10-26/10-source-comparison.jpg)을 함께 직접 확인했다. 두 속성 행·추가 정보 분리와 기본 입력/저장 위계 일치. 기존96% 패널의 오늘 배경34px, 유형의 중립 선택 경계/기존 공통52px 높이, solid primary는 기존 컴포넌트/플랫폼 제약에 따른 명시한 차이다. 새 전역 스타일로 바꾸지 않는다.
+- 필수 다섯 면: 공통22/30·16/24·14/20 글자 위계/줄바꿈, 간격·44px 조작/56px 속성 행, 흰 면/중립/primary token, 기존 Feather/AppIcon과 광학/기하 정렬, 기존 기본 입력·요약/추가 정보·저장 문구를 확인했다. 새 raster 자산/폰트/의존성/백엔드 변경은 없다. 생성 gradient/질감의 픽셀 일치를 주장하지 않는다.
+- P1 동시15개 선택 노출은 두 현재 값 행→관련 목록으로 수정했다. P2 [초기 저장 하단 잘림](./docs/audits/task-form-properties-2026-10-26/01-main-390.jpg)은 폼 간격 보정 후 최종390에서 전체 버튼을 확인했다. P2 browser Back의 scroll173→0은 commit 이후 복원으로 바꿔 [173→173·원문/초점 유지](./docs/audits/task-form-properties-2026-10-26/restore-back.json)를 확인했다. P2 간격0의 잘못된 요약은 유효한 값에만 표시하도록 바꾸고 최종 오류 캡처에서 확인했다.
+- 실제 확인:320/390/430·390×568, 속성 선택/자동 복귀·종일 두 알림과 시간 복원, custom 단위 이동/오류/적용 전 취소, 입력/스크롤/초점·Escape/브라우저 Back/부모 중앙 버리기, 새 작성의 제목/설정 유지. 실제 Task 저장 payload는 회귀로 확인했고 새 운영 저장/알림 전달 검증은 아니다. 콘솔 error0, 기존 deprecation2종이다.
+- native/글자 확대1.5/실제 스크린 리더/dark/운영 API·느린 저장·실패·미지원 브라우저 traversal은 미확인이다. 이전 미커밋 ChoiceChips 실험은 제거하고 선택 구조에 필요한 코드만 유지했다. 커밋/푸시는 하지 않았다.
+
+검사 결과: 전체 `npm run validate` 통과(TypeScript/lint/format/문서/출시 정적 검사/126 suites·674 tests, opt-in STG1개 제외). 로그 `/private/tmp/dooit-task-form-properties-20261026.log`. 새 `check:ui-layout`은 기본320/390/430 각3행·13조작, 새 작성2행·12조작, 새 작성 알림2행·8조작, custom3행·6조작, 짧은390은3행·9조작 통과다. plain text 비선택 행에는 아이콘 정렬 표식을 제거했으며 모든44px 조작 검사는 유지했다. 임시 비교 HTML이 첫 format 검사에 걸려 비교 캡처 저장 후 제거하고 전체 검사를 다시 통과했다.
+
+final result: passed
+
+---
+
+# 이전 Design QA — TaskForm 버튼 밀도 재평가
+
+2026-10-26 · `e54fdbb` 이후 working tree · [새 실제 감사](./docs/audits/task-form-density-review-2026-10-26/README.md) · [세 생성 시안/정확한 표시 순서](./docs/design/task-form-density-2026-10-26/README.md)
+
+- 기본 화면과 알림·직접 반복을 펼친 화면을 Chrome mock390×844에서 새로 캡처하고 직접 확인했다. 알림7·반복5·단위3의 동시 노출/스크롤 부담과 기본 화면에서 현재 설정을 읽을 수 없는 문제가 남았다. 이전 표현/키보드 보정만으로 화면 전체가 정돈됐다고 설명한 판정을 정정한다.
+- Microsoft To Do·Todoist 공식 문서를 재확인하고 속성별 필요한 순간의 편집을 비교했다. 경쟁 앱 직접 조작·Figma 감사는 아니다. built-in Image Gen으로 실제 캡처를 첨부한 독립3안을 생성했다. 표시 순서와 전체 프롬프트를 저장했다. 추천은 요약 두 행→속성별 선택이며 사용자 미선택/앱 미적용이다.
+- 이번에는 앱 코드/테스트를 새로 바꾸지 않았다. 기존 미커밋 선택 UI를 승인/커밋하지 않는다. 정책에 기본/편집 상태의 선택 그룹·노출 수와 탭/스크롤 비용 기록을 추가했다. 구현 후 실제 동작·기하/광학 검사와 native/확대 등 한계 확인이 필요하다.
+
+전체 `npm run validate` 재실행 통과:126 suites /674 tests, opt-in STG1개 제외. 로그 `/private/tmp/dooit-task-form-density-20261026.log`. 이는 기존 코드 회귀/정적 검사 결과이며 새 시안의 동작 검증이 아니다.
+
+final result: needs revision (버튼 밀도와 속성 편집 구조). 첫 오류 초점/R4보다 우선한다. 미커밋/미푸시.
+
+---
+
+# 이전 Design QA — TaskForm 알림·반복 선택 정돈
+
+2026-10-26 · `e54fdbb` 이후 working tree · [새 실제 전후·자료/범위·흐름·검사](./docs/audits/task-form-options-2026-10-26/README.md)
+
+- 입력/유형 변경은 사용자 승인으로 `e54fdbb`에 커밋했다(푸시 없음). 기존 inline 알림/반복/직접 단위의 값·문구·순서/펼침·저장/dirty·중앙 확인을 유지하는 표현 보정이다. 새 화면/선택 단계는 없다. Product Design audit/design-qa와 저장소 정책을 적용했고 저장 context는 없었다.
+- Microsoft To Do·Todoist의 공식 알림/반복 안내와 WAI-ARIA Radio를 새로 읽었다. 공식 패턴 참고이며 경쟁 앱 직접 로그인/최신 픽셀 비교·Figma 사용은 아니다. 새 이미지/의존성·백엔드 변경도 없다.
+- 실제390 전후를 한 입력의 전체/부분 비교판에서 직접 확인했다. 스크롤44px 차이는 알림 라벨 기준 부분 비교로 분리했다. 폰트/간격/색 token/이미지 품질/문구를 확인했다. 비선택은 중립 면, 선택은 primary와 semibold, 글자14/20·조작44·반경10을 사용한다. 직접 단위는 연결된52px 그룹이라 아래8px 이동은 의도한 여백이다.
+- 유형/알림/반복/단위는 공통 단일 선택 동작을 사용한다. 새 실제320/390/430·각 그룹 checked/Tab 하나·방향키 순환/그룹 간 Tab·종일의 두 알림/시각 복원·잘못된 간격 차단/복구·390×568·변경 보호/원문 복귀를 확인했다.
+- 새 좌표 검사는320/390/430 각각1행/22·24·25target, 짧은390은1행/11target 통과다. 별도 그룹 단일 선택/Tab·모든 radio44px·가로 영역 검사와 캡처의 글자 중앙·위계 검토도 통과했다. 축소된 초기 캡처와 개발 갱신 표시는 재촬영했다.
+- 전체 `npm run validate` 통과:126 suites /674 tests, opt-in STG1개 제외. 실제 native/확대1.5/화면 읽기/dark·운영 알림 전달/반복 실행·느린 저장/실패는 미확인이다. 첫 오류 초점/R4·전역 초점/손잡이·새로고침/미지원 traversal은 남는다.
+
+final result: passed (명시한 inline 선택 표현/실제 Web·회귀 범위). 새 알림/반복 변경은 미커밋/미푸시다.
+
+---
+
+# 이전 Design QA — Task 작성·편집 입력과 유형 정돈
 
 2026-10-26 · `e049f0f` 이후 working tree · [동일390 전후·실제 흐름·검사·한계](./docs/audits/task-form-controls-2026-10-26/README.md)
 

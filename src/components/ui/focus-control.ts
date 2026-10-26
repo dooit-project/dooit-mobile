@@ -2,10 +2,13 @@ import type { ComponentRef } from 'react';
 import { AccessibilityInfo, findNodeHandle, Platform, View } from 'react-native';
 
 /** Restore keyboard focus on Web and accessibility focus on native. */
-export function focusControl(control: ComponentRef<typeof View> | null | undefined) {
+export function focusControl(
+  control: ComponentRef<typeof View> | null | undefined,
+  options?: FocusOptions,
+) {
   if (!control) return;
   if (Platform.OS === 'web') {
-    (control as unknown as HTMLElement).focus();
+    (control as unknown as HTMLElement).focus(options);
   } else {
     const tag = findNodeHandle(control);
     if (tag) AccessibilityInfo.setAccessibilityFocus(tag);

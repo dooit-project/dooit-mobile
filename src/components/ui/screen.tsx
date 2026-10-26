@@ -1,4 +1,4 @@
-import type { ComponentProps, PropsWithChildren, ReactNode } from 'react';
+import type { ComponentProps, PropsWithChildren, ReactNode, Ref } from 'react';
 import type { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ type ScreenProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   scrollViewProps?: Omit<ScrollViewProps, 'contentContainerStyle'>;
+  scrollRef?: Ref<ScrollView>;
 }>;
 
 export function Screen({
@@ -24,6 +25,7 @@ export function Screen({
   style,
   contentContainerStyle,
   scrollViewProps,
+  scrollRef,
 }: ScreenProps) {
   const theme = useAppTheme();
   const { screenPadding } = useMobileLayout();
@@ -36,6 +38,7 @@ export function Screen({
         style={[styles.safeArea, { backgroundColor: theme.colors.background }, style]}
       >
         <ScrollView
+          ref={scrollRef}
           automaticallyAdjustKeyboardInsets
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
