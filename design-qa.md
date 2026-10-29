@@ -1,4 +1,15 @@
-# 최신 Design QA — 월간 달력
+# 최신 Design QA — 여러 날 일정 상세
+
+2026-10-30 · [실제 desktop 화면과 한계](./docs/audits/calendar-period-check-2026-10-30/README.md)
+
+- mock 달력의 기간 막대·시작일 목록·상세 진입을 확인하고, 상세에서 종료 날짜가 누락되는 문제를 수정했다. 같은 날·종일·자정·연도 경계는 자동 테스트 범위다.
+- Chrome 확장 접근 호스트 장애로 앱 창 desktop에서만 실제 확인했다. 새 DOM 정렬 검사와 320/390/430·native·스크린 리더·운영 API는 미확인이다. 기존 상세 구조는 유지하고 날짜 문구만 변경했다. 미커밋·미푸시.
+
+final result: pending (작은 화면의 실제 DOM 좌표 검사 미완료)
+
+---
+
+# 이전 Design QA — 월간 달력
 
 2026-10-30 · [실제 화면·원본 차이와 한계](./docs/audits/calendar-month-2026-10-30/README.md)
 

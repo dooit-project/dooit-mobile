@@ -20,6 +20,7 @@ import {
 } from '@/components/ui';
 import { useDdayGoals } from '@/features/dday';
 import { TaskScheduleForm } from '@/features/tasks/task-schedule-form';
+import { getTaskScheduleLabel } from '@/features/tasks/task-schedule-label';
 import { TaskGoalPath } from '@/features/tasks/task-goal-path';
 import { useTaskUnloadProtection } from '@/features/tasks/use-task-unload-protection';
 import { useTaskFormSettingsNavigation } from '@/features/tasks/use-task-form-settings-navigation';
@@ -550,7 +551,7 @@ function TaskContent({
   const leadingHeight = Math.max(sizes.touchTarget, titleLineHeight);
   const done = task.status === 'DONE';
   const recurrenceLabel = getRecurrenceLabel(task);
-  const scheduleLabel = getScheduleLabel(task);
+  const scheduleLabel = getTaskScheduleLabel(task);
   const plannedLabel = task.plannedDate
     ? `${task.plannedDate === today ? '오늘 · ' : ''}${formatDateLabel(task.plannedDate)}`
     : '날짜 없음 · 기록함';
@@ -986,22 +987,6 @@ function parseTaskId(value: string | string[] | undefined) {
   }
 
   return numericValue;
-}
-
-function getScheduleLabel(task: TaskResponse) {
-  if (task.allDay) {
-    return '종일';
-  }
-
-  if (task.startAt && task.endAt) {
-    return `${getDateTimeLabel(task.startAt)} - ${formatTimeLabel(task.endAt)}`;
-  }
-
-  if (task.startAt) {
-    return getDateTimeLabel(task.startAt);
-  }
-
-  return task.unscheduled ? '시간 미정' : '없음';
 }
 
 function getDateTimeLabel(value: TaskResponse['createdAt']) {
