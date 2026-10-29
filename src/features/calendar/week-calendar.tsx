@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { AppIcon, AppText, Button, InlineNotice, Screen } from '@/components/ui';
@@ -215,7 +215,7 @@ function MonthPicker({ pickerYear, selectedDate, onMoveYear, onSelectMonth }: Mo
 
           return (
             <Pressable
-              accessibilityLabel={`${pickerYear}년 ${month}월 선택`}
+              accessibilityLabel={`${pickerYear}년 ${month}월 선택${Platform.OS === 'web' && selected ? ', 선택됨' : ''}`}
               accessibilityRole="button"
               accessibilityState={{ selected }}
               key={month}
@@ -380,7 +380,7 @@ function CalendarDateButton({
         month: 'long',
         day: 'numeric',
         weekday: 'long',
-      })}${isToday ? ', 오늘' : ''}`}
+      })}${isToday ? ', 오늘' : ''}${Platform.OS === 'web' && selected ? ', 선택됨' : ''}`}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onBlur={() => setIsFocused(false)}
