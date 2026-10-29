@@ -1,0 +1,84 @@
+{
+  "capturedAt": "2026-10-29T16:02:20.080Z",
+  "documentWidth": 430,
+  "route": "/calendar",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 48,
+        "width": 375,
+        "x": 20,
+        "y": 72
+      },
+      "icons": [
+        {
+          "height": 24.5,
+          "width": 22,
+          "x": 72.5390625,
+          "y": 81.75
+        },
+        {
+          "height": 24.5,
+          "width": 22,
+          "x": 268.453125,
+          "y": 81.75
+        }
+      ],
+      "name": "calendar-heading",
+      "text": {
+        "height": 30,
+        "width": 119.9140625,
+        "x": 121.5390625,
+        "y": 79
+      }
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 61.5390625,
+        "y": 72
+      },
+      "minimum": 44,
+      "name": "이전 달"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 135.9140625,
+        "x": 113.5390625,
+        "y": 72
+      },
+      "minimum": 44,
+      "name": "2026년 10월 월 선택 열기"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 257.453125,
+        "y": 72
+      },
+      "minimum": 44,
+      "name": "다음 달"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 309.453125,
+        "y": 72
+      },
+      "minimum": 44,
+      "name": "오늘 날짜로 이동"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 430
+  }
+}

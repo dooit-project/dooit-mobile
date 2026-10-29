@@ -9,10 +9,10 @@ import { getUserFacingApiErrorMessage } from '@/services/api';
 import { useAppToday } from '@/services/time/use-app-today';
 import { radii, spacing, useAppTheme, useMobileLayout } from '@/theme';
 import type { LocalDateString, TaskResponse } from '@/types';
-import { formatDateLabel, isLocalDateString, shiftLocalDate } from '@/utils';
+import { formatDateLabel, isLocalDateString } from '@/utils';
 
 import { CalendarDayTasks } from './calendar-day-tasks';
-import { getThreeWeekCalendarDates } from './calendar-date';
+import { getMonthCalendarDates, shiftMonth } from './calendar-date';
 import { CALENDAR_DAY_WIDTH, getCalendarColumnBoundaryPercent } from './calendar-layout';
 import { CalendarPeriodBars, CalendarSingleDayLabels } from './calendar-period-bars';
 import { useCalendarVisibleTasks } from './use-calendar-visible-tasks';
@@ -23,6 +23,7 @@ export function WeekCalendar() {
   const router = useRouter();
   const params = useLocalSearchParams<{ date?: string }>();
   const theme = useAppTheme();
+  const { isDenseCalendar } = useMobileLayout();
   const today = useAppToday();
   const [browsedDate, setBrowsedDate] = useState<LocalDateString | null>(
     params.date && isLocalDateString(params.date) ? params.date : null,
@@ -31,14 +32,14 @@ export function WeekCalendar() {
   const setSelectedDate = (date: LocalDateString) => setBrowsedDate(date === today ? null : date);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [pickerYear, setPickerYear] = useState(() => Number(selectedDate.slice(0, 4)));
-  const calendarDates = useMemo(() => getThreeWeekCalendarDates(selectedDate), [selectedDate]);
+  const calendarDates = useMemo(() => getMonthCalendarDates(selectedDate), [selectedDate]);
   const rangeTasks = useCalendarVisibleTasks(calendarDates);
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
   };
 
-  const moveWeek = (amount: number) => {
-    const nextSelectedDate = shiftLocalDate(selectedDate, amount * 7);
+  const moveMonth = (amount: number) => {
+    const nextSelectedDate = shiftMonth(selectedDate, amount);
 
     if (nextSelectedDate) {
       setSelectedDate(nextSelectedDate);
@@ -65,7 +66,16 @@ export function WeekCalendar() {
   };
 
   return (
-    <Screen safeAreaEdges={['left', 'right']} scroll contentContainerStyle={styles.screen}>
+    <Screen
+      safeAreaEdges={['left', 'right']}
+      scroll
+      contentContainerStyle={styles.screen}
+      scrollViewProps={
+        Platform.OS === 'web' && isDenseCalendar
+          ? { showsVerticalScrollIndicator: false }
+          : undefined
+      }
+    >
       <ContextualFeatureTip
         message="날짜를 누르면 그날의 할 일과 일정을 볼 수 있어요. 여러 날 일정은 이어진 막대로 표시해요."
         tipIds={['calendar.overview']}
@@ -74,10 +84,10 @@ export function WeekCalendar() {
       <View style={styles.calendarSurface}>
         <View style={styles.calendarHeading}>
           <Pressable
-            accessibilityLabel="이전 주"
+            accessibilityLabel="이전 달"
             accessibilityRole="button"
             hitSlop={8}
-            onPress={() => moveWeek(-1)}
+            onPress={() => moveMonth(-1)}
             style={({ pressed }) => [
               styles.calendarNavButton,
               { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
@@ -107,16 +117,30 @@ export function WeekCalendar() {
             </AppText>
           </Pressable>
           <Pressable
-            accessibilityLabel="다음 주"
+            accessibilityLabel="다음 달"
             accessibilityRole="button"
             hitSlop={8}
-            onPress={() => moveWeek(1)}
+            onPress={() => moveMonth(1)}
             style={({ pressed }) => [
               styles.calendarNavButton,
               { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
             ]}
           >
             <AppIcon name="chevron-right" color={theme.colors.textSecondary} />
+          </Pressable>
+          <Pressable
+            accessibilityLabel="오늘 날짜로 이동"
+            accessibilityRole="button"
+            onPress={() => {
+              setSelectedDate(today);
+              setPickerYear(Number(today.slice(0, 4)));
+              setMonthPickerOpen(false);
+            }}
+            style={styles.todayButton}
+          >
+            <AppText tone="secondary" variant="caption" weight="semibold">
+              오늘
+            </AppText>
           </Pressable>
         </View>
 
@@ -156,6 +180,9 @@ export function WeekCalendar() {
         />
       </View>
 
+      <AppText accessibilityRole="header" variant="sectionTitle" weight="semibold">
+        {formatDateLabel(selectedDate, { month: 'long', day: 'numeric', weekday: 'long' })}
+      </AppText>
       <CalendarDayTasks key={selectedDate} date={selectedDate} />
     </Screen>
   );
@@ -261,17 +288,18 @@ function MonthDateGrid({
   onOpenTask = () => undefined,
 }: DatePickerProps) {
   const theme = useAppTheme();
-  const { isDenseCalendar } = useMobileLayout();
+  const { isDenseCalendar, screenPadding } = useMobileLayout();
   const selectedMonth = selectedDate.slice(0, 7);
 
   return (
     <View
       style={[
         styles.monthGridSurface,
+        isDenseCalendar && { marginHorizontal: -screenPadding },
         { backgroundColor: theme.colors.surface, borderColor: theme.colors.rule },
       ]}
     >
-      <View style={styles.monthWeekdays}>
+      <View style={[styles.monthWeekdays, isDenseCalendar && styles.monthWeekdaysDense]}>
         {weekdayLabels.map((label, index) => (
           <AppText
             align="center"
@@ -466,6 +494,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing[2],
   },
+  todayButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    minWidth: 44,
+  },
   monthPickerSurface: {
     borderRadius: radii.md,
     borderWidth: StyleSheet.hairlineWidth,
@@ -517,17 +551,21 @@ const styles = StyleSheet.create({
   monthWeekday: {
     width: CALENDAR_DAY_WIDTH,
   },
+  monthWeekdaysDense: {
+    paddingHorizontal: 0,
+  },
   monthGrid: {
     flexDirection: 'row',
     paddingTop: spacing[1],
   },
   monthWeek: {
     marginHorizontal: spacing[2],
-    minHeight: 128,
+    minHeight: 64,
     position: 'relative',
   },
   monthWeekDense: {
-    minHeight: 112,
+    marginHorizontal: 0,
+    minHeight: 60,
   },
   dayColumnRules: {
     bottom: 0,
@@ -550,19 +588,19 @@ const styles = StyleSheet.create({
     width: CALENDAR_DAY_WIDTH,
   },
   monthDayButtonDense: {
-    minHeight: 42,
+    minHeight: 44,
   },
   singleDayLane: {
-    minHeight: 28,
+    minHeight: 0,
   },
   singleDayLaneDense: {
-    minHeight: 24,
+    minHeight: 0,
   },
   periodLanes: {
-    minHeight: 48,
+    minHeight: 0,
   },
   periodLanesDense: {
-    minHeight: 40,
+    minHeight: 0,
   },
   todayDot: {
     borderRadius: radii.full,
