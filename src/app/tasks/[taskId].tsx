@@ -344,9 +344,9 @@ export default function TaskDetailScreen() {
   const confirmationOpen = isConfirmingClose && hasDraft;
   const confirmation = confirmationOpen ? (
     <ConfirmDialog
-      title="변경 내용을 버릴까요?"
-      message="저장하지 않은 변경 내용이 사라져요."
-      confirmLabel="변경 내용 버리기"
+      title="저장하지 않고 나갈까요?"
+      message="지금까지 입력한 내용은 저장되지 않아요."
+      confirmLabel="저장하지 않기"
       cancelLabel="계속 작성"
       onConfirm={discardAndClose}
       onCancel={() => setIsConfirmingClose(false)}

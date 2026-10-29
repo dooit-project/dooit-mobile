@@ -138,10 +138,8 @@ export function DetailSheet({
           !element.hasAttribute('disabled') &&
           element.getClientRects().length > 0,
       );
-    const focusFirst = () => {
-      const close = dialog.querySelector<HTMLElement>('[aria-label="할 일 상세 닫기"]');
-      (close ?? focusable()[0] ?? dialog).focus();
-    };
+    // Start at the dialog's reading position. Tab still reaches the controls in order.
+    const focusFirst = () => dialog.focus({ preventScroll: true });
     const frame = requestAnimationFrame(focusFirst);
     const onKeyDown = (event: KeyboardEvent) => {
       // An active menu owns its first Escape and keyboard navigation.
@@ -222,8 +220,10 @@ export function DetailSheet({
         accessibilityViewIsModal
         role={Platform.OS === 'web' ? 'dialog' : undefined}
         aria-modal={Platform.OS === 'web' ? true : undefined}
+        tabIndex={Platform.OS === 'web' ? -1 : undefined}
         style={[
           styles.sheet,
+          Platform.OS === 'web' ? { outlineWidth: 0 } : undefined,
           { transform: [{ translateY: dragOffset }] },
           {
             backgroundColor: theme.colors.surface,

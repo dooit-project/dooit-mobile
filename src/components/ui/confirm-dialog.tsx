@@ -132,7 +132,7 @@ export function ConfirmDialog({
             <View style={styles.actions}>
               <Button
                 ref={confirmRef}
-                variant="dangerOutline"
+                variant="outline"
                 size="compact"
                 focusAppearance="ring"
                 onPress={() => {
