@@ -1,0 +1,26 @@
+[
+  {
+    "level": "info",
+    "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "timestamp": "2026-10-26T13:11:38.997Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "log",
+    "message": "Running application \"main\" with appParams:\n Object \nDevelopment-level warnings: ON.\nPerformance optimizations: OFF.",
+    "timestamp": "2026-10-26T13:11:39.021Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "warn",
+    "message": "\"shadow*\" style props are deprecated. Use \"boxShadow\".",
+    "timestamp": "2026-10-26T13:11:39.321Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "warn",
+    "message": "props.pointerEvents is deprecated. Use style.pointerEvents",
+    "timestamp": "2026-10-26T13:11:39.458Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  }
+]

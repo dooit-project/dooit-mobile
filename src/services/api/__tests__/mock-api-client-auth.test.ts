@@ -131,7 +131,7 @@ describe('Mock auth API', () => {
     );
   });
 
-  it('반복 일정 생성과 수정에서 recurrence 응답을 유지한다', async () => {
+  it('반복 일정 PUT의 null은 반복을 해제하지 않고 원래 규칙을 유지한다', async () => {
     const created = await mockApiClient.post<TaskResponse>('/api/v1/tasks', {
       title: '매일 계획 점검',
       type: 'SCHEDULE',
@@ -169,10 +169,11 @@ describe('Mock auth API', () => {
     });
 
     expect(updated).toMatchObject({
-      recurrenceSeriesId: null,
-      recurrenceRule: null,
-      occurrenceDate: null,
-      recurrence: null,
+      recurrenceSeriesId: created.id,
+      recurrenceRule: 'FREQ=DAILY',
+      occurrenceDate: '2099-01-02',
+      recurrence: created.recurrence,
+      recurrenceException: 'MODIFIED',
     });
   });
 });

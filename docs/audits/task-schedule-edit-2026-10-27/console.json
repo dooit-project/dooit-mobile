@@ -1,0 +1,26 @@
+[
+  {
+    "level": "warn",
+    "message": "\"shadow*\" style props are deprecated. Use \"boxShadow\".",
+    "timestamp": "2026-10-26T17:01:10.383Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "warn",
+    "message": "props.pointerEvents is deprecated. Use style.pointerEvents",
+    "timestamp": "2026-10-26T17:01:10.542Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "warn",
+    "message": "\"shadow*\" style props are deprecated. Use \"boxShadow\".",
+    "timestamp": "2026-10-26T17:15:21.303Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "warn",
+    "message": "props.pointerEvents is deprecated. Use style.pointerEvents",
+    "timestamp": "2026-10-26T17:15:21.469Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  }
+]

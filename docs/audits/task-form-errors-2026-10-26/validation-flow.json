@@ -1,0 +1,44 @@
+{
+  "sequence": [
+    {
+      "active": "일정 시작 시간",
+      "invalid": ["일정 시작 시간"]
+    },
+    {
+      "active": "일정 종료 시간",
+      "invalid": ["일정 종료 시간"]
+    },
+    {
+      "active": "예상 소요 시간(분)",
+      "invalid": ["예상 소요 시간(분)"]
+    }
+  ],
+  "duration": {
+    "active": "예상 소요 시간(분)",
+    "description": "접수 준비물 확인",
+    "error": {
+      "bottom": 375.2265625,
+      "height": 18,
+      "left": 24,
+      "right": 351,
+      "top": 357.2265625,
+      "width": 327,
+      "x": 24,
+      "y": 357.2265625
+    },
+    "field": {
+      "bottom": 349.2265625,
+      "height": 44,
+      "left": 24,
+      "right": 144,
+      "top": 305.2265625,
+      "width": 120,
+      "x": 24,
+      "y": 305.2265625
+    },
+    "viewport": {
+      "height": 568,
+      "width": 390
+    }
+  }
+}

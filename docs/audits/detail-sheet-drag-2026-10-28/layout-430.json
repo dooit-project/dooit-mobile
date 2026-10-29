@@ -1,0 +1,272 @@
+{
+  "capturedAt": "2026-10-28T12:52:51.323Z",
+  "documentWidth": 430,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 342,
+        "x": 20,
+        "y": 53.765625
+      },
+      "icons": [
+        {
+          "height": 10,
+          "width": 10,
+          "x": 20,
+          "y": 70.765625
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 140.2265625,
+          "y": 67.765625
+        }
+      ],
+      "name": "task-goal-path:0",
+      "text": {
+        "height": 20,
+        "width": 94.2265625,
+        "x": 38,
+        "y": 65.765625
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 367,
+        "x": 24,
+        "y": 419.765625
+      },
+      "icons": [
+        {
+          "height": 44,
+          "width": 44,
+          "x": 347,
+          "y": 419.765625
+        }
+      ],
+      "name": "schedule-all-day:1",
+      "text": {
+        "height": 42,
+        "width": 311,
+        "x": 24,
+        "y": 420.765625
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 56,
+        "width": 367,
+        "x": 24,
+        "y": 560.765625
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 576.765625
+        },
+        {
+          "height": 20,
+          "width": 20,
+          "x": 371,
+          "y": 578.765625
+        }
+      ],
+      "name": "task-form-property:2",
+      "text": {
+        "height": 24,
+        "width": 299,
+        "x": 60,
+        "y": 576.765625
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 56,
+        "width": 367,
+        "x": 24,
+        "y": 617.765625
+      },
+      "icons": [
+        {
+          "height": 24,
+          "width": 24,
+          "x": 24,
+          "y": 633.765625
+        },
+        {
+          "height": 20,
+          "width": 20,
+          "x": 371,
+          "y": 635.765625
+        }
+      ],
+      "name": "task-form-property:3",
+      "text": {
+        "height": 24,
+        "width": 299,
+        "x": 60,
+        "y": 633.765625
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 342,
+        "x": 20,
+        "y": 53.765625
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 366,
+        "y": 53.765625
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 367,
+        "x": 24,
+        "y": 187.765625
+      },
+      "minimum": 44,
+      "name": "control:2"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 117,
+        "x": 28,
+        "y": 275.765625
+      },
+      "minimum": 44,
+      "name": "control:3"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 117,
+        "x": 149,
+        "y": 275.765625
+      },
+      "minimum": 44,
+      "name": "control:4"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 117,
+        "x": 270,
+        "y": 275.765625
+      },
+      "minimum": 44,
+      "name": "control:5"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 367,
+        "x": 24,
+        "y": 363.765625
+      },
+      "minimum": 44,
+      "name": "control:6"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 367,
+        "x": 24,
+        "y": 419.765625
+      },
+      "minimum": 44,
+      "name": "control:7"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 179.5,
+        "x": 24,
+        "y": 503.765625
+      },
+      "minimum": 44,
+      "name": "control:8"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 179.5,
+        "x": 211.5,
+        "y": 503.765625
+      },
+      "minimum": 44,
+      "name": "control:9"
+    },
+    {
+      "bounds": {
+        "height": 56,
+        "width": 367,
+        "x": 24,
+        "y": 560.765625
+      },
+      "minimum": 44,
+      "name": "control:10"
+    },
+    {
+      "bounds": {
+        "height": 56,
+        "width": 367,
+        "x": 24,
+        "y": 617.765625
+      },
+      "minimum": 44,
+      "name": "control:11"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 375,
+        "x": 20,
+        "y": 746.765625
+      },
+      "minimum": 44,
+      "name": "control:12"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 375,
+        "x": 20,
+        "y": 794.765625
+      },
+      "minimum": 44,
+      "name": "control:13"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 430
+  }
+}

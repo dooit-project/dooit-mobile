@@ -1,0 +1,14 @@
+[
+  {
+    "level": "warn",
+    "message": "\"shadow*\" style props are deprecated. Use \"boxShadow\".",
+    "timestamp": "2026-10-26T14:57:59.897Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  },
+  {
+    "level": "warn",
+    "message": "props.pointerEvents is deprecated. Use style.pointerEvents",
+    "timestamp": "2026-10-26T14:58:00.075Z",
+    "url": "http://localhost:8082/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp&transform.reactCompiler=true"
+  }
+]

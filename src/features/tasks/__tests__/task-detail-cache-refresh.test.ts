@@ -1,6 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 
 import { ddayQueryKeys } from '@/features/dday/dday-query-keys';
+import { dailyPlanQueryKeys } from '@/features/daily-plan';
 import { taskQueryKeys } from '@/features/tasks/task-query-keys';
 import { useChangeTaskDate } from '@/features/tasks/use-change-task-date';
 import { useCompleteTask } from '@/features/tasks/use-complete-task';
@@ -36,6 +37,13 @@ beforeEach(() => {
   ]);
 });
 afterEach(() => mockClient.clear());
+
+test('일정 수정 후 이전 날짜에 남은 하루 계획 집계를 다시 조회한다', () => {
+  mockClient.setQueryData(dailyPlanQueryKeys.summary(date), { date, completedCount: 0 });
+  const options = useUpdateTask() as unknown as MutationOptions;
+  options.onSuccess(task);
+  expect(mockClient.getQueryState(dailyPlanQueryKeys.summary(date))?.isInvalidated).toBe(true);
+});
 
 test.each([
   ['수정', () => useUpdateTask()],

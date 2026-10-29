@@ -1,6 +1,6 @@
 import type { ComponentProps, PropsWithChildren, ReactNode, Ref } from 'react';
 import type { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { sizes, spacing, useAppTheme, useMobileLayout } from '@/theme';
@@ -40,7 +40,7 @@ export function Screen({
         <ScrollView
           ref={scrollRef}
           automaticallyAdjustKeyboardInsets
-          keyboardDismissMode="on-drag"
+          keyboardDismissMode={Platform.OS === 'web' ? 'none' : 'on-drag'}
           keyboardShouldPersistTaps="handled"
           {...scrollViewProps}
           contentContainerStyle={styles.scrollContent}

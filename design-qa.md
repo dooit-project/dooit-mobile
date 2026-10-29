@@ -1,4 +1,64 @@
-# 최신 Design QA — 선택01 TaskForm 속성 행 구현
+# 최신 Design QA — 상세 시트 손잡이
+
+2026-10-28 · [실제 검토와 범위](./docs/audits/detail-sheet-drag-2026-10-28/README.md)
+
+- 기존 시안의 손잡이 모양과 시트 구조를 유지하고 아래로 충분히 끌면 기존 닫기 동작을 호출한다. 저장되지 않은 변경은 기존 확인창을 거치며 짧은 드래그는 원위치한다. 드래그 중 Web 텍스트 선택 문제도 수정했다.
+- Chrome mock Web 데스크톱 및 390에서 닫기·편집 중 확인을 직접 확인했고, 320/390/430 화면의 실제 좌표는 각각 4행/14조작 검사를 통과했다. 기존 시안과 실제 캡처는 데이터가 달라 구조만 비교했다.
+- `npm run validate` 통과: 129 suites/693 tests, opt-in STG 1개 제외. Android/iOS 실기기·보조 기술 및 운영 API는 미확인이다. 미커밋·미푸시.
+
+final result: passed (명시한 R5 mock Web 범위)
+
+---
+
+# 이전 Design QA — 선택1번 일정 전용 편집
+
+2026-10-27 ·34d470c 이후 working tree · [구현 전 검토/계약 발견·실제 단계/한계](./docs/audits/task-schedule-edit-2026-10-27/README.md)
+
+- 원본: 사용자 직접 확인1번에 안내 제거/취소 경계를 반영한 [보정04](./docs/design/task-schedule-edit-2026-10-27/04-focused-editor-refined.png). [최종 실제03](./docs/audits/task-schedule-edit-2026-10-27/03-focused-final-390.jpg)와 [같은 폭/날짜/시각 비교11](./docs/audits/task-schedule-edit-2026-10-27/11-source-comparison.jpg)을 함께 직접 확인했다.853×1844 원본390폭 비율 유지·구현CSS/실제390×844. 필드·버튼을 읽을 수 있어 별도 부분 crop은 추가하지 않았다.
+- 다섯 면: 공통 글꼴22/30·18/26·16/24·14/20·13/18, 필드/하단 간격과48px 조작, primary/white/neutral token, 기존 AppIcon·새 자산 없음, 원문 제목/날짜·안내 삭제/취소와 완료 문구를 확인했다. 기존96% 패널/뒤 Today34px·손잡이/목표 경로, 날짜의 YYYY-MM-DD 입력·기존 종일 설명, solid primary는 공통 컴포넌트에 따른 명시한 차이다.
+- 초기 자동 초점의 검은 Back 경계를 새 Back의 선택적 focus ring으로 보정했다. 종일의40×20 그림은 전체44px 행을 조작 영역으로 만들고 내부 중복 switch를 aria-hidden 부모에 숨겼다. 최종320/390/430/390×568 모두 새 좌표2행/9조작 통과.
+- 기능: 로컬 backend 코드에서 미완료 PUT의 목록 날짜 동시 갱신/DONE 보존·반복 범위 계약을 확인하고 mock 날짜 잔류/알림 누락/반복 삭제를 보정했다. 실제 Web mock 저장으로27일→29일 이동 후 상세·이전 Today 제거·달력29일 새 시각, 복원/취소/dirty/Back·일정 행 초점·종일 시각 보존/오류를 확인했다. 반복 원문/알림 시간차·기간/캐시는 회귀 범위다. 두 API를 연속 호출하지 않는다.
+- 공식 GOV.UK 버튼/Todoist 속성 편집 자료 참고이며 경쟁 앱 직접 조작/Figma/외부 전문가 인증은 아니다. Android/iOS/Web 공통 영향이며 실제 native/확대/화면 읽기/dark/운영 API·알림/느린 실패·다중 반복 실사용은 미확인이다. 전체 수정의 실제 반복 규칙 변경 전용 계약 연결은 별도 후속이다. 미커밋·미푸시.
+
+검사 결과: 전체 `npm run validate` 통과(TypeScript/lint/format/문서/출시 정적 검사·129 suites/693 tests, opt-in STG1개 제외). 로그 `/private/tmp/dooit-schedule-20261027.log`. 실제 좌표4개 모두2행/9조작 통과. console error0·기존 shadow/pointerEvents deprecation2종이다.
+
+final result: passed (명시한 R4 일정 전용 편집의 mock Web/회귀 범위)
+
+---
+
+# 이전 Design QA — 오류 복구 외부 기준 재검토
+
+2026-10-27 · `34d470c` 이후 working tree · [새 실제 감사/단계·출처·한계](./docs/audits/task-form-external-recheck-2026-10-26/README.md)
+
+- Product Design audit와 공식 WAI/GOV.UK/Todoist 자료를 대조했다. 경쟁 앱 직접 사용·Figma·외부 전문가 인증은 아니다.
+- [동일390×844 실제 전후 비교](./docs/audits/task-form-external-recheck-2026-10-26/07-date-comparison.jpg): 형식은 맞지만 존재하지 않는 날짜에 형식 안내만 보이던 P2를 구체적인 날짜 확인 문구로 수정했다. 일반 형식 오류는 기존 안내를 유지한다. 같은 입력/스크롤/초점 조건에서 문구 외 글꼴/간격/색/자산/기본 구성 유지. 세부 영역은 같은 폭의 입력 바로 아래 문구를 비교판에서 직접 읽을 수 있어 별도 확대 합성을 추가하지 않았다.
+- 실제 정상→날짜 오류→320px→접힌 예상 시간/390×568→오류 해제/설명 보존→취소/초점 복귀를 확인했다. 새 좌표 검사3행/13조작·3행/9조작 통과, console error0/기존 deprecation2종.
+- Android/iOS 공통 문구 변경이며 실기기/스크린 리더/확대/dark/운영 저장·알림은 미확인이다. 날짜/시각 전용 새 편집은 다음 선택 단계이며 미구현이다. 미커밋·미푸시.
+
+검사 결과: 전체 `npm run validate` 통과(TypeScript/lint/format/문서/출시 정적 검사·126 suites/678 tests, opt-in STG1개 제외). 로그 `/private/tmp/dooit-external-recheck-20261027.log`. 새 실제 좌표 검사2개 모두 통과.
+
+final result: passed (명시한 오류 복구 Web 범위)
+
+---
+
+# 이전 Design QA — TaskForm 첫 오류 위치와 수정 흐름
+
+2026-10-26 · `34d470c` 이후 working tree · [구현 전 검토/실제 단계/수정 이력과 한계](./docs/audits/task-form-errors-2026-10-26/README.md)
+
+- 시각 기준: 사용자 선택01을 유지한 이번 [수정 전 정상390](./docs/audits/task-form-errors-2026-10-26/01-before-normal-390.jpg). 구현 [정상390](./docs/audits/task-form-errors-2026-10-26/03-after-normal-390.jpg)/[날짜 오류390](./docs/audits/task-form-errors-2026-10-26/04-after-date-error-390.jpg). 같은 Chrome mock/light/CSS390×844와390×844 실제 캡처로 밀도 정규화 없이 비교했다.
+- [전체 정상/오류와 부분 비교판](./docs/audits/task-form-errors-2026-10-26/09-before-after-comparison.jpg)을 함께 직접 확인했다. 정상 배치/조작 수/글자·간격·기본 색과 값은 유지한다. 오류의 입력 초점/스크롤과 문구 위치만 바뀌므로 오류 상태의 절대 y 차이를 시안 이탈로 판단하지 않는다. 커서 위치 차이는 입력/기하 변경이 아니다.
+- 필수 다섯 면: 기존 공통 글꼴/16·14·13 크기·행간, 정상 폭/높이/간격, danger/primary/중립 token, 기존 아이콘/새 이미지 없음, 기본/오류 문구·원문 보존을 확인했다. 시간 오류는 전체 시간 행 아래로 읽히되 오류 경계/설명 ID는 해당 칸에만 연결한다. 새 카드/오류 dialog/추가 버튼/새 의존성/백엔드 변경은 없다.
+- P2 오류 위치/초점: 이전은 폼 하단 메시지·저장 초점이었다. 필드별 설명/invalid/화면 순서 검사를 연결했다. 처음 Web 자동 스크롤 뒤 blur되는 문제를 실제 발견하고, RN Web 소스 확인 후 Screen/DetailSheet Web만 none/native on-drag 유지로 수정했다. [수정 후 지속된 활성 날짜/설명 연결](./docs/audits/task-form-errors-2026-10-26/date-error-390.json)과 새 작성의 활성 시각을 확인했다. 반쪽 폭의 오류 문장 끊김은 전체 시간 행 폭으로 보정 후320/430에서 재촬영했다.
+- 실제 단계: 날짜·반복 제출, 시작→종료→예상 시간의 복수 오류, 접힌 예상 시간 자동 펼침/390×568에서 입력·문구 모두 보임, 수정 시 강조 해제/다른 입력 유지, 새 작성/기존 수정, 기존 중앙 버리기/초점 복귀. 기본 시각 검사에 스크롤 후 오류 초점 유지 검사를 추가했다. 공식 WAI/GOV.UK 문서 참고이며 Figma/경쟁 앱 직접 사용은 아니다.
+- native/화면 읽기/font scale1.5/dark/운영 저장·느린 실패/알림은 미확인이다. 실제 오류 guard 저장 payload는 회귀 범위이며 실제 API 저장은 수행하지 않았다. 영향은 Android/iOS/Web 공통 TaskForm/TextField와 Web 공통 스크롤 화면이다. 새 작업은 미커밋/미푸시다.
+
+검사 결과: 전체 `npm run validate` 통과(TypeScript/lint/format/문서/출시 정적 검사·126 suites/677 tests, opt-in STG1개 제외). 로그 `/private/tmp/dooit-task-form-errors-20261026.log`. 새 실제 기하 검사는 날짜390·종료320/430 각3행/13조작, 짧은 예상 시간390은3행/9조작, 새 작성390은2행/12조작 통과다. console error0이며 기존 deprecation2종은 유지한다.
+
+final result: passed
+
+---
+
+# 이전 Design QA — 선택01 TaskForm 속성 행 구현
 
 2026-10-26 · `e54fdbb` 이후 working tree · [범위/실제 감사/검사와 한계](./docs/audits/task-form-properties-2026-10-26/README.md)
 

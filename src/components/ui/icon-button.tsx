@@ -12,6 +12,7 @@ type IconButtonProps = Omit<PressableProps, 'accessibilityLabel' | 'children' | 
   variant?: 'soft' | 'plain';
   expanded?: boolean;
   style?: ViewStyle;
+  focusAppearance?: 'border' | 'ring';
 };
 
 export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonProps>(
@@ -26,12 +27,14 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
       onBlur,
       onFocus,
       style,
+      focusAppearance = 'border',
       ...props
     },
     ref,
   ) {
     const theme = useAppTheme();
     const [isFocused, setIsFocused] = useState(false);
+    const [isFocusVisible, setIsFocusVisible] = useState(false);
     const isDisabled = Boolean(disabled);
 
     return (
@@ -47,10 +50,13 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
         hitSlop={4}
         onBlur={(event) => {
           setIsFocused(false);
+          setIsFocusVisible(false);
           onBlur?.(event);
         }}
         onFocus={(event) => {
           setIsFocused(true);
+          const target = event.target as unknown as { matches?: (selector: string) => boolean };
+          setIsFocusVisible(target.matches?.(':focus-visible') ?? true);
           onFocus?.(event);
         }}
         style={({ pressed }) => [
@@ -62,11 +68,20 @@ export const IconButton = forwardRef<ComponentRef<typeof Pressable>, IconButtonP
                 : variant === 'plain'
                   ? 'transparent'
                   : theme.colors.surfaceMuted,
-            borderColor: isFocused ? theme.colors.text : 'transparent',
-            borderWidth: isFocused ? 2 : 1,
+            borderColor:
+              isFocused && focusAppearance === 'border' ? theme.colors.text : 'transparent',
+            borderWidth: focusAppearance === 'ring' || isFocused ? 2 : 1,
             opacity: isDisabled ? 0.45 : 1,
           },
           style,
+          focusAppearance === 'ring' && isFocused && isFocusVisible
+            ? {
+                outlineColor: theme.colors.primary,
+                outlineWidth: 2,
+                outlineOffset: 2,
+                outlineStyle: 'solid',
+              }
+            : undefined,
         ]}
       >
         {children}

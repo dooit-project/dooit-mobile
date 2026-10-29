@@ -19,6 +19,7 @@ import {
   focusControl,
 } from '@/components/ui';
 import { useDdayGoals } from '@/features/dday';
+import { TaskScheduleForm } from '@/features/tasks/task-schedule-form';
 import { TaskGoalPath } from '@/features/tasks/task-goal-path';
 import { useTaskUnloadProtection } from '@/features/tasks/use-task-unload-protection';
 import { useTaskFormSettingsNavigation } from '@/features/tasks/use-task-form-settings-navigation';
@@ -59,6 +60,9 @@ export default function TaskDetailScreen() {
   const reopenTask = useReopenTask(today);
   const [isPanel] = useState(() => router.canGoBack());
   const [isEditing, setIsEditing] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState(false);
+  const scheduleTriggerRef = useRef<ComponentRef<typeof Pressable>>(null);
+  const scheduleBackRef = useRef<ComponentRef<typeof Pressable>>(null);
   const { formRef, scrollRef, settingsOpen, onScroll, onSettingsChange, closeSettings } =
     useTaskFormSettingsNavigation();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -122,73 +126,18 @@ export default function TaskDetailScreen() {
     ],
   });
   const dismissMenu = actionMenu.dismiss;
-  const requestClose = useCallback(() => {
-    if (closeSettings()) return;
-    if (menuOpen) {
-      dismissMenu();
-      return;
-    }
-    if (busy) return;
-    if (isConfirmingClose) {
-      setIsConfirmingClose(false);
-      return;
-    }
-    if (hasDraft) {
-      setCloseTarget('detail');
-      pendingAction.current = null;
-      pendingBrowserNavigation.current = null;
-      setIsConfirmingClose(true);
-      return;
-    }
-    getScreenBackAction(router).onPress();
-  }, [busy, hasDraft, router, menuOpen, dismissMenu, isConfirmingClose, closeSettings]);
-  usePreventRemove(settingsOpen || hasDraft || (busy && !deleteTask.isSuccess), ({ data }) => {
-    if (closeSettings()) return;
-    if (busy) return;
-    if (isConfirmingClose) {
-      setIsConfirmingClose(false);
-      return;
-    }
-    setCloseTarget('detail');
-    pendingBrowserNavigation.current = null;
-    pendingAction.current = data.action;
-    setIsConfirmingClose(true);
-  });
-  useEffect(() => {
-    if (deleteTask.isSuccess) getScreenBackAction(router).onPress();
-  }, [deleteTask.isSuccess, router]);
-  useTaskUnloadProtection(hasDraft || busy);
-  useEffect(() => {
-    if (Platform.OS !== 'web' || (!hasDraft && !busy)) return;
-    // SDK 56's native removal hook does not cover browser Back/Forward.
-    // Use the public browser API where traversal cancellation is available.
-    const browserNavigation = (window as unknown as { navigation?: BrowserNavigation }).navigation;
-    if (!browserNavigation) return;
-    const protectTraversal = (event: Event) => {
-      if (event.defaultPrevented) return;
-      const traversal = event as BrowserTraverseEvent;
-      if (traversal.navigationType !== 'traverse' || !traversal.cancelable) return;
-      traversal.preventDefault();
-      if (closeSettings()) return;
-      if (busy) return;
-      if (isConfirmingClose) {
-        setIsConfirmingClose(false);
-        return;
-      }
-      setCloseTarget('detail');
-      pendingAction.current = null;
-      pendingBrowserNavigation.current = () =>
-        browserNavigation.traverseTo(traversal.destination.key);
-      setIsConfirmingClose(true);
-    };
-    browserNavigation.addEventListener('navigate', protectTraversal);
-    return () => browserNavigation.removeEventListener('navigate', protectTraversal);
-  }, [hasDraft, busy, isConfirmingClose, closeSettings]);
-  const stopEditing = (restoreFocus = true) => {
-    setIsEditing(false);
-    setHasFormDraft(false);
-    if (restoreFocus) requestAnimationFrame(() => focusControl(editTriggerRef.current));
-  };
+  const stopEditing = useCallback(
+    (restoreFocus = true) => {
+      setIsEditing(false);
+      setEditingSchedule(false);
+      setHasFormDraft(false);
+      if (restoreFocus)
+        requestAnimationFrame(() =>
+          focusControl(editingSchedule ? scheduleTriggerRef.current : editTriggerRef.current),
+        );
+    },
+    [editingSchedule],
+  );
   const discardAndClose = () => {
     const action = pendingAction.current;
     const browserAction = pendingBrowserNavigation.current;
@@ -210,9 +159,18 @@ export default function TaskDetailScreen() {
     setManagement(null);
     setEditScope('THIS');
     setHasFormDraft(false);
+    setEditingSchedule(false);
     setIsEditing(true);
   };
-  const cancelEditing = () => {
+  const startScheduleEditing = () => {
+    startEditing();
+    setEditingSchedule(true);
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+      focusControl(scheduleBackRef.current);
+    });
+  };
+  const cancelEditing = useCallback(() => {
     if (busy) return;
     if (hasFormDraft) {
       setCloseTarget('editor');
@@ -223,7 +181,93 @@ export default function TaskDetailScreen() {
     }
     updateTask.reset();
     stopEditing();
-  };
+  }, [busy, hasFormDraft, stopEditing, updateTask]);
+  const requestClose = useCallback(() => {
+    if (closeSettings()) return;
+    if (menuOpen) {
+      dismissMenu();
+      return;
+    }
+    if (busy) return;
+    if (isConfirmingClose) {
+      setIsConfirmingClose(false);
+      return;
+    }
+    if (hasDraft) {
+      setCloseTarget('detail');
+      pendingAction.current = null;
+      pendingBrowserNavigation.current = null;
+      setIsConfirmingClose(true);
+      return;
+    }
+    if (editingSchedule) {
+      stopEditing(false);
+      requestAnimationFrame(() => getScreenBackAction(router).onPress());
+    } else getScreenBackAction(router).onPress();
+  }, [
+    busy,
+    hasDraft,
+    router,
+    menuOpen,
+    dismissMenu,
+    isConfirmingClose,
+    closeSettings,
+    editingSchedule,
+    stopEditing,
+  ]);
+  usePreventRemove(
+    editingSchedule || settingsOpen || hasDraft || (busy && !deleteTask.isSuccess),
+    ({ data }) => {
+      if (closeSettings()) return;
+      if (busy) return;
+      if (editingSchedule) {
+        cancelEditing();
+        return;
+      }
+      if (isConfirmingClose) {
+        setIsConfirmingClose(false);
+        return;
+      }
+      setCloseTarget('detail');
+      pendingBrowserNavigation.current = null;
+      pendingAction.current = data.action;
+      setIsConfirmingClose(true);
+    },
+  );
+  useEffect(() => {
+    if (deleteTask.isSuccess) getScreenBackAction(router).onPress();
+  }, [deleteTask.isSuccess, router]);
+  useTaskUnloadProtection(hasDraft || busy);
+  useEffect(() => {
+    if (Platform.OS !== 'web' || (!editingSchedule && !hasDraft && !busy)) return;
+    // SDK 56's native removal hook does not cover browser Back/Forward.
+    // Use the public browser API where traversal cancellation is available.
+    const browserNavigation = (window as unknown as { navigation?: BrowserNavigation }).navigation;
+    if (!browserNavigation) return;
+    const protectTraversal = (event: Event) => {
+      if (event.defaultPrevented) return;
+      const traversal = event as BrowserTraverseEvent;
+      if (traversal.navigationType !== 'traverse' || !traversal.cancelable) return;
+      traversal.preventDefault();
+      if (closeSettings()) return;
+      if (busy) return;
+      if (editingSchedule) {
+        cancelEditing();
+        return;
+      }
+      if (isConfirmingClose) {
+        setIsConfirmingClose(false);
+        return;
+      }
+      setCloseTarget('detail');
+      pendingAction.current = null;
+      pendingBrowserNavigation.current = () =>
+        browserNavigation.traverseTo(traversal.destination.key);
+      setIsConfirmingClose(true);
+    };
+    browserNavigation.addEventListener('navigate', protectTraversal);
+    return () => browserNavigation.removeEventListener('navigate', protectTraversal);
+  }, [hasDraft, busy, isConfirmingClose, closeSettings, editingSchedule, cancelEditing]);
   const handleSubmit = (request: TaskUpsertRequest) => {
     if (parsedTaskId === null) return;
     updateTask.mutate(
@@ -258,6 +302,18 @@ export default function TaskDetailScreen() {
       accessibilityElementsHidden={menuOpen}
       importantForAccessibility={menuOpen ? 'no-hide-descendants' : 'auto'}
     >
+      {editingSchedule ? (
+        <IconButton
+          ref={scheduleBackRef}
+          focusAppearance="ring"
+          accessibilityLabel="일정 변경 취소하고 상세로 돌아가기"
+          variant="plain"
+          disabled={busy}
+          onPress={cancelEditing}
+        >
+          <AppIcon name="chevron-left" color={theme.colors.textSecondary} />
+        </IconButton>
+      ) : null}
       <TaskGoalPath task={task} disabled={!task || busy || isEditing || hasChecklistDraft} />
       {!isEditing ? (
         <Button
@@ -298,7 +354,7 @@ export default function TaskDetailScreen() {
   ) : null;
   const content = (
     <View
-      style={panelStyles.content}
+      style={[panelStyles.content, editingSchedule && { flexGrow: 1 }]}
       accessibilityElementsHidden={menuOpen}
       importantForAccessibility={menuOpen ? 'no-hide-descendants' : 'auto'}
     >
@@ -325,10 +381,10 @@ export default function TaskDetailScreen() {
           }
         />
       ) : task && isEditing ? (
-        <View style={styles.editing}>
+        <View style={[styles.editing, editingSchedule && { flexGrow: 1 }]}>
           {!settingsOpen ? (
             <AppText accessibilityRole="header" variant="title" weight="semibold">
-              할 일 수정
+              {editingSchedule ? '일정 변경' : '할 일 수정'}
             </AppText>
           ) : null}
           {isRecurringTask(task) && !settingsOpen ? (
@@ -339,18 +395,35 @@ export default function TaskDetailScreen() {
               onChange={setEditScope}
             />
           ) : null}
-          <TaskForm
-            ref={formRef}
-            onSettingsChange={onSettingsChange}
-            initialTask={task}
-            autoFocusTitle
-            errorMessage={updateTask.error?.message}
-            isSubmitting={updateTask.isPending}
-            submitLabel="수정 완료"
-            onDraftChange={reportFormDraft}
-            onCancel={cancelEditing}
-            onSubmit={handleSubmit}
-          />
+          {editingSchedule ? (
+            <AppText variant="sectionTitle" tone="secondary">
+              {task.title}
+            </AppText>
+          ) : null}
+          {editingSchedule ? (
+            <TaskScheduleForm
+              task={task}
+              scope={editScope}
+              errorMessage={updateTask.error?.message}
+              isSubmitting={updateTask.isPending}
+              onDraftChange={reportFormDraft}
+              onCancel={cancelEditing}
+              onSubmit={handleSubmit}
+            />
+          ) : (
+            <TaskForm
+              ref={formRef}
+              onSettingsChange={onSettingsChange}
+              initialTask={task}
+              autoFocusTitle
+              errorMessage={updateTask.error?.message}
+              isSubmitting={updateTask.isPending}
+              submitLabel="수정 완료"
+              onDraftChange={reportFormDraft}
+              onCancel={cancelEditing}
+              onSubmit={handleSubmit}
+            />
+          )}
         </View>
       ) : task && management ? (
         <View style={panelStyles.content}>
@@ -401,7 +474,8 @@ export default function TaskDetailScreen() {
             if (task.status === 'DONE') reopenTask.mutate(task.id);
             else completeTask.mutate(task.id);
           }}
-          onEdit={startEditing}
+          onEditSchedule={startScheduleEditing}
+          scheduleTriggerRef={scheduleTriggerRef}
           onChecklistDraftChange={reportChecklistDraft}
           onChecklistBusyChange={setChecklistBusy}
           onDateBusyChange={setDateBusy}
@@ -421,6 +495,7 @@ export default function TaskDetailScreen() {
           label="할 일 상세"
           returnFocusLabel={task?.title}
           expanded={isEditing}
+          fillContent={editingSchedule}
           onClose={requestClose}
         >
           {content}
@@ -430,7 +505,7 @@ export default function TaskDetailScreen() {
           scroll
           scrollRef={scrollRef}
           scrollViewProps={{ onScroll: onScroll, scrollEventThrottle: 16 }}
-          contentContainerStyle={styles.screen}
+          contentContainerStyle={[styles.screen, editingSchedule && { flexGrow: 1 }]}
           overlay={actionMenu.overlay}
         >
           {header}
@@ -449,7 +524,8 @@ function TaskContent({
   isCompleting,
   completionError,
   onComplete,
-  onEdit,
+  onEditSchedule,
+  scheduleTriggerRef,
   onChecklistDraftChange,
   onChecklistBusyChange,
   onDateBusyChange,
@@ -460,7 +536,8 @@ function TaskContent({
   isCompleting: boolean;
   completionError?: string | null;
   onComplete: () => void;
-  onEdit: () => void;
+  onEditSchedule: () => void;
+  scheduleTriggerRef: React.RefObject<ComponentRef<typeof Pressable> | null>;
   onChecklistDraftChange: (draft: boolean) => void;
   onChecklistBusyChange: (busy: boolean) => void;
   onDateBusyChange: (busy: boolean) => void;
@@ -530,7 +607,8 @@ function TaskContent({
             label="일정"
             value={scheduleLabel}
             disabled={editDisabled}
-            onPress={onEdit}
+            controlRef={scheduleTriggerRef}
+            onPress={onEditSchedule}
           />
         ) : null}
         <DetailField
@@ -554,7 +632,7 @@ function TaskContent({
             {recurrenceLabel}
           </AppText>
         ) : null}
-        {task.targetDate ? (
+        {task.targetDate && task.type !== 'SCHEDULE' ? (
           <AppText tone="secondary" variant="caption" style={panelStyles.fieldNote}>
             목표일 {formatDateLabel(task.targetDate)}
           </AppText>
@@ -589,7 +667,9 @@ function DetailField({
   disabled,
   expanded,
   onPress,
+  controlRef,
 }: {
+  controlRef?: React.Ref<ComponentRef<typeof Pressable>>;
   icon: 'clock' | 'calendar';
   label: string;
   value: string;
@@ -600,6 +680,7 @@ function DetailField({
   const theme = useAppTheme();
   return (
     <Pressable
+      ref={controlRef}
       {...uiAuditProps({ uiRow: 'detail-field', uiAlign: 'text-block', uiTouch: '44' })}
       accessibilityRole="button"
       accessibilityLabel={`${label}, ${value}${icon === 'clock' ? ', 일정 수정' : ', 실행일 변경'}`}

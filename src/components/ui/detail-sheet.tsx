@@ -1,13 +1,17 @@
 import {
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
+  useState,
   type ComponentRef,
   type ReactNode,
   type Ref,
 } from 'react';
 import {
+  Animated,
   KeyboardAvoidingView,
+  PanResponder,
   Platform,
   Pressable,
   ScrollView,
@@ -53,6 +57,7 @@ export function DetailSheet({
   modalActive = false,
   scrollRef,
   onScroll,
+  fillContent = false,
 }: {
   children: ReactNode;
   header: ReactNode;
@@ -65,6 +70,7 @@ export function DetailSheet({
   modalActive?: boolean;
   scrollRef?: Ref<ScrollView>;
   onScroll?: ScrollViewProps['onScroll'];
+  fillContent?: boolean;
 }) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -72,6 +78,31 @@ export function DetailSheet({
   const dialogRef = useRef<ComponentRef<typeof View>>(null);
   const closeRef = useRef(onClose);
   const modalActiveRef = useRef(modalActive);
+  const [dragOffset] = useState(() => new Animated.Value(0));
+  const dragResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => !modalActive,
+        onPanResponderGrant: (event) => event.preventDefault(),
+        onMoveShouldSetPanResponder: (_, gesture) =>
+          !modalActive && gesture.dy > 8 && gesture.dy > Math.abs(gesture.dx) * 1.5,
+        onPanResponderMove: (_, gesture) => dragOffset.setValue(Math.max(0, gesture.dy)),
+        onPanResponderRelease: (_, gesture) => {
+          Animated.spring(dragOffset, {
+            toValue: 0,
+            useNativeDriver: Platform.OS !== 'web',
+          }).start();
+          if (gesture.dy >= 80 && !modalActive) onClose();
+        },
+        onPanResponderTerminate: () => {
+          Animated.spring(dragOffset, {
+            toValue: 0,
+            useNativeDriver: Platform.OS !== 'web',
+          }).start();
+        },
+      }),
+    [dragOffset, modalActive, onClose],
+  );
   const returnLabelRef = useRef(returnFocusLabel);
   useLayoutEffect(() => {
     closeRef.current = onClose;
@@ -185,7 +216,7 @@ export function DetailSheet({
         onPress={onClose}
         style={[StyleSheet.absoluteFill, { backgroundColor: theme.colors.overlay }]}
       />
-      <View
+      <Animated.View
         ref={dialogRef}
         accessibilityLabel={label}
         accessibilityViewIsModal
@@ -193,6 +224,7 @@ export function DetailSheet({
         aria-modal={Platform.OS === 'web' ? true : undefined}
         style={[
           styles.sheet,
+          { transform: [{ translateY: dragOffset }] },
           {
             backgroundColor: theme.colors.surface,
             marginTop: Math.max(insets.top, spacing[2]),
@@ -200,10 +232,9 @@ export function DetailSheet({
           },
         ]}
       >
-        <View
-          accessible={false}
-          style={[styles.handle, { backgroundColor: theme.colors.border }]}
-        />
+        <View accessible={false} {...dragResponder.panHandlers} style={styles.handleTarget}>
+          <View style={[styles.handle, { backgroundColor: theme.colors.border }]} />
+        </View>
         <View style={{ paddingHorizontal: screenPadding }}>{header}</View>
         {notice ? (
           <View style={{ paddingHorizontal: screenPadding, paddingTop: spacing[2] }}>{notice}</View>
@@ -214,8 +245,9 @@ export function DetailSheet({
           scrollEventThrottle={16}
           automaticallyAdjustKeyboardInsets
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
+          keyboardDismissMode={Platform.OS === 'web' ? 'none' : 'on-drag'}
           contentContainerStyle={{
+            flexGrow: fillContent ? 1 : undefined,
             paddingHorizontal: screenPadding,
             paddingTop: spacing[2],
             paddingBottom: Math.max(insets.bottom, spacing[6]),
@@ -224,7 +256,7 @@ export function DetailSheet({
           {children}
         </ScrollView>
         {overlay}
-      </View>
+      </Animated.View>
     </KeyboardAvoidingView>
   );
 }
@@ -244,7 +276,6 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     alignSelf: 'center',
-    marginTop: spacing[2],
-    marginBottom: spacing[2],
   },
+  handleTarget: { height: 20, alignItems: 'center', justifyContent: 'center' },
 });

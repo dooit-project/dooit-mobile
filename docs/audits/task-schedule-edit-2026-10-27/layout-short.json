@@ -1,0 +1,160 @@
+{
+  "capturedAt": "2026-10-26T17:21:07.767Z",
+  "documentWidth": 390,
+  "route": "/tasks/4",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 254,
+        "x": 68,
+        "y": 42.7265625
+      },
+      "icons": [
+        {
+          "height": 10,
+          "width": 10,
+          "x": 68,
+          "y": 59.7265625
+        },
+        {
+          "height": 16,
+          "width": 14,
+          "x": 188.2265625,
+          "y": 56.7265625
+        }
+      ],
+      "name": "task-goal-path:0",
+      "text": {
+        "height": 20,
+        "width": 94.2265625,
+        "x": 86,
+        "y": 54.7265625
+      },
+      "titleLine": null
+    },
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 44,
+        "width": 350,
+        "x": 20,
+        "y": 266.7265625
+      },
+      "icons": [
+        {
+          "height": 44,
+          "width": 44,
+          "x": 326,
+          "y": 266.7265625
+        }
+      ],
+      "name": "schedule-all-day:1",
+      "text": {
+        "height": 42,
+        "width": 294,
+        "x": 20,
+        "y": 267.7265625
+      },
+      "titleLine": null
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 20,
+        "y": 42.7265625
+      },
+      "minimum": 44,
+      "name": "control:0"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 254,
+        "x": 68,
+        "y": 42.7265625
+      },
+      "minimum": 44,
+      "name": "control:1"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 326,
+        "y": 42.7265625
+      },
+      "minimum": 44,
+      "name": "control:2"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 350,
+        "x": 20,
+        "y": 210.7265625
+      },
+      "minimum": 44,
+      "name": "control:3"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 350,
+        "x": 20,
+        "y": 266.7265625
+      },
+      "minimum": 44,
+      "name": "control:4"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 171,
+        "x": 20,
+        "y": 350.7265625
+      },
+      "minimum": 44,
+      "name": "control:5"
+    },
+    {
+      "bounds": {
+        "height": 44,
+        "width": 171,
+        "x": 199,
+        "y": 350.7265625
+      },
+      "minimum": 44,
+      "name": "control:6"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 350,
+        "x": 20,
+        "y": 440
+      },
+      "minimum": 44,
+      "name": "control:7"
+    },
+    {
+      "bounds": {
+        "height": 48,
+        "width": 350,
+        "x": 20,
+        "y": 496
+      },
+      "minimum": 44,
+      "name": "control:8"
+    }
+  ],
+  "viewport": {
+    "height": 568,
+    "width": 390
+  }
+}

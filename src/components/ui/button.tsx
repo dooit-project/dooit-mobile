@@ -7,7 +7,7 @@ import { radii, sizes, spacing, useAppTheme } from '@/theme';
 import { AppText } from './app-text';
 import { uiAuditProps } from './ui-audit-props';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerOutline';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'dangerOutline';
 type ButtonSize = 'compact' | 'medium' | 'large';
 
 type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
@@ -67,6 +67,12 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
       textColor: theme.colors.textSecondary,
       pressedColor: theme.colors.surfaceMuted,
     },
+    outline: {
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.borderStrong,
+      textColor: theme.colors.textSecondary,
+      pressedColor: theme.colors.surfaceMuted,
+    },
     dangerOutline: {
       backgroundColor: theme.colors.surfaceElevated,
       borderColor: theme.colors.border,
@@ -113,7 +119,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(fu
           backgroundColor: pressed ? selected.pressedColor : selected.backgroundColor,
           borderColor:
             isFocused && focusAppearance === 'border' ? theme.colors.text : selected.borderColor,
-          borderWidth: variant === 'dangerOutline' ? 1 : 2,
+          borderWidth: variant === 'dangerOutline' || variant === 'outline' ? 1 : 2,
           opacity: isDisabled ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,
         },

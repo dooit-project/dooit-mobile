@@ -1,0 +1,145 @@
+- button:
+  - generic: 
+- generic: dooit
+- button:
+  - generic: A little is a beginning.
+- heading [level=1]: 토익 900점 받기
+- button:
+  - generic: 
+- checkbox:
+  - generic: 󰄰
+- button:
+  - generic: 영단어 30개 외우기
+  - generic: 매일 · 아침 식사 후
+- checkbox:
+  - generic: 󰄰
+- button:
+  - generic: 토익 문제 30개 풀기
+  - generic: 오답까지 정리하기
+- checkbox:
+  - generic: 󰄰
+- button:
+  - generic: 토익 시험 접수
+  - generic: 
+  - generic: 오후 2:00
+- heading [level=1]: 건강한 몸 만들기
+- button:
+  - generic: 
+- checkbox:
+  - generic: 󰄰
+- button:
+  - generic: 30분 걷기
+  - generic: 월 · 수 · 금 · 퇴근 후
+- checkbox [checked]:
+  - generic: 󰄳
+- button:
+  - generic: 스트레칭 5분
+  - generic: 완료
+- button:
+  - generic: 
+  - generic: 할 일 추가
+- button:
+  - generic: 
+- button:
+  - generic: 2026년 10월
+- button:
+  - generic: 
+- generic: 월
+- generic: 화
+- generic: 수
+- generic: 목
+- generic: 금
+- generic: 토
+- generic: 일
+- button:
+  - generic: "19"
+- button:
+  - generic: "20"
+- button:
+  - generic: "21"
+- button:
+  - generic: "22"
+- button:
+  - generic: "23"
+- button:
+  - generic: "24"
+- button:
+  - generic: "25"
+- button:
+  - generic: "26"
+- button:
+  - generic: "27"
+- button:
+  - generic: "28"
+- button:
+  - generic: "29"
+- button:
+  - generic: "30"
+- button:
+  - generic: "31"
+- button:
+  - generic: "1"
+- button:
+  - generic: 토익 시험 접수
+- button:
+  - generic: "2"
+- button:
+  - generic: "3"
+- button:
+  - generic: "4"
+- button:
+  - generic: "5"
+- button:
+  - generic: "6"
+- button:
+  - generic: "7"
+- button:
+  - generic: "8"
+- generic: 
+- generic: 예정된 항목이 없어요
+- generic: 선택한 날짜에는 아직 일정이나 할 일이 없어요.
+- button:
+  - generic: 이 날짜에 일정 추가
+- tablist:
+  - tab [selected]:
+    - generic: 
+    - generic: 
+    - generic: 오늘
+  - tab:
+    - generic: 
+    - generic: 
+    - generic: 달력
+  - tab:
+    - generic: 
+    - generic: 
+    - generic: 계획
+  - tab:
+    - generic: 
+    - generic: 
+    - generic: 돌아보기
+- dialog "할 일 상세":
+  - button "토익 900점 받기, 계획에서 목표 보기":
+    - generic: 토익 900점 받기
+    - generic: 
+  - button "할 일 수정":
+    - generic: 수정
+  - button "할 일 더보기":
+    - generic: 
+  - button "할 일 상세 닫기":
+    - generic: 
+  - checkbox "토익 시험 접수 완료하기":
+    - generic: 󰄰
+  - heading "토익 시험 접수" [level=1]
+  - button "일정, 10월 27일 (화) 14:00 - 14:30, 일정 수정" [active]:
+    - generic: 
+    - generic: 일정
+    - generic: 10월 27일 (화) 14:00 - 14:30
+    - generic: 
+  - button "실행일, 오늘 · 10월 27일 (화), 실행일 변경":
+    - generic: 
+    - generic: 실행일
+    - generic: 오늘 · 10월 27일 (화)
+    - generic: 
+  - button "체크리스트 추가":
+    - generic: 
+    - generic: 체크리스트 추가

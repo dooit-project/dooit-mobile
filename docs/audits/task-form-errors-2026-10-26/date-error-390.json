@@ -1,0 +1,30 @@
+{
+  "active": "일정 날짜",
+  "description": "일정 날짜를 YYYY-MM-DD 형식으로 입력해 주세요.",
+  "descriptionID": "_r_1_-scheduleDate",
+  "errorRect": {
+    "bottom": 386.765625,
+    "height": 18,
+    "left": 24,
+    "right": 351,
+    "top": 368.765625,
+    "width": 327,
+    "x": 24,
+    "y": 368.765625
+  },
+  "fieldRect": {
+    "bottom": 360.765625,
+    "height": 44,
+    "left": 24,
+    "right": 351,
+    "top": 316.765625,
+    "width": 327,
+    "x": 24,
+    "y": 316.765625
+  },
+  "invalid": "true",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

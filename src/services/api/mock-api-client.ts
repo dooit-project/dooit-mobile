@@ -317,6 +317,8 @@ function createTask(
     originalOccurrenceDate: overrides.originalOccurrenceDate ?? null,
     recurrenceException: overrides.recurrenceException ?? null,
     recurrence: overrides.recurrence ?? null,
+    notificationEnabled: overrides.notificationEnabled ?? true,
+    notifyAt: overrides.notifyAt ?? null,
     createdAt: overrides.createdAt ?? now,
     updatedAt: overrides.updatedAt ?? null,
   };
@@ -813,6 +815,13 @@ function getDaysLeft(targetDate: LocalDateString) {
 }
 
 function applyTaskRequest(task: TaskResponse, request: TaskUpsertRequest) {
+  if (request.recurrence != null) {
+    throw new ApiClientError('반복 규칙 수정은 아직 지원하지 않습니다.', {
+      kind: 'http',
+      status: 400,
+    });
+  }
+  const previousPlannedDate = task.plannedDate;
   task.title = request.title;
   task.description = request.description ?? null;
   task.category = request.category ?? null;
@@ -823,10 +832,64 @@ function applyTaskRequest(task: TaskResponse, request: TaskUpsertRequest) {
   task.endAt = request.endAt ?? null;
   task.notificationEnabled = request.notificationEnabled ?? true;
   task.notifyAt = request.notifyAt ?? null;
-  applyTaskRecurrence(task, request);
+  task.unscheduled = !task.startAt && !task.endAt;
+  // Match Task.update/applyInitialStatus: non-completed schedules move atomically.
+  if (task.status !== 'DONE' && !task.unscheduled) {
+    task.status = 'TODAY';
+    task.plannedDate = task.startAt!.slice(0, 10) as LocalDateString;
+    task.targetDate = task.plannedDate;
+    task.todayOrder = null;
+    task.completedAt = null;
+  }
   task.updatedAt = now;
+  if (
+    task.status !== 'TODAY' ||
+    task.completedAt ||
+    !previousPlannedDate ||
+    previousPlannedDate !== task.plannedDate
+  ) {
+    removeTaskFromFocus(task.id);
+  }
 
   return cloneTask(task);
+}
+
+function applyPersonalTaskUpdate(task: TaskResponse, request: TaskUpsertRequest, scope: unknown) {
+  if (!task.recurrenceSeriesId || !['ALL', 'THIS_AND_FUTURE'].includes(String(scope))) {
+    applyTaskRequest(task, request);
+    if (task.recurrenceSeriesId) task.recurrenceException = 'MODIFIED';
+    return;
+  }
+  if (!request.startAt || request.recurrence != null) {
+    throw new ApiClientError(
+      '반복 범위 수정은 시작 일시가 필요하며 반복 규칙을 바꿀 수 없습니다.',
+      { kind: 'http', status: 400 },
+    );
+  }
+  const shiftToOccurrence = (value: string | null | undefined, occurrence: string) => {
+    if (!value) return null;
+    const days = Math.round(
+      (Date.parse(`${occurrence}T00:00:00Z`) -
+        Date.parse(`${request.startAt!.slice(0, 10)}T00:00:00Z`)) /
+        86_400_000,
+    );
+    return `${shiftLocalDate(value.slice(0, 10), days)}${value.slice(10)}`;
+  };
+  tasks
+    .filter(
+      (candidate) =>
+        candidate.recurrenceSeriesId === task.recurrenceSeriesId &&
+        (scope === 'ALL' || (candidate.occurrenceDate ?? '') >= (task.occurrenceDate ?? '')),
+    )
+    .forEach((candidate) => {
+      const occurrence = candidate.occurrenceDate ?? candidate.startAt!.slice(0, 10);
+      applyTaskRequest(candidate, {
+        ...request,
+        startAt: shiftToOccurrence(request.startAt, occurrence),
+        endAt: shiftToOccurrence(request.endAt, occurrence),
+        notifyAt: shiftToOccurrence(request.notifyAt, occurrence),
+      });
+    });
 }
 
 function requirePersonalGoal(goalId: number) {
@@ -2336,7 +2399,7 @@ export const mockApiClient = {
       const task = getTask(taskId);
       const request = body as TaskUpsertRequest;
       validateGoalRequest(request, task);
-      applyTaskRequest(task, request);
+      applyPersonalTaskUpdate(task, request, options.query?.recurrenceScope);
       return (
         request.linkedGoalId == null
           ? cloneTask(task)

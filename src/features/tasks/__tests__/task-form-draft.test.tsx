@@ -68,6 +68,94 @@ function mount(initialTask = task) {
   return { report, submit, render, changeText, press };
 }
 
+function input(label: string) {
+  return screen.root
+    .findAllByType(TextInput)
+    .find((node) => node.props.accessibilityLabel === label)!;
+}
+
+test('여러 오류는 화면 순서대로 안내하고 다른 입력을 수정해도 해당 오류는 유지한다', () => {
+  const { press, changeText, submit } = mount();
+  press('설명·추가 정보 보기');
+  changeText('예상 소요 시간(분)', '1');
+  changeText('일정 날짜', '2026-02-30');
+  changeText('일정 시작 시간', '25:00');
+  press('수정 완료');
+  expect(input('일정 날짜').props['aria-invalid']).toBe(true);
+  expect(input('일정 날짜').props.accessibilityHint).toContain('존재하지 않는 날짜');
+  expect(input('예상 소요 시간(분)').props['aria-invalid']).toBeUndefined();
+  changeText('Task 설명', '접수 준비');
+  expect(input('일정 날짜').props['aria-invalid']).toBe(true);
+  changeText('일정 날짜', '2026-10-25');
+  expect(input('일정 날짜').props['aria-invalid']).toBeUndefined();
+  press('수정 완료');
+  expect(input('일정 시작 시간').props['aria-invalid']).toBe(true);
+  changeText('일정 시작 시간', '14:00');
+  press('수정 완료');
+  expect(input('예상 소요 시간(분)').props['aria-invalid']).toBe(true);
+  expect(submit).not.toHaveBeenCalled();
+});
+
+test('접힌 예상 시간 오류를 펼쳐 안내하고 원문과 다른 입력을 보존한다', () => {
+  const { press, changeText, submit } = mount();
+  press('설명·추가 정보 보기');
+  changeText('Task 설명', '준비물 확인');
+  changeText('예상 소요 시간(분)', '1');
+  press('추가 정보 접기');
+  expect(input('예상 소요 시간(분)')).toBeUndefined();
+  press('수정 완료');
+  expect(input('예상 소요 시간(분)').props['aria-invalid']).toBe(true);
+  expect(input('예상 소요 시간(분)').props.accessibilityHint).toContain('5분 이상 1440분 이하');
+  expect(input('Task 설명').props.value).toBe('준비물 확인');
+  changeText('예상 소요 시간(분)', '25');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      description: '준비물 확인',
+      estimatedDurationMinutes: 25,
+      startAt: task.startAt,
+    }),
+  );
+});
+
+test('기존 반복 일정의 제목만 수정하면 원래 복합 규칙을 PUT에 재전송하지 않는다', () => {
+  const { press, changeText, submit } = mount({
+    ...task,
+    recurrence: {
+      id: 9,
+      frequency: 'WEEKLY',
+      interval: 2,
+      recurrenceRule: 'FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH',
+      timeZone: 'Asia/Seoul',
+      recurrenceStartAt: task.startAt!,
+      recurrenceUntil: null,
+      recurrenceCount: null,
+    },
+  });
+  changeText('Task 제목', '접수 준비');
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({ title: '접수 준비', recurrence: undefined }),
+  );
+});
+
+test('종료 시각 오류는 관련 시작 시각 수정으로 해제하고 종일 전환 시 숨겨진 시간 오류를 남기지 않는다', () => {
+  const { press, changeText, submit } = mount();
+  changeText('일정 종료 시간', '13:00');
+  press('수정 완료');
+  expect(input('일정 종료 시간').props['aria-invalid']).toBe(true);
+  changeText('일정 시작 시간', '12:00');
+  expect(input('일정 종료 시간').props['aria-invalid']).toBeUndefined();
+  changeText('일정 시작 시간', '25:00');
+  press('수정 완료');
+  expect(input('일정 시작 시간').props['aria-invalid']).toBe(true);
+  act(() => screen.root.findByType(Switch).props.onValueChange(true));
+  press('수정 완료');
+  expect(submit).toHaveBeenLastCalledWith(
+    expect.objectContaining({ allDay: true, startAt: '2026-10-25T00:00:00' }),
+  );
+});
+
 test('수정 진입·초점·추가 정보 펼침은 초안이 아니며 제목을 원문으로 복원하면 해제한다', () => {
   const { report, changeText, press } = mount();
   expect(report.mock.calls).toEqual([[false]]);
@@ -287,7 +375,7 @@ test('기본 화면에는 현재 값만 보이고 설정 이동·취소가 다�
       title: '접수 준비',
       startAt: '2026-10-25T15:00:00',
       endAt: '2026-10-25T15:30:00',
-      recurrence: null,
+      recurrence: undefined,
     }),
   );
 });
