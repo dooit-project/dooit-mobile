@@ -98,9 +98,7 @@ export function ScheduleCard({
         ]}
       >
         <View style={styles.copy}>
-          <AppText numberOfLines={2} weight="medium">
-            {task.title}
-          </AppText>
+          <AppText weight="medium">{task.title}</AppText>
           <View style={styles.metadata}>
             <AppText tone="primary" variant="caption" weight="bold">
               일정 · {presentation.primaryLabel}

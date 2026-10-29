@@ -1,0 +1,58 @@
+{
+  "capturedAt": "2026-10-29T14:58:59.620Z",
+  "documentWidth": 320,
+  "route": "/calendar",
+  "rows": [
+    {
+      "alignment": "text-block",
+      "bounds": {
+        "height": 150,
+        "width": 271,
+        "x": 17,
+        "y": 359
+      },
+      "icons": [
+        {
+          "height": 20,
+          "width": 20,
+          "x": 41,
+          "y": 424
+        }
+      ],
+      "name": "task-copy",
+      "text": {
+        "height": 118,
+        "width": 191,
+        "x": 81,
+        "y": 375
+      }
+    }
+  ],
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "bounds": {
+        "height": 44,
+        "width": 44,
+        "x": 29,
+        "y": 412
+      },
+      "minimum": 44,
+      "name": "completion"
+    },
+    {
+      "bounds": {
+        "height": 134,
+        "width": 199,
+        "x": 77,
+        "y": 367
+      },
+      "minimum": 44,
+      "name": "open"
+    }
+  ],
+  "viewport": {
+    "height": 844,
+    "width": 320
+  }
+}

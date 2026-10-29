@@ -138,7 +138,6 @@ export function TaskCard({
         >
           <View style={styles.copy}>
             <AppText
-              numberOfLines={2}
               tone={isDone ? 'secondary' : 'default'}
               weight="medium"
               style={isDone ? styles.doneTitle : undefined}
