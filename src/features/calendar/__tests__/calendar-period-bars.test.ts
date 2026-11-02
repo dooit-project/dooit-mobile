@@ -36,6 +36,52 @@ const schedule: TaskResponse = {
 };
 
 describe('buildCalendarPeriodSegments', () => {
+  it('월요일 자정에 끝나는 일정은 일요일 뒤에 계속되는 화살표를 표시하지 않는다', () => {
+    const endingAtBoundary = {
+      ...schedule,
+      startAt: '2026-10-30T09:00:00',
+      endAt: '2026-11-02T00:00:00',
+    } satisfies TaskResponse;
+    const dates = [
+      '2026-10-26',
+      '2026-10-27',
+      '2026-10-28',
+      '2026-10-29',
+      '2026-10-30',
+      '2026-10-31',
+      '2026-11-01',
+    ];
+
+    expect(buildCalendarPeriodSegments([endingAtBoundary], dates)).toEqual([
+      {
+        task: endingAtBoundary,
+        startIndex: 4,
+        endIndex: 6,
+        continuesBefore: false,
+        continuesAfter: false,
+      },
+    ]);
+  });
+
+  it('월 경계를 넘어 월요일 이후에도 진행되면 다음 주로 이어짐을 표시한다', () => {
+    const continuing = {
+      ...schedule,
+      startAt: '2026-10-30T09:00:00',
+      endAt: '2026-11-02T09:00:00',
+    } satisfies TaskResponse;
+    const dates = [
+      '2026-10-26',
+      '2026-10-27',
+      '2026-10-28',
+      '2026-10-29',
+      '2026-10-30',
+      '2026-10-31',
+      '2026-11-01',
+    ];
+
+    expect(buildCalendarPeriodSegments([continuing], dates)[0].continuesAfter).toBe(true);
+  });
+
   it('주 경계에서 이어지는 기간과 continuation을 계산한다', () => {
     const dates = [
       '2026-07-06',

@@ -289,7 +289,7 @@ export function buildCalendarPeriodSegments(tasks: TaskResponse[], dates: LocalD
     const startIndex = occupiedIndexes[0];
     const endIndex = occupiedIndexes.at(-1) ?? startIndex;
     const startDate = task.startAt?.slice(0, 10);
-    const endDate = task.endAt?.slice(0, 10);
+    const endDate = getOccupiedEndDate(task);
 
     return [
       {
@@ -307,13 +307,15 @@ export function isMultiDaySchedule(task: TaskResponse) {
   if (!task.startAt || !task.endAt) return false;
 
   const startDate = task.startAt.slice(0, 10) as LocalDateString;
+  const occupiedEndDate = getOccupiedEndDate(task);
+  return occupiedEndDate !== null && occupiedEndDate > startDate;
+}
+
+function getOccupiedEndDate(task: TaskResponse): LocalDateString | null {
+  if (!task.endAt) return null;
   const rawEndDate = task.endAt.slice(0, 10) as LocalDateString;
   const endsAtMidnight = /^T00:00(?::00(?:\.0+)?)?$/.test(task.endAt.slice(10));
-  const occupiedEndDate = endsAtMidnight
-    ? (shiftLocalDate(rawEndDate, -1) ?? rawEndDate)
-    : rawEndDate;
-
-  return occupiedEndDate > startDate;
+  return endsAtMidnight ? (shiftLocalDate(rawEndDate, -1) ?? rawEndDate) : rawEndDate;
 }
 
 function formatOverflowDate(date: LocalDateString) {
