@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-03T17:07:12.921Z",
+  "route": "/review",
+  "viewport": {
+    "width": 430,
+    "height": 844
+  },
+  "documentWidth": 430,
+  "rows": [
+    {
+      "name": "review-week-navigation:0",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 74,
+        "y": 44,
+        "width": 282,
+        "height": 44
+      },
+      "text": {
+        "x": 167.84375,
+        "y": 54,
+        "width": 94.296875,
+        "height": 24
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 132.84375,
+          "y": 53.5,
+          "width": 22,
+          "height": 25
+        },
+        {
+          "x": 275.140625,
+          "y": 53.5,
+          "width": 22,
+          "height": 25
+        }
+      ]
+    },
+    {
+      "name": "review-record:1",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 36,
+        "y": 208,
+        "width": 374,
+        "height": 66
+      },
+      "text": {
+        "x": 45,
+        "y": 217,
+        "width": 330,
+        "height": 48
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 387,
+          "y": 233.5,
+          "width": 14,
+          "height": 15
+        }
+      ]
+    },
+    {
+      "name": "review-record:2",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 36,
+        "y": 274,
+        "width": 374,
+        "height": 66
+      },
+      "text": {
+        "x": 45,
+        "y": 283,
+        "width": 330,
+        "height": 48
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 387,
+          "y": 299.5,
+          "width": 14,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "control:0",
+      "minimum": 44,
+      "bounds": {
+        "x": 121.84375,
+        "y": 44,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:1",
+      "minimum": 44,
+      "bounds": {
+        "x": 264.140625,
+        "y": 44,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:2",
+      "minimum": 44,
+      "bounds": {
+        "x": 356,
+        "y": 44,
+        "width": 54,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:3",
+      "minimum": 44,
+      "bounds": {
+        "x": 36,
+        "y": 208,
+        "width": 374,
+        "height": 66
+      }
+    },
+    {
+      "name": "control:4",
+      "minimum": 44,
+      "bounds": {
+        "x": 36,
+        "y": 274,
+        "width": 374,
+        "height": 66
+      }
+    }
+  ]
+}

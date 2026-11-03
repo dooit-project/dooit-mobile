@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-03T17:04:52.872Z",
+  "route": "/review",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "documentWidth": 390,
+  "rows": [
+    {
+      "name": "review-week-navigation:0",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 74,
+        "y": 44,
+        "width": 242,
+        "height": 44
+      },
+      "text": {
+        "x": 143.03125,
+        "y": 54,
+        "width": 103.921875,
+        "height": 24
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 108.03125,
+          "y": 53.5,
+          "width": 22,
+          "height": 25
+        },
+        {
+          "x": 259.953125,
+          "y": 53.5,
+          "width": 22,
+          "height": 25
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "control:0",
+      "minimum": 44,
+      "bounds": {
+        "x": 97.03125,
+        "y": 44,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:1",
+      "minimum": 44,
+      "bounds": {
+        "x": 248.953125,
+        "y": 44,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:2",
+      "minimum": 44,
+      "bounds": {
+        "x": 316,
+        "y": 44,
+        "width": 54,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:3",
+      "minimum": 44,
+      "bounds": {
+        "x": 141.421875,
+        "y": 427,
+        "width": 107.140625,
+        "height": 44
+      }
+    }
+  ]
+}
