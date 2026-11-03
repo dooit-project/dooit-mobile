@@ -1,4 +1,92 @@
-# 최신 Design QA — 여러 날 일정 상세
+# 최신 Design QA — 달력 전체 흐름 재검토
+
+2026-11-02 · [실제 화면·발견 사항](./docs/audits/calendar-flow-recheck-2026-11-02/README.md)
+
+- 430 mock Web에서 빈 날짜의 일정 추가·저장·달력 복귀와 다른 날짜 선택을 확인했다. 일정이 있는 날짜에서 추가 진입점이 사라지는 P2와 등록 화면 전환 시 포커스 관련 브라우저 경고를 발견했다.
+- 여러 일정·오류·확대 글자·스크린 리더·native 및 새 DOM 기하 검사는 미확인이다. 특이사항이 있어 커밋 조건은 충족되지 않았다.
+
+final result: pending (추가 진입점과 포커스 경고 확인 필요)
+
+---
+
+# 이전 Design QA — 달력 상단 간격 단계별 보정
+
+2026-11-02 · [단계별 실제 화면과 한계](./docs/audits/calendar-density-2026-11-02/README.md)
+
+- 390 mock Web에서 밀도를 단계별 비교하고 버튼 터치 영역을 유지하며 표시 요소를 위쪽으로 보정했다. 320/430 육안 확인 및 월 선택·오늘 복귀를 확인했다.
+- 새 DOM 좌표·`check:ui-layout`, 첫 이용 안내·실제 데이터, 확대 글자·스크린 리더 및 native는 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (실제 DOM 좌표 검사 및 native 미완료)
+
+---
+
+# 이전 Design QA — 공통 헤더 44 높이 보정
+
+2026-11-02 · [실제 화면과 한계](./docs/audits/header-44-2026-11-02/README.md)
+
+- 공통 헤더 최소 높이를 48에서 44로 조정했다. Chrome mock Web 390 전후 및 320/430 달력, 320의 두 줄 영문 문구와 430의 오늘·계획 빈 상태를 육안 확인했다.
+- 새 DOM 좌표·`check:ui-layout`, 돌아보기, 데이터가 있는 화면, 확대 글자·스크린 리더 및 native는 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (실제 DOM 좌표 검사 및 native 미완료)
+
+---
+
+# 이전 Design QA — 공통 헤더와 달력 상단 간격
+
+2026-11-02 · [실제 화면과 한계](./docs/audits/calendar-compact-header-2026-11-02/README.md)
+
+- 공통 헤더를 56에서 48로 줄이고 달력 본문의 상단 8을 제거했다. Chrome mock Web 390의 달력·오늘 화면 전후 및 320/430 달력을 확인하고 다음 달·오늘 복귀를 조작했다.
+- 새 DOM 좌표·`check:ui-layout`, 계획·돌아보기, 첫 이용 안내, 글자 확대·키보드·스크린 리더 및 native는 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (실제 DOM 좌표 검사 및 native 미완료)
+
+---
+
+# 이전 Design QA — 달력 상단 여백
+
+2026-11-01 · [실제 화면과 한계](./docs/audits/calendar-top-spacing-2026-11-01/README.md)
+
+- 달력 본문 상단 간격을 16px에서 8px로 줄였다. Chrome 반응형 mock Web 390에서 전후를 비교하고 320/430의 배치, 다음 달 이동과 오늘 복귀를 확인했다.
+- 새 DOM 좌표·`check:ui-layout`, 글자 확대·키보드 초점·스크린 리더 및 native는 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (실제 DOM 좌표 검사 및 native 미완료)
+
+---
+
+# 이전 Design QA — 달력 오늘 버튼
+
+2026-10-31 · [실제 화면과 한계](./docs/audits/calendar-today-button-2026-10-31/README.md)
+
+- 오늘 버튼의 시각 테두리를 작게 만들고 조작 영역은 유지했다. Chrome 반응형 mock Web 390에서 이전 화면과 비교하고 다음 달 이동·오늘 복귀를 확인했다. 320은 육안 확인했다.
+- 새 DOM 좌표·`check:ui-layout`, 430·글자 확대·키보드 초점·스크린 리더 및 native는 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (실제 DOM 좌표 검사 및 native 미완료)
+
+---
+
+# 이전 Design QA — 달력 상단 정렬
+
+2026-10-30 · [실제 화면과 한계](./docs/audits/calendar-heading-2026-10-30/README.md)
+
+- 월 제목·양방향 이동을 달력 가운데에 두고 오늘 복귀는 오른쪽의 공통 outline 버튼으로 보정했다. Chrome 반응형 mock Web 320/390/430에서 육안 확인하고 월 이동·선택·복귀를 조작했다.
+- 새 DOM 보고서 수집에 실패해 `check:ui-layout`은 미실행이다. 확대 글자, 키보드 초점, native 및 스크린 리더는 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (실제 DOM 좌표 검사 및 native 미완료)
+
+---
+
+# 이전 Design QA — 기간 일정 주·월 경계
+
+2026-10-30 · [실제 화면과 한계](./docs/audits/calendar-boundary-2026-10-30/README.md)
+
+- 월요일 자정 종료 시 일요일 뒤에 잘못 표시되던 이어짐 화살표를 보정했다. 기존 시안과 막대 구조를 유지하고 desktop mock Web에서 자정 종료, 다음 주 계속 및 다음 달 표시를 확인했다.
+- 브라우저 접근 호스트 장애로 모바일 320/390/430 새 DOM 좌표와 `check:ui-layout`은 미완료다. Android/iOS·화면 읽기 음성·운영 API도 미확인이다. 변경은 미커밋·미푸시다.
+
+final result: pending (작은 화면의 실제 DOM 좌표 검사 미완료)
+
+---
+
+# 이전 Design QA — 여러 날 일정 상세
 
 2026-10-30 · [실제 desktop 화면과 한계](./docs/audits/calendar-period-check-2026-10-30/README.md)
 

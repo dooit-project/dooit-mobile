@@ -560,8 +560,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing[3],
     maxWidth: sizes.contentMaxWidth,
-    minHeight: sizes.plannerHeaderHeight,
-    paddingVertical: spacing[1],
+    minHeight: sizes.touchTarget,
     width: '100%',
   },
   headerButton: {

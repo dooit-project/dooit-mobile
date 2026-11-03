@@ -4,6 +4,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { AppIcon, AppText, Button, InlineNotice, Screen } from '@/components/ui';
+import { uiAuditProps } from '@/components/ui/ui-audit-props';
 import { ContextualFeatureTip } from '@/features/onboarding';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { useAppToday } from '@/services/time/use-app-today';
@@ -23,7 +24,7 @@ export function WeekCalendar() {
   const router = useRouter();
   const params = useLocalSearchParams<{ date?: string }>();
   const theme = useAppTheme();
-  const { isDenseCalendar } = useMobileLayout();
+  const { fontScale, isDenseCalendar } = useMobileLayout();
   const today = useAppToday();
   const [browsedDate, setBrowsedDate] = useState<LocalDateString | null>(
     params.date && isLocalDateString(params.date) ? params.date : null,
@@ -31,6 +32,7 @@ export function WeekCalendar() {
   const selectedDate = browsedDate ?? today;
   const setSelectedDate = (date: LocalDateString) => setBrowsedDate(date === today ? null : date);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+  const [todayButtonFocused, setTodayButtonFocused] = useState(false);
   const [pickerYear, setPickerYear] = useState(() => Number(selectedDate.slice(0, 4)));
   const calendarDates = useMemo(() => getMonthCalendarDates(selectedDate), [selectedDate]);
   const rangeTasks = useCalendarVisibleTasks(calendarDates);
@@ -82,65 +84,98 @@ export function WeekCalendar() {
         title="달력 보는 방법"
       />
       <View style={styles.calendarSurface}>
-        <View style={styles.calendarHeading}>
+        <View
+          {...uiAuditProps({ uiRow: 'calendar-heading', uiAlign: 'text-block' })}
+          style={styles.calendarHeading}
+        >
+          <View style={styles.headingSide} />
+          <View style={styles.monthNavigation}>
+            <Pressable
+              {...uiAuditProps({ uiTouch: '44' })}
+              accessibilityLabel="이전 달"
+              accessibilityRole="button"
+              onPress={() => moveMonth(-1)}
+              style={({ pressed }) => [
+                styles.calendarNavButton,
+                fontScale > 1 && styles.calendarControlLargeText,
+                { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+              ]}
+            >
+              <View {...uiAuditProps({ uiIcon: 'glyph' })}>
+                <AppIcon name="chevron-left" color={theme.colors.textSecondary} />
+              </View>
+            </Pressable>
+            <Pressable
+              {...uiAuditProps({ uiTouch: '44' })}
+              accessibilityLabel={`${formatDateLabel(selectedDate, {
+                year: 'numeric',
+                month: 'long',
+              })} 월 선택 열기`}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: monthPickerOpen }}
+              onPress={() => {
+                setPickerYear(Number(selectedDate.slice(0, 4)));
+                setMonthPickerOpen((current) => !current);
+              }}
+              style={({ pressed }) => [
+                styles.monthTitleButton,
+                fontScale > 1 && styles.calendarTitleLargeText,
+                { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+              ]}
+            >
+              <AppText
+                {...uiAuditProps({ uiText: 'block' })}
+                align="center"
+                variant="sectionTitle"
+                weight="bold"
+              >
+                {formatDateLabel(selectedDate, { year: 'numeric', month: 'long' })}
+              </AppText>
+            </Pressable>
+            <Pressable
+              {...uiAuditProps({ uiTouch: '44' })}
+              accessibilityLabel="다음 달"
+              accessibilityRole="button"
+              onPress={() => moveMonth(1)}
+              style={({ pressed }) => [
+                styles.calendarNavButton,
+                fontScale > 1 && styles.calendarControlLargeText,
+                { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
+              ]}
+            >
+              <View {...uiAuditProps({ uiIcon: 'glyph' })}>
+                <AppIcon name="chevron-right" color={theme.colors.textSecondary} />
+              </View>
+            </Pressable>
+          </View>
           <Pressable
-            accessibilityLabel="이전 달"
-            accessibilityRole="button"
-            hitSlop={8}
-            onPress={() => moveMonth(-1)}
-            style={({ pressed }) => [
-              styles.calendarNavButton,
-              { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-            ]}
-          >
-            <AppIcon name="chevron-left" color={theme.colors.textSecondary} />
-          </Pressable>
-          <Pressable
-            accessibilityLabel={`${formatDateLabel(selectedDate, {
-              year: 'numeric',
-              month: 'long',
-            })} 월 선택 열기`}
-            accessibilityRole="button"
-            accessibilityState={{ expanded: monthPickerOpen }}
-            hitSlop={8}
-            onPress={() => {
-              setPickerYear(Number(selectedDate.slice(0, 4)));
-              setMonthPickerOpen((current) => !current);
-            }}
-            style={({ pressed }) => [
-              styles.monthTitleButton,
-              { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-            ]}
-          >
-            <AppText align="center" variant="title" weight="bold">
-              {formatDateLabel(selectedDate, { year: 'numeric', month: 'long' })}
-            </AppText>
-          </Pressable>
-          <Pressable
-            accessibilityLabel="다음 달"
-            accessibilityRole="button"
-            hitSlop={8}
-            onPress={() => moveMonth(1)}
-            style={({ pressed }) => [
-              styles.calendarNavButton,
-              { backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent' },
-            ]}
-          >
-            <AppIcon name="chevron-right" color={theme.colors.textSecondary} />
-          </Pressable>
-          <Pressable
+            {...uiAuditProps({ uiTouch: '44' })}
             accessibilityLabel="오늘 날짜로 이동"
             accessibilityRole="button"
+            onBlur={() => setTodayButtonFocused(false)}
+            onFocus={() => setTodayButtonFocused(true)}
             onPress={() => {
               setSelectedDate(today);
               setPickerYear(Number(today.slice(0, 4)));
               setMonthPickerOpen(false);
             }}
-            style={styles.todayButton}
+            style={[styles.todayButton, fontScale > 1 && styles.calendarControlLargeText]}
           >
-            <AppText tone="secondary" variant="caption" weight="semibold">
-              오늘
-            </AppText>
+            {({ pressed }) => (
+              <View
+                style={[
+                  styles.todayButtonOutline,
+                  {
+                    backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
+                    borderColor: todayButtonFocused ? theme.colors.text : theme.colors.borderStrong,
+                  },
+                ]}
+              >
+                <AppText tone="secondary" variant="caption" weight="semibold">
+                  오늘
+                </AppText>
+              </View>
+            )}
           </Pressable>
         </View>
 
@@ -462,7 +497,7 @@ const styles = StyleSheet.create({
   screen: {
     gap: spacing[4],
     paddingBottom: 104,
-    paddingTop: spacing[4],
+    paddingTop: 0,
   },
   calendarSurface: {
     gap: spacing[1],
@@ -470,10 +505,17 @@ const styles = StyleSheet.create({
   calendarHeading: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: spacing[2],
     minHeight: 44,
+  },
+  headingSide: {
+    width: 48,
+  },
+  monthNavigation: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
-    paddingBottom: spacing[1],
+    minWidth: 0,
   },
   monthGridSurface: {
     borderRadius: radii.md,
@@ -485,6 +527,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     height: 44,
     justifyContent: 'center',
+    paddingBottom: spacing[3],
     width: 44,
   },
   monthTitleButton: {
@@ -492,13 +535,32 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     height: 44,
     justifyContent: 'center',
-    paddingHorizontal: spacing[2],
+    paddingBottom: spacing[3],
+    flexShrink: 1,
   },
   todayButton: {
     alignItems: 'center',
+    height: 48,
     justifyContent: 'center',
+    paddingBottom: spacing[3],
+    width: 48,
+  },
+  calendarControlLargeText: {
+    paddingBottom: 0,
+  },
+  calendarTitleLargeText: {
+    height: 'auto',
     minHeight: 44,
+    paddingBottom: 0,
+  },
+  todayButtonOutline: {
+    alignItems: 'center',
+    borderRadius: radii.md,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 32,
     minWidth: 44,
+    paddingHorizontal: spacing[1],
   },
   monthPickerSurface: {
     borderRadius: radii.md,
