@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-03T14:00:25.064Z",
+  "route": "/calendar",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "documentWidth": 390,
+  "rows": [
+    {
+      "name": "calendar-heading:0",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 44,
+        "width": 350,
+        "height": 48
+      },
+      "text": {
+        "x": 145.65625,
+        "y": 49,
+        "width": 98.671875,
+        "height": 26
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 112.65625,
+          "y": 49.5,
+          "width": 22,
+          "height": 25
+        },
+        {
+          "x": 255.328125,
+          "y": 49.5,
+          "width": 22,
+          "height": 25
+        }
+      ]
+    },
+    {
+      "name": "add-item:1",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 693,
+        "width": 350,
+        "height": 56
+      },
+      "text": {
+        "x": 69,
+        "y": 709,
+        "width": 122.546875,
+        "height": 24
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 25,
+          "y": 708,
+          "width": 24,
+          "height": 26
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "control:0",
+      "minimum": 44,
+      "bounds": {
+        "x": 101.65625,
+        "y": 46,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:1",
+      "minimum": 44,
+      "bounds": {
+        "x": 145.65625,
+        "y": 46,
+        "width": 98.671875,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:2",
+      "minimum": 44,
+      "bounds": {
+        "x": 244.328125,
+        "y": 46,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:3",
+      "minimum": 44,
+      "bounds": {
+        "x": 322,
+        "y": 44,
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "name": "control:4",
+      "minimum": 44,
+      "bounds": {
+        "x": 20,
+        "y": 693,
+        "width": 350,
+        "height": 56
+      }
+    }
+  ]
+}

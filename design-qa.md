@@ -712,3 +712,12 @@ final result: passed
 ## 2026-10-18 빠른 기록 STG 연동
 
 [코드·자료 사전 검토와 검증 기록](docs/design/QUICK_CAPTURE_STG_INTEGRATION_2026-10-18.md). Today의 TODO 선택을 저장 유형으로 전달하고 mock도 서버와 맞췄다. 기존 UI 구조와 디자인 토큰은 유지했다. 실제 모바일 client→STG 수용 예시는 통과했다. iab/Chrome 연결 불가로 새 화면 캡처·시각·키보드·보조 기술 감사는 보류이며 통과 판정하지 않는다. Android/iOS 실기기와 PRD 배포도 미확인이다.
+
+# 달력 날짜별 일정 추가 후속 작업
+
+2026-11-03 · 기존 [달력 흐름 감사](./docs/audits/calendar-flow-recheck-2026-11-02/README.md)의 후속 구현
+
+- 범위: 선택 날짜 목록에 항목이 있을 때 공통 추가 행을 제공하고 빈 상태의 기존 동작과 같은 날짜·일정 유형을 전달한다. 달력 배치와 목록 구조는 유지한다.
+- Web 전환 시 기존 버튼의 초점을 해제하고 새 일정 제목에 초점을 주도록 조정했다. 경고가 실제로 해소됐는지와 키보드·스크린 리더 사용성은 재확인이 필요하다.
+- `npm run validate` 통과: 130 suites/701 tests, opt-in STG 1개 제외. Android/iOS/Web에 목록 행이 적용되며 초점 처리는 Web 한정이다.
+- 후속으로 사용자 승인에 따라 로컬 Playwright와 Chrome mock Web 390×844에서 빈 날짜 추가 → 일정 저장 → 목록에서 다시 추가를 확인했다. 선택 날짜와 제목 입력 초점이 유지됐으며 이 흐름에서 기존 `aria-hidden` 경고는 재현되지 않았다. [실제 캡처와 좌표](./docs/audits/calendar-add-action-2026-11-03/README.md). 새 DOM 기하 검사 2행/5조작 통과. 320/430, 키보드·스크린 리더, Android/iOS 및 운영 API는 미확인이다.

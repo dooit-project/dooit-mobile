@@ -36,6 +36,7 @@ export default function NewTaskScreen() {
   });
   const params = useLocalSearchParams<{
     date?: string;
+    fromCalendar?: string;
     quickCapture?: string;
     type?: string;
     goalId?: string;
@@ -62,7 +63,9 @@ export default function NewTaskScreen() {
     params.type === 'SCHEDULE' || params.type === 'TODO' || params.type === 'IDEA'
       ? params.type
       : undefined;
-  const autoFocusTitle = isQuickCaptureEntry(params.quickCapture);
+  const autoFocusTitle =
+    isQuickCaptureEntry(params.quickCapture) ||
+    (Platform.OS === 'web' && params.fromCalendar === '1');
   const leaveScreen = () => {
     if (!closeSettings()) leaveNewTaskScreen(router);
   };

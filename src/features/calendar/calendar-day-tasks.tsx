@@ -1,8 +1,15 @@
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
-import { AppText, Button, EmptyState, InlineNotice, ListSkeleton } from '@/components/ui';
+import {
+  AddItemRow,
+  AppText,
+  Button,
+  EmptyState,
+  InlineNotice,
+  ListSkeleton,
+} from '@/components/ui';
 import { ScheduleCard, TaskCard, useCompleteTask } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, spacing, useAppTheme } from '@/theme';
@@ -31,6 +38,12 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
   });
   const openTask = (taskId: number) => {
     router.push({ pathname: '/tasks/[taskId]', params: { taskId: String(taskId) } });
+  };
+  const addSchedule = () => {
+    if (Platform.OS === 'web' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    router.push({ pathname: '/tasks/new', params: { date, type: 'SCHEDULE', fromCalendar: '1' } });
   };
 
   return (
@@ -71,15 +84,7 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
           }
           title="예정된 항목이 없어요"
           description="선택한 날짜에는 아직 일정이나 할 일이 없어요."
-          primaryAction={
-            <Button
-              onPress={() =>
-                router.push({ pathname: '/tasks/new', params: { date, type: 'SCHEDULE' } })
-              }
-            >
-              이 날짜에 일정 추가
-            </Button>
-          }
+          primaryAction={<Button onPress={addSchedule}>이 날짜에 일정 추가</Button>}
         />
       ) : (
         <>
@@ -101,6 +106,9 @@ export function CalendarDayTasks({ date }: CalendarDayTasksProps) {
               onOpen={(taskId) => openTask(taskId)}
             />
           ) : null}
+          <AddItemRow tone="primary" onPress={addSchedule}>
+            이 날짜에 일정 추가
+          </AddItemRow>
         </>
       )}
     </View>
