@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import {
@@ -15,6 +16,10 @@ import {
   uiAuditProps,
 } from '@/components/ui';
 import { getDdayGoalFallbackColor, useDdayGoalColors } from '@/features/dday';
+import { env } from '@/config/env';
+import { useAuthState } from '@/features/auth';
+import { readPlanGoalPreferences } from '@/features/goals/plan-goal-preferences';
+import { useGoals } from '@/features/goals/use-goals';
 import { getRecurrenceLabel, useCompleteTask, useReopenTask } from '@/features/tasks';
 import { getUserFacingApiErrorMessage } from '@/services/api';
 import { radii, sizes, spacing, typography, useAppTheme, useMobileLayout } from '@/theme';
@@ -23,6 +28,7 @@ import { formatTimeLabel } from '@/utils';
 
 import { useTodayOverview } from './use-today-overview';
 import { groupTodayTaskRecords } from './today-task-groups';
+import { annotateTodayGoalTasks } from './today-goal-items';
 
 type TodayOverviewProps = {
   date: LocalDateString;
@@ -32,12 +38,41 @@ type TodayOverviewProps = {
 export function TodayOverview({ date, overview }: TodayOverviewProps) {
   const router = useRouter();
   const theme = useAppTheme();
+  const auth = useAuthState();
+  const goalScope =
+    auth.status === 'guest' || auth.status === 'registered'
+      ? JSON.stringify([env.apiMode, env.apiUrl ?? null, auth.user.id])
+      : null;
+  const preferences = useQuery({
+    queryKey: ['today-goal-preferences', goalScope],
+    queryFn: () => readPlanGoalPreferences(goalScope!),
+    enabled: goalScope !== null,
+  });
+  const refetchPreferences = preferences.refetch;
+  useFocusEffect(
+    useCallback(() => {
+      if (goalScope) void refetchPreferences();
+    }, [goalScope, refetchPreferences]),
+  );
+  const goals = useGoals();
   const { todayTasks, doneTasks, isPending, error, refetch } = overview;
   const completeTask = useCompleteTask(date);
   const reopenTask = useReopenTask(date);
-  const [menuGoalId, setMenuGoalId] = useState<number | null>(null);
-  const groups = groupTodayTaskRecords(todayTasks, doneTasks);
-  const goalIds = groups.flatMap((group) => (group.goalId === null ? [] : [group.goalId]));
+  const [menuGoalKey, setMenuGoalKey] = useState<string | null>(null);
+  const goalTitles: Record<number, string> = {};
+  for (const goal of goals.data ?? []) goalTitles[goal.id] = goal.title;
+  for (const occurrence of overview.goalOccurrences ?? []) {
+    if (occurrence.goalId !== null && occurrence.snapshotGoalTitle)
+      goalTitles[occurrence.goalId] = occurrence.snapshotGoalTitle;
+  }
+  const groups = groupTodayTaskRecords(
+    annotateTodayGoalTasks(date, todayTasks, overview.goalOccurrences),
+    annotateTodayGoalTasks(date, doneTasks, overview.goalOccurrences),
+    goalTitles,
+  );
+  const goalIds = groups.flatMap((group) =>
+    group.goalId === null || group.goalNamespace === 'goal' ? [] : [group.goalId],
+  );
   const goalColors = useDdayGoalColors(goalIds);
 
   const openTask = (taskId: number) => {
@@ -65,27 +100,47 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
 
   if (groups.length === 0) {
     return (
-      <EmptyState
-        icon={
-          <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
-            <AppIcon color={theme.colors.primary} name="circle" />
-          </View>
-        }
-        title="오늘 할 일을 가볍게 남겨보세요"
-        description="목표를 향한 작은 일도, 오늘만 필요한 일도 함께 둘 수 있어요."
-      />
+      <>
+        {overview.goalOccurrenceError ? (
+          <InlineNotice
+            title="반복 계획을 불러오지 못했어요"
+            message={getUserFacingApiErrorMessage(overview.goalOccurrenceError)}
+            tone="danger"
+            action={
+              <Button size="compact" variant="ghost" onPress={() => void refetch()}>
+                다시 시도
+              </Button>
+            }
+          />
+        ) : null}
+        {!overview.goalOccurrenceError ? (
+          <EmptyState
+            icon={
+              <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}>
+                <AppIcon color={theme.colors.primary} name="circle" />
+              </View>
+            }
+            title="오늘 할 일을 가볍게 남겨보세요"
+            description="목표를 향한 작은 일도, 오늘만 필요한 일도 함께 둘 수 있어요."
+          />
+        ) : null}
+      </>
     );
   }
 
   return (
     <View style={styles.container}>
       {groups.map((group) => {
+        const groupKey = `${group.goalNamespace ?? group.kind}-${group.goalId ?? group.title}`;
         const goalColor =
           group.goalId === null
             ? theme.colors.textMuted
-            : (goalColors[String(group.goalId)] ?? getDdayGoalFallbackColor(group.goalId));
+            : group.goalNamespace === 'goal'
+              ? (preferences.data?.colors[`goal:${group.goalId}`] ??
+                getDdayGoalFallbackColor(group.goalId))
+              : (goalColors[String(group.goalId)] ?? getDdayGoalFallbackColor(group.goalId));
         return (
-          <View key={`${group.kind}-${group.goalId ?? group.title}`} style={styles.group}>
+          <View key={groupKey} style={styles.group}>
             {group.goalId !== null ? (
               <View
                 accessible={false}
@@ -121,26 +176,26 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                 <IconButton
                   variant="plain"
                   accessibilityLabel={`${group.title} 메뉴`}
-                  expanded={menuGoalId === group.goalId}
-                  onPress={() => setMenuGoalId(menuGoalId === group.goalId ? null : group.goalId)}
+                  expanded={menuGoalKey === groupKey}
+                  onPress={() => setMenuGoalKey(menuGoalKey === groupKey ? null : groupKey)}
                 >
                   <AppIcon color={theme.colors.textMuted} name="more-horizontal" />
                 </IconButton>
               ) : null}
             </View>
-            {group.goalId !== null && menuGoalId === group.goalId ? (
+            {group.goalId !== null && menuGoalKey === groupKey ? (
               <View style={styles.menu}>
                 <Button
                   size="compact"
                   variant="secondary"
                   onPress={() => {
-                    setMenuGoalId(null);
+                    setMenuGoalKey(null);
                     router.push('/plan');
                   }}
                 >
                   계획으로 이동
                 </Button>
-                <Button size="compact" variant="ghost" onPress={() => setMenuGoalId(null)}>
+                <Button size="compact" variant="ghost" onPress={() => setMenuGoalKey(null)}>
                   닫기
                 </Button>
               </View>
@@ -174,6 +229,18 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
         <InlineNotice message={completeTask.error.message} tone="danger" />
       ) : null}
       {reopenTask.error ? <InlineNotice message={reopenTask.error.message} tone="danger" /> : null}
+      {overview.goalOccurrenceError ? (
+        <InlineNotice
+          title="반복 계획을 불러오지 못했어요"
+          message={getUserFacingApiErrorMessage(overview.goalOccurrenceError)}
+          tone="danger"
+          action={
+            <Button size="compact" variant="ghost" onPress={() => void refetch()}>
+              다시 시도
+            </Button>
+          }
+        />
+      ) : null}
     </View>
   );
 }

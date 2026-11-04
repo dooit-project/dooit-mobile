@@ -5,31 +5,45 @@ type TodayGroup = {
   title: string;
   tasks: TaskResponse[];
   kind: 'goal' | 'schedule' | 'task';
+  goalNamespace?: 'goal' | 'dday';
 };
 
 /** Current Today records win over a stale completed-list response with the same ID. */
-export function groupTodayTaskRecords(todayTasks: TaskResponse[], doneTasks: TaskResponse[]) {
+export function groupTodayTaskRecords(
+  todayTasks: TaskResponse[],
+  doneTasks: TaskResponse[],
+  goalTitles: Record<number, string> = {},
+) {
   const unique = new Map([...doneTasks, ...todayTasks].map((task) => [task.id, task]));
   return groupTodayTasks(
     sortGroupTasks([...unique.values()].filter((task) => task.type !== 'IDEA')),
+    goalTitles,
   );
 }
 
-function groupTodayTasks(tasks: TaskResponse[]): TodayGroup[] {
-  const goalGroups = new Map<number, TodayGroup>();
+function groupTodayTasks(tasks: TaskResponse[], goalTitles: Record<number, string>): TodayGroup[] {
+  const goalGroups = new Map<string, TodayGroup>();
   const unlinkedSchedules: TaskResponse[] = [];
   const unlinkedTasks: TaskResponse[] = [];
 
   tasks.forEach((task) => {
-    if (task.ddayGoalId !== null) {
-      const current = goalGroups.get(task.ddayGoalId) ?? {
-        goalId: task.ddayGoalId,
-        title: task.ddayGoalTitle ?? '목표',
+    const linkedGoalId = task.linkedGoalId ?? null;
+    const goalId = linkedGoalId ?? task.ddayGoalId;
+    if (goalId !== null) {
+      const goalNamespace = linkedGoalId !== null ? 'goal' : 'dday';
+      const key = `${goalNamespace}:${goalId}`;
+      const current = goalGroups.get(key) ?? {
+        goalId,
+        title:
+          goalNamespace === 'goal'
+            ? (goalTitles[goalId] ?? '목표')
+            : (task.ddayGoalTitle ?? '목표'),
         tasks: [],
         kind: 'goal' as const,
+        goalNamespace,
       };
       current.tasks.push(task);
-      goalGroups.set(task.ddayGoalId, current);
+      goalGroups.set(key, current);
     } else if (task.type === 'SCHEDULE') {
       unlinkedSchedules.push(task);
     } else {

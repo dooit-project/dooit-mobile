@@ -24,3 +24,28 @@ export function separateTodayGoalItems<T extends Pick<TaskResponse, 'id'>>(
     occurrences: rows,
   };
 }
+
+/** Restore Goal context without replacing the linked Task's actionable title. */
+export function annotateTodayGoalTasks(
+  date: LocalDateString,
+  tasks: TaskResponse[],
+  occurrences: GoalPlanOccurrenceResponse[] | undefined,
+): TaskResponse[] {
+  if (!occurrences) return tasks;
+  const byTask = new Map<number, GoalPlanOccurrenceResponse>();
+  for (const occurrence of occurrences) {
+    if (occurrence.serviceDate !== date || occurrence.linkedTaskId === null) continue;
+    const previous = byTask.get(occurrence.linkedTaskId);
+    if (!previous || previous.occurrenceVersion < occurrence.occurrenceVersion)
+      byTask.set(occurrence.linkedTaskId, occurrence);
+  }
+  return tasks.map((task) => {
+    const occurrence = byTask.get(task.id);
+    if (!occurrence) return task;
+    return {
+      ...task,
+      linkedGoalId: occurrence.goalId,
+      description: occurrence.snapshotTriggerText,
+    };
+  });
+}

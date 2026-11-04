@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 
-import { separateTodayGoalItems } from '@/features/today/today-goal-items';
+import { annotateTodayGoalTasks, separateTodayGoalItems } from '@/features/today/today-goal-items';
 import { getAccessToken } from '@/services/api';
 import type { GoalPlanOccurrenceResponse } from '@/types';
 
@@ -132,6 +132,30 @@ describe('Occurrence actions', () => {
 });
 
 describe('Occurrence and Task duplicate removal', () => {
+  it('연결 Task에 없는 목표와 행동 이름을 해당 날짜의 최신 회차에서 보완한다', () => {
+    const original = {
+      id: 10,
+      title: 'minimum',
+      description: null,
+    } as import('@/types').TaskResponse;
+    const rows = [
+      occurrence(),
+      occurrence({
+        occurrenceVersion: 8,
+        snapshotPlanName: '매일 읽기',
+        snapshotTriggerText: '식사 후',
+      }),
+    ];
+    expect(annotateTodayGoalTasks(date, [original], rows)[0]).toMatchObject({
+      id: 10,
+      linkedGoalId: 2,
+      title: 'minimum',
+      description: '식사 후',
+    });
+    expect(original.title).toBe('minimum');
+    expect(annotateTodayGoalTasks('2026-10-21', [original], rows)[0]).toBe(original);
+    expect(annotateTodayGoalTasks(date, [original], undefined)[0]).toBe(original);
+  });
   it('keeps ordinary Tasks when occurrence data is unavailable', () => {
     const tasks = [{ id: 10 }];
     expect(separateTodayGoalItems(date, tasks, undefined)).toEqual({

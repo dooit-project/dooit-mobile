@@ -2,12 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Platform } from 'react-native';
 
 import { taskApi, taskQueryKeys } from '@/features/tasks';
+import { useTodayGoalOccurrences } from '@/features/goals/use-goal-occurrences';
 import type { LocalDateString } from '@/types';
 
 import { separateTodayReviewItems } from './today-review-items';
 
 export function useTodayOverview(date: LocalDateString) {
   const canFetch = Platform.OS !== 'web' || typeof window !== 'undefined';
+  const occurrencesQuery = useTodayGoalOccurrences(date);
   const todayQuery = useQuery({
     queryKey: taskQueryKeys.today(date),
     queryFn: ({ signal }) => taskApi.getToday(date, signal),
@@ -34,7 +36,7 @@ export function useTodayOverview(date: LocalDateString) {
     enabled: canFetch,
   });
   const coreQueries = [todayQuery, doneQuery, inboxQuery];
-  const supplementalQueries = [staleQuery, recommendationsQuery];
+  const supplementalQueries = [staleQuery, recommendationsQuery, occurrencesQuery];
   const queries = [...coreQueries, ...supplementalQueries];
   const reviewItems = separateTodayReviewItems(
     recommendationsQuery.data ?? [],
@@ -47,7 +49,9 @@ export function useTodayOverview(date: LocalDateString) {
     doneTasks: doneQuery.data ?? [],
     staleTasks: staleQuery.data ?? [],
     inboxTasks: reviewItems.inboxTasks,
-    isPending: coreQueries.some((query) => query.isPending),
+    goalOccurrences: occurrencesQuery.data,
+    goalOccurrenceError: occurrencesQuery.error,
+    isPending: coreQueries.some((query) => query.isPending) || occurrencesQuery.isPending,
     isRefreshing: queries.some((query) => query.isFetching),
     error: coreQueries.find((query) => query.error)?.error ?? null,
     supplementalError: supplementalQueries.find((query) => query.error)?.error ?? null,

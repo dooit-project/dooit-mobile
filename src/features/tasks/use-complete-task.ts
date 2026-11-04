@@ -1,5 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ddayQueryKeys } from '@/features/dday/dday-query-keys';
+import { goalOccurrenceQueryKeys } from '@/features/goals/goal-plan-query-keys';
+import { goalJourneyQueryKeys } from '@/features/goals/goal-journey-query-keys';
+import { getAccessToken } from '@/services/api';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
 import { dailyPlanQueryKeys } from '@/features/daily-plan';
@@ -13,6 +16,7 @@ export function useCompleteTask(date: LocalDateString) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    onMutate: () => ({ ownerId: queryClient.getQueryData<{ id: number }>(['auth', 'me'])?.id }),
     mutationFn: (taskId: number) => taskApi.complete(taskId),
     onSuccess: (completedTask) => {
       queryClient.setQueryData<TaskResponse>(taskQueryKeys.detail(completedTask.id), completedTask);
@@ -44,6 +48,16 @@ export function useCompleteTask(date: LocalDateString) {
       void queryClient.invalidateQueries({ queryKey: dailyPlanQueryKeys.summary(date) });
       requestTaskNotificationSync();
       void queryClient.invalidateQueries({ queryKey: ddayQueryKeys.all });
+    },
+    onSettled: (_data, _error, _taskId, context) => {
+      if (
+        !context?.ownerId ||
+        queryClient.getQueryData<{ id: number }>(['auth', 'me'])?.id !== context.ownerId ||
+        !getAccessToken()
+      )
+        return;
+      void queryClient.invalidateQueries({ queryKey: goalOccurrenceQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: goalJourneyQueryKeys.all });
     },
   });
 }

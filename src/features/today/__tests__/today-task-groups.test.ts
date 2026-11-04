@@ -36,4 +36,18 @@ describe('오늘의 할 일과 완료 기록 묶음', () => {
   it('아이디어를 오늘 체크 목록에 섞지 않는다', () => {
     expect(groupTodayTaskRecords([task({ type: 'IDEA' })], [])).toEqual([]);
   });
+  it('같은 숫자의 새 목표와 기존 D-Day를 분리하고 새 목표 이름을 표시한다', () => {
+    const groups = groupTodayTaskRecords(
+      [
+        task({ id: 1, linkedGoalId: 5, todayOrder: 1 }),
+        task({ id: 2, ddayGoalId: 5, ddayGoalTitle: '기존 목표', todayOrder: 2 }),
+      ],
+      [],
+      { 5: '새 목표' },
+    );
+    expect(groups.map(({ goalNamespace, title }) => [goalNamespace, title])).toEqual([
+      ['goal', '새 목표'],
+      ['dday', '기존 목표'],
+    ]);
+  });
 });
