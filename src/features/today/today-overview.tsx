@@ -18,6 +18,8 @@ import {
 import { getDdayGoalFallbackColor, useDdayGoalColors } from '@/features/dday';
 import { env } from '@/config/env';
 import { useAuthState } from '@/features/auth';
+import { goalPlanApi } from '@/features/goals/goal-plan-api';
+import { goalPlanQueryKeys } from '@/features/goals/goal-plan-query-keys';
 import { readPlanGoalPreferences } from '@/features/goals/plan-goal-preferences';
 import { useGoals } from '@/features/goals/use-goals';
 import { getRecurrenceLabel, useCompleteTask, useReopenTask } from '@/features/tasks';
@@ -28,7 +30,7 @@ import { formatTimeLabel } from '@/utils';
 
 import { useTodayOverview } from './use-today-overview';
 import { groupTodayTaskRecords } from './today-task-groups';
-import { annotateTodayGoalTasks } from './today-goal-items';
+import { annotateTodayGoalTasks, todayGoalMetadata } from './today-goal-items';
 
 type TodayOverviewProps = {
   date: LocalDateString;
@@ -55,6 +57,17 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
     }, [goalScope, refetchPreferences]),
   );
   const goals = useGoals();
+  const plans = useQuery({
+    queryKey: goalPlanQueryKeys.list(),
+    queryFn: ({ signal }) => goalPlanApi.list({}, signal),
+    enabled: (overview.goalOccurrences?.length ?? 0) > 0,
+  });
+  const occurrencesByTask = new Map(
+    (overview.goalOccurrences ?? [])
+      .filter((row) => row.serviceDate === date && row.linkedTaskId !== null)
+      .sort((a, b) => a.occurrenceVersion - b.occurrenceVersion)
+      .map((row) => [row.linkedTaskId!, row]),
+  );
   const { todayTasks, doneTasks, isPending, error, refetch } = overview;
   const completeTask = useCompleteTask(date);
   const reopenTask = useReopenTask(date);
@@ -206,6 +219,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                 <TodayItemRow
                   key={task.id}
                   task={task}
+                  goalMetadata={todayGoalMetadata(task, occurrencesByTask.get(task.id), plans.data)}
                   doneColor={goalColor}
                   completionDisabled={completeTask.isPending || reopenTask.isPending}
                   isCompleting={
@@ -247,6 +261,7 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
 
 function TodayItemRow({
   task,
+  goalMetadata,
   doneColor,
   completionDisabled,
   isCompleting,
@@ -254,6 +269,7 @@ function TodayItemRow({
   onOpen,
 }: {
   task: TaskResponse;
+  goalMetadata?: string;
   doneColor: string;
   completionDisabled: boolean;
   isCompleting: boolean;
@@ -273,14 +289,15 @@ function TodayItemRow({
       ? task.allDay || !task.startAt
         ? '종일'
         : formatTimeLabel(task.startAt, { hour12: true })
-      : [
+      : (goalMetadata ??
+        [
           recurrenceLabel?.startsWith('매주 ')
             ? recurrenceLabel.slice(3).replaceAll('·', ' · ')
             : recurrenceLabel,
           task.description?.split('\n')[0],
         ]
           .filter(Boolean)
-          .join(' · ');
+          .join(' · '));
 
   return (
     <View {...uiAuditProps({ uiRow: 'today-item', uiAlign: 'title-line' })} style={styles.itemRow}>

@@ -1,6 +1,14 @@
 import { QueryClient } from '@tanstack/react-query';
 
-import { annotateTodayGoalTasks, separateTodayGoalItems } from '@/features/today/today-goal-items';
+import {
+  annotateTodayGoalTasks,
+  separateTodayGoalItems,
+  todayGoalMetadata,
+} from '@/features/today/today-goal-items';
+import {
+  createTodayGoalPracticeChange,
+  getRecordedGoalPracticeText,
+} from '@/features/today/today-goal-practice';
 import { getAccessToken } from '@/services/api';
 import type { GoalPlanOccurrenceResponse } from '@/types';
 
@@ -95,6 +103,44 @@ describe('Today occurrence read coordination', () => {
 });
 
 describe('Occurrence actions', () => {
+  it.each(['STANDARD', 'MINIMUM'] as const)(
+    'records explicit %s with the shown version and actual Seoul time',
+    (variant) => {
+      expect(
+        createTodayGoalPracticeChange(occurrence(), variant, new Date('2026-10-20T15:30:00Z')),
+      ).toEqual({
+        type: 'result',
+        occurrence: { id: 1, occurrenceVersion: 7 },
+        request: {
+          actionVariant: variant,
+          practicedAt: '2026-10-21T00:30:00',
+          practicedTimeZone: 'Asia/Seoul',
+          nextActionPatchKind: 'KEEP',
+        },
+      });
+    },
+  );
+  it('does not infer a practice level from the linked Task or replace an existing result', () => {
+    const result = { actionVariant: 'UNKNOWN' } as import('@/types').GoalPracticeResultResponse;
+    const practiced = occurrence({ status: 'PRACTICED', result });
+    expect(getRecordedGoalPracticeText(practiced)).toBeNull();
+    expect(
+      getRecordedGoalPracticeText({
+        ...practiced,
+        result: { ...result, actionVariant: 'STANDARD' },
+      }),
+    ).toBe('Read 10 pages');
+    expect(
+      getRecordedGoalPracticeText({
+        ...practiced,
+        result: { ...result, actionVariant: 'MINIMUM' },
+      }),
+    ).toBe('Read one paragraph');
+    expect(() => createTodayGoalPracticeChange(practiced, 'STANDARD', new Date())).toThrow();
+    expect(() =>
+      createTodayGoalPracticeChange(occurrence({ status: 'RESTED' }), 'MINIMUM', new Date()),
+    ).toThrow();
+  });
   it('keeps explicit variant, actual clock zone, next action and the displayed version', async () => {
     const request = {
       actionVariant: 'MINIMUM' as const,
@@ -132,6 +178,26 @@ describe('Occurrence actions', () => {
 });
 
 describe('Occurrence and Task duplicate removal', () => {
+  it('shows schedule only for the matching plan version and labels the actual minimum action', () => {
+    const row = occurrence({ snapshotTriggerText: '식사 후' });
+    const task = {
+      title: row.snapshotMinimumActionText,
+      status: 'TODO',
+    } as unknown as import('@/types').TaskResponse;
+    const plan = {
+      id: 3,
+      currentVersion: 1,
+      schedule: { days: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'] },
+    } as import('@/types').GoalPlanResponse;
+    expect(todayGoalMetadata(task, row, [plan])).toBe('작은 행동 · 매일 · 식사 후');
+    expect(todayGoalMetadata(task, row, [{ ...plan, currentVersion: 2 }])).toBe(
+      '작은 행동 · 식사 후',
+    );
+    expect(todayGoalMetadata(task, { ...row, snapshotNextAction: task.title }, [plan])).toBe(
+      '매일 · 식사 후',
+    );
+    expect(todayGoalMetadata({ ...task, status: 'DONE' }, row, [plan])).toBeUndefined();
+  });
   it('연결 Task에 없는 목표와 행동 이름을 해당 날짜의 최신 회차에서 보완한다', () => {
     const original = {
       id: 10,

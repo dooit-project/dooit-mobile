@@ -1,4 +1,40 @@
-import type { GoalPlanOccurrenceResponse, LocalDateString, TaskResponse } from '@/types';
+import type {
+  GoalPlanOccurrenceResponse,
+  GoalPlanResponse,
+  LocalDateString,
+  TaskResponse,
+} from '@/types';
+
+import { goalPlanDays } from '@/features/goals/goal-plan-form-values';
+
+/** Current plan schedules are safe to show only when they match the occurrence snapshot. */
+export function todayGoalMetadata(
+  task: TaskResponse,
+  occurrence: GoalPlanOccurrenceResponse | undefined,
+  plans: GoalPlanResponse[] | undefined,
+): string | undefined {
+  if (!occurrence || task.status === 'DONE') return undefined;
+  const plan = plans?.find(
+    (row) => row.id === occurrence.planId && row.currentVersion === occurrence.planVersion,
+  );
+  const days = plan?.schedule.days;
+  const recurrence =
+    days?.length === 7
+      ? '매일'
+      : goalPlanDays
+          .filter((day) => days?.includes(day.value))
+          .map((day) => day.label)
+          .join(' · ');
+  const isMinimum =
+    !occurrence.snapshotNextAction &&
+    occurrence.snapshotMinimumActionText !== occurrence.snapshotStandardActionText &&
+    task.title === occurrence.snapshotMinimumActionText;
+  return (
+    [isMinimum ? '작은 행동' : null, recurrence, occurrence.snapshotTriggerText]
+      .filter(Boolean)
+      .join(' · ') || undefined
+  );
+}
 
 /** Undefined is an unavailable occurrence query, never proof that no plans are due. */
 export function separateTodayGoalItems<T extends Pick<TaskResponse, 'id'>>(

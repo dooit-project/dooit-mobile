@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-04T15:07:10.150Z",
+  "route": "/",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "documentWidth": 390,
+  "rows": [
+    {
+      "name": "today-item:0",
+      "alignment": "title-line",
+      "bounds": {
+        "x": 28,
+        "y": 104,
+        "width": 342,
+        "height": 64
+      },
+      "text": {
+        "x": 84,
+        "y": 114,
+        "width": 282,
+        "height": 46
+      },
+      "titleLine": {
+        "x": 84,
+        "y": 114,
+        "width": 282,
+        "height": 24
+      },
+      "icons": [
+        {
+          "x": 28,
+          "y": 104,
+          "width": 44,
+          "height": 44
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "control:0",
+      "minimum": 44,
+      "bounds": {
+        "x": 322,
+        "y": 60,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:1",
+      "minimum": 44,
+      "bounds": {
+        "x": 28,
+        "y": 104,
+        "width": 44,
+        "height": 44
+      }
+    }
+  ]
+}
