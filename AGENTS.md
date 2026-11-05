@@ -14,6 +14,9 @@
 - 플랫폼별 코드를 수정하면 영향받는 Android, iOS, Web 환경을 명시한다.
 - 새 의존성은 Expo SDK 56 및 React Native 0.85 호환성을 확인한 뒤 추가한다.
 - 화면 수정이나 신규 사용자 기능은 [`docs/qa/PRODUCT_DESIGN_REVIEW_POLICY.md`](./docs/qa/PRODUCT_DESIGN_REVIEW_POLICY.md)에 따라 구현 전 Product Design 검토와 구현 후 실제 화면 감사를 진행한다.
+- 화면 작업은 Product Design index로 목적에 맞는 절차를 선택하고, 기준 시안·사용자 흐름·시각 정렬·실제 화면 비교를 기본으로 확인한다. 추가 스킬은 변경 범위·플랫폼·위험에 맞게 선택해 깊이 적용하며 모든 스킬을 기계적으로 실행하지 않는다. 사용한 스킬·결과·미확인 사항을 [화면 디자인 검토·수정 루프](./docs/qa/PRODUCT_DESIGN_REVIEW_POLICY.md#화면-작업의-스킬-검토와-수정-루프)에 따라 기록한다. 설치만으로 검토했다고 주장하지 않는다.
+- 새 모바일 화면이나 의미 있는 구조의 시각안을 만들 때는 Product Design `ideate`와 프로젝트의 [`imagegen-frontend-mobile`](./.agents/skills/imagegen-frontend-mobile/SKILL.md)을 초안에 활용하고, 선택된 시안과 기존 제품 제약을 우선한다. [초안 제작 절차](./docs/qa/PRODUCT_DESIGN_REVIEW_POLICY.md#새-화면-초안과-선택한-시안의-연결)에 따라 맥락·선택 근거와 실제 검증 여부를 기록한다. 기존 시안의 작은 보정에 새로운 안을 강제하지 않는다.
+- 같은 범위의 디자인·접근성·기능 문제는 수정하고 같은 데이터·뷰포트의 실제 화면으로 다시 검사한다. 필수 검사 실패나 확인한 중대한 문제는 통과로 보고하지 않는다. 최종 답변에는 실제 화면 캡처를 직접 표시하고 파일 링크, 남은 차이와 미확인 환경을 함께 제공한다.
 - UI 구현은 먼저 [`docs/design/DESIGN_IMPLEMENTATION_GUIDE.md`](./docs/design/DESIGN_IMPLEMENTATION_GUIDE.md)의 정확한 기준 이미지·고정 요소·작업 범위를 확인한다. 시안 번호로 원본을 추정하지 않으며, 기존 선택안 보정과 새로운 정보 구조 변경을 구분한다.
 - 화면 개발·시안 보정마다 [`docs/qa/UI_VISUAL_ACCEPTANCE.md`](./docs/qa/UI_VISUAL_ACCEPTANCE.md)의 반복 지적 항목을 기본 검사한다. 아이콘 중심·행 높이·터치 영역·긴 문구·가로 넘침을 확인하고, 실제 Web 변경은 새 DOM 측정으로 `npm run check:ui-layout -- <report.json>`을 실행한다. 실패는 같은 범위에서 수정·재측정하며, 기하 검사 통과만으로 눈에 보이는 글리프 정렬을 통과시키지 않는다.
 - UI/UX 제안·시안 수정에도 위 정책의 기본 검토를 적용한다. 화면의 필요성과 위치, 행동 위계·발견 가능성, 시각 일관성, 접근성을 확인하고 공식 디자인 가이드·유사 서비스의 관련 패턴과 비교한다. 사용 도구·출처와 시안 검토/자료 참고/실제 앱 검증의 범위를 구분해 기록한다.

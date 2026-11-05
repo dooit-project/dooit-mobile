@@ -4,3 +4,5 @@ dist/
 node_modules/
 package-lock.json
 assets/
+# Preserve the upstream formatting of installed third-party skills.
+.agents/skills/
