@@ -721,3 +721,20 @@ final result: passed
 - Web 전환 시 기존 버튼의 초점을 해제하고 새 일정 제목에 초점을 주도록 조정했다. 경고가 실제로 해소됐는지와 키보드·스크린 리더 사용성은 재확인이 필요하다.
 - `npm run validate` 통과: 130 suites/701 tests, opt-in STG 1개 제외. Android/iOS/Web에 목록 행이 적용되며 초점 처리는 Web 한정이다.
 - 후속으로 사용자 승인에 따라 로컬 Playwright와 Chrome mock Web 390×844에서 빈 날짜 추가 → 일정 저장 → 목록에서 다시 추가를 확인했다. 선택 날짜와 제목 입력 초점이 유지됐으며 이 흐름에서 기존 `aria-hidden` 경고는 재현되지 않았다. [실제 캡처와 좌표](./docs/audits/calendar-add-action-2026-11-03/README.md). 새 DOM 기하 검사 2행/5조작 통과. 320/430, 키보드·스크린 리더, Android/iOS 및 운영 API는 미확인이다.
+
+## 2026-11-06 오늘 목표 묶음·추가 버튼
+
+- Source: [사용자 선택 1번](./docs/design/today-soft-groups-2026-11-06/selected-reference.png)을 기준으로 사용자가 동의한 옅은 배경과 작은 추가 버튼을 반영한 [보정 시안](./docs/design/today-soft-groups-2026-11-06/refined-reference.png).
+- Scope: 오늘의 목표별 배경과 추가 버튼, 그에 영향을 받는 긴 제목·키보드 초점. 시안의 전체 내비게이션 이름이나 일정의 완료 조작 변경은 포함하지 않는다.
+- Implementation: [mock Web 화면](./docs/audits/today-soft-groups-2026-11-06/after-390.png), 390×844 CSS px, deviceScaleFactor 1. 원본 852×1846을 390×844로 축소한 [전체 비교](./docs/audits/today-soft-groups-2026-11-06/comparison-390.png)와 [목표 영역 확대 비교](./docs/audits/today-soft-groups-2026-11-06/comparison-detail-390.png)를 열어 확인했다.
+- 상태 차이: 두 목표와 주요 항목은 일치한다. 실제 mock에는 시안이 생략한 설명과 완료 문구가 있으므로 그룹 높이가 다르다. 실제 데이터를 숨기지 않는다. 시안의 상단 여백은 과도한 여백을 줄이라는 기존 요청에 따라 재현하지 않았다.
+- Typography: 공통 AppText/ItemCopy, 제목 16px·목표 18px 및 시스템 글꼴을 사용했다. 긴 글자 강제 절단을 제거하고 작은 화면에서 읽기를 확인했다. 이미지의 정확한 글꼴은 알 수 없다.
+- Spacing/layout: 목표별 옅은 표면·색 레일, 버튼 오른쪽 정렬과 두 목표 그룹의 리듬을 확인했다. 320/390/430px 및 긴 내용의 기하 검사는 [감사 기록](./docs/audits/today-soft-groups-2026-11-06/README.md)에 있다.
+- Colors/tokens: 기존 목표색과 낮은 투명도, 테마의 primary·textOnPrimary를 사용한다. 여섯 목표색의 밝은/어두운 토큰상 보조 텍스트 대비를 계산했다. 전체 플랫폼의 실제 색 대비를 증명하지 않는다.
+- Assets: 기존 dooit 브랜드와 공통 아이콘을 사용한다. 생성된 시안은 이미지로서의 기준일 뿐 앱의 래스터 자산으로 넣지 않았다.
+- Copy: 사용자 데이터와 기존 화면 문구를 보존한다. 순환 문구가 시안과 다를 수 있다.
+- Interaction: 추가 메뉴 열기/닫기, Enter·Tab·Escape와 초점 복귀, 완료·완료 취소를 확인했다. mock 페이지 오류는 확인되지 않았다.
+- 비교 및 수정: 첫 구현을 캡처하고 메뉴를 클릭했을 때 불필요한 검은 포커스 경계가 보이는 것을 확인해 키보드에만 보이는 ring으로 수정했다. 긴 제목의 두 줄 제한을 제거하고 추가 메뉴에 키보드 진입·Escape 복귀를 연결한 후 화면·동작을 다시 캡처했다.
+- 범위 밖 차이: 시안의 ‘목표/기록’ 탭 명칭과 일정 앞 달력 아이콘은 각각 전역 내비게이션·완료 행동의 결정이 필요하므로 실제 앱에서는 기존 ‘계획/돌아보기’와 체크를 유지한다. 이 영역은 이번 단위의 시안 일치 판정에 포함하지 않는다. Android/iOS 실기기, 화면 읽기 도구, 글자 확대와 운영 API는 미확인이다.
+
+final result: passed

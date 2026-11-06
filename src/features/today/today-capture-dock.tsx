@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
-import { AppIcon, AppText } from '@/components/ui';
+import { AppIcon, AppText, Button } from '@/components/ui';
 import { radii, spacing, useAppTheme } from '@/theme';
 
 type TodayCaptureDockProps = {
@@ -23,7 +23,22 @@ export function TodayCaptureDock({
 }: TodayCaptureDockProps) {
   const theme = useAppTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const addButtonRef = useRef<ComponentRef<typeof Button>>(null);
+  const firstActionRef = useRef<ComponentRef<typeof Pressable>>(null);
   const handlers = { idea: onCreateIdea, schedule: onCreateSchedule, task: onCreateTask };
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !menuOpen) return;
+    firstActionRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      setMenuOpen(false);
+      requestAnimationFrame(() => addButtonRef.current?.focus());
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [menuOpen]);
 
   return (
     <View accessibilityLabel="빠른 작성" pointerEvents="box-none" style={styles.container}>
@@ -44,6 +59,7 @@ export function TodayCaptureDock({
               accessibilityLabel={`${action.label} 추가`}
               accessibilityRole="button"
               key={action.key}
+              ref={action.key === 'schedule' ? firstActionRef : undefined}
               onPress={() => {
                 setMenuOpen(false);
                 handlers[action.key]();
@@ -62,25 +78,19 @@ export function TodayCaptureDock({
         </View>
       ) : null}
 
-      <Pressable
+      <Button
+        ref={addButtonRef}
         accessibilityHint="일정, 할 일 또는 아이디어 추가 메뉴를 엽니다."
         accessibilityLabel={menuOpen ? '추가 메뉴 닫기' : '할 일 추가'}
-        accessibilityRole="button"
         accessibilityState={{ expanded: menuOpen }}
         aria-expanded={menuOpen}
+        focusAppearance="ring"
+        leading={<AppIcon color={theme.colors.textOnPrimary} name="plus" size="list" />}
         onPress={() => setMenuOpen((current) => !current)}
-        style={({ pressed }) => [
-          styles.addButton,
-          {
-            backgroundColor: pressed ? theme.colors.highlightBlue : theme.colors.primarySoft,
-          },
-        ]}
+        style={styles.addButton}
       >
-        <AppIcon color={theme.colors.primary} name="plus" size="list" />
-        <AppText tone="primary" weight="semibold" style={{ fontSize: 16, lineHeight: 24 }}>
-          할 일 추가
-        </AppText>
-      </Pressable>
+        할 일 추가
+      </Button>
     </View>
   );
 }
@@ -114,13 +124,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[3],
   },
   addButton: {
-    alignItems: 'center',
-    borderRadius: radii.md,
-    flexDirection: 'row',
-    gap: spacing[4],
-    justifyContent: 'flex-start',
+    alignSelf: 'flex-end',
+    borderRadius: radii.full,
     minHeight: 50,
-    width: '100%',
     paddingHorizontal: spacing[5],
   },
 });

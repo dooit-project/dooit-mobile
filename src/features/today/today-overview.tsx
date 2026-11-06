@@ -153,7 +153,18 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
                 getDdayGoalFallbackColor(group.goalId))
               : (goalColors[String(group.goalId)] ?? getDdayGoalFallbackColor(group.goalId));
         return (
-          <View key={groupKey} style={styles.group}>
+          <View
+            key={groupKey}
+            style={[
+              styles.group,
+              {
+                backgroundColor:
+                  group.goalId === null
+                    ? theme.colors.surfaceMuted
+                    : `${goalColor}${theme.isDark ? '22' : '0D'}`,
+              },
+            ]}
+          >
             {group.goalId !== null ? (
               <View
                 accessible={false}
@@ -178,7 +189,6 @@ export function TodayOverview({ date, overview }: TodayOverviewProps) {
               ) : null}
               <AppText
                 accessibilityRole="header"
-                numberOfLines={2}
                 style={styles.groupTitle}
                 variant="sectionTitle"
                 weight="bold"
@@ -347,7 +357,6 @@ function TodayItemRow({
           title={task.title}
           metadata={trailingLabel}
           completed={done}
-          numberOfLines={fontScale > 1 ? undefined : 2}
           metadataLeading={
             isSchedule && !done ? (
               <AppIcon color={theme.colors.textMuted} name="calendar" size="meta" />
@@ -361,17 +370,21 @@ function TodayItemRow({
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[8],
+    gap: spacing[4],
   },
   group: {
+    borderRadius: radii.xl,
     gap: 0,
-    paddingLeft: spacing[4],
+    paddingBottom: spacing[2],
+    paddingLeft: spacing[7],
+    paddingRight: spacing[3],
+    paddingTop: spacing[2],
   },
   goalRail: {
     position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
+    left: spacing[3],
+    top: spacing[3],
+    bottom: spacing[3],
     width: 4,
     borderRadius: radii.full,
     opacity: 0.5,
