@@ -17,6 +17,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  type DimensionValue,
   type ScrollViewProps,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -58,6 +59,7 @@ export function DetailSheet({
   scrollRef,
   onScroll,
   fillContent = false,
+  height,
 }: {
   children: ReactNode;
   header: ReactNode;
@@ -71,6 +73,7 @@ export function DetailSheet({
   scrollRef?: Ref<ScrollView>;
   onScroll?: ScrollViewProps['onScroll'];
   fillContent?: boolean;
+  height?: DimensionValue;
 }) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -228,7 +231,7 @@ export function DetailSheet({
           {
             backgroundColor: theme.colors.surface,
             marginTop: Math.max(insets.top, spacing[2]),
-            height: expanded ? '96%' : '84%',
+            height: height ?? (expanded ? '96%' : '84%'),
           },
         ]}
       >

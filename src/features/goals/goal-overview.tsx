@@ -1,16 +1,18 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import {
   AddItemRow,
   AppIcon,
   AppText,
   Button,
+  DetailSheet,
   EmptyState,
   IconButton,
   InlineNotice,
   Screen,
+  useDetailSheetTriggerTracking,
 } from '@/components/ui';
 import { env } from '@/config/env';
 import { useAuthState } from '@/features/auth';
@@ -73,6 +75,7 @@ export function GoalOverview() {
 }
 
 function GoalWorkspace({ scope }: { scope: string }) {
+  useDetailSheetTriggerTracking();
   const panelId = useId();
   const { goal: requestedGoal } = useLocalSearchParams<{ goal?: string | string[] }>();
   const handledGoal = useRef<string | null>(null);
@@ -269,6 +272,112 @@ function GoalWorkspace({ scope }: { scope: string }) {
       safeAreaEdges={['left', 'right']}
       contentContainerStyle={styles.screen}
       scrollViewProps={{ scrollEnabled: !dragging, showsVerticalScrollIndicator: false }}
+      overlay={
+        all && !ordering ? (
+          <Modal
+            transparent
+            visible
+            onRequestClose={() => {
+              setAll(false);
+              setSearch('');
+            }}
+          >
+            <DetailSheet
+              label="전체 목표"
+              height="64%"
+              onClose={() => {
+                setAll(false);
+                setSearch('');
+              }}
+              header={
+                <View style={styles.pickerHeader}>
+                  <AppText variant="sectionTitle" weight="bold" accessibilityRole="header">
+                    전체 목표
+                  </AppText>
+                  <View style={styles.pickerActions}>
+                    {ordered.length > 1 ? (
+                      <Button
+                        variant="ghost"
+                        size="compact"
+                        accessibilityLabel="목표 순서 편집"
+                        onPress={() => {
+                          setAll(false);
+                          setSearch('');
+                          setDraft(ordered.map((target) => target.key));
+                          setHistory([]);
+                          setOrdering(true);
+                        }}
+                      >
+                        순서 편집
+                      </Button>
+                    ) : null}
+                    <IconButton
+                      variant="plain"
+                      accessibilityLabel="전체 목표 닫기"
+                      onPress={() => {
+                        setAll(false);
+                        setSearch('');
+                      }}
+                    >
+                      <AppIcon name="x" color={theme.colors.textSecondary} />
+                    </IconButton>
+                  </View>
+                </View>
+              }
+            >
+              <View style={styles.section}>
+                <TextInput
+                  accessibilityLabel="전체 목표 검색"
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="목표 검색"
+                  placeholderTextColor={theme.colors.textMuted}
+                  style={[
+                    styles.search,
+                    { color: theme.colors.text, borderColor: theme.colors.border },
+                  ]}
+                />
+                {!matches.length ? (
+                  <AppText accessibilityLiveRegion="polite" tone="secondary">
+                    찾는 목표가 없어요.
+                  </AppText>
+                ) : null}
+                {matches.map((target) => (
+                  <Pressable
+                    key={target.key}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${target.title}${currentKey === target.key ? ', 선택됨' : ''}${target.kind === 'dday' ? ', 기존 목표' : target.value.status !== 'ACTIVE' ? `, ${statusLabels[target.value.status]}` : ''}`}
+                    accessibilityState={{ selected: currentKey === target.key }}
+                    onPress={() => choose(target.key)}
+                    style={styles.option}
+                  >
+                    <View style={[styles.dot, { backgroundColor: color(target) }]} />
+                    <AppText style={styles.grow}>{target.title}</AppText>
+                    {currentKey === target.key ? (
+                      <AppIcon name="check" color={theme.colors.primary} />
+                    ) : null}
+                    {target.kind === 'dday' || target.value.status !== 'ACTIVE' ? (
+                      <AppText variant="caption" tone="secondary">
+                        {target.kind === 'dday' ? '기존 목표' : statusLabels[target.value.status]}
+                      </AppText>
+                    ) : null}
+                  </Pressable>
+                ))}
+                <AddItemRow
+                  tone="primary"
+                  onPress={() => {
+                    setAll(false);
+                    setSearch('');
+                    setForm('create');
+                  }}
+                >
+                  새 목표 만들기
+                </AddItemRow>
+              </View>
+            </DetailSheet>
+          </Modal>
+        ) : undefined
+      }
     >
       {!ready || ((goals.isPending || legacy.isPending) && !ordered.length) ? (
         <ActivityIndicator accessibilityLabel="목표를 불러오는 중" color={theme.colors.primary} />
@@ -402,61 +511,6 @@ function GoalWorkspace({ scope }: { scope: string }) {
                   완료
                 </Button>
               </View>
-            </View>
-          ) : all ? (
-            <View style={styles.section}>
-              <TextInput
-                accessibilityLabel="전체 목표 검색"
-                value={search}
-                onChangeText={setSearch}
-                placeholder="목표 검색"
-                placeholderTextColor={theme.colors.textMuted}
-                style={[
-                  styles.search,
-                  { color: theme.colors.text, borderColor: theme.colors.border },
-                ]}
-              />
-              {!matches.length ? (
-                <AppText accessibilityLiveRegion="polite" tone="secondary">
-                  찾는 목표가 없어요.
-                </AppText>
-              ) : null}
-              {matches.map((target) => (
-                <Pressable
-                  key={target.key}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: currentKey === target.key }}
-                  onPress={() => choose(target.key)}
-                  style={styles.option}
-                >
-                  <View style={[styles.dot, { backgroundColor: color(target) }]} />
-                  <AppText style={styles.grow}>{target.title}</AppText>
-                  <AppText variant="caption" tone="secondary">
-                    {target.kind === 'dday' ? '기존 목표' : statusLabels[target.value.status]}
-                  </AppText>
-                </Pressable>
-              ))}
-              <Button
-                variant="ghost"
-                onPress={() => {
-                  setAll(false);
-                  setForm('create');
-                }}
-              >
-                새 목표 만들기
-              </Button>
-              {ordered.length > 1 ? (
-                <Button
-                  variant="ghost"
-                  onPress={() => {
-                    setDraft(ordered.map((target) => target.key));
-                    setHistory([]);
-                    setOrdering(true);
-                  }}
-                >
-                  목표 순서 바꾸기
-                </Button>
-              ) : null}
             </View>
           ) : null}
           {form ? (
@@ -729,6 +783,8 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[1] },
   grow: { flex: 1, minWidth: 0 },
   option: { flexDirection: 'row', alignItems: 'center', minHeight: 48, gap: spacing[3] },
+  pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  pickerActions: { flexDirection: 'row', alignItems: 'center' },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
   search: { minHeight: 48, borderWidth: 1, borderRadius: 8, padding: spacing[3], fontSize: 16 },
 });

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "viewport": {
+    "width": 430,
+    "height": 844
+  },
+  "documentWidth": 430,
+  "rows": [
+    {
+      "name": "추가 행 1",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 579.84375,
+        "width": 390,
+        "height": 56
+      },
+      "text": {
+        "x": 69,
+        "y": 595.84375,
+        "width": 90.921875,
+        "height": 24
+      },
+      "icons": [
+        {
+          "x": 25,
+          "y": 594.84375,
+          "width": 24,
+          "height": 26
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "목표 순서 편집",
+      "minimum": 44,
+      "bounds": {
+        "x": 293.984375,
+        "y": 323.84375,
+        "width": 72.015625,
+        "height": 44
+      }
+    },
+    {
+      "name": "전체 목표 닫기",
+      "minimum": 44,
+      "bounds": {
+        "x": 366,
+        "y": 323.84375,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "새 목표 만들기",
+      "minimum": 44,
+      "bounds": {
+        "x": 20,
+        "y": 579.84375,
+        "width": 390,
+        "height": 56
+      }
+    }
+  ]
+}
