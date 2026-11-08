@@ -114,6 +114,7 @@ export function GoalPlanList({
                 title={plan.name}
                 metadata={[
                   days,
+                  plan.triggerText?.trim() || null,
                   plan.status === 'PAUSED'
                     ? '잠시 멈춤'
                     : plan.status === 'ARCHIVED'
@@ -139,7 +140,7 @@ export function GoalPlanList({
             key={plan.id}
             {...uiAuditProps({ uiRow: 'plan-definition', uiAlign: 'text-block' })}
             accessibilityRole="button"
-            accessibilityLabel={`${plan.name}, ${days}, 수정`}
+            accessibilityLabel={`${plan.name}, ${[days, plan.triggerText?.trim()].filter(Boolean).join(', ')}, 수정`}
             disabled={disabled}
             onPress={() => {
               setSnapshot(plan);

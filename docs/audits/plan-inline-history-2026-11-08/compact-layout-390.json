@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-08T06:10:16.561Z",
+  "route": "/plan",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "documentWidth": 390,
+  "rows": [
+    {
+      "name": "button:0",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 270.6875,
+        "y": 55.5,
+        "width": 89.3125,
+        "height": 25
+      },
+      "text": {
+        "x": 300.6875,
+        "y": 56,
+        "width": 59.3125,
+        "height": 24
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 270.6875,
+          "y": 55.5,
+          "width": 22,
+          "height": 25
+        }
+      ]
+    },
+    {
+      "name": "plan-definition:1",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 181,
+        "width": 350,
+        "height": 64
+      },
+      "text": {
+        "x": 68,
+        "y": 190,
+        "width": 298,
+        "height": 46
+      },
+      "titleLine": {
+        "x": 68,
+        "y": 190,
+        "width": 298,
+        "height": 24
+      },
+      "icons": [
+        {
+          "x": 24,
+          "y": 201,
+          "width": 24,
+          "height": 24
+        }
+      ]
+    },
+    {
+      "name": "plan-definition:2",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 245,
+        "width": 350,
+        "height": 64
+      },
+      "text": {
+        "x": 68,
+        "y": 254,
+        "width": 298,
+        "height": 46
+      },
+      "titleLine": {
+        "x": 68,
+        "y": 254,
+        "width": 298,
+        "height": 24
+      },
+      "icons": [
+        {
+          "x": 24,
+          "y": 265,
+          "width": 24,
+          "height": 24
+        }
+      ]
+    },
+    {
+      "name": "add-item:3",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 309,
+        "width": 350,
+        "height": 56
+      },
+      "text": {
+        "x": 69,
+        "y": 325,
+        "width": 90.921875,
+        "height": 24
+      },
+      "titleLine": null,
+      "icons": [
+        {
+          "x": 25,
+          "y": 324,
+          "width": 24,
+          "height": 26
+        }
+      ]
+    },
+    {
+      "name": "goal-history:4",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 431,
+        "width": 350,
+        "height": 56
+      },
+      "text": {
+        "x": 57,
+        "y": 436,
+        "width": 253.78125,
+        "height": 46
+      },
+      "titleLine": {
+        "x": 57,
+        "y": 436,
+        "width": 253.78125,
+        "height": 24
+      },
+      "icons": [
+        {
+          "x": 21,
+          "y": 447,
+          "width": 24,
+          "height": 24
+        }
+      ]
+    },
+    {
+      "name": "goal-history:5",
+      "alignment": "text-block",
+      "bounds": {
+        "x": 20,
+        "y": 495,
+        "width": 350,
+        "height": 56
+      },
+      "text": {
+        "x": 57,
+        "y": 500,
+        "width": 253.78125,
+        "height": 46
+      },
+      "titleLine": {
+        "x": 57,
+        "y": 500,
+        "width": 253.78125,
+        "height": 24
+      },
+      "icons": [
+        {
+          "x": 21,
+          "y": 511,
+          "width": 24,
+          "height": 24
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "control:0",
+      "minimum": 44,
+      "bounds": {
+        "x": 260.6875,
+        "y": 45.5,
+        "width": 109.3125,
+        "height": 45
+      }
+    },
+    {
+      "name": "control:1",
+      "minimum": 44,
+      "bounds": {
+        "x": 326,
+        "y": 117,
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "control:2",
+      "minimum": 44,
+      "bounds": {
+        "x": 20,
+        "y": 309,
+        "width": 350,
+        "height": 56
+      }
+    }
+  ]
+}

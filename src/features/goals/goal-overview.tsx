@@ -37,6 +37,7 @@ import { GoalForm } from './goal-form';
 import { parsePlanGoalKey, resolvePlanGoalNavigation } from './plan-goal-navigation';
 import { useGoals, useGoalStatus } from './use-goals';
 import { GoalPlanList } from './goal-plan-list';
+import { GoalHistoryList } from './goal-history-list';
 import { GoalTabs } from './goal-tabs';
 import {
   readPlanGoalPreferences,
@@ -758,6 +759,9 @@ function GoalWorkspace({ scope }: { scope: string }) {
                   ) : null}
                 </>
               )}
+              {!plansEditing && !itemOrder.editing && !confirmation && !menu ? (
+                <GoalHistoryList key={current.key} kind={current.kind} id={current.value.id} />
+              ) : null}
             </View>
           ) : !form && !ordering && !ordered.length && !goals.error && !legacy.error ? (
             <EmptyState

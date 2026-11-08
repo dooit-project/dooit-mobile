@@ -6,7 +6,6 @@ import {
   AppIcon,
   AppText,
   Button,
-  EmptyState,
   InlineNotice,
   ItemCopy,
   ItemLeading,
@@ -40,7 +39,9 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
   const query = useDdayGoalTasks(goalId);
   const order = useDdayPlanItemOrder(selectionScope, goalId);
   const items = applyDdayPlanItemOrder(
-    getDdayPlanItems(query.data ?? [], toApiLocalDate()),
+    getDdayPlanItems(query.data ?? [], toApiLocalDate()).filter(
+      (item) => item.recurring || !item.onlyCompleted,
+    ),
     order.keys,
   );
   const [editing, setEditing] = useState(false);
@@ -135,13 +136,7 @@ export const DdayGoalTasks = forwardRef<DdayGoalTasksHandle, Props>(function Dda
       </View>
     );
   if (query.error && !query.data) return errorNotice;
-  if (items.length === 0 && !editing)
-    return (
-      <EmptyState
-        title="연결된 항목이 없어요"
-        description="항목 추가로 할 일이나 일정을 만들어 보세요."
-      />
-    );
+  if (items.length === 0 && !editing) return errorNotice;
 
   return (
     <View style={styles.container}>

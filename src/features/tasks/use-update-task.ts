@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ddayQueryKeys } from '@/features/dday/dday-query-keys';
 import { dailyPlanQueryKeys } from '@/features/daily-plan';
+import { goalJourneyQueryKeys } from '@/features/goals/goal-journey-query-keys';
 
 import { requestTaskNotificationSync } from '@/features/notifications';
 import type { RecurrenceEditScope, TaskResponse, TaskUpsertRequest } from '@/types';
@@ -26,6 +27,7 @@ export function useUpdateTask() {
       void queryClient.invalidateQueries({ queryKey: dailyPlanQueryKeys.all });
       requestTaskNotificationSync();
       void queryClient.invalidateQueries({ queryKey: ddayQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: goalJourneyQueryKeys.all });
     },
   });
 }
